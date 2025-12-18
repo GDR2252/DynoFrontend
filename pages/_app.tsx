@@ -1,0 +1,85 @@
+import {
+  AdminLayout,
+  ClientLayout,
+  LoginLayout,
+  PaymentLayout,
+} from "@/Containers";
+import store from "@/store";
+import "@/styles/globals.css";
+import { theme } from "@/styles/theme";
+import { ThemeProvider } from "@mui/material";
+import { SessionProvider } from "next-auth/react";
+import type { AppProps } from "next/app";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { Provider } from "react-redux";
+import "../i18n";
+import LanguageBootstrap from "@/helpers/LanguageBootstrap";
+import type { ReactNode } from "react";
+
+export default function App({ Component, pageProps }: AppProps) {
+  const { pathname } = useRouter();
+  const [pageName, setPageName] = useState("");
+  const [pageDescription, setPageDescription] = useState("");
+  const [pageAction, setPageAction] = useState<ReactNode | null>(null);
+
+  return (
+    <>
+      <Provider store={store}>
+      <LanguageBootstrap />
+        <SessionProvider session={pageProps.session}>
+          <ThemeProvider theme={theme}>
+            {!pathname.includes("auth") &&
+              !pathname.includes("payment") &&
+              !pathname.includes("admin") && (
+                <ClientLayout
+                  pageName={pageName}
+                  pageDescription={pageDescription}
+                  pageAction={pageAction}
+                >
+                  <Component
+                    {...pageProps}
+                    setPageName={setPageName}
+                    setPageDescription={setPageDescription}
+                    setPageAction={setPageAction}
+                  />
+                </ClientLayout>
+              )}
+            {(pathname.includes("auth") ||
+              pathname.includes("admin/login")) && (
+              <LoginLayout pageName={pageName} pageDescription={pageDescription}>
+                <Component
+                  {...pageProps}
+                  setPageName={setPageName}
+                  setPageDescription={setPageDescription}
+                  setPageAction={setPageAction}
+                />
+              </LoginLayout>
+            )}
+            {pathname.includes("payment") && (
+              <PaymentLayout pageName={pageName} pageDescription={pageDescription}>
+                <Component
+                  {...pageProps}
+                  setPageName={setPageName}
+                  setPageDescription={setPageDescription}
+                  setPageAction={setPageAction}
+                />
+              </PaymentLayout>
+            )}
+            {pathname.includes("admin") &&
+              !pathname.includes("admin/login") && (
+                <AdminLayout pageName={pageName} pageDescription={pageDescription}>
+                  <Component
+                    {...pageProps}
+                    setPageName={setPageName}
+                    setPageDescription={setPageDescription}
+                    setPageAction={setPageAction}
+                  />
+                </AdminLayout>
+              )}
+          </ThemeProvider>
+        </SessionProvider>
+      </Provider>
+    </>
+  );
+}

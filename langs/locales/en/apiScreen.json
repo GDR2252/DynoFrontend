@@ -1,0 +1,57 @@
+{
+  "apiKeysTitle": "API Keys",
+  "apiKeysDescription": "Manage API keys for integrating DynoPay into your applications",
+  "createNewKey": "Create New Key",
+  "createKeyMobile": "Create",
+  "documentation": {
+    "title": "API Documentation",
+    "description": "Learn how to integrate DynoPay into your application with our comprehensive API documentation.",
+    "viewDocumentation": "View Documentation",
+    "infoIconAlt": "information"
+  },
+  "icons": {
+    "copyAlt": "copy",
+    "eyeAlt": "view",
+    "trashAlt": "delete"
+  },
+  "status": {
+    "active": "Active"
+  },
+  "createdOn": "Created on {{date}}",
+  "validation": {
+    "selectCompany": "Please select a company"
+  },
+  "company": {
+    "selectCompany": "Select Company",
+    "label": "Company Name"
+  },
+  "currency": {
+    "baseCurrency": "Base Currency"
+  },
+  "toast": {
+    "copied": "Copied!"
+  },
+  "delete": {
+    "confirmMessage": "Are you sure you want to delete this API key?",
+    "confirmButton": "Delete"
+  },
+  "keys": {
+    "production": "Production API Key",
+    "development": "Development API Key"
+  },
+  "security": {
+    "title": "Security Best Practices:",
+    "description": "Keep your API keys secure and never share them publicly. If you suspect a key has been compromised, delete it immediately and create a new one."
+  },
+  "generate": {
+    "modalTitle": "Generate API key",
+    "submit": "Generate"
+  },
+  "withdrawalWhitelist": {
+    "title": "Withdrawal Whitelist",
+    "description": "Once enabled, your account will only be able to withdraw to addresses on your whitelist.",
+    "addressManagement": "Address Management",
+    "off": "OFF",
+    "enable": "Enable"
+  }
+}

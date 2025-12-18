@@ -1,0 +1,57 @@
+{
+  "apiKeysTitle": "Chaves de API",
+  "apiKeysDescription": "Gerencie as chaves de API para integrar o DynoPay aos seus aplicativos.",
+  "createNewKey": "Criar nova chave",
+  "createKeyMobile": "Criar",
+  "documentation": {
+    "title": "Documentação da API",
+    "description": "Aprenda como integrar o DynoPay em sua aplicação com nossa documentação completa da API.",
+    "viewDocumentation": "Ver documentação",
+    "infoIconAlt": "informação"
+  },
+  "icons": {
+    "copyAlt": "copiar",
+    "eyeAlt": "visualizar",
+    "trashAlt": "excluir"
+  },
+  "status": {
+    "active": "Ativo"
+  },
+  "createdOn": "Criado em {{date}}",
+  "validation": {
+    "selectCompany": "Selecione uma empresa"
+  },
+  "company": {
+    "selectCompany": "Selecionar empresa",
+    "label": "Nome da empresa"
+  },
+  "currency": {
+    "baseCurrency": "Moeda base"
+  },
+  "toast": {
+    "copied": "Copiado!"
+  },
+  "delete": {
+    "confirmMessage": "Tem certeza de que deseja excluir esta chave de API?",
+    "confirmButton": "Excluir"
+  },
+  "keys": {
+    "production": "Chave de API de produção",
+    "development": "Chave de API de desenvolvimento"
+  },
+  "security": {
+    "title": "Melhores práticas de segurança:",
+    "description": "Mantenha suas chaves de API em segurança e nunca as compartilhe publicamente. Se suspeitar que uma chave foi comprometida, exclua-a imediatamente e crie uma nova."
+  },
+  "generate": {
+    "modalTitle": "Gerar chave de API",
+    "submit": "Gerar"
+  },
+  "withdrawalWhitelist": {
+    "title": "Lista de permissões de saque",
+    "description": "Quando ativado, sua conta só poderá sacar para endereços na sua lista de permissões.",
+    "addressManagement": "Gerenciar endereços",
+    "off": "DESLIGADO",
+    "enable": "Ativar"
+  }
+}

@@ -1,0 +1,94 @@
+import { styled } from "@mui/material";
+
+export const SelectorTrigger = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  padding: "9px 12px",
+  borderRadius: "6px",
+  border: "1px solid ",
+  borderColor: theme?.palette?.border?.main,
+  cursor: "pointer",
+  background: "white",
+  color: theme?.palette?.text?.primary,
+  [theme.breakpoints.down("md")]: {
+    padding: "0px",
+    gap: "8px",
+    border: "none",
+  },
+}));
+
+export const TriggerText = styled("span")(({ theme }) => ({
+  color: theme.palette.primary.main,
+  fontWeight: 600,
+  whiteSpace: "nowrap",
+  fontSize: "14px",
+  lineHeight: "16px",
+  fontFamily: "UrbanistMedium",
+  [theme.breakpoints.down("md")]: {
+    fontSize: "13px",
+  },
+}));
+
+export const CompanyListWrapper = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "6px",
+  marginTop: "6px",
+}));
+
+export const CompanyItem = styled("div")<{ active: boolean }>(
+  ({ active, theme }) => ({
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "10px 12px",
+    borderRadius: "10px",
+    cursor: "pointer",
+    background: active ? theme.palette.primary.light : "transparent",
+    border: active ? "1px solid #dbeafe" : "1px solid transparent",
+    transition: "0.2s ease-in-out",
+
+    "&:hover": {
+      background: "#eef2ff",
+    },
+
+    ".info": {
+      display: "flex",
+      flexDirection: "column",
+      fontFamily: "UrbanistMedium",
+    },
+
+    ".name": {
+      fontSize: "15px",
+      fontWeight: 600,
+      color: theme.palette.text.primary,
+    },
+
+    ".email": {
+      fontSize: "13px",
+      color: theme.palette.text.secondary,
+    },
+  })
+);
+
+export const ItemLeft = styled("div")(() => ({
+  display: "flex",
+  alignItems: "center",
+}));
+
+export const ItemRight = styled("div")<{ active: boolean }>(
+  ({ active, theme }) => ({
+    background: active ? theme.palette.primary.light : "transparent",
+    border: active ? "1px solid #fff" : "1px solid #d1d5db",
+    display: "flex",
+    padding: "10px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    transition: "0.15s ease-in-out",
+
+    "&:hover": {
+      background: active ? theme.palette.primary.light : "#f4f6f9",
+    },
+  })
+);

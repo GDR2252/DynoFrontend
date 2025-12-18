@@ -1,0 +1,20 @@
+{
+  "companySelectorTitle": "Your Companies",
+  "addCompany": "Add New Company",
+  "settings": "Settings",
+  "logout": "Logout",
+  "requiredKYC": "KYC Required - $1,000 reached",
+  "dashboard": "Dashboard",
+  "dash": "Dash",
+  "transactions": "Transactions",
+  "create": "Create",
+  "wallets": "Wallets",
+  "more": "More",
+  "close": "Close",
+  "language": "Language",
+  "api": "API",
+  "notifications": "Notifications",
+  "yourReferralCode": "Your Referral Code",
+  "knowledgeBase": "Knowledge Base",
+  "dashboardDescription": "Overview of your crypto payment activity."
+}

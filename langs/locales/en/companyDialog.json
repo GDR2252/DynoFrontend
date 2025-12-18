@@ -1,0 +1,48 @@
+{
+  "mode": {
+    "add": {
+      "title": "Add new company",
+      "subtitle": "Create a new business profile to manage cryptocurrency payments",
+      "primaryButton": "Start a company"
+    },
+    "edit": {
+      "title": "Edit company",
+      "subtitle": "Update company profile information",
+      "primaryButton": "Update"
+    }
+  },
+  "fields": {
+    "companyName": {
+      "label": "Company name*",
+      "placeholder": "Enter company name"
+    },
+    "website": {
+      "label": "Website (optional)",
+      "placeholder": "https://example.com"
+    },
+    "email": {
+      "label": "E-mail",
+      "placeholder": "contact@example.com"
+    },
+    "mobile": {
+      "label": "Mobile",
+      "placeholder": "Enter your mobile number"
+    },
+    "brandLogo": {
+      "label": "Brand logo",
+      "uploadCta": "Click to upload or drag and drop",
+      "uploadHint": "SVG, PNG, JPG (max. 2MB)"
+    }
+  },
+  "actions": {
+    "cancel": "Cancel"
+  },
+  "validation": {
+    "companyNameRequired": "Company name is required",
+    "emailInvalid": "Please enter a valid email",
+    "emailRequired": "Email is required",
+    "mobileRequired": "Mobile number is required",
+    "mobileMin": "Minimum 10 digits are required",
+    "mobileMax": "Maximum 14 digits are allowed"
+  }
+}

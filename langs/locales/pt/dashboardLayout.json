@@ -1,0 +1,20 @@
+{
+  "companySelectorTitle": "Suas empresas",
+  "addCompany": "Adicionar nova empresa",
+  "settings": "Configurações",
+  "logout": "Sair",
+  "requiredKYC": "KYC Obrigatório - $1.000 atingidos",
+  "dashboard": "Painel",
+  "dash": "Painel",
+  "transactions": "Transações",
+  "create": "Criar",
+  "wallets": "Carteiras",
+  "more": "Mais",
+  "close": "Fechar",
+  "language": "Idioma",
+  "api": "API",
+  "notifications": "Notificações",
+  "yourReferralCode": "Seu Código de Indicação",
+  "knowledgeBase": "Base de Conhecimento",
+  "dashboardDescription": "Visão geral da sua atividade de pagamentos em criptomoedas"
+}

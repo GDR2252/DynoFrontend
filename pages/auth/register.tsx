@@ -684,6 +684,16 @@ import {
 import * as yup from "yup";
 import LoadingIcon from "@/assets/Icons/LoadingIcon";
 
+type RegisterErrorKey =
+  | ""
+  | "firstNameRequired"
+  | "lastNameRequired"
+  | "emailRequired"
+  | "emailInvalid"
+  | "passwordRequired"
+  | "passwordInvalid"
+  | "passwordAndConfirmPasswordShouldBeSame";
+
 const Register = () => {
   const isMobile = useIsMobile();
   const { t } = useTranslation("auth");
@@ -691,41 +701,40 @@ const Register = () => {
   const userState = useSelector((state: rootReducer) => state.userReducer);
 
   const [firstName, setFirstName] = useState("");
-  const [firstNameError, setFirstNameError] = useState("");
+  const [firstNameError, setFirstNameError] = useState<RegisterErrorKey>("");
 
   const [lastName, setLastName] = useState("");
-  const [lastNameError, setLastNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState<RegisterErrorKey>("");
 
   const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
+  const [emailError, setEmailError] = useState<RegisterErrorKey>("");
 
   const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [passwordError, setPasswordError] = useState<RegisterErrorKey>("");
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordValidation, setShowPasswordValidation] = useState(false);
   const passwordFieldRef = useRef<HTMLDivElement | null>(null);
 
   const [confirmPassword, setConfirmPassword] = useState("");
-  // For confirm password we store an error *code* (e.g. "mismatch") and translate via `t`
-  const [confirmPasswordError, setConfirmPasswordError] = useState<
-    "" | "mismatch"
-  >("");
+  const [confirmPasswordError, setConfirmPasswordError] =
+    useState<RegisterErrorKey>("");
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const passwordRegex =
     /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()\-=__+{}\[\]:;<>,.?/~]).{8,20}$/;
 
   const registerSchema = yup.object().shape({
-    firstName: yup.string().required("First Name is required!"),
-    lastName: yup.string().required("Last Name is required!"),
+    // Store translation keys as messages so UI can translate live on language change
+    firstName: yup.string().required("firstNameRequired"),
+    lastName: yup.string().required("lastNameRequired"),
     email: yup
       .string()
-      .email("Please enter a valid email")
-      .required("Email is required!"),
+      .email("emailInvalid")
+      .required("emailRequired"),
     password: yup
       .string()
-      .required("Password is required!")
-      .matches(passwordRegex, ""),
+      .required("passwordRequired")
+      .matches(passwordRegex, "passwordInvalid"),
     confirmPassword: yup.string().oneOf([yup.ref("password")]),
   });
 
@@ -748,6 +757,49 @@ const Register = () => {
 
   // Errors for firstName, lastName, email only show on Sign Up click (via schema)
 
+  const validateField = async (
+    field: "firstName" | "lastName" | "email" | "password",
+    nextValues?: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      password?: string;
+      confirmPassword?: string;
+    }
+  ) => {
+    try {
+      await registerSchema.validateAt(field, {
+        firstName,
+        lastName,
+        email,
+        password,
+        confirmPassword,
+        ...(nextValues || {}),
+      });
+      if (field === "firstName") setFirstNameError("");
+      if (field === "lastName") setLastNameError("");
+      if (field === "email") setEmailError("");
+      if (field === "password") {
+        setPasswordError("");
+        setShowPasswordValidation(false);
+      }
+    } catch (e: any) {
+      const key = (e?.message || "") as RegisterErrorKey;
+      if (field === "firstName") setFirstNameError(key);
+      if (field === "lastName") setLastNameError(key);
+      if (field === "email") setEmailError(key);
+      if (field === "password") {
+        // For invalid password pattern, show the PasswordValidation UI instead of helper text
+        if (key === "passwordInvalid") {
+          setPasswordError("");
+          setShowPasswordValidation(true);
+        } else {
+          setPasswordError(key);
+        }
+      }
+    }
+  };
+
   const handlePasswordChange = (value: string) => {
     // Remove spaces from password
     const valueWithoutSpaces = value.replace(/\s/g, "");
@@ -757,6 +809,8 @@ const Register = () => {
 
     if (!finalValue) {
       setShowPasswordValidation(false);
+      // If the user already tried submitting, keep schema-driven error in sync
+      if (passwordError) validateField("password", { password: finalValue });
     } else if (passwordRegex.test(finalValue)) {
       // Hide validation when all conditions are met
       setPasswordError("");
@@ -764,6 +818,15 @@ const Register = () => {
     } else {
       setPasswordError("");
       setShowPasswordValidation(true);
+    }
+
+    // If confirm password already has a value, keep mismatch error in sync
+    if (confirmPassword) {
+      if (finalValue && confirmPassword && confirmPassword !== finalValue) {
+        setConfirmPasswordError("passwordAndConfirmPasswordShouldBeSame");
+      } else {
+        setConfirmPasswordError("");
+      }
     }
   };
 
@@ -796,19 +859,29 @@ const Register = () => {
       dispatch(UserAction(USER_REGISTER, payload));
     } catch (err: any) {
       if (err.inner && Array.isArray(err.inner)) {
-        const fieldErrors: Record<string, string> = {};
+        const fieldErrors: Record<string, RegisterErrorKey> = {};
         err.inner.forEach((e: any) => {
           if (e.path && !fieldErrors[e.path]) {
-            fieldErrors[e.path] = e.message;
+            fieldErrors[e.path] = e.message as RegisterErrorKey;
           }
         });
 
         setFirstNameError(fieldErrors.firstName || "");
         setLastNameError(fieldErrors.lastName || "");
         setEmailError(fieldErrors.email || "");
-        setPasswordError(fieldErrors.password || "");
-        // Any confirmPassword schema error should be treated as a mismatch
-        setConfirmPasswordError(fieldErrors.confirmPassword ? "mismatch" : "");
+        if (fieldErrors.password === "passwordInvalid") {
+          setPasswordError("");
+          setShowPasswordValidation(true);
+        } else {
+          setPasswordError(fieldErrors.password || "");
+        }
+
+        // confirmPassword: schema doesn't have its own message, so map to our key
+        if (confirmPassword && password && confirmPassword !== password) {
+          setConfirmPasswordError("passwordAndConfirmPasswordShouldBeSame");
+        } else {
+          setConfirmPasswordError("");
+        }
       }
     }
   };
@@ -887,9 +960,10 @@ const Register = () => {
                     ? rawValue.charAt(0).toUpperCase() + rawValue.slice(1)
                     : rawValue;
                 setFirstName(capitalized);
+                if (firstNameError) validateField("firstName", { firstName: capitalized });
               }}
               error={!!firstNameError}
-              helperText={firstNameError || ""}
+              helperText={firstNameError ? t(firstNameError) : ""}
             />
 
             {/* Last Name */}
@@ -906,9 +980,10 @@ const Register = () => {
                     ? rawValue.charAt(0).toUpperCase() + rawValue.slice(1)
                     : rawValue;
                 setLastName(capitalized);
+                if (lastNameError) validateField("lastName", { lastName: capitalized });
               }}
               error={!!lastNameError}
-              helperText={lastNameError || ""}
+              helperText={lastNameError ? t(lastNameError) : ""}
             />
           </Box>
 
@@ -922,6 +997,7 @@ const Register = () => {
               // Remove all spaces from email
               const valueWithoutSpaces = e.target.value.replace(/\s/g, "");
               setEmail(valueWithoutSpaces);
+              if (emailError) validateField("email", { email: valueWithoutSpaces });
             }}
             onKeyDown={(e) => {
               // Prevent space key from being entered
@@ -930,7 +1006,7 @@ const Register = () => {
               }
             }}
             error={!!emailError}
-            helperText={emailError || ""}
+            helperText={emailError ? t(emailError) : ""}
           />
 
           {/* Password */}
@@ -957,7 +1033,7 @@ const Register = () => {
               // Show red border when there is a password error or
               // when the PasswordValidation component is visible (invalid password)
               error={!!passwordError || showPasswordValidation}
-              helperText={passwordError || ""}
+              helperText={passwordError ? t(passwordError) : ""}
               sideButton={true}
               sideButtonType="primary"
               sideButtonIcon={
@@ -1026,17 +1102,15 @@ const Register = () => {
                 // Only show error when both passwords have a value
                 setConfirmPasswordError("");
               } else if (value !== password) {
-                setConfirmPasswordError("mismatch");
+                setConfirmPasswordError("passwordAndConfirmPasswordShouldBeSame");
               } else {
                 setConfirmPasswordError("");
               }
             }}
             placeholder={t("confirmPasswordPlaceHolder")}
-            error={confirmPasswordError === "mismatch"}
+            error={confirmPasswordError === "passwordAndConfirmPasswordShouldBeSame"}
             helperText={
-              confirmPasswordError === "mismatch"
-                ? t("passwordAndConfirmPasswordShouldBeSame")
-                : ""
+              confirmPasswordError ? t(confirmPasswordError) : ""
             }
             sideButton={true}
             sideButtonType="primary"

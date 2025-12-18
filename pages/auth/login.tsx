@@ -805,7 +805,7 @@ import {
 import Image from "next/image";
 import GoogleIcon from "@/assets/Images/googleIcon.svg";
 import ArrowUpwardIcon from "@/assets/Icons/up-arrow-icon.png";
-import EditIcon from "@/assets/Icons/edit-icon.png";
+import EditIcon from "@/assets/Icons/editicon.png";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Logo from "@/assets/Images/auth/dynopay-logo.png";
@@ -840,6 +840,7 @@ import LoadingIcon from "@/assets/Icons/LoadingIcon";
 import { signIn } from "next-auth/react";
 import LanguageSwitcher from "@/Components/UI/LanguageSwitcher";
 import OtpDialog from "@/Components/UI/OtpDialog";
+import ForgotPasswordDialog from "@/Components/UI/ForgotPasswordDialog";
 
 export default function Login() {
   const { t } = useTranslation("auth");
@@ -886,20 +887,28 @@ export default function Login() {
   const [showErrorAnimation, setShowErrorAnimation] = useState(false);
   const [previousLoadingState, setPreviousLoadingState] = useState(false);
 
-  // Validation schemas
+  // Forgot password state
+  const [forgotPasswordDialogOpen, setForgotPasswordDialogOpen] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+  const [forgotPasswordEmailError, setForgotPasswordEmailError] = useState("");
+  const [forgotPasswordOtpSent, setForgotPasswordOtpSent] = useState(false);
+  const [forgotPasswordOtpCountdown, setForgotPasswordOtpCountdown] = useState(0);
+  const [forgotPasswordOtpError, setForgotPasswordOtpError] = useState("");
+
+  // Validation schemas - use translation keys instead of translated strings
   const emailSchema = yup.object().shape({
     email: yup
       .string()
-      .email("Please enter a valid email")
-      .required("Email is required!"),
+      .email("emailInvalid")
+      .required("emailRequired"),
   });
 
   const passwordSchema = yup.object().shape({
-    password: yup.string().required("Password is required!"),
+    password: yup.string().required("passwordRequired"),
   });
 
   const emailOtpSchema = yup.object().shape({
-    emailOTP: yup.string().required("OTP is required!"),
+    emailOTP: yup.string().required("otpRequired"),
   });
 
   // Navigate to home if user is logged in
@@ -988,7 +997,7 @@ export default function Login() {
   // Validate email (only called on button click)
   const validateEmail = async () => {
     if (!emailInput) {
-      setEmailError("Email is required!");
+      setEmailError("emailRequired");
       return false;
     }
     try {
@@ -996,7 +1005,8 @@ export default function Login() {
       setEmailError("");
       return true;
     } catch (err: any) {
-      setEmailError(err.message);
+      // Store translation key instead of translated message
+      setEmailError(err.message || "emailInvalid");
       return false;
     }
   };
@@ -1018,9 +1028,10 @@ export default function Login() {
         setShowLoginMethods(true);
         setEmailError("");
       } else {
-        setEmailError("Email not found! Please try again");
+        setEmailError("emailNotFound");
       }
     } catch (e: any) {
+      // For API errors, keep the message as-is (it's from the server)
       const message =
         e.response?.data?.message ?? e.message ?? "An error occurred";
       setEmailError(message);
@@ -1071,7 +1082,7 @@ export default function Login() {
 
     // Validate and submit
     if (!otp || otp.trim().length !== 6) {
-      setEmailOtpError("Please enter a valid 6-digit OTP code");
+      setEmailOtpError("otpInvalid6Digit");
       setEmailOtpTouched(true);
       return;
     }
@@ -1088,13 +1099,13 @@ export default function Login() {
   // Validate mobile number
   const validateMobile = () => {
     if (!mobile || mobile.trim() === "") {
-      setMobileError("Mobile number is required!");
+      setMobileError("mobileRequired");
       return false;
     }
     // Basic validation - should be at least 10 digits
     const cleanedMobile = mobile.replace(/\D/g, "");
     if (cleanedMobile.length < 10) {
-      setMobileError("Please enter a valid mobile number");
+      setMobileError("mobileInvalid");
       return false;
     }
     setMobileError("");
@@ -1169,7 +1180,7 @@ export default function Login() {
   // Validate SMS OTP
   const validateSmsOtp = () => {
     if (!otp || otp.trim().length !== 6) {
-      setOtpError("Please enter a valid 6-digit OTP code");
+      setOtpError("otpInvalid6Digit");
       return false;
     }
     setOtpError("");
@@ -1179,7 +1190,7 @@ export default function Login() {
   // Validate password
   const validatePassword = async () => {
     if (!password) {
-      setPasswordError("Password is required!");
+      setPasswordError("passwordRequired");
       return false;
     }
     try {
@@ -1187,7 +1198,8 @@ export default function Login() {
       setPasswordError("");
       return true;
     } catch (err: any) {
-      setPasswordError(err.message);
+      // Store translation key instead of translated message
+      setPasswordError(err.message || "passwordRequired");
       return false;
     }
   };
@@ -1195,7 +1207,7 @@ export default function Login() {
   // Validate email OTP
   const validateEmailOtp = async () => {
     if (!emailOtp) {
-      setEmailOtpError("OTP is required!");
+      setEmailOtpError("otpRequired");
       return false;
     }
     try {
@@ -1203,7 +1215,8 @@ export default function Login() {
       setEmailOtpError("");
       return true;
     } catch (err: any) {
-      setEmailOtpError(err.message);
+      // Store translation key instead of translated message
+      setEmailOtpError(err.message || "otpRequired");
       return false;
     }
   };
@@ -1223,7 +1236,7 @@ export default function Login() {
         dispatch({
           type: TOAST_SHOW,
           payload: {
-            message: "Please get the verification code first",
+            message: t("pleaseGetVerificationCodeFirst"),
             severity: "error",
           },
         });
@@ -1238,7 +1251,7 @@ export default function Login() {
       // Basic validation - just check if OTP is entered and is 6 digits
       if (!emailOtp || emailOtp.trim().length !== 6) {
         setEmailOtpTouched(true);
-        setEmailOtpError("Please enter a valid 6-digit OTP code");
+        setEmailOtpError("otpInvalid6Digit");
         // Reopen dialog if OTP is not valid
         setEmailOtpDialogOpen(true);
         return;
@@ -1280,7 +1293,7 @@ export default function Login() {
       // Get mobile number - use input or from userState
       const mobileToUse = mobile || userState.mobile;
       if (!mobileToUse) {
-        setMobileError("Mobile number is required!");
+        setMobileError("mobileRequired");
         return;
       }
 
@@ -1341,6 +1354,110 @@ export default function Login() {
     });
   };
 
+  // Forgot password countdown timer
+  useEffect(() => {
+    if (forgotPasswordOtpCountdown > 0) {
+      const timerId = setTimeout(() => {
+        setForgotPasswordOtpCountdown(forgotPasswordOtpCountdown - 1);
+      }, 1000);
+      return () => clearTimeout(timerId);
+    }
+  }, [forgotPasswordOtpCountdown]);
+
+  // Handle forgot password email submit
+  const handleForgotPasswordEmailSubmit = async (email: string) => {
+    setForgotPasswordEmail(email);
+    setForgotPasswordEmailError("");
+    
+    try {
+      // Check if email exists
+      const {
+        data: { data },
+      } = await axiosBaseApi.get("/user/checkEmail?email=" + email);
+
+      if (data.validEmail) {
+        // Send OTP for password recovery
+        dispatch(
+          UserAction(USER_SEND_OTP, {
+            email: email,
+            mobile: null,
+          })
+        );
+        setForgotPasswordOtpSent(true);
+        setForgotPasswordOtpCountdown(30);
+        setForgotPasswordEmailError("");
+      } else {
+        setForgotPasswordEmailError("emailNotFound");
+      }
+    } catch (e: any) {
+      const message =
+        e.response?.data?.message ?? e.message ?? "An error occurred";
+      setForgotPasswordEmailError(message);
+      dispatch({
+        type: TOAST_SHOW,
+        payload: {
+          message: message,
+          severity: "error",
+        },
+      });
+    }
+  };
+
+  // Handle forgot password OTP verify
+  const handleForgotPasswordOtpVerify = async (otp: string, email: string) => {
+    setForgotPasswordOtpError("");
+    
+    if (!otp || otp.trim().length !== 5) {
+      setForgotPasswordOtpError("otpInvalid5Digit");
+      return;
+    }
+
+    try {
+      // Verify OTP for password recovery
+      dispatch(
+        UserAction(USER_CONFIRM_CODE, {
+          email: email,
+          otp: otp.trim(),
+        })
+      );
+    } catch (e: any) {
+      const message =
+        e.response?.data?.message ?? e.message ?? "Failed to verify OTP";
+      setForgotPasswordOtpError(message);
+      dispatch({
+        type: TOAST_SHOW,
+        payload: {
+          message: message,
+          severity: "error",
+        },
+      });
+    }
+  };
+
+  // Handle forgot password resend code
+  const handleForgotPasswordResendCode = async (email: string) => {
+    try {
+      dispatch(
+        UserAction(USER_SEND_OTP, {
+          email: email,
+          mobile: null,
+        })
+      );
+      setForgotPasswordOtpCountdown(30);
+      setForgotPasswordOtpError("");
+    } catch (e: any) {
+      const message =
+        e.response?.data?.message ?? e.message ?? "Failed to send OTP";
+      dispatch({
+        type: TOAST_SHOW,
+        payload: {
+          message: message,
+          severity: "error",
+        },
+      });
+    }
+  };
+
   return (
     <AuthContainer>
       <CardWrapper
@@ -1396,10 +1513,15 @@ export default function Login() {
                 value={emailInput}
                 onChange={(e) => {
                   setEmailInput(e.target.value);
+                  // Clear error when typing
+                  if (emailError) {
+                    setEmailError("");
+                    setEmailTouched(false);
+                  }
                 }}
                 placeholder={t("emailPlaceHolder")}
                 error={emailTouched && !!emailError}
-                helperText={emailTouched && emailError ? emailError : ""}
+                helperText={emailTouched && emailError ? (emailError.includes(" ") ? emailError : t(emailError)) : ""}
               />
             </Box>
 
@@ -1550,7 +1672,7 @@ export default function Login() {
                             : t("resendCode")
                         }
                         onClick={handleSendSmsOtp}
-                        endIcon={ArrowUpwardIcon}
+                        endIcon={smsOtpCountdown > 0 || userState.loading ? undefined : ArrowUpwardIcon}
                         sx={{
                           fontWeight: 500,
                           padding: "11px 20px",
@@ -1561,9 +1683,10 @@ export default function Login() {
 
                   {/* Show mobile number if available from userState */}
                   {loginMethod === "sms" && userState.mobile && (
-                    <Box sx={{ marginTop: "8px", marginLeft: "32px" }}>
+                    <Box sx={{ marginLeft: "32px" }}>
                       <Typography
                         sx={{
+                          textAlign: "start",
                           fontSize: "12px",
                           color: "#676768",
                           fontFamily: "UrbanistMedium",
@@ -1597,7 +1720,7 @@ export default function Login() {
                           inputMode="numeric"
                           error={mobileTouched && !!mobileError}
                           helperText={
-                            mobileTouched && mobileError ? mobileError : ""
+                            mobileTouched && mobileError ? (mobileError.includes(" ") ? mobileError : t(mobileError)) : ""
                           }
                         />
                       </Box>
@@ -1625,7 +1748,7 @@ export default function Login() {
                           inputMode="numeric"
                           error={mobileTouched && !!mobileError}
                           helperText={
-                            mobileTouched && mobileError ? mobileError : ""
+                            mobileTouched && mobileError ? (mobileError.includes(" ") ? mobileError : t(mobileError)) : ""
                           }
                           sideButton={true}
                           sideButtonType="secondary"
@@ -1671,7 +1794,7 @@ export default function Login() {
                         }
                         fullWidth
                         onClick={handleSendSmsOtp}
-                        endIcon={ArrowUpwardIcon}
+                        endIcon={smsOtpCountdown > 0 || userState.loading ? undefined : ArrowUpwardIcon}
                         sx={{
                           height: "32px",
                           fontSize: "13px",
@@ -1706,7 +1829,7 @@ export default function Login() {
                         error={otpTouched && !!otpError}
                         helperText={
                           otpTouched && otpError
-                            ? otpError
+                            ? (otpError.includes(" ") ? otpError : t(otpError))
                             : t("enterCodeSentToNumber")
                         }
                       />
@@ -1762,7 +1885,7 @@ export default function Login() {
                             : t("resendCode")
                         }
                         onClick={handleSendEmailOtp}
-                        endIcon={ArrowUpwardIcon}
+                        endIcon={emailOtpCountdown > 0 ? undefined : ArrowUpwardIcon}
                         sx={{
                           fontWeight: 500,
                           padding: "11px 20px",
@@ -1803,7 +1926,7 @@ export default function Login() {
                         }
                         fullWidth
                         disabled={emailOtpCountdown > 0}
-                        endIcon={ArrowUpwardIcon}
+                        endIcon={emailOtpCountdown > 0 ? undefined : ArrowUpwardIcon}
                         onClick={handleSendEmailOtp}
                         sx={{
                           fontWeight: 500,
@@ -1843,7 +1966,7 @@ export default function Login() {
                           fontFamily: "UrbanistMedium",
                         }}
                         onClick={() => {
-                          router.push("/auth/forgot-password");
+                          setForgotPasswordDialogOpen(true);
                         }}
                       >
                         {t("forgotYourPassword")}
@@ -1858,6 +1981,11 @@ export default function Login() {
                         value={password}
                         onChange={(e) => {
                           setPassword(e.target.value);
+                          // Clear error when typing
+                          if (passwordError) {
+                            setPasswordError("");
+                            setPasswordTouched(false);
+                          }
                         }}
                         placeholder={t("passwordPlaceHolder")}
                         error={
@@ -1869,7 +1997,7 @@ export default function Login() {
                           loginMethod === "password" &&
                           passwordTouched &&
                           passwordError
-                            ? passwordError
+                            ? (passwordError.includes(" ") ? passwordError : t(passwordError))
                             : ""
                         }
                         sideButton={true}
@@ -2016,22 +2144,42 @@ export default function Login() {
             setEmailOtpDialogOpen(false);
             // Don't reset emailOtpSent so resend button still shows
           }}
-          title={t("emailVerification") || "E-mail Verification"}
-          subtitle={t("emailVerificationSubtitle") || "We have sent a verification code to your email address"}
+          title={t("emailVerification")}
+          subtitle={t("emailVerificationSubtitle")}
           contactInfo={verifiedEmail}
           contactType="email"
           resendCodeLabel={t("resendCode")}
           resendCodeCountdownLabel={(seconds) =>
             `${t("codeIn")} ${seconds}s`
           }
-          primaryButtonLabel={t("checkAndAdd") || "Check and Add"}
+          primaryButtonLabel={t("checkAndAdd")}
           onResendCode={handleSendEmailOtp}
           onVerify={handleEmailOtpVerify}
           countdown={emailOtpCountdown}
           loading={userState.loading}
-          error={emailOtpTouched && emailOtpError ? emailOtpError : undefined}
+          error={emailOtpTouched && emailOtpError ? (emailOtpError.includes(" ") ? emailOtpError : t(emailOtpError)) : undefined}
         />
       )}
+
+      {/* Forgot Password Dialog */}
+      <ForgotPasswordDialog
+        open={forgotPasswordDialogOpen}
+        onClose={() => {
+          setForgotPasswordDialogOpen(false);
+          setForgotPasswordEmail("");
+          setForgotPasswordEmailError("");
+          setForgotPasswordOtpSent(false);
+          setForgotPasswordOtpCountdown(0);
+          setForgotPasswordOtpError("");
+        }}
+        onEmailSubmit={handleForgotPasswordEmailSubmit}
+        onOtpVerify={handleForgotPasswordOtpVerify}
+        onResendCode={handleForgotPasswordResendCode}
+        countdown={forgotPasswordOtpCountdown}
+        loading={userState.loading}
+        emailError={forgotPasswordEmailError ? (forgotPasswordEmailError.includes(" ") ? forgotPasswordEmailError : t(forgotPasswordEmailError)) : undefined}
+        otpError={forgotPasswordOtpError ? (forgotPasswordOtpError.includes(" ") ? forgotPasswordOtpError : t(forgotPasswordOtpError)) : undefined}
+      />
     </AuthContainer>
   );
 }

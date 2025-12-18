@@ -388,10 +388,12 @@ const ApiKeysPage = ({
           py: 1.25,
           borderRadius: "6px",
           display: "flex",
-          alignItems: "center",
+          flexDirection: { xs: "column", sm: "row" }, 
+          alignItems: "flex-start",
           justifyContent: "start",
           gap: 1,
           border: `1px solid ${theme.palette.border.main}`,
+          flexWrap: { xs: "wrap", sm: "nowrap" },
         }}
       >
         <Box
@@ -400,9 +402,9 @@ const ApiKeysPage = ({
             alignItems: "center",
             justifyContent: "start",
             gap: 1,
+            flexShrink: 0,
           }}
         >
-          {/* Use mask so SVG renders with exact hex color */}
           <Box
             component="span"
             sx={{
@@ -415,11 +417,23 @@ const ApiKeysPage = ({
               flex: "0 0 auto",
             }}
           />
-          <InfoText sx={{ color: theme.palette.error.main }}>
+          <InfoText 
+            sx={{ 
+              color: theme.palette.error.main,
+              whiteSpace: "nowrap",
+            }}
+          >
             {t("security.title")}
           </InfoText>
         </Box>
-        <InfoText>
+        <InfoText
+          sx={{
+            flex: 1,
+            minWidth: 0,
+            wordWrap: "break-word",
+            overflowWrap: "break-word",
+          }}
+        >
           {t("security.description")}
         </InfoText>
       </Box>

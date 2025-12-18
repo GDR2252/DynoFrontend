@@ -13,6 +13,7 @@ import EnvelopeIcon from "@/assets/Icons/envelope-icon.svg";
 import ArrowUpwardIcon from "@/assets/Icons/up-arrow-icon.png";
 import { DialogCloseButton } from "./styled";
 import CloseIcon from "@/assets/Icons/close-icon.svg";
+import { useTranslation } from "react-i18next";
 
 export interface OtpDialogProps {
   open: boolean;
@@ -44,24 +45,34 @@ const otpInitial = {
 const OtpDialog: React.FC<OtpDialogProps> = ({
   open,
   onClose,
-  title = "E-mail Verification",
-  subtitle = "We have sent a verification code to your email address",
+  title,
+  subtitle,
   contactInfo = "",
   contactType = "email",
   otpLength = 6,
-  resendCodeLabel = "Resend Code",
-  resendCodeCountdownLabel = (seconds: number) => `Code in ${seconds}s`,
-  primaryButtonLabel = "Check and Add",
+  resendCodeLabel,
+  resendCodeCountdownLabel,
+  primaryButtonLabel,
   onResendCode,
   onVerify,
   countdown = 0,
   loading = false,
   error,
 }) => {
+  const { t } = useTranslation("auth");
   const theme = useTheme();
   const isMobile = useIsMobile("sm");
   const [otpValues, setOtpValues] = useState(otpInitial);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Use translations as defaults if props are not provided
+  const dialogTitle = title || t("emailVerification");
+  const dialogSubtitle = subtitle;
+  const dialogResendCodeLabel = resendCodeLabel || t("resendCode");
+  const dialogResendCodeCountdownLabel =
+    resendCodeCountdownLabel ||
+    ((seconds: number) => `${t("codeIn")} ${seconds}s`);
+  const dialogPrimaryButtonLabel = primaryButtonLabel || t("checkAndAdd");
 
   // Calculate input size based on screen size
   const inputSize = isMobile ? "32px" : "40px";
@@ -70,10 +81,10 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
   const otpSchema = React.useMemo(() => {
     const shape: any = {};
     for (let i = 1; i <= otpLength; i++) {
-      shape[`otp${i}`] = yup.string().required("Required");
+      shape[`otp${i}`] = yup.string().required(t("required"));
     }
     return yup.object().shape(shape);
-  }, [otpLength]);
+  }, [otpLength, t]);
 
   // Reset OTP values when dialog closes
   useEffect(() => {
@@ -171,7 +182,7 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
       }}
     >
       <PanelCard
-        title={title}
+        title={dialogTitle}
         headerIcon={
           contactType === "email" ? (
             <Image src={EnvelopeIcon} alt="email icon" width={24} height={24} />
@@ -179,7 +190,12 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
         }
         headerAction={
           <DialogCloseButton onClick={onClose}>
-            <Image src={CloseIcon.src} alt="close icon" width={16} height={16} />
+            <Image
+              src={CloseIcon.src}
+              alt="close icon"
+              width={16}
+              height={16}
+            />
           </DialogCloseButton>
         }
         showHeaderBorder={false}
@@ -210,11 +226,11 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
             lineHeight: "1.3",
           }}
         >
-          {subtitle}
+          {dialogSubtitle}
         </Typography>
 
         {/* Info Message Box */}
-        {!contactInfo && (
+        {contactInfo && (
           <Box
             sx={{
               backgroundColor: theme.palette.secondary.main,
@@ -253,10 +269,9 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
                 },
               }}
             >
-              Code sent to{" "}
+              {t("codeSentTo")}{" "}
               <span style={{ fontWeight: 600, fontFamily: "UrbanistBold" }}>
                 {contactInfo}
-                dharmikgodhani1705@gmail.com
               </span>
             </Typography>
           </Box>
@@ -287,7 +302,7 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
                     marginBottom: "8px",
                   }}
                 >
-                  Verification Code *
+                  {t("verificationCode")} *
                 </Typography>
                 <Box
                   sx={{
@@ -403,8 +418,8 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
                   size="medium"
                   label={
                     countdown > 0
-                      ? resendCodeCountdownLabel(countdown)
-                      : resendCodeLabel
+                      ? dialogResendCodeCountdownLabel(countdown)
+                      : dialogResendCodeLabel
                   }
                   onClick={() => {
                     if (onResendCode) {
@@ -412,7 +427,7 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
                     }
                   }}
                   disabled={countdown > 0 || loading}
-                  endIcon={ArrowUpwardIcon}
+                  endIcon={countdown > 0 || loading ? undefined : ArrowUpwardIcon}
                   type="button"
                   sx={{
                     fontWeight: 500,
@@ -430,7 +445,7 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
                 <CustomButton
                   variant="primary"
                   size="medium"
-                  label={primaryButtonLabel}
+                  label={dialogPrimaryButtonLabel}
                   type="submit"
                   disabled={
                     submitDisable ||

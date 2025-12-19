@@ -66,6 +66,7 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
   const isMobile = useIsMobile("sm");
   const [otpValues, setOtpValues] = useState(otpInitial);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
 
   // Use translations as defaults if props are not provided
   const dialogTitle = title || t("emailVerification");
@@ -94,6 +95,7 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
       setOtpValues(otpInitial);
       inputRefs.current = [];
       previousOtpRef.current = "";
+      setFocusedIndex(null);
     } else {
       // Reset previous OTP ref when dialog opens
       previousOtpRef.current = "";
@@ -101,6 +103,7 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
       setTimeout(() => {
         if (inputRefs.current[0]) {
           inputRefs.current[0].focus();
+          setFocusedIndex(0);
         }
       }, 100);
     }
@@ -158,6 +161,7 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
       if (nextField) {
         setTimeout(() => {
           nextField.focus();
+          setFocusedIndex(lastFilledIndex);
         }, 0);
       }
     } else if (singleDigit && index < otpLength - 1) {
@@ -165,6 +169,7 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
       const nextField = inputRefs.current[index + 1];
       if (nextField) {
         nextField.focus();
+        setFocusedIndex(index + 1);
       }
     }
   };
@@ -193,6 +198,7 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
       const prevField = inputRefs.current[index - 1];
       if (prevField) {
         prevField.focus();
+        setFocusedIndex(index - 1);
       }
       return;
     }
@@ -203,6 +209,7 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
       const nextField = inputRefs.current[index + 1];
       if (nextField) {
         nextField.focus();
+        setFocusedIndex(index + 1);
       }
       return;
     }
@@ -223,6 +230,7 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
         handleChange(clearEvent);
         if (prevField) {
           prevField.focus();
+          setFocusedIndex(index - 1);
         }
       } else if (currentValue) {
         // If current field has value, just clear it
@@ -383,6 +391,7 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
       const nextField = inputRefs.current[nextFocusIndex];
       if (nextField) {
         nextField.focus();
+        setFocusedIndex(nextFocusIndex);
         // Select all text in the field for better UX
         nextField.select();
       }
@@ -604,7 +613,7 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
                   <Box
                     sx={{
                       display: "flex",
-                      gap: "6px",
+                      gap: "8px",
                       justifyContent: "flex-start",
                     }}
                   >
@@ -613,6 +622,8 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
                       const hasValue =
                         values[fieldName] && values[fieldName].length > 0;
                       const hasError = !!error;
+                      const isFocused = focusedIndex === index;
+                      
                       return (
                         <Box
                           key={fieldName}
@@ -640,7 +651,11 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
                                 checkAutoSubmit(latestValues);
                               }, 100);
                             }}
-                            onBlur={() => handleOtpBlur(fieldName, handleBlur)}
+                            onFocus={() => setFocusedIndex(index)}
+                            onBlur={() => {
+                              setFocusedIndex(null);
+                              handleOtpBlur(fieldName, handleBlur);
+                            }}
                             onKeyDown={(e) =>
                               handleKeyDown(index, e, values, handleChange)
                             }
@@ -660,6 +675,46 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
                             inputHeight={inputSize}
                             inputRef={(el: HTMLInputElement | null) => {
                               inputRefs.current[index] = el;
+                            }}
+                            sx={{
+                              "& .MuiOutlinedInput-root": {
+                                borderRadius: "12px !important",
+                                backgroundColor: "#FFFFFF",
+                                "& fieldset": {
+                                  borderColor: hasError
+                                    ? "#F44336"
+                                    : hasValue && !hasError
+                                    ? "#99D985"
+                                    : "#E9ECF2",
+                                  borderWidth: "1px",
+                                },
+                                "&:hover fieldset": {
+                                  borderColor: hasError
+                                    ? "#F44336"
+                                    : hasValue && !hasError
+                                    ? "#99D985"
+                                    : "#E9ECF2",
+                                },
+                                "&.Mui-focused fieldset": {
+                                  borderColor: hasError
+                                    ? "#F44336"
+                                    : hasValue && !hasError
+                                    ? "#99D985"
+                                    : "#E9ECF2",
+                                  borderWidth: "1px",
+                                },
+                              },
+                              "& .MuiInputBase-input": {
+                                textAlign: "center",
+                                fontSize: isMobile ? "18px" : "20px",
+                                fontWeight: 600,
+                                fontFamily: "UrbanistBold",
+                                padding: "0 !important",
+                                letterSpacing: "0.5px",
+                                color: "#242428",
+                                height: "100%",
+                                lineHeight: inputSize,
+                              },
                             }}
                           />
                         </Box>

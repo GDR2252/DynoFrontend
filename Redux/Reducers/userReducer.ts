@@ -14,6 +14,7 @@ const userInitialState = {
   name: "",
   mobile: "",
   loading: false,
+  error: null as { message: string; actionType: string } | null,
 };
 
 const userReducer = (state = userInitialState, action: ReducerAction) => {
@@ -33,6 +34,7 @@ const userReducer = (state = userInitialState, action: ReducerAction) => {
         email: payload.email,
         name: payload.name,
         loading: false,
+        error: null,
       };
     case USER_REGISTER:
       localStorage.setItem("token", payload.accessToken);
@@ -41,6 +43,7 @@ const userReducer = (state = userInitialState, action: ReducerAction) => {
         email: payload.email,
         name: payload.name,
         loading: false,
+        error: null,
       };
     case USER_UPDATE:
       localStorage.setItem("token", payload.accessToken);
@@ -52,11 +55,13 @@ const userReducer = (state = userInitialState, action: ReducerAction) => {
         email: payload.email,
         mobile: payload.mobile,
         loading: false,
+        error: null,
       };
     case USER_API_ERROR:
       return {
         ...state,
         loading: false,
+        error: action.payload || null,
       };
     default:
       return {

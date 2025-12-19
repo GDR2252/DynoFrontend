@@ -24,6 +24,7 @@ export interface InputFieldProps {
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onPaste?: (e: React.ClipboardEvent<HTMLInputElement>) => void;
   type?: "text" | "email" | "password" | "number" | "tel" | "url";
   variant?: "outlined" | "filled" | "standard";
   size?: "small" | "medium";
@@ -74,6 +75,7 @@ const InputField: React.FC<InputFieldProps> = ({
   onBlur,
   onFocus,
   onKeyDown,
+  onPaste,
   type = "text",
   variant = "outlined",
   size = "medium",

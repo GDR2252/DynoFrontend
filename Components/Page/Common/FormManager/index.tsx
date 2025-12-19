@@ -41,9 +41,10 @@ const FormManager = ({
   const handleChange = (e: React.ChangeEvent<any>) => {
     if (yupSchema) {
       const tempData = inputHelper({ ...values }, e);
-      const tempData2 = inputHelper({ ...values }, e);
-      const tempErrors = checkValidation(yupSchema, tempData2);
-      setSubmitDisable(tempErrors ? true : false);
+      // Update values first to ensure validation uses the latest data
+      setValues(tempData);
+      // Then validate with the new values
+      const tempErrors = checkValidation(yupSchema, tempData);
       const tempInitialValues: any = {};
       Object.keys(initialValues).map((item) => {
         if (Number.isInteger(initialTouchValue && initialTouchValue[item]))
@@ -51,7 +52,13 @@ const FormManager = ({
         else tempInitialValues[item] = "";
       });
       setErrors(tempErrors ?? { ...tempInitialValues });
+      // Enable submit if validation passes (no errors)
+      setSubmitDisable(tempErrors ? true : false);
+    } else {
+      // If no schema, just update values and enable submit
+      const tempData = inputHelper({ ...values }, e);
       setValues(tempData);
+      setSubmitDisable(false);
     }
   };
 

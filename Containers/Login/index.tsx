@@ -4,8 +4,8 @@ import { LoginWrapper, ContentWrapper } from "./styled";
 import { useSelector } from "react-redux";
 import Toast from "@/Components/UI/Toast";
 import Image from "next/image";
-import bg from "@/assets/Images/auth/bg-auth.png";
-import smallbg from "@/assets/Images/auth/bg-auth-small.png";
+import bg from "@/assets/Images/auth/Background-Image.png";
+import AuthBg from "@/assets/Images/auth/auth-bg.png";
 import { Box } from "@mui/material";
 
 const LoginLayout = ({ children, pageName, pageDescription }: LayoutProps) => {
@@ -20,46 +20,61 @@ const LoginLayout = ({ children, pageName, pageDescription }: LayoutProps) => {
         loading={ToastState.loading}
       />
 
+      {/* Desktop Background */}
       <Box
         sx={{
           position: "fixed",
           inset: 0,
-          width: "100%",
-          height: "100%",
-          overflow: "hidden",
+          width: { xs: "100%", md: "100%", lg: "80%" },
+          height: "100dvh",
           zIndex: 1,
+          display: { xs: "none", md: "block" },
+          bottom: 0,
+          left: 0,
+          pointerEvents: "none",
         }}
       >
         <Box
           sx={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            width: "70%",
+            position: "relative",
+            width: "100%",
             height: "100%",
           }}
         >
           <Image
-            src={bg.src}
-            alt="auth-bg"
+            src={bg}
+            alt="bg"
             fill
             priority
-            style={{ objectFit: "cover" }}
+            style={{ objectFit: "fill" }}
           />
         </Box>
+      </Box>
 
+      {/* Mobile Background */}
+      <Box
+        sx={{
+          position: "fixed",
+          inset: 0,
+          width: { xs: "528px", sm: "100%", lg: "596px" },
+          height: { xs: "528px", sm: "100dvh", lg: "596px" },
+          zIndex: 1,
+          display: { xs: "block", md: "none" },
+          top: { xs: "30%", sm: "0%" },
+          left: { xs: "-190px", sm: "-10%" },
+          pointerEvents: "none",
+        }}
+      >
         <Box
           sx={{
-            position: "absolute",
-            right: 0,
-            bottom: 0,
-            width: "45%",
-            height: "60%",
+            position: "relative",
+            width: "100%",
+            height: "100%",
           }}
         >
           <Image
-            src={smallbg.src}
-            alt="auth-bg-small"
+            src={AuthBg}
+            alt="authBg"
             fill
             priority
             style={{ objectFit: "contain" }}

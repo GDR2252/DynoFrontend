@@ -24,6 +24,7 @@ export interface userReducer {
   user_id: number;
   photo: string;
   telegram_id: string;
+  error: { message: string; actionType: string } | null;
 }
 
 export interface companyReducer {

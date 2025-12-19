@@ -28,6 +28,7 @@ export interface OtpDialogProps {
   primaryButtonLabel?: string;
   onResendCode?: () => void;
   onVerify?: (otp: string) => void;
+  onClearError?: () => void; // Callback to clear error when user starts typing
   countdown?: number; // Countdown in seconds
   loading?: boolean;
   error?: string;
@@ -55,6 +56,7 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
   primaryButtonLabel,
   onResendCode,
   onVerify,
+  onClearError,
   countdown = 0,
   loading = false,
   error,
@@ -86,11 +88,21 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
     return yup.object().shape(shape);
   }, [otpLength, t]);
 
-  // Reset OTP values when dialog closes
+  // Reset OTP values when dialog closes and auto-focus first field when opens
   useEffect(() => {
     if (!open) {
       setOtpValues(otpInitial);
       inputRefs.current = [];
+      previousOtpRef.current = "";
+    } else {
+      // Reset previous OTP ref when dialog opens
+      previousOtpRef.current = "";
+      // Auto-focus first input when dialog opens
+      setTimeout(() => {
+        if (inputRefs.current[0]) {
+          inputRefs.current[0].focus();
+        }
+      }, 100);
     }
   }, [open]);
 
@@ -101,18 +113,55 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
     values: any
   ) => {
     // Only allow numbers
-    const numericValue = value.replace(/\D/g, "").slice(0, 1);
+    const numericValue = value.replace(/\D/g, "");
+
+    // If multiple digits are entered (e.g., from paste or rapid typing), take only the first
+    const singleDigit = numericValue.slice(0, 1);
     const fieldName = `otp${index + 1}`;
+
     const e: any = {
       target: {
         name: fieldName,
-        value: numericValue,
+        value: singleDigit,
       },
     };
     handleChange(e);
 
-    // Auto-focus to next field if current field has a value
-    if (numericValue && index < otpLength - 1) {
+    // Clear error when user starts typing
+    if (error && onClearError) {
+      onClearError();
+    }
+
+    // If multiple digits were entered, distribute them to subsequent fields
+    if (numericValue.length > 1) {
+      const remainingDigits = numericValue.slice(1, otpLength - index);
+      remainingDigits.split("").forEach((digit, idx) => {
+        const nextIndex = index + idx + 1;
+        if (nextIndex < otpLength) {
+          const nextFieldName = `otp${nextIndex + 1}`;
+          const nextEvent: any = {
+            target: {
+              name: nextFieldName,
+              value: digit,
+            },
+          };
+          handleChange(nextEvent);
+        }
+      });
+
+      // Focus on the last filled field or next empty field
+      const lastFilledIndex = Math.min(
+        index + numericValue.length,
+        otpLength - 1
+      );
+      const nextField = inputRefs.current[lastFilledIndex];
+      if (nextField) {
+        setTimeout(() => {
+          nextField.focus();
+        }, 0);
+      }
+    } else if (singleDigit && index < otpLength - 1) {
+      // Auto-focus to next field if current field has a value
       const nextField = inputRefs.current[index + 1];
       if (nextField) {
         nextField.focus();
@@ -135,13 +184,209 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
     values: any,
     handleChange: any
   ) => {
-    // Handle backspace to move to previous field
-    if (e.key === "Backspace" && !values[`otp${index + 1}`] && index > 0) {
+    const fieldName = `otp${index + 1}`;
+    const currentValue = values[fieldName];
+
+    // Handle Arrow Left - move to previous field
+    if (e.key === "ArrowLeft" && index > 0) {
+      e.preventDefault();
       const prevField = inputRefs.current[index - 1];
       if (prevField) {
         prevField.focus();
       }
+      return;
     }
+
+    // Handle Arrow Right - move to next field
+    if (e.key === "ArrowRight" && index < otpLength - 1) {
+      e.preventDefault();
+      const nextField = inputRefs.current[index + 1];
+      if (nextField) {
+        nextField.focus();
+      }
+      return;
+    }
+
+    // Handle Backspace
+    if (e.key === "Backspace") {
+      if (!currentValue && index > 0) {
+        // If current field is empty, move to previous and clear it
+        e.preventDefault();
+        const prevField = inputRefs.current[index - 1];
+        const prevFieldName = `otp${index}`;
+        const clearEvent: any = {
+          target: {
+            name: prevFieldName,
+            value: "",
+          },
+        };
+        handleChange(clearEvent);
+        if (prevField) {
+          prevField.focus();
+        }
+      } else if (currentValue) {
+        // If current field has value, just clear it
+        const clearEvent: any = {
+          target: {
+            name: fieldName,
+            value: "",
+          },
+        };
+        handleChange(clearEvent);
+      }
+      return;
+    }
+
+    // Handle Delete key - clear current field
+    if (e.key === "Delete") {
+      e.preventDefault();
+      const clearEvent: any = {
+        target: {
+          name: fieldName,
+          value: "",
+        },
+      };
+      handleChange(clearEvent);
+      return;
+    }
+
+    // Handle Enter key - trigger submit if all fields are filled
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const allFilled = Array.from({ length: otpLength }).every((_, idx) => {
+        const fieldName = `otp${idx + 1}`;
+        return values[fieldName] && values[fieldName].length > 0;
+      });
+
+      if (allFilled && onVerify) {
+        const otp = Object.keys(values)
+          .sort()
+          .map((key) => values[key])
+          .join("");
+        if (otp.length === otpLength) {
+          onVerify(otp);
+        }
+      }
+      return;
+    }
+
+    // Prevent non-numeric keys (except navigation keys already handled)
+    if (
+      !/^[0-9]$/.test(e.key) &&
+      ![
+        "Backspace",
+        "Delete",
+        "ArrowLeft",
+        "ArrowRight",
+        "Tab",
+        "Enter",
+      ].includes(e.key)
+    ) {
+      e.preventDefault();
+      return;
+    }
+  };
+
+  const handlePaste = (
+    e: React.ClipboardEvent<HTMLInputElement>,
+    handleChange: any,
+    values: any,
+    startIndex: number = 0
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Get pasted data
+    const pastedData = e.clipboardData.getData("text");
+
+    // Extract only numbers from pasted data
+    const numericValue = pastedData.replace(/\D/g, "");
+
+    if (numericValue.length === 0) return;
+
+    // Clear error when user pastes
+    if (error && onClearError) {
+      onClearError();
+    }
+
+    // Use the latest form values from ref if available
+    const currentValues = formValuesRef.current || values;
+
+    // Determine starting index - start from the field where paste occurred
+    let firstEmptyIndex = startIndex;
+    
+    // If pasting into a filled field, start from that field (replace from there)
+    // If pasting into an empty field, find the first empty field from the start
+    const currentFieldValue = currentValues[`otp${startIndex + 1}`];
+    if (!currentFieldValue || currentFieldValue.length === 0) {
+      // Find first empty field to start filling from
+      for (let i = 0; i < otpLength; i++) {
+        const fieldName = `otp${i + 1}`;
+        if (!currentValues[fieldName] || currentValues[fieldName].length === 0) {
+          firstEmptyIndex = i;
+          break;
+        }
+      }
+    }
+
+    // Calculate how many digits we can fit
+    const availableSlots = otpLength - firstEmptyIndex;
+    const digitsToFill = numericValue.slice(0, availableSlots);
+
+    // Fill OTP fields with pasted values starting from first empty field
+    // Update all fields in sequence
+    digitsToFill.split("").forEach((digit, idx) => {
+      const fieldIndex = firstEmptyIndex + idx;
+      if (fieldIndex < otpLength) {
+        const fieldName = `otp${fieldIndex + 1}`;
+        const changeEvent: any = {
+          target: {
+            name: fieldName,
+            value: digit,
+          },
+        };
+        handleChange(changeEvent);
+      }
+    });
+
+    // Focus on the appropriate field after paste
+    const lastFilledIndex = Math.min(
+      firstEmptyIndex + digitsToFill.length - 1,
+      otpLength - 1
+    );
+    
+    // Use setTimeout to ensure all state updates are processed before focusing
+    setTimeout(() => {
+      const latestValues = formValuesRef.current || currentValues;
+      let nextFocusIndex = lastFilledIndex;
+      
+      // Check if all fields are now filled
+      const allFilled = Array.from({ length: otpLength }).every((_, idx) => {
+        const fieldName = `otp${idx + 1}`;
+        return latestValues[fieldName] && latestValues[fieldName].length > 0;
+      });
+      
+      if (!allFilled) {
+        // Find next empty field
+        for (let i = lastFilledIndex + 1; i < otpLength; i++) {
+          const fieldName = `otp${i + 1}`;
+          if (!latestValues[fieldName] || latestValues[fieldName].length === 0) {
+            nextFocusIndex = i;
+            break;
+          }
+        }
+      } else {
+        // All filled, focus last field
+        nextFocusIndex = otpLength - 1;
+      }
+      
+      const nextField = inputRefs.current[nextFocusIndex];
+      if (nextField) {
+        nextField.focus();
+        // Select all text in the field for better UX
+        nextField.select();
+      }
+    }, 50); // Small delay to ensure state updates are processed
   };
 
   const handleSubmit = (values: any) => {
@@ -150,10 +395,21 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
       .sort()
       .map((key) => values[key])
       .join("");
-    if (onVerify) {
+    if (onVerify && otp.length === otpLength) {
       onVerify(otp);
     }
   };
+
+  // Track previous OTP to prevent duplicate submissions
+  const previousOtpRef = useRef<string>("");
+  const formValuesRef = useRef<any>(null);
+
+  // Reset previous OTP when error occurs to allow resubmission
+  useEffect(() => {
+    if (error) {
+      previousOtpRef.current = "";
+    }
+  }, [error]);
 
   return (
     <PopupModal
@@ -290,182 +546,205 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
             submitDisable,
             touched,
             values,
-          }) => (
-            <>
-              <Box sx={{ marginBottom: "16px" }}>
-                <Typography
-                  sx={{
-                    fontSize: "15px",
-                    fontWeight: 500,
-                    color: theme.palette.text.primary,
-                    fontFamily: "UrbanistMedium",
-                    marginBottom: "8px",
-                  }}
-                >
-                  {t("verificationCode")} *
-                </Typography>
+          }) => {
+            // Store values in ref for auto-submit check
+            formValuesRef.current = values;
+
+            // Helper function to check and auto-submit
+            const checkAutoSubmit = (currentValues: any) => {
+              const allFilled = Array.from({ length: otpLength }).every(
+                (_, idx) => {
+                  const fieldName = `otp${idx + 1}`;
+                  return (
+                    currentValues[fieldName] &&
+                    currentValues[fieldName].length > 0
+                  );
+                }
+              );
+
+              if (allFilled && !loading && !submitDisable) {
+                const otp = Object.keys(currentValues)
+                  .sort()
+                  .map((key) => currentValues[key])
+                  .join("");
+
+                // Prevent duplicate submissions
+                if (
+                  otp !== previousOtpRef.current &&
+                  otp.length === otpLength
+                ) {
+                  previousOtpRef.current = otp;
+                  // Small delay to ensure UI updates are complete
+                  setTimeout(() => {
+                    if (onVerify) {
+                      onVerify(otp);
+                    }
+                  }, 150);
+                }
+              } else if (!allFilled) {
+                // Reset previous OTP when fields are cleared
+                previousOtpRef.current = "";
+              }
+            };
+
+            return (
+              <>
+                <Box sx={{ marginBottom: "16px" }}>
+                  <Typography
+                    sx={{
+                      fontSize: "15px",
+                      fontWeight: 500,
+                      color: theme.palette.text.primary,
+                      fontFamily: "UrbanistMedium",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    {t("verificationCode")} *
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: "6px",
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    {Array.from({ length: otpLength }).map((_, index) => {
+                      const fieldName = `otp${index + 1}`;
+                      const hasValue =
+                        values[fieldName] && values[fieldName].length > 0;
+                      const hasError = !!error;
+                      return (
+                        <Box
+                          key={fieldName}
+                          sx={{
+                            width: inputSize,
+                            minWidth: inputSize,
+                            maxWidth: inputSize,
+                          }}
+                        >
+                          <InputField
+                            value={values[fieldName] || ""}
+                            name={fieldName}
+                            type="text"
+                            onChange={(e) => {
+                              handleOtpChange(
+                                index,
+                                e.target.value,
+                                handleChange,
+                                values
+                              );
+
+                              setTimeout(() => {
+                                const latestValues =
+                                  formValuesRef.current || values;
+                                checkAutoSubmit(latestValues);
+                              }, 100);
+                            }}
+                            onBlur={() => handleOtpBlur(fieldName, handleBlur)}
+                            onKeyDown={(e) =>
+                              handleKeyDown(index, e, values, handleChange)
+                            }
+                            onPaste={(e) => {
+                              handlePaste(e, handleChange, values, index);
+                              setTimeout(() => {
+                                const latestValues =
+                                  formValuesRef.current || values;
+                                checkAutoSubmit(latestValues);
+                              }, 100);
+                            }}
+                            error={hasError}
+                            success={hasValue && !hasError}
+                            fullWidth
+                            maxLength={1}
+                            inputMode="numeric"
+                            inputHeight={inputSize}
+                            inputRef={(el: HTMLInputElement | null) => {
+                              inputRefs.current[index] = el;
+                            }}
+                          />
+                        </Box>
+                      );
+                    })}
+                  </Box>
+                  {error && (
+                    <Typography
+                      sx={{
+                        fontSize: "12px",
+                        color: "#d32f2f",
+                        marginTop: "8px",
+                        fontFamily: "UrbanistMedium",
+                      }}
+                    >
+                      {error}
+                    </Typography>
+                  )}
+                </Box>
+
+                {/* Action Buttons */}
                 <Box
                   sx={{
                     display: "flex",
-                    gap: "6px",
-                    justifyContent: "flex-start",
+                    gap: "12px",
+                    justifyContent: "space-between",
                   }}
                 >
-                  {Array.from({ length: otpLength }).map((_, index) => {
-                    const fieldName = `otp${index + 1}`;
-                    const hasValue =
-                      values[fieldName] && values[fieldName].length > 0;
-                    return (
-                      <Box
-                        key={fieldName}
-                        sx={{
-                          width: inputSize,
-                          minWidth: inputSize,
-                          maxWidth: inputSize,
-                        }}
-                      >
-                        <InputField
-                          value={values[fieldName] || ""}
-                          name={fieldName}
-                          type="text"
-                          onChange={(e) =>
-                            handleOtpChange(
-                              index,
-                              e.target.value,
-                              handleChange,
-                              values
-                            )
-                          }
-                          onBlur={() => handleOtpBlur(fieldName, handleBlur)}
-                          onKeyDown={(e) =>
-                            handleKeyDown(index, e, values, handleChange)
-                          }
-                          success={hasValue}
-                          fullWidth
-                          maxLength={1}
-                          inputMode="numeric"
-                          inputHeight={inputSize}
-                          sx={{
-                            gap: 0,
-                            width: "100%",
-                            "& > div": {
-                              width: "100%",
-                            },
-                            "& .MuiOutlinedInput-root": {
-                              height: inputSize,
-                              width: "100%",
-                              "& input": {
-                                textAlign: "center",
-                                fontSize: isMobile ? "16px" : "18px",
-                                fontWeight: hasValue ? 600 : 400,
-                                padding: "0 !important",
-                                height: "100%",
-                                width: "100%",
-                              },
-                              "&.Mui-focused fieldset": {
-                                borderColor: hasValue
-                                  ? "#4CAF50"
-                                  : theme.palette.primary.main,
-                                borderWidth: "2px",
-                              },
-                              "& fieldset": {
-                                borderColor: hasValue ? "#4CAF50" : "#E9ECF2",
-                                borderWidth: hasValue ? "2px" : "1px",
-                              },
-                              "&:hover fieldset": {
-                                borderColor: hasValue
-                                  ? "#4CAF50"
-                                  : theme.palette.primary.main,
-                              },
-                            },
-                            "& .MuiInputBase-input": {
-                              color: hasValue ? "#4CAF50" : "#242428",
-                            },
-                          }}
-                          inputRef={(el: HTMLInputElement | null) => {
-                            inputRefs.current[index] = el;
-                          }}
-                        />
-                      </Box>
-                    );
-                  })}
-                </Box>
-                {error && (
-                  <Typography
-                    sx={{
-                      fontSize: "12px",
-                      color: "#d32f2f",
-                      marginTop: "8px",
-                      fontFamily: "UrbanistMedium",
-                    }}
-                  >
-                    {error}
-                  </Typography>
-                )}
-              </Box>
-
-              {/* Action Buttons */}
-              <Box
-                sx={{
-                  display: "flex",
-                  gap: "12px",
-                  justifyContent: "space-between",
-                }}
-              >
-                {/* Resend Code Button */}
-                <CustomButton
-                  variant="secondary"
-                  size="medium"
-                  label={
-                    countdown > 0
-                      ? dialogResendCodeCountdownLabel(countdown)
-                      : dialogResendCodeLabel
-                  }
-                  onClick={() => {
-                    if (onResendCode) {
-                      onResendCode();
+                  {/* Resend Code Button */}
+                  <CustomButton
+                    variant="secondary"
+                    size="medium"
+                    label={
+                      countdown > 0
+                        ? dialogResendCodeCountdownLabel(countdown)
+                        : dialogResendCodeLabel
                     }
-                  }}
-                  disabled={countdown > 0 || loading}
-                  endIcon={countdown > 0 || loading ? undefined : ArrowUpwardIcon}
-                  type="button"
-                  sx={{
-                    fontWeight: 500,
-                    padding: "11px 20px",
-                    flex: 1,
-                    fontSize: isMobile ? "13px" : "15px",
-                    [theme.breakpoints.down("sm")]: {
-                      fontSize: "13px",
-                      padding: "10px 16px",
-                    },
-                  }}
-                />
+                    onClick={() => {
+                      if (onResendCode) {
+                        onResendCode();
+                      }
+                    }}
+                    disabled={countdown > 0 || loading}
+                    endIcon={
+                      countdown > 0 || loading ? undefined : ArrowUpwardIcon
+                    }
+                    type="button"
+                    sx={{
+                      fontWeight: 500,
+                      padding: "11px 20px",
+                      flex: 1,
+                      fontSize: isMobile ? "13px" : "15px",
+                      [theme.breakpoints.down("sm")]: {
+                        fontSize: "13px",
+                        padding: "10px 16px",
+                      },
+                    }}
+                  />
 
-                {/* Primary Action Button */}
-                <CustomButton
-                  variant="primary"
-                  size="medium"
-                  label={dialogPrimaryButtonLabel}
-                  type="submit"
-                  disabled={
-                    submitDisable ||
-                    loading ||
-                    !Object.values(values).every((val) => val)
-                  }
-                  sx={{
-                    fontWeight: 700,
-                    padding: "15px 24px",
-                    flex: 1,
-                    fontSize: isMobile ? "13px" : "15px",
-                    [theme.breakpoints.down("sm")]: {
-                      fontSize: "13px",
-                      padding: "12px 20px",
-                    },
-                  }}
-                />
-              </Box>
-            </>
-          )}
+                  {/* Primary Action Button */}
+                  <CustomButton
+                    variant="primary"
+                    size="medium"
+                    label={dialogPrimaryButtonLabel}
+                    type="submit"
+                    disabled={
+                      submitDisable ||
+                      loading ||
+                      !Object.values(values).every((val) => val)
+                    }
+                    sx={{
+                      fontWeight: 700,
+                      padding: "15px 24px",
+                      flex: 1,
+                      fontSize: isMobile ? "13px" : "15px",
+                      [theme.breakpoints.down("sm")]: {
+                        fontSize: "13px",
+                        padding: "12px 20px",
+                      },
+                    }}
+                  />
+                </Box>
+              </>
+            );
+          }}
         </FormManager>
       </PanelCard>
     </PopupModal>

@@ -3,21 +3,23 @@ import { Box, Card, styled } from "@mui/material";
 export const LoginWrapper = styled(Box)(() => ({
   background: "#f4f6fa",
   width: "100%",
-  height: "100%",
-  minHeight: "100vh",
+  height: "100dvh",
+  minHeight: "100dvh",
   position: "relative",
-  overflow: "hidden",
+  overflow: "auto",
 }));
 
 export const ContentWrapper = styled(Box)(() => ({
   position: "relative",
   zIndex: 20,
   width: "100%",
+  maxWidth: "100%",
   display: "flex",
   justifyContent: "center",
-  alignItems: "flex-start",
+  alignItems: "center",
   padding: "60px 20px 40px 20px",
-  overflow: "visible",
+  minHeight: "100dvh",
+  boxSizing: "border-box",
   scrollbarWidth: "none",
   "&::-webkit-scrollbar": {
     display: "none",

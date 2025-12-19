@@ -164,14 +164,11 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         ...(showSuccessAnimation && {
           animation: "successPulse 0.6s ease-in-out",
           "@keyframes successPulse": {
-            "0%": {
+            "0%, 100%": {
               backgroundColor: variant === "primary" ? "#0004FF" : "#FFFFFF",
             },
             "50%": {
-              backgroundColor: "#4CAF50",
-            },
-            "100%": {
-              backgroundColor: variant === "primary" ? "#0004FF" : "#FFFFFF",
+              transform: "scale(0.98)",
             },
           },
         }),

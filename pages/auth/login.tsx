@@ -928,22 +928,44 @@ export default function Login() {
     if (previousLoadingState && !userState.loading) {
       // If user is not logged in and loading stopped, it was likely an error
       if (!userState.name && showLoginMethods) {
-        setShowErrorAnimation(true);
-        setTimeout(() => {
-          setShowErrorAnimation(false);
-        }, 500);
+        // Don't show error animation if OTP dialog is open for email verification
+        const shouldShowErrorAnimation = !(
+          loginMethod === "email" && emailOtpDialogOpen
+        );
 
-        // Clear OTP error states after API error so user can retry
-        if (loginMethod === "email" && emailOtp) {
-          // Don't set error here - let the toast handle it
-          // Just ensure touched state allows retry
-          setEmailOtpTouched(false);
-          // Keep dialog open so user can retry
-          if (!emailOtpDialogOpen) {
-            setEmailOtpDialogOpen(true);
+        if (shouldShowErrorAnimation) {
+          setShowErrorAnimation(true);
+          setTimeout(() => {
+            setShowErrorAnimation(false);
+          }, 500);
+        }
+
+        // Handle API errors - set error message in form if it's an OTP verification error
+        if (userState.error && userState.error.actionType === USER_CONFIRM_CODE) {
+          if (loginMethod === "email" && emailOtp) {
+            // Set the error message so it displays in the OTP dialog
+            setEmailOtpError(userState.error.message || "OTP verification failed");
+            setEmailOtpTouched(true);
+            // Keep dialog open so user can retry
+            if (!emailOtpDialogOpen) {
+              setEmailOtpDialogOpen(true);
+            }
+          } else if (loginMethod === "sms" && otp) {
+            setOtpError(userState.error.message || "OTP verification failed");
+            setOtpTouched(true);
           }
-        } else if (loginMethod === "sms" && otp) {
-          setOtpTouched(false);
+        } else {
+          // Clear OTP error states after API error so user can retry
+          if (loginMethod === "email" && emailOtp) {
+            // Just ensure touched state allows retry
+            setEmailOtpTouched(false);
+            // Keep dialog open so user can retry
+            if (!emailOtpDialogOpen) {
+              setEmailOtpDialogOpen(true);
+            }
+          } else if (loginMethod === "sms" && otp) {
+            setOtpTouched(false);
+          }
         }
       }
     }
@@ -951,11 +973,13 @@ export default function Login() {
   }, [
     userState.loading,
     userState.name,
+    userState.error,
     previousLoadingState,
     showLoginMethods,
     loginMethod,
     emailOtp,
     otp,
+    emailOtpDialogOpen,
   ]);
 
   // Ensure loading stops if there's an error (safety check)
@@ -1075,6 +1099,11 @@ export default function Login() {
 
   // Handle OTP verification from dialog
   const handleEmailOtpVerify = (otp: string) => {
+    // Don't proceed if still loading from previous request
+    if (userState.loading) {
+      return;
+    }
+
     setEmailOtp(otp);
     // Clear any previous errors before submitting
     setEmailOtpError("");
@@ -2039,19 +2068,31 @@ export default function Login() {
                 variant="primary"
                 size={isMobile ? "small" : "medium"}
                 fullWidth
-                disabled={userState.loading}
+                disabled={
+                  userState.loading &&
+                  !(loginMethod === "email" && emailOtpDialogOpen)
+                }
                 onClick={() => {
                   // Ensure we can submit even after previous errors
                   handleLoginSubmit();
                 }}
                 hideLabelWhenLoading={true}
-                showSuccessAnimation={showSuccessAnimation}
-                showErrorAnimation={showErrorAnimation}
+                showSuccessAnimation={
+                  showSuccessAnimation &&
+                  !(loginMethod === "email" && emailOtpDialogOpen)
+                }
+                showErrorAnimation={
+                  showErrorAnimation &&
+                  !(loginMethod === "email" && emailOtpDialogOpen)
+                }
                 sx={{
                   fontWeight: 700,
                 }}
                 endIcon={
-                  userState.loading ? <LoadingIcon size={20} /> : undefined
+                  userState.loading &&
+                  !(loginMethod === "email" && emailOtpDialogOpen) ? (
+                    <LoadingIcon size={20} />
+                  ) : undefined
                 }
               />
             </Box>
@@ -2155,6 +2196,11 @@ export default function Login() {
           primaryButtonLabel={t("checkAndAdd")}
           onResendCode={handleSendEmailOtp}
           onVerify={handleEmailOtpVerify}
+          onClearError={() => {
+            // Clear error when user starts typing
+            setEmailOtpError("");
+            setEmailOtpTouched(false);
+          }}
           countdown={emailOtpCountdown}
           loading={userState.loading}
           error={emailOtpTouched && emailOtpError ? (emailOtpError.includes(" ") ? emailOtpError : t(emailOtpError)) : undefined}

@@ -110,9 +110,10 @@ export const ApiKeyCreatedText = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary,
   display: "flex",
   alignItems: "center",
-  gap: 4,
+  gap: "7px",
   "& .created-on-text": {
     fontSize: 13,
+    fontFamily: "UrbanistMedium",
   },
   [theme.breakpoints.down("md")]: {
     "& .created-on-text": {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import {
   SidebarFooter,
   ReferralCard,
@@ -16,9 +16,12 @@ import BGOverlay from "@/assets/Images/bg-overlay.png";
 import CopyIcon from "@/assets/Icons/copy-icon.svg";
 import FileIcon from "@/assets/Icons/file-icon.svg";
 import { useTranslation } from "react-i18next";
+import Toast from "@/Components/UI/Toast";
 
-const ReferralAndKnowledge = ({ isMobile }) => {
-  const { t } = useTranslation("dashboardLayout");
+const ReferralAndKnowledge = ({ isMobile }: { isMobile: boolean }) => {
+  const { t } = useTranslation("common");
+   const tCommon = useCallback((key: string) => t(key, { ns: "common" }), [t]);
+  const [openToast, setOpenToast] = useState(false);
 
   return (
     <SidebarFooter>
@@ -49,6 +52,11 @@ const ReferralAndKnowledge = ({ isMobile }) => {
             <CopyButton
               onClick={() => {
                 navigator.clipboard.writeText("DYNO2024XYZ");
+                setOpenToast(true);
+
+                setTimeout(() => {
+                  setOpenToast(false);
+                }, 2000);
               }}
             >
               <Image
@@ -73,6 +81,11 @@ const ReferralAndKnowledge = ({ isMobile }) => {
         />
         <KnowledgeBaseTitle>{t("knowledgeBase")}</KnowledgeBaseTitle>
       </KnowledgeBaseBtn>
+          <Toast
+            open={openToast}
+            message={tCommon("copiedToClipboard")}
+            severity="success"
+          />
     </SidebarFooter>
   );
 };

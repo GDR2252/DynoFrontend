@@ -6,14 +6,10 @@ export const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: "10px",
   background: "#fff",
   border: `1px solid ${theme.palette.border.main}`,
-  boxShadow: "rgba(47, 47, 101, 0.08) 0 2px 8px 0",
+  boxShadow: "none !important",
   display: "flex",
   flexDirection: "column",
   overflow: "hidden",
-  transition: "box-shadow 0.3s ease",
-  "&:hover": {
-    boxShadow: "rgba(47, 47, 101, 0.12) 0 4px 12px 0",
-  },
 }));
 
 export const CardHeader = styled(Box)(({ theme }) => ({

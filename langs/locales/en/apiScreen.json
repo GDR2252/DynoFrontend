@@ -17,7 +17,7 @@
   "status": {
     "active": "Active"
   },
-  "createdOn": "Created on {{date}}",
+  "createdOn": "Created on {{date}} at {{time}}",
   "validation": {
     "selectCompany": "Please select a company"
   },
@@ -36,20 +36,16 @@
     "confirmMessage": "Are you sure you want to delete this API key? Applications using this key will no longer be able to access the API. This action cannot be undone.",
     "confirmButton": "Delete"
   },
-  "keys": {
-    "production": "Production API Key",
-    "development": "Development API Key"
-  },
   "security": {
     "title": "Security Best Practices:",
     "description": "Keep your API keys secure and never share them publicly. If you suspect a key has been compromised, delete it immediately and create a new one."
   },
   "generate": {
-    "modalTitle": "Generate API key",
+    "modalTitle": "Create New API Key",
     "modalSubtitle": "Generate a new API key to integrate DynoPay into your app",
     "submit": "Generate",
     "keyName": "Key Name",
-    "keyNamePlaceholder": "Enter key name",
+    "keyNamePlaceholder": "e.g.: App Production",
     "baseCurrency": "Base Currency",
     "baseCurrencyPlaceholder": "Enter base currency",
     "keyNameDescription": "Key Permissions",
@@ -59,7 +55,7 @@
     "keyNameDescription4": "Access wallet information",
     "successTitle": "API Key Generated",
     "successSubtitle": "Save this key now - you won't be able to see it again",
-    "yourKey": "API Key",
+    "yourKey": "API",
     "adminToken": "Admin Token",
     "securityTitle": "Important Security Notice",
     "securityMessage": "Make sure to copy your API key now. For security reasons, we won't show it again. Store it securely and never share it publicly."

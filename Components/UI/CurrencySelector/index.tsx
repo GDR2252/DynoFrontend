@@ -26,7 +26,7 @@ import nigerianFlag from "@/assets/Images/Icons/flags/nigerian-flag.png";
 // Currency data - you can add more flags as needed
 const currencies = [
   { code: "USD", label: "USD", flag: unitedStatesFlag },
-  { code: "EUR", label: "EUR", flag: euroFlag }, 
+  { code: "EUR", label: "EUR", flag: euroFlag },
   { code: "NGN", label: "NGN", flag: nigerianFlag },
 ];
 
@@ -95,8 +95,12 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
     };
   }, [isOpen, anchorEl]);
 
-  const borderColor = error ?theme.palette.error.main : theme.palette.border.main;
-  const focusBorderColor = error ?theme.palette.error.main : theme.palette.border.focus;
+  const borderColor = error
+    ? theme.palette.error.main
+    : theme.palette.border.main;
+  const focusBorderColor = error
+    ? theme.palette.error.main
+    : theme.palette.border.focus;
 
   return (
     <Box
@@ -112,18 +116,14 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
           variant="body2"
           sx={{
             fontWeight: 500,
+            fontFamily: "UrbanistMedium",
             fontSize: isMobile ? "13px" : "15px",
             textAlign: "start",
-            color: theme.palette.text.primary,
+            color: "#242428",
             lineHeight: "1.2",
           }}
         >
-          {label}
-          {required && (
-            <Typography component="span" sx={{ color: theme.palette.text.primary, ml: 0.5 }}>
-              *
-            </Typography>
-          )}
+          {label + " *"}
         </Typography>
       )}
 
@@ -162,15 +162,15 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
             sx={{
               display: "flex",
               alignItems: "center",
-              gap: 1.5,
+              gap: isMobile ? "3px" : "4px",
               flex: 1,
             }}
           >
             <CurrencyFlag
               src={selectedCurrency.flag.src}
               alt={selectedCurrency.code}
-              width={24}
-              height={24}
+              width={isMobile ? 10 : 16}
+              height={isMobile ? 10 : 16}
             />
             <CurrencyText isMobile={isMobile}>
               {selectedCurrency.code}
@@ -203,14 +203,16 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
           transformOrigin={{ vertical: "top", horizontal: "left" }}
           PaperProps={{
             sx: {
-              mt: "-1px",
+              mt: "2px",
               borderRadius: "6px",
               overflow: "hidden",
+              fontFamily: "UrbanistMedium",
               width: triggerRef.current?.offsetWidth || "auto",
               border: `1px solid ${borderColor}`,
               borderTop: "none",
               maxHeight: "200px",
               backgroundColor: theme.palette.common.white,
+              boxShadow: "0px 4px 16px 0px rgba(47, 47, 101, 0.15)",
             },
           }}
         >
@@ -221,12 +223,15 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
                 onClick={() => handleSelect(currency.code)}
                 selected={currency.code === value}
                 sx={{
+                  maxHeight: "32px",
                   borderRadius: "50px",
-                  p: 1,
-                  gap: 1.5,
-                  minHeight: "40px",
+                  lineHeight: 1.2,
+                  p: "8px",
+                  gap: isMobile ? "3px" : "4px",
                   background:
-                    currency.code === value ? theme.palette.primary.light : "transparent",
+                    currency.code === value
+                      ? theme.palette.primary.light
+                      : "transparent",
                   "&:hover": {
                     background: theme.palette.primary.light,
                   },
@@ -252,9 +257,9 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
                     sx: {
                       fontFamily: "UrbanistMedium",
                       fontWeight: 500,
-                      fontSize: "13px",
+                      fontSize: isMobile ? "10px" : "13px",
                       color: theme.palette.text.primary,
-                      lineHeight: "1",
+                      lineHeight: 1.2,
                     },
                   }}
                 />
@@ -269,8 +274,10 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
               margin: "4px 0 0 0",
               fontSize: isMobile ? "10px" : "13px",
               fontWeight: 500,
-              color: error ? theme.palette.error.main : theme.palette.text.secondary,
-              lineHeight: "1.5",
+              color: error
+                ? theme.palette.error.main
+                : theme.palette.text.secondary,
+              lineHeight: 1.2,
               textAlign: "start",
             }}
           >

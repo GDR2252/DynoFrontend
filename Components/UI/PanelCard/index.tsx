@@ -104,6 +104,7 @@ export interface PanelCardProps {
    * Custom styles for the header
    */
   headerSx?: SxProps;
+  subTitleSx?: SxProps;
   /**
    * Custom styles for the body
    */
@@ -131,6 +132,7 @@ const PanelCard: React.FC<PanelCardProps> = ({
   showHeaderBorder = true,
   sx,
   headerSx,
+  subTitleSx,
   bodySx,
   onClick,
 }) => {
@@ -148,8 +150,8 @@ const PanelCard: React.FC<PanelCardProps> = ({
           <HeaderContent>
             {headerIcon && <>{headerIcon}</>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              {title && <HeaderTitle>{title}</HeaderTitle>}
-              {subTitle && <HeaderSubTitle>{subTitle}</HeaderSubTitle>}
+              {title && <HeaderTitle sx={{ ...headerSx }}>{title}</HeaderTitle>}
+              {subTitle && <HeaderSubTitle sx={{ ...subTitleSx}}>{subTitle}</HeaderSubTitle>}
             </Box>
           </HeaderContent>
           {headerAction &&

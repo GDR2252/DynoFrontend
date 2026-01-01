@@ -47,6 +47,7 @@ export interface InputFieldProps {
   maxLength?: number;
   inputHeight?: string;
   iconBoxSize?: string;
+  inputBgColor?: string;
   inputMode?:
     | "none"
     | "text"
@@ -103,6 +104,7 @@ const InputField: React.FC<InputFieldProps> = ({
   maxLength,
   inputMode,
   inputHeight,
+  inputBgColor,
   iconBoxSize,
   minRows = 1,
   maxRows,
@@ -320,7 +322,7 @@ const InputField: React.FC<InputFieldProps> = ({
             fontFamily: "UrbanistMedium",
             fontSize: isMobile ? "13px" : "15px",
             textAlign: "start",
-            color: "#242428",
+            color: theme.palette.text.primary,
             lineHeight: "1.2",
           }}
           className="label"
@@ -433,9 +435,7 @@ const InputField: React.FC<InputFieldProps> = ({
               maxLength: maxLength,
               inputMode: inputMode,
               autoComplete:
-                type === "password"
-                  ? "new-password"
-                  : autoComplete || "off",
+                type === "password" ? "new-password" : autoComplete || "off",
               "data-form-type": type === "password" ? "other" : undefined,
               "data-lpignore": type === "password" ? "true" : undefined,
               "data-1p-ignore": type === "password" ? "true" : undefined,
@@ -461,6 +461,7 @@ const InputField: React.FC<InputFieldProps> = ({
               ) : undefined,
             }}
             sx={{
+              ...sx,
               ...(sideButton && { flex: 1 }),
               borderRadius: "6px !important",
               boxShadow: "none",
@@ -509,13 +510,15 @@ const InputField: React.FC<InputFieldProps> = ({
               },
               "& .MuiOutlinedInput-root": {
                 borderRadius: "6px",
-                backgroundColor: disabled
-                  ? "#F5F5F5"
-                  : success
-                  ? "#E5EDFF"
-                  : error
-                  ? "#FFFBFB"
-                  : "#FFFFFF",
+                backgroundColor:
+                  inputBgColor ??
+                  (disabled
+                    ? "#F5F5F5"
+                    : success
+                    ? "#E5EDFF"
+                    : error
+                    ? "#FFFBFB"
+                    : "#FFFFFF"),
                 transition: "all 0.3s ease",
                 boxShadow: "rgba(16, 24, 40, 0.05) 0px 1px 2px 0px",
                 "& fieldset": {

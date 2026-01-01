@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 
 export const SecurityNoticeContainer = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.primary.light,
-  padding: theme.spacing(2),
+  padding: "8px 14px",
   borderRadius: "7px",
   border: `1px solid ${theme.palette.border.main}`,
   display: "flex",
@@ -23,6 +23,7 @@ export const SecurityNoticeSubtitle = styled(Typography)(({ theme }) => ({
   fontFamily: "UrbanistMedium",
   [theme.breakpoints.down("sm")]: {
     fontSize: "13px",
+    lineHeight: 1.2,
   },
 }));
 
@@ -31,6 +32,7 @@ export const SecurityNoticeTitle = styled(Typography)(({ theme }) => ({
   fontWeight: 600,
   marginBottom: theme.spacing(0.5),
   fontSize: "13px",
+  lineHeight: 1.2,
   fontFamily: "UrbanistBold",
   [theme.breakpoints.down("sm")]: {
     fontSize: "10px",
@@ -41,7 +43,7 @@ export const SecurityNoticeDescription = styled("ul")(({ theme }) => ({
   color: theme.palette.text.primary,
   marginBottom: theme.spacing(0.5),
   fontSize: "13px",
-  lineHeight: 1,
+  lineHeight: 1.2,
   fontFamily: "UrbanistRegular",
   fontWeight: 400,
   [theme.breakpoints.down("sm")]: {

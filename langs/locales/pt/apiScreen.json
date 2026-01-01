@@ -17,7 +17,7 @@
   "status": {
     "active": "Ativo"
   },
-  "createdOn": "Criado em {{date}}",
+  "createdOn": "Criado em {{date}} às {{time}}",
   "validation": {
     "selectCompany": "Selecione uma empresa"
   },
@@ -36,22 +36,18 @@
     "confirmMessage": "Tem certeza de que deseja excluir esta chave de API? Os aplicativos que usam esta chave não poderão mais acessar a API. Esta ação não pode ser desfeita.",
     "confirmButton": "Excluir"
   },
-  "keys": {
-    "production": "Chave de API de produção",
-    "development": "Chave de API de desenvolvimento"
-  },
   "security": {
     "title": "Melhores práticas de segurança:",
     "description": "Mantenha suas chaves de API em segurança e nunca as compartilhe publicamente. Se suspeitar que uma chave foi comprometida, exclua-a imediatamente e crie uma nova."
   },
   "generate": {
-    "modalTitle": "Gerar chave de API",
-    "modalSubtitle": "Gere uma nova chave de API para integrar o DynoPay ao seu aplicativo",
+    "modalTitle": "Criar nova chave de API",
+    "modalSubtitle": "Gere uma nova chave de API para integrar o DynoPay ao seu aplicativo.",
     "submit": "Gerar",
     "keyName": "Nome da chave",
     "baseCurrency": "Moeda base",
     "baseCurrencyPlaceholder": "Digite a moeda base",
-    "keyNamePlaceholder": "Digite o nome da chave",
+    "keyNamePlaceholder": "Exemplo: Produção de Aplicativos",
     "keyNameDescription": "Permissões da chave",
     "keyNameDescription1": "Criar e gerenciar solicitações de pagamento",
     "keyNameDescription2": "Visualizar histórico de transações",

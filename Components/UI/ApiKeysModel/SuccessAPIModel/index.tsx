@@ -104,6 +104,7 @@ const SuccessAPIModel: React.FC<SuccessAPIModelProps> = ({
             readOnly
             inputHeight="40px"
             value="dpk_live_x04exyjb946e9lwclqhqvqzrgu3k0v24"
+            inputBgColor="#FCFBF8"
             sx={{
               "& .MuiInputBase-root input": {
                 fontSize: "13px !important",
@@ -150,6 +151,7 @@ const SuccessAPIModel: React.FC<SuccessAPIModelProps> = ({
             readOnly
             inputHeight="40px"
             value="dpk_live_x04exyjb946e9lwclqhqvqzrgu3k0v24"
+            inputBgColor="#FCFBF8"
             sx={{
               "& .MuiInputBase-root input": {
                 fontSize: "13px !important",
@@ -210,7 +212,8 @@ const SuccessAPIModel: React.FC<SuccessAPIModelProps> = ({
               </SecurityNoticeDescription>
             </ContentContainer>
           </SecurityNoticeContainer>
-
+        </Box>
+        <Box sx={{ marginTop: isMobile ? "9px" : "20px" }}>
           <CustomButton
             variant="primary"
             size="medium"

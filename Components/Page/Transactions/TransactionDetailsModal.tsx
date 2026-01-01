@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { Box, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
@@ -53,6 +53,7 @@ import InputField from "@/Components/UI/AuthLayout/InputFields";
 import useIsMobile from "@/hooks/useIsMobile";
 import SidebarIcon from "@/utils/customIcons/sidebar-icons";
 import { HourGlassIcon } from "@/utils/customIcons";
+import Toast from "@/Components/UI/Toast";
 
 export interface ExtendedTransaction {
   id: string;
@@ -95,6 +96,7 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
     },
     [t]
   );
+    const [openToast, setOpenToast] = useState(false);
   if (!transaction) return null;
 
   const getCryptoIcon = (crypto: string) => {
@@ -133,6 +135,11 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
+    setOpenToast(true);
+
+    setTimeout(() => {
+      setOpenToast(false);
+    }, 2000);
   };
 
   const handleViewOnExplorer = () => {
@@ -143,6 +150,7 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
   };
 
   return (
+    <>
     <PopupModal
       open={open}
       handleClose={onClose}
@@ -454,6 +462,12 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
           </Box>
       </PanelCard>
     </PopupModal>
+    <Toast
+      open={openToast}
+      message={tTransactions("copiedToClipboard")}
+      severity="success"
+    />
+    </>
   );
 };
 

@@ -4,13 +4,13 @@ import { styled } from "@mui/material/styles";
 
 export const PermissionsContainer = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.primary.light,
-  padding: theme.spacing(2),
+  padding: "8px 10px",
   borderRadius: "7px",
   border: `1px solid ${theme.palette.border.main}`,
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-start",
-  gap: theme.spacing(2),
+  gap: theme.spacing(1),
 }));
 
 export const IconContainer = styled(Box)({
@@ -28,19 +28,25 @@ export const ContentContainer = styled(Box)({
 export const PermissionsTitle = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,
   fontWeight: 600,
+  fontStyle : "semibold",
+  lineHeight: 1.2,
+  fontFamily: "UrbanistRegular",
   marginBottom: theme.spacing(0.5),
   fontSize: "13px",
+  [theme.breakpoints.down("md")]: {
+    fontSize: "10px",
+  },
 }));
 
 export const PermissionsList = styled("ul")(({ theme }) => ({
   margin: 0,
   paddingLeft: theme.spacing(1),
   listStyle: "none",
+  fontFamily: "UrbanistMedium",
   "& li": {
     color: theme.palette.text.primary,
-    marginBottom: theme.spacing(0.5),
     fontSize: "13px",
-    lineHeight: 1,
+    lineHeight: 1.2,
     position: "relative",
     paddingLeft: theme.spacing(1.5),
     "&::before": {
@@ -49,10 +55,13 @@ export const PermissionsList = styled("ul")(({ theme }) => ({
       left: 0,
       top: "50%",
       transform: "translateY(-50%)",
-      width: "4px",
-      height: "4px",
+      width: "1.5px",
+      height: "1.5px",
       borderRadius: "50%",
       backgroundColor: theme.palette.text.primary,
+    },
+    [theme.breakpoints.down("md")]: {
+      fontSize: "10px",
     },
   },
 }));

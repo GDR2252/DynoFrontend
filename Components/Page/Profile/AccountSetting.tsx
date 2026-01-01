@@ -310,7 +310,10 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                     helperText={
                       touched.lastName && errors.lastName && errors.lastName
                     }
-                    sx={{ gap: "8px" }}
+                    sx={{
+                        gap: "8px",
+                        marginTop: { xs: "12px", sm: "0px" },
+                     }}
                   />
                 </Grid>
               </Grid>

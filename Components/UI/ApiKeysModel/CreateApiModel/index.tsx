@@ -77,7 +77,11 @@ const CreateApiModel: React.FC<CreateApiModelProps> = ({ open, onClose }) => {
           headerActionLayout="inline"
         >
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Typography variant="body2" color="text.primary">
+            <Typography
+              variant="body2"
+              color="text.primary"
+              sx={{ fontFamily: "UrbanistMedium", lineHeight: 1.2 }}
+            >
               {t("generate.modalSubtitle")}
             </Typography>
           </Box>
@@ -102,11 +106,12 @@ const CreateApiModel: React.FC<CreateApiModelProps> = ({ open, onClose }) => {
               >
                 <InputField
                   fullWidth
-                  label={t("generate.keyName") + "*"}
+                  label={t("generate.keyName") + " *"}
                   placeholder={t("generate.keyNamePlaceholder")}
                   name="key_name"
                   value={values.key_name}
                   onChange={handleChange}
+                  sx={{ minHeight: "40px" }}
                 />
 
                 <CurrencySelector
@@ -133,7 +138,7 @@ const CreateApiModel: React.FC<CreateApiModelProps> = ({ open, onClose }) => {
                 />
 
                 <PermissionsContainer>
-                  <IconContainer>
+                  <IconContainer sx={{ width: "24px", height: "24px" }}>
                     <Image
                       src={InfoIcon.src}
                       alt="info-icon"
@@ -172,7 +177,7 @@ const CreateApiModel: React.FC<CreateApiModelProps> = ({ open, onClose }) => {
                     type="submit"
                     variant="primary"
                     size="medium"
-                    label={t("generate.submit")}
+                    label={t("actions.generate")}
                     disabled={submitDisable}
                     sx={{
                       flex: 1,

@@ -41,6 +41,7 @@ import InputField from "@/Components/UI/AuthLayout/InputFields";
 import CreateApiModel from "@/Components/UI/ApiKeysModel/CreateApiModel";
 import DeleteModel from "@/Components/UI/DeleteModel";
 import UnitedStatesFlag from "@/assets/Images/Icons/flags/united-states-flag.png";
+import useIsMobile from "@/hooks/useIsMobile";
 
 const companyInitial = {
   company_id: 0,
@@ -106,6 +107,10 @@ const ApiDocumentationCard = ({ docsUrl }: { docsUrl: string }) => {
         position: "relative",
         zIndex: 1,
         backgroundColor: "transparent",
+        fontSize: { xs: "13px", md: "15px" },
+      }}
+      subTitleSx={{
+        fontSize: { xs: "10px", md: "13px" },
       }}
       bodySx={{
         position: "relative",
@@ -149,6 +154,7 @@ const ApiKeyCard = ({
 }) => {
   const { t } = useTranslation("apiScreen");
   const [show, setShow] = useState(false);
+  const isMobile = useIsMobile("md");
 
   const apiKey: string = apiRow?.apiKey || "";
   const createdAt =
@@ -256,18 +262,18 @@ const ApiKeyCard = ({
             <Image
               src={TrashIcon.src}
               alt={t("icons.trashAlt")}
-              width={16}
-              height={16}
+              width={isMobile ? 12 : 16}
+              height={isMobile ? 12 : 16}
               draggable={false}
             />
           </ApiKeyDeleteButton>
 
           <ApiKeyCreatedText>
             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              <AccessTimeFilledIcon sx={{ fontSize: 13 }} />
+              <AccessTimeFilledIcon sx={{ fontSize: 15 }} />
             </Box>
             <Typography component="span" className="created-on-text">
-              {t("createdOn", { date: "17/12/2025 at 10:00:00" })}
+              {t("createdOn", { date: "17/12/2025", time: "10:00:00" })}
             </Typography>
           </ApiKeyCreatedText>
         </ApiKeyCardTopRow>

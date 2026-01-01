@@ -36,7 +36,8 @@
   "webhookResponse": "Webhook Response",
   "close": "Close",
   "viewOnExplorer": "View on Explorer",
-  "copy": "Copy"
+  "copy": "Copy",
+  "copiedToClipboard": "Copied to Clipboard"
 }
 
 

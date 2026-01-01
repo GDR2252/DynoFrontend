@@ -13,7 +13,7 @@ export const CurrencyTrigger = muiStyled(Box)<{
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  gap: "8px",
+  gap: "4px",
   padding: "8px",
   borderRadius: "6px",
   border: "1px solid",
@@ -35,6 +35,9 @@ export const CurrencyTrigger = muiStyled(Box)<{
     outline: "none",
     borderColor: error ? theme.palette.error.main : theme.palette.primary.main,
   },
+  [theme.breakpoints.down("md")]: {
+    gap: "3px",
+  },
 }));
 
 export const CurrencyFlag = styled(Image)({
@@ -43,15 +46,19 @@ export const CurrencyFlag = styled(Image)({
   borderRadius: "50%",
   objectFit: "cover",
   flexShrink: 0,
+  [theme.breakpoints.down("md")]: {
+    width: "10px",
+    height: "10px",
+  },
 });
 
 export const CurrencyText = styled.span<{ isMobile?: boolean }>(
   ({ isMobile }) => ({
-    fontSize: isMobile ? "13px" : "15px",
+    fontSize: isMobile ? "10px" : "13px",
     fontWeight: 500,
     fontFamily: "UrbanistMedium",
     color: theme.palette.text.primary,
-    lineHeight: "1.5",
+    lineHeight: 1.2,
   })
 );
 

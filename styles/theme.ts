@@ -14,12 +14,18 @@ declare module "@mui/material/Button" {
 declare module "@mui/material/styles" {
   interface Palette {
     border: {
+      focus: any;
       main: string;
+      success: string;
+      error: string;
     };
   }
   interface PaletteOptions {
     border?: {
       main?: string;
+      focus?: string;
+      success?: string;
+      error?: string;
     };
   }
 }
@@ -43,11 +49,19 @@ export const theme = createTheme({
       black: "#12131C",
       white: "#fff",
     },
+    success: {
+      main: "#EAFFF0",
+      dark: "#47B464",
+      light: "#DCF6E4",
+    },
     error: {
       main: "#E8484A",
     },
     border: {
-      main: "#E9ECF2", //border color
+      main: "#E9ECF2",
+      focus: "#A3A6AC",
+      success: "#1C993D",
+      error: "#E8484A",
     },
     primary: {
       main: "#0004FF", //Dark Blue
@@ -58,7 +72,8 @@ export const theme = createTheme({
     secondary: {
       main: "#f4f6fa", //background color
       dark: "#E9ECF2",
-      light: "#585ed8",
+      light: "#F4F6FA",
+      contrastText:"#BDBDBD",
     },
     text: {
       primary: "#242428",

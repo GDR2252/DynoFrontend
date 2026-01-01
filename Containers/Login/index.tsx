@@ -47,6 +47,7 @@ const LoginLayout = ({ children, pageName, pageDescription }: LayoutProps) => {
             fill
             priority
             style={{ objectFit: "fill" }}
+            draggable={false}
           />
         </Box>
       </Box>
@@ -78,6 +79,7 @@ const LoginLayout = ({ children, pageName, pageDescription }: LayoutProps) => {
             fill
             priority
             style={{ objectFit: "contain" }}
+            draggable={false}
           />
         </Box>
       </Box>

@@ -1,13 +1,24 @@
+import CustomButton from "@/Components/UI/Buttons";
+import useIsMobile from "@/hooks/useIsMobile";
 import { pageProps } from "@/utils/types";
+import { AddRounded } from "@mui/icons-material";
 import Head from "next/head";
+import router from "next/router";
 import { useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { Box, Grid } from "@mui/material";
+import DashboardLeftSection from "@/Components/Page/Dashboard/DashboardLeftSection";
+import DashboardRightSection from "@/Components/Page/Dashboard/DashboardRightSection";
 
-export default function Home({ setPageName, setPageDescription }: pageProps) {
+export default function Home({
+  setPageName,
+  setPageDescription,
+  setPageAction,
+}: pageProps) {
   const namespaces = ["dashboardLayout", "common"];
 
+  const isMobile = useIsMobile("md");
   const { t } = useTranslation(namespaces);
-
   const tDashboard = useCallback(
     (key: string) => t(key, { ns: "dashboardLayout" }),
     [t]
@@ -22,6 +33,29 @@ export default function Home({ setPageName, setPageDescription }: pageProps) {
     }
   }, [setPageName, setPageDescription, tDashboard]);
 
+  useEffect(() => {
+    if (!setPageAction) return;
+    setPageAction(
+      <CustomButton
+        label={
+          isMobile
+            ? tDashboard("createNewKey")
+            : tDashboard("createPaymentLink")
+        }
+        variant="primary"
+        size="medium"
+        endIcon={<AddRounded sx={{ fontSize: isMobile ? 18 : 20 }} />}
+        onClick={() => router.push("/create-pay-link")}
+        sx={{
+          height: isMobile ? 34 : 40,
+          px: isMobile ? 1.5 : 2.5,
+          fontSize: isMobile ? 13 : 15,
+        }}
+      />
+    );
+    return () => setPageAction(null);
+  }, [setPageAction, tDashboard, isMobile]);
+
   return (
     <>
       <Head>
@@ -31,9 +65,17 @@ export default function Home({ setPageName, setPageDescription }: pageProps) {
       </Head>
 
       <main>
-        {/* Using common namespace */}
-        <h1>{tCommon("homeHeading")}</h1>
-        <p>{tCommon("homeTagline")}</p>
+        <Grid container spacing={3}>
+          {/* Left Section - Stat Cards and Graph */}
+          <Grid item xs={12} lg={8}>
+            <DashboardLeftSection />
+          </Grid>
+
+          {/* Right Section - Fee Tier and Upgrade */}
+          <Grid item xs={12} lg={4}>
+            <DashboardRightSection />
+          </Grid>
+        </Grid>
       </main>
     </>
   );

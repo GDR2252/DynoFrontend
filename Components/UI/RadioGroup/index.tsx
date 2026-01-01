@@ -13,10 +13,9 @@ export interface CustomRadioProps extends Omit<RadioProps, "sx"> {
  * - Fully customizable via sx prop
  */
 const CustomRadio = styled(Radio)<CustomRadioProps>(({ theme }) => ({
-  height: "24px",
-  width: "24px",
+  height: "24px !important",
+  width: "24px !important",
   color: "#F4F6FA",
-  padding: "6px",
   border: "1px solid ",
   borderColor: theme.palette.border.main,
   backgroundColor: theme.palette.secondary.main,
@@ -27,9 +26,16 @@ const CustomRadio = styled(Radio)<CustomRadioProps>(({ theme }) => ({
     color: "#0004FF",
   },
   "& .MuiSvgIcon-root": {
-    width: "24px",
-    height: "24px",
+    width: "28px !important",
+    height: "28px !important",
   },
+  "& svg[data-testid='RadioButtonUncheckedIcon']": {
+    fill: "transparent",
+  },
+  "& svg[data-testid='RadioButtonCheckedIcon']": {
+    fill: "#0004FF",
+  },
+
   "&.Mui-disabled": {
     color: "#E9ECF2",
     opacity: 0.5,

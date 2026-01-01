@@ -1,6 +1,6 @@
 import withAuth from "@/Components/Page/Common/HOC/withAuth";
 import { LayoutProps, rootReducer } from "@/utils/types";
-import { Box, Grid, useTheme } from "@mui/material";
+import { Box, Grid, useTheme, SxProps, Theme } from "@mui/material";
 import React from "react";
 import useTokenData from "@/hooks/useTokenData";
 import Toast from "@/Components/UI/Toast";
@@ -17,6 +17,7 @@ const ClientLayout = ({
   pageDescription,
   component,
   pageAction,
+  pageHeaderSx,
 }: LayoutProps) => {
   const theme = useTheme();
   const tokenData = useTokenData();
@@ -49,7 +50,7 @@ const ClientLayout = ({
             flex: 1,
             overflow: "hidden", // important
             px: { xs: 2, lg: 3 },
-            pb: { xs: 10, lg: 3 }, // Add bottom padding on mobile for bottom nav
+            // pb: { xs: 10, lg: 2 }, // Add bottom padding on mobile for bottom nav
             mt: 3,
           }}
         >
@@ -79,44 +80,45 @@ const ClientLayout = ({
                 height: "100%",
                 overflowY: "auto",
                 overflowX: "hidden",
+                pb: { xs: 10, lg: 0 },
               }}
             >
               {(pageName || pageDescription) && (
-                <PageHeader sx={{ pt: 0, pb: 2.5, mb: 0 }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: { xs: "flex-start", md: "center" },
-                      justifyContent: "space-between",
-                      gap: 2,
-                    }}
-                  >
-                    <Box sx={{ flex: 1, minWidth: 0 }}>
-                      {pageName && (
-                        <PageHeaderTitle variant="h1">
-                          {pageName}
-                        </PageHeaderTitle>
-                      )}
-                      {pageDescription && (
-                        <PageHeaderDescription variant="body1">
-                          {pageDescription}
-                        </PageHeaderDescription>
-                      )}
-                    </Box>
-
-                    {pageAction && (
-                      <Box
-                        sx={{
-                          flexShrink: 0,
-                          pt: { xs: 0.5, md: 0 },
-                          display: "flex",
-                          justifyContent: "flex-end",
-                        }}
-                      >
-                        {pageAction}
-                      </Box>
+                <PageHeader
+                  sx={
+                    pageHeaderSx
+                      ? ([
+                          { pt: 0, pb: { lg: 2.5, md: 1.5, xs: 1 }, mb: 0 },
+                          pageHeaderSx,
+                        ] as SxProps<Theme>)
+                      : { pt: 0, pb: { lg: 2.5, md: 1.5, xs: 1 }, mb: 0 }
+                  }
+                >
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    {pageName && (
+                      <PageHeaderTitle variant="h1">{pageName}</PageHeaderTitle>
+                    )}
+                    {pageDescription && (
+                      <PageHeaderDescription variant="body1">
+                        {pageDescription}
+                      </PageHeaderDescription>
                     )}
                   </Box>
+
+                  {pageAction && (
+                    <Box
+                      sx={{
+                        flexShrink: 0,
+                        pt: { xs: 0.5, md: 0 },
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: { xs: 1, md: 2 },
+                      }}
+                      className="pageAction"
+                    >
+                      {pageAction}
+                    </Box>
+                  )}
                 </PageHeader>
               )}
               {children}

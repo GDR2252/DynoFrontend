@@ -31,8 +31,8 @@ import useIsMobile from "@/hooks/useIsMobile";
 const languages = [
   { code: "pt", label: "Português", flag: portugalFlag },
   { code: "en", label: "English", flag: unitedStatesFlag },
-  { code: "fr", label: "Français", flag: franceFlag },
-  { code: "es", label: "Español", flag: spainFlag },
+  // { code: "fr", label: "Français", flag: franceFlag },
+  // { code: "es", label: "Español", flag: spainFlag },
 ];
 
 export default function LanguageSwitcher({ sx }: { sx?: SxProps<Theme> }) {
@@ -153,6 +153,7 @@ export default function LanguageSwitcher({ sx }: { sx?: SxProps<Theme> }) {
                 primaryTypographyProps={{
                   sx: {
                     fontSize: isMobile ? "13px !important" : "15px",
+                    lineHeight: 1.2,
                   },
                 }}
                 primary={`${lng.code.toUpperCase()} – ${lng.label}`}

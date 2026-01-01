@@ -4,8 +4,6 @@ import { useTheme } from "@mui/material/styles";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import * as yup from "yup";
-import { MuiTelInput } from "mui-tel-input";
-
 import { TokenData } from "@/utils/types";
 import PanelCard from "@/Components/UI/PanelCard";
 import FormManager from "../Common/FormManager";
@@ -17,6 +15,9 @@ import CustomButton from "@/Components/UI/Buttons";
 import useIsMobile from "@/hooks/useIsMobile";
 import CameraIcon from "@/assets/Icons/camera-icon.svg";
 import TrashIcon from "@/assets/Icons/trash-icon.svg";
+import { useTranslation } from "react-i18next";
+import { getInitials } from "@/helpers";
+import CountryPhoneInput from "@/Components/UI/CountryPhoneInput";
 
 const initialValue = {
   firstName: "",
@@ -28,6 +29,7 @@ const initialValue = {
 const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
   const dispatch = useDispatch();
   const theme = useTheme();
+  const { t } = useTranslation("profile");
 
   const fileRef = useRef<any>();
   const isMobile = useIsMobile("md");
@@ -35,14 +37,12 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
   const [initialUser, setInitialUser] = useState({ ...initialValue });
   const [initialPhoto, setInitialPhoto] = useState("");
   const [userPhoto, setUserPhoto] = useState("");
+  const [imageError, setImageError] = useState(false);
 
   const registerSchema = yup.object().shape({
-    firstName: yup.string().required("First Name is required"),
-    lastName: yup.string().required("Last Name is required"),
-    email: yup
-      .string()
-      .email("Please enter a valid email")
-      .required("email is required"),
+    firstName: yup.string().required(t("firstNameRequired")),
+    lastName: yup.string().required(t("lastNameRequired")),
+    email: yup.string().email(t("emailInvalid")).required(t("emailRequired")),
   });
 
   useEffect(() => {
@@ -55,6 +55,7 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
     });
     setUserPhoto(tokenData.photo);
     setInitialPhoto(tokenData.photo);
+    setImageError(false);
   }, [tokenData]);
 
   const hasChanges = (values: any) => {
@@ -101,18 +102,20 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
       const file = e.target.files[0];
       setUserPhoto(URL.createObjectURL(file));
       setMedia(file);
+      setImageError(false); 
     }
   };
 
   const handleRemovePhoto = () => {
     setUserPhoto("");
     setMedia(null);
+    setImageError(false); 
   };
 
   return (
     <PanelCard
       bodyPadding={`${theme.spacing(2, 2.5, 2.5, 2.5)}`}
-      title="Account Setting"
+      title={t("accountSetting")}
       showHeaderBorder={false}
       headerAction={
         <IconButton>
@@ -135,30 +138,59 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            backgroundColor:
+              userPhoto && !imageError
+                ? "transparent"
+                : theme.palette.primary.light,
           }}
         >
-          <Image
-            src={userPhoto}
-            alt="Profile photo"
-            fill
-            style={{ objectFit: "cover", borderRadius: "50%" }}
-          />
+          {userPhoto && !imageError ? (
+            <Image
+              src={userPhoto}
+              alt={t("profilePhotoAlt")}
+              fill
+              style={{ objectFit: "cover", borderRadius: "50%" }}
+              draggable={false}
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <Typography
+              sx={{
+                fontSize: isMobile ? "20px" : "24px",
+                fontWeight: 600,
+                color: theme.palette.primary.main,
+                backgroundColor: theme.palette.primary.light,
+                fontFamily: "UrbanistMedium",
+                textTransform: "uppercase",
+              }}
+            >
+              {getInitials(initialUser.firstName, initialUser.lastName)}
+            </Typography>
+          )}
         </Box>
 
         {/* Actions */}
         <Box mt={"4px"}>
-          <Grid container columnSpacing={2} rowSpacing={2}>
-            <Grid
-              item
-              xs={6}
-              sm={6}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: { xs: "12px", sm: "12px", md: "21px", lg: "21px" },
+              // flexWrap: "wrap",
+            }}
+          >
+            <Box
               sx={{
+                order: { xs: 2, lg: 1 },
+                flex: { xs: "1 1 calc(50% - 4px)", sm: "0 0 auto" },
                 display: "flex",
-                justifyContent: { xs: "center", sm: "flex-end" },
+                justifyContent: "center",
+                minWidth: { xs: "calc(50% - 4px)", sm: "auto" },
               }}
             >
               <CustomButton
-                label="Upload new photo"
+                label={t("uploadNewPhoto")}
                 variant="outlined"
                 size="medium"
                 startIcon={
@@ -167,6 +199,7 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                     alt="camera-icon"
                     width={14}
                     height={12}
+                    draggable={false}
                   />
                 }
                 iconSize={18}
@@ -177,18 +210,18 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                   fontSize: { xs: "13px", sm: "15px" },
                 }}
               />
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              sm={6}
+            </Box>
+            <Box
               sx={{
+                order: { xs: 1, lg: 2 },
+                flex: { xs: "1 1 calc(50% - 4px)", sm: "0 0 auto" },
                 display: "flex",
-                justifyContent: { xs: "center", sm: "flex-start" },
+                justifyContent: "center",
+                minWidth: { xs: "calc(50% - 4px)", sm: "auto" },
               }}
             >
               <CustomButton
-                label="Remove"
+                label={t("remove")}
                 variant="outlined"
                 size="medium"
                 startIcon={
@@ -197,18 +230,20 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                     alt="trash-icon"
                     width={12}
                     height={12}
+                    draggable={false}
                   />
                 }
                 iconSize={18}
                 onClick={handleRemovePhoto}
                 sx={{
-                  width: { xs: "100%", sm: "auto" },
-                  padding: "0px 16px",
-                  fontSize: { xs: "13px", sm: "15px" },
+                  color: "#676768",
+                  width: { xs: "100%", sm: "auto", md: "auto" },
+                  padding: { xs: "0px 16px", sm: "0px 49px", md: "0px 49px" },
+                  fontSize: { xs: "13px", sm: "15px", md: "15px" },
                 }}
               />
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Box>
 
         {/* Hidden file input */}
@@ -238,18 +273,18 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                rowGap: "14px",
+                rowGap: isMobile ? "12px" : "14px",
                 width: "100%",
-                mt: "14px",
+                mt: isMobile ? "16px" : "14px",
               }}
             >
-              <Grid container columnSpacing={2} rowSpacing={2}>
+              <Grid container columnSpacing={2} rowSpacing={0}>
                 <Grid item xs={12} sm={6}>
                   <InputField
                     fullWidth={true}
                     inputHeight={isMobile ? "32px" : "38px"}
-                    label="First Name"
-                    placeholder="Enter your first name"
+                    label={t("firstName")}
+                    placeholder={t("firstNamePlaceholder")}
                     value={values.firstName}
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -258,14 +293,15 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                     helperText={
                       touched.firstName && errors.firstName && errors.firstName
                     }
+                    sx={{ gap: "8px" }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <InputField
                     fullWidth={true}
                     inputHeight={isMobile ? "32px" : "38px"}
-                    label="Surname"
-                    placeholder="Enter your surname"
+                    label={t("lastName")}
+                    placeholder={t("lastNamePlaceholder")}
                     name="lastName"
                     value={values.lastName}
                     onChange={handleChange}
@@ -274,23 +310,25 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                     helperText={
                       touched.lastName && errors.lastName && errors.lastName
                     }
+                    sx={{ gap: "8px" }}
                   />
                 </Grid>
               </Grid>
 
-              <Grid container columnSpacing={2} rowSpacing={2}>
+              <Grid container columnSpacing={2} rowSpacing={0}>
                 <Grid item xs={12} sm={6}>
                   <InputField
                     fullWidth={true}
                     inputHeight={isMobile ? "32px" : "38px"}
-                    label="E-mail"
-                    placeholder="Enter your email"
+                    label={t("email")}
+                    placeholder={t("emailPlaceholder")}
                     name="email"
                     value={values.email}
                     error={touched.email && errors.email}
                     helperText={touched.email && errors.email && errors.email}
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    sx={{ gap: "8px" }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -299,29 +337,30 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                       width: "100%",
                       display: "flex",
                       flexDirection: "column",
-                      gap: "6px",
+                      gap: "8px",
+                      marginTop: { xs: "12px", sm: "0px" },
                     }}
                   >
                     <Typography
                       variant="body2"
                       sx={{
                         fontWeight: 500,
-                        fontSize: "15px",
+                        fontSize: isMobile ? "13px" : "15px",
+                        fontFamily: "UrbanistMedium",
                         textAlign: "start",
                         color: "#242428",
                         lineHeight: "1.2",
                       }}
                     >
-                      Mobile
+                      {t("mobile")}
                     </Typography>
-                    <MuiTelInput
+                    <CountryPhoneInput
                       fullWidth={true}
-                      placeholder="Enter your mobile number"
+                      placeholder={t("mobilePlaceholder")}
                       name="mobile"
-                      forceCallingCode
-                      disableFormatting
                       defaultCountry="US"
                       value={values.mobile}
+                      inputHeight={isMobile ? "32px" : "40px"}
                       onChange={(newValue, info) => {
                         const e: any = {
                           target: {
@@ -332,80 +371,6 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                         handleChange(e);
                       }}
                       onBlur={handleBlur}
-                      sx={{
-                        borderRadius: "6px !important",
-                        boxShadow: "none",
-                        fontFamily: "UrbanistMedium",
-                        "& .MuiInputBase-root": {
-                          height: isMobile ? "32px" : "38px",
-                          borderRadius: "6px",
-                          boxSizing: "border-box",
-                          "& input": {
-                            padding: "12px 14px",
-                            boxSizing: "border-box",
-                            fontSize: "15px",
-                            lineHeight: "1.5",
-                            color: "#333",
-                            "&::placeholder": {
-                              color: "#BDBDBD",
-                              fontFamily: "UrbanistMedium",
-                            },
-                            fontFamily: "UrbanistMedium",
-                          },
-                        },
-                        "& .MuiOutlinedInput-root": {
-                          borderRadius: "6px",
-                          backgroundColor: "#FFFFFF",
-                          transition: "all 0.3s ease",
-                          boxShadow: "rgba(16, 24, 40, 0.05) 0px 1px 2px 0px",
-                          "& fieldset": {
-                            borderColor: "#E9ECF2",
-                            borderWidth: "1px",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: theme.palette.primary.light,
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: theme.palette.primary.light,
-                            borderWidth: "1px",
-                          },
-                          "& input": {
-                            "&:-webkit-autofill": {
-                              WebkitBoxShadow: "0 0 0 1000px white inset",
-                              WebkitTextFillColor: "#333",
-                            },
-                          },
-                        },
-                        // Style for the country selector button (flag + dropdown)
-                        "& button": {
-                          padding: "4px 8px",
-                          marginRight: "4px",
-                          color: "#333",
-                          "&:hover": {
-                            backgroundColor: "transparent",
-                          },
-                          "& svg": {
-                            fontSize: "16px",
-                            color: "#676768",
-                          },
-                          // Style for flag icon image
-                          "& img": {
-                            width: "24px",
-                            height: "24px",
-                            borderRadius: "50%",
-                            objectFit: "cover",
-                          },
-                        },
-                        // Style for country code text
-                        "& .MuiInputAdornment-root": {
-                          "& p": {
-                            fontSize: "15px",
-                            color: "#333",
-                            fontFamily: "UrbanistMedium",
-                            margin: 0,
-                          },
-                        },
-                      }}
                     />
                   </Box>
                 </Grid>
@@ -421,10 +386,10 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
               >
                 <CustomButton
                   variant="primary"
-                  size="medium"
+                  size={isMobile ? "small" : "medium"}
                   type="submit"
                   disabled={submitDisable || !hasChanges(values)}
-                  label="Update"
+                  label={t("update")}
                   sx={{ width: { xs: "100%", sm: "auto" } }}
                 />
               </Box>

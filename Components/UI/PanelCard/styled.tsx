@@ -5,7 +5,7 @@ import { styled } from "@mui/material/styles";
 export const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: "10px",
   background: "#fff",
-  outline: `1px solid ${theme.palette.border.main}`,
+  border: `1px solid ${theme.palette.border.main}`,
   boxShadow: "rgba(47, 47, 101, 0.08) 0 2px 8px 0",
   display: "flex",
   flexDirection: "column",
@@ -24,6 +24,9 @@ export const CardHeader = styled(Box)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.border.main}`,
   gap: theme.spacing(2),
   position: "relative",
+  [theme.breakpoints.down("md")]: {
+    padding: theme.spacing(2, 2, 0, 2),
+  },
 }));
 
 export const HeaderContent = styled(Box)({
@@ -40,6 +43,9 @@ export const HeaderTitle = styled(Typography)({
   letterSpacing: "-0.02em",
   fontFamily: "UrbanistMedium",
   color: "#242428",
+  [theme.breakpoints.down("md")]: {
+    fontSize: "15px",
+  },
 });
 
 export const HeaderIcon = styled(Box)(({ theme }) => ({
@@ -58,6 +64,9 @@ export const HeaderIcon = styled(Box)(({ theme }) => ({
 export const CardBody = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2.5, 2.5, 2.5, 2.5),
   flex: 1,
+  [theme.breakpoints.down("md")]: {
+    padding: theme.spacing(2, 2, 2, 2),
+  },
 }));
 
 export const CardFooter = styled(Box)(({ theme }) => ({
@@ -70,7 +79,7 @@ export const CardFooter = styled(Box)(({ theme }) => ({
 }));
 
 export const HeaderSubTitle = styled(Typography)(({ theme }) => ({
-  fontSize: "15px",
+  fontSize: "13px",
   fontWeight: 400,
   lineHeight: 1.2,
   letterSpacing: "-0.02em",

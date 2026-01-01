@@ -54,13 +54,23 @@ const PopupModal = ({
   extraFooterComponent,
   ...rest
 }: PopupModalProps) => {
+  const customOnClose = rest.onClose;
+
   return (
     <ModalContainer
       {...rest}
       customProps={{ transparent }}
       TransitionComponent={Transition}
       keepMounted
-      onClose={() => handleClose()}
+      onClose={
+        customOnClose
+          ? customOnClose
+          : (event, reason) => {
+              if (reason === "backdropClick" || reason === "escapeKeyDown") {
+                handleClose();
+              }
+            }
+      }
       aria-describedby="alert-dialog-slide-description"
     >
       {showHeader && (

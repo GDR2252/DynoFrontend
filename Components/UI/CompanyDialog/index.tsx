@@ -4,18 +4,21 @@ import { Box, Button, Grid, IconButton, Typography } from "@mui/material";
 import { MuiTelInput } from "mui-tel-input";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { CancelRounded } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 
 import PopupModal from "@/Components/UI/PopupModal";
 import FormManager from "@/Components/Page/Common/FormManager";
-import TextBox from "@/Components/UI/TextBox";
+import InputField from "@/Components/UI/AuthLayout/InputFields";
 import PanelCard from "@/Components/UI/PanelCard";
 import { CompanyAction } from "@/Redux/Actions";
 import { COMPANY_INSERT, COMPANY_UPDATE } from "@/Redux/Actions/CompanyAction";
 import { ICompany, rootReducer } from "@/utils/types";
-import FileIcon from "@/assets/Icons/file-icon.svg";
+import EditPencilIcon from "@/assets/Icons/edit-pencil-icon.svg";
+import BusinessIcon from "@/assets/Icons/business-icon.svg";
+import DownloadIcon from "@/assets/Icons/download-icon.svg";
+import CustomButton from "../Buttons";
+import useIsMobile from "@/hooks/useIsMobile";
 
 export type CompanyDialogMode = "add" | "edit";
 
@@ -48,11 +51,14 @@ export default function CompanyDialog({
   const theme = useTheme();
   const { t } = useTranslation("companyDialog");
   const fileRef = useRef<HTMLInputElement | null>(null);
-  const companyState = useSelector((state: rootReducer) => state.companyReducer);
-
+  const companyState = useSelector(
+    (state: rootReducer) => state.companyReducer
+  );
+  const isMobile = useIsMobile("sm");
   const [mediaFile, setMediaFile] = useState<File | undefined>();
   const [fileName, setFileName] = useState<string | undefined>();
   const [imagePreview, setImagePreview] = useState<string | undefined>();
+  const [formKey, setFormKey] = useState(0);
 
   const initialValues = useMemo<CompanyFormValues>(() => {
     if (mode === "edit" && company) {
@@ -100,6 +106,7 @@ export default function CompanyDialog({
 
   const handleClose = () => {
     resetLocal();
+    setFormKey((prev) => prev + 1); // Reset form by changing key
     onClose();
   };
 
@@ -138,6 +145,16 @@ export default function CompanyDialog({
       showHeader={false}
       transparent
       handleClose={handleClose}
+      sx={{
+        "& .MuiDialog-paper": {
+          width: "100%",
+          maxWidth: "456px",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          p:2
+        },
+      }}
     >
       <PanelCard
         title={title}
@@ -146,27 +163,52 @@ export default function CompanyDialog({
         headerPadding={theme.spacing(2.5, 2.5, 0, 2.5)}
         bodyPadding={theme.spacing(2, 2.5, 2.5, 2.5)}
         sx={{
-          width: { xs: "100%", md: 520 },
+          width: "100%",
           borderRadius: "14px",
+          maxWidth: "456px",
+          mx: "auto",
         }}
         headerAction={
           <IconButton
-            onClick={handleClose}
             sx={{
-              width: 34,
-              height: 34,
-              borderRadius: "10px",
+              position: "absolute",
+              top: 12,
+              right: 12,
+              height: 40,
+              width: 40,
+              padding: "7px",
+              backgroundColor: theme.palette.secondary.main,
               border: "1px solid",
-              borderColor: "border.main",
-              backgroundColor: "#fff",
+              borderColor: theme.palette.border.main,
+              borderRadius: "50%",
+              "&:hover": {
+                backgroundColor: theme.palette.secondary.main,
+              },
             }}
           >
-            <CancelRounded color="secondary" />
+            {mode === "add" ? (
+              <Image
+                src={BusinessIcon.src}
+                alt="business-icon"
+                width={16}
+                height={18}
+                draggable={false}
+              />
+            ) : (
+              <Image
+                src={EditPencilIcon.src}
+                alt="edit-pencil-icon"
+                width={16}
+                height={18}
+                draggable={false}
+              />
+            )}
           </IconButton>
         }
         headerActionLayout="inline"
       >
         <FormManager
+          key={formKey}
           initialValues={initialValues}
           yupSchema={schema}
           onSubmit={handleSubmit}
@@ -180,15 +222,16 @@ export default function CompanyDialog({
             values,
           }) => (
             <>
-              <Grid container spacing={2}>
+              <Grid container spacing={"14px"}>
                 <Grid item xs={12}>
-                  <TextBox
+                  <InputField
                     fullWidth
+                    inputHeight={isMobile ? "32px" : "38px"}
                     label={t("fields.companyName.label")}
                     placeholder={t("fields.companyName.placeholder")}
                     name="company_name"
                     value={values.company_name}
-                    error={touched.company_name && errors.company_name}
+                    error={Boolean(touched.company_name && errors.company_name)}
                     helperText={
                       touched.company_name && errors.company_name
                         ? errors.company_name
@@ -200,8 +243,9 @@ export default function CompanyDialog({
                 </Grid>
 
                 <Grid item xs={12}>
-                  <TextBox
+                  <InputField
                     fullWidth
+                    inputHeight={isMobile ? "32px" : "38px"}
                     label={t("fields.website.label")}
                     placeholder={t("fields.website.placeholder")}
                     name="website"
@@ -212,13 +256,14 @@ export default function CompanyDialog({
                 </Grid>
 
                 <Grid item xs={12}>
-                  <TextBox
+                  <InputField
                     fullWidth
+                    inputHeight={isMobile ? "32px" : "38px"}
                     label={t("fields.email.label")}
                     placeholder={t("fields.email.placeholder")}
                     name="email"
                     value={values.email}
-                    error={touched.email && errors.email}
+                    error={Boolean(touched.email && errors.email)}
                     helperText={
                       touched.email && errors.email ? errors.email : undefined
                     }
@@ -267,7 +312,7 @@ export default function CompanyDialog({
                       boxShadow: "none",
                       fontFamily: "UrbanistMedium",
                       "& .MuiInputBase-root": {
-                        height: "44px",
+                        height: isMobile ? "32px" : "38px",
                         borderRadius: "10px",
                         boxSizing: "border-box",
                         "& input": {
@@ -277,7 +322,7 @@ export default function CompanyDialog({
                           lineHeight: "1.5",
                           color: "#333",
                           "&::placeholder": {
-                            color: "#BDBDBD",
+                            color: theme.palette.secondary.contrastText,
                             fontFamily: "UrbanistMedium",
                           },
                           fontFamily: "UrbanistMedium",
@@ -287,8 +332,7 @@ export default function CompanyDialog({
                         borderRadius: "10px",
                         backgroundColor: "#FFFFFF",
                         transition: "all 0.3s ease",
-                        boxShadow:
-                          "rgba(16, 24, 40, 0.05) 0px 1px 2px 0px",
+                        boxShadow: "rgba(16, 24, 40, 0.05) 0px 1px 2px 0px",
                         "& fieldset": {
                           borderColor: "#E9ECF2",
                           borderWidth: "1px",
@@ -349,69 +393,92 @@ export default function CompanyDialog({
                   <Box
                     sx={{
                       border: "1px dashed #E9ECF2",
-                      borderRadius: "12px",
+                      borderRadius: "8px",
                       px: 2,
-                      py: 2.25,
+                      py: 2,
                       textAlign: "center",
                       cursor: "pointer",
                       userSelect: "none",
-                      backgroundColor: "#FAFBFF",
-                      "&:hover": { backgroundColor: "#F5F7FF" },
+                      backgroundColor: "#FFFFFF",
+                      transition: "all 0.2s ease",
+                      "&:hover": {
+                        borderColor: theme.palette.primary.light,
+                        backgroundColor: "#FAFBFF",
+                      },
                     }}
                     onClick={() => fileRef.current?.click()}
                   >
-                    <Box
-                      sx={{
-                        width: 42,
-                        height: 42,
-                        mx: "auto",
-                        mb: 1,
-                        borderRadius: "12px",
-                        backgroundColor: "#fff",
-                        border: "1px solid #E9ECF2",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Image
-                        src={FileIcon.src}
-                        alt="upload"
-                        width={18}
-                        height={18}
-                      />
-                    </Box>
-                    <Typography sx={{ fontSize: 13, color: "text.secondary" }}>
-                      {t("fields.brandLogo.uploadCta")}
-                    </Typography>
-                    <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
-                      {t("fields.brandLogo.uploadHint")}
-                    </Typography>
-                    <input
-                      type="file"
-                      ref={fileRef}
-                      hidden
-                      accept="image/*"
-                      onChange={(e: any) => handleFileChange(e.target.files?.[0])}
-                    />
-                    {fileName && (
-                      <Typography sx={{ mt: 1, fontSize: 12 }}>
-                        {fileName}
-                      </Typography>
+                    {!imagePreview && (
+                      <>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: "fit-content",
+                            height: "fit-content",
+                            gap: 1,
+                            backgroundColor: theme.palette.text.secondary,
+                            borderRadius: "6px",
+                            padding: "4px",
+                            mx: "auto",
+                            mb: 1,
+                          }}
+                        >
+                          <Image
+                            src={DownloadIcon.src}
+                            alt="download-icon"
+                            width={12}
+                            height={12}
+                            draggable={false}
+                          />
+                        </Box>
+                        <Typography
+                          sx={{
+                            fontSize: 13,
+                            color: theme.palette.text.secondary,
+                            mb: 0.5,
+                            fontWeight: 400,
+                          }}
+                        >
+                          {t("fields.brandLogo.uploadCta")}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: 12,
+                            color: theme.palette.text.secondary,
+                            fontWeight: 400,
+                          }}
+                        >
+                          {t("fields.brandLogo.uploadHint")}
+                        </Typography>
+                        <input
+                          type="file"
+                          ref={fileRef}
+                          hidden
+                          accept="image/*"
+                          onChange={(e: any) =>
+                            handleFileChange(e.target.files?.[0])
+                          }
+                        />
+                      </>
                     )}
                     {imagePreview && (
                       <Box sx={{ mt: 1.5 }}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                        <Image
                           src={imagePreview}
                           alt="logo preview"
                           crossOrigin="anonymous"
+                          width={64}
+                          height={64}
                           style={{
                             width: 64,
                             height: 64,
                             borderRadius: 12,
                             objectFit: "cover",
                           }}
+                          draggable={false}
                         />
                       </Box>
                     )}
@@ -427,36 +494,34 @@ export default function CompanyDialog({
                   gap: 1.5,
                 }}
               >
-                <Button
+                <CustomButton
+                  label={t("actions.cancel")}
                   variant="outlined"
+                  size="medium"
                   onClick={handleClose}
+                  disabled={companyState.loading}
                   sx={{
                     flex: 1,
-                    height: 44,
-                    borderRadius: "10px",
-                    borderColor: "#E9ECF2",
-                    color: "#242428",
-                    textTransform: "none",
-                    fontFamily: "UrbanistMedium",
+                    fontSize: "15px",
+                    [theme.breakpoints.down("md")]: {
+                      fontSize: "13px",
+                    },
                   }}
-                >
-                  {t("actions.cancel")}
-                </Button>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  type="submit"
+                />
+                <CustomButton
+                  label={primaryButton}
+                  variant="primary"
+                  size="medium"
+                  onClick={() => handleSubmit(values)}
                   disabled={submitDisable || companyState.loading}
                   sx={{
                     flex: 1,
-                    height: 44,
-                    borderRadius: "10px",
-                    textTransform: "none",
-                    fontFamily: "UrbanistMedium",
+                    fontSize: "15px",
+                    [theme.breakpoints.down("md")]: {
+                      fontSize: "13px",
+                    },
                   }}
-                >
-                  {primaryButton}
-                </Button>
+                />
               </Box>
             </>
           )}
@@ -465,4 +530,3 @@ export default function CompanyDialog({
     </PopupModal>
   );
 }
-

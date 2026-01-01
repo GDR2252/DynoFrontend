@@ -67,33 +67,25 @@ const UpdatePassword = () => {
     newPassword: yup
       .string()
       .nullable()
-      .test(
-        "password-validation",
-        "",
-        function (value) {
-          // Only validate if value exists and is not empty
-          if (!value || value.trim() === "") {
-            return true; // No error if empty
-          }
-          return passwordRegex.test(value);
+      .test("password-validation", "", function (value) {
+        // Only validate if value exists and is not empty
+        if (!value || value.trim() === "") {
+          return true; // No error if empty
         }
-      ),
+        return passwordRegex.test(value);
+      }),
     confirmPassword: yup
       .string()
       .nullable()
-      .test(
-        "password-match",
-        t("passwordMismatch"),
-        function (value) {
-          // Only validate if value exists and is not empty
-          if (!value || value.trim() === "") {
-            return true; // No error if empty
-          }
-          // Check if it matches newPassword
-          const newPassword = this.parent.newPassword;
-          return value === newPassword;
+      .test("password-match", t("passwordMismatch"), function (value) {
+        // Only validate if value exists and is not empty
+        if (!value || value.trim() === "") {
+          return true; // No error if empty
         }
-      ),
+        // Check if it matches newPassword
+        const newPassword = this.parent.newPassword;
+        return value === newPassword;
+      }),
   });
 
   const handlePasswordSubmit = (values: any) => {
@@ -147,7 +139,7 @@ const UpdatePassword = () => {
             return (e: React.ChangeEvent<HTMLInputElement>) => {
               setInteractedFields((prev) => ({ ...prev, [fieldName]: true }));
               handleChange(e);
-              
+
               // Handle password validation for newPassword field
               if (fieldName === "newPassword") {
                 const value = e.target.value.replace(/\s/g, ""); // Remove spaces
@@ -168,7 +160,7 @@ const UpdatePassword = () => {
             return (e: React.FocusEvent<HTMLInputElement>) => {
               setInteractedFields((prev) => ({ ...prev, [fieldName]: true }));
               handleBlur(e);
-              
+
               // Handle password validation blur for newPassword field
               if (fieldName === "newPassword") {
                 setTimeout(() => {
@@ -248,6 +240,8 @@ const UpdatePassword = () => {
                         />
                       )
                     }
+                    sideButtonIconWidth={isMobile ? "14px" : "19px"}
+                    sideButtonIconHeight={isMobile ? "14px" : "19px"}
                     onSideButtonClick={() => {
                       setShowPassword(!showPassword);
                     }}
@@ -261,6 +255,7 @@ const UpdatePassword = () => {
                         alt="info-icon"
                         width={16}
                         height={16}
+                        draggable={false}
                       />
                     </InfoIconBox>
                     <InfoText>{t("infoText")}</InfoText>
@@ -312,6 +307,8 @@ const UpdatePassword = () => {
                         />
                       )
                     }
+                    sideButtonIconWidth={isMobile ? "14px" : "19px"}
+                    sideButtonIconHeight={isMobile ? "14px" : "19px"}
                     onSideButtonClick={() => {
                       setShowNewPassword(!showNewPassword);
                     }}
@@ -380,6 +377,8 @@ const UpdatePassword = () => {
                         />
                       )
                     }
+                    sideButtonIconWidth={isMobile ? "14px" : "19px"}
+                    sideButtonIconHeight={isMobile ? "14px" : "19px"}
                     onSideButtonClick={() => {
                       setShowConfirmPassword(!showConfirmPassword);
                     }}
@@ -398,7 +397,7 @@ const UpdatePassword = () => {
                 <CustomButton
                   label={t("update")}
                   variant="primary"
-                  size="medium"
+                  size={isMobile ? "small" : "medium"}
                   disabled={
                     submitDisable ||
                     !values.newPassword?.trim() ||

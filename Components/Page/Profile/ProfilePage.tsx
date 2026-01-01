@@ -7,7 +7,7 @@ import AccountSetting from "./AccountSetting";
 
 const ProfilePage = ({ tokenData }: { tokenData: TokenData }) => {
   return (
-    <Grid container columnSpacing={3} sx={{ mb: 3, rowGap: 2 }}>
+    <Grid container columnSpacing={3} sx={{ rowGap: 2 }}>
       <Grid item md={6} xs={12}>
         <AccountSetting tokenData={tokenData} />
       </Grid>

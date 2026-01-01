@@ -20,7 +20,7 @@ export const SelectorTrigger = styled("div")(({ theme }) => ({
 
 export const TriggerText = styled("span")(({ theme }) => ({
   color: theme.palette.primary.main,
-  fontWeight: 600,
+  fontWeight: 500,
   whiteSpace: "nowrap",
   fontSize: "14px",
   lineHeight: "16px",
@@ -61,7 +61,7 @@ export const CompanyItem = styled("div")<{ active: boolean }>(
 
     ".name": {
       fontSize: "15px",
-      fontWeight: 600,
+      fontWeight: 500,
       color: theme.palette.text.primary,
     },
 

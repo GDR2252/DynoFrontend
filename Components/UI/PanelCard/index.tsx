@@ -39,6 +39,7 @@ import {
   HeaderTitle,
   HeaderSubTitle,
 } from "./styled";
+import useIsMobile from "@/hooks/useIsMobile";
 
 export interface PanelCardProps {
   /**
@@ -133,6 +134,7 @@ const PanelCard: React.FC<PanelCardProps> = ({
   bodySx,
   onClick,
 }) => {
+  const isMobile = useIsMobile("md");
   return (
     <StyledCard sx={sx} onClick={onClick}>
       {(title || headerIcon || headerAction) && (
@@ -146,9 +148,7 @@ const PanelCard: React.FC<PanelCardProps> = ({
           <HeaderContent>
             {headerIcon && <>{headerIcon}</>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              {title && (
-                <HeaderTitle>{title}</HeaderTitle>
-              )}
+              {title && <HeaderTitle>{title}</HeaderTitle>}
               {subTitle && <HeaderSubTitle>{subTitle}</HeaderSubTitle>}
             </Box>
           </HeaderContent>
@@ -161,8 +161,8 @@ const PanelCard: React.FC<PanelCardProps> = ({
               <Box
                 sx={{
                   position: "absolute",
-                  top: 12,
-                  right: 12,
+                  top: isMobile ? 6 : 12,
+                  right: isMobile ? 6 : 12,
                   display: "flex",
                   alignItems: "center",
                   backgroundColor: "secondary.main",

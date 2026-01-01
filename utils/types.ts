@@ -1,4 +1,4 @@
-import { AlertColor } from "@mui/material";
+import { AlertColor, SxProps, Theme } from "@mui/material";
 import type { ReactNode } from "react";
 
 export interface ReducerAction {
@@ -145,6 +145,7 @@ export interface LayoutProps {
   pageDescription?: string;
   component?: any;
   pageAction?: ReactNode;
+  pageHeaderSx?: SxProps<Theme>;
 }
 
 export interface TokenData {
@@ -166,6 +167,7 @@ export interface pageProps {
   setPageName: (name: string) => void;
   setPageDescription?: (description: string) => void;
   setPageAction?: (action: ReactNode | null) => void;
+  setPageHeaderSx?: (sx: SxProps<Theme> | null) => void;
   setComponent?: Function;
   discription?: Function;
 }

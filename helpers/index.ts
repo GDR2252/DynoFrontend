@@ -4,6 +4,7 @@ import createEncryption from "./createEncryption";
 
 import getRandomColor from "./getRandomColor";
 import getRandomNumber from "./getRandomNumber";
+import getInitials from "./getInitials";
 import inputHelper from "./inputHelper";
 import unAuthorizedHelper from "./unAutorizedHelper";
 
@@ -77,21 +78,21 @@ const generateStatusUrl = (data: any) => {
 const getCurrencySymbol = (currency: any, amount: any) => {
   switch (currency) {
     case "NGN":
-      return "₦ " + amount;
+      return "₦" + amount;
     case "KES":
       return amount;
     case "UGX":
       return amount;
     case "GHS":
-      return "₵ " + amount;
+      return "₵" + amount;
     case "RWF":
-      return "₣ " + amount;
+      return "₣" + amount;
     case "EUR":
-      return "€ " + amount;
+      return "€" + amount;
     case "GBP":
-      return "£ " + amount;
+      return "£" + amount;
     case "USD":
-      return "$ " + amount;
+      return "$" + amount;
     default:
       return amount;
   }
@@ -108,6 +109,22 @@ const stringShorten = (string: string, startChars = 10, endChars = 5) => {
   return firstString + "........" + lastString;
 };
 
+const formatNumberWithComma = (number: number): string => {
+  const numStr = number.toString();
+  const decimalIndex = numStr.indexOf(".");
+  const decimalPlaces =
+    decimalIndex === -1
+      ? 0
+      : Math.min(numStr.length - decimalIndex - 1, 2);
+  return number
+    .toLocaleString("en-US", {
+      minimumFractionDigits: decimalPlaces,
+      maximumFractionDigits: 2,
+    })
+    .replace(/,/g, " ")
+    .replace(/\./g, ",");
+};
+
 export {
   a11yProps,
   countDecimals,
@@ -119,10 +136,12 @@ export {
   firstCapital,
   extractLinks,
   getRandomNumber,
+  getInitials,
   createEncryption,
   getTime,
   generateRedirectUrl,
   generateStatusUrl,
   getCurrencySymbol,
   stringShorten,
+  formatNumberWithComma,
 };

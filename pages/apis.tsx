@@ -6,7 +6,11 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useIsMobile from "@/hooks/useIsMobile";
 
-const APIs = ({ setPageName, setPageDescription, setPageAction }: pageProps) => {
+const APIs = ({
+  setPageName,
+  setPageDescription,
+  setPageAction,
+}: pageProps) => {
   const namespaces = ["apiScreen", "common"];
   const isMobile = useIsMobile("md");
   const { t } = useTranslation(namespaces);
@@ -37,13 +41,17 @@ const APIs = ({ setPageName, setPageDescription, setPageAction }: pageProps) => 
         label={isMobile ? tApi("createKeyMobile") : tApi("createNewKey")}
         variant="primary"
         size="medium"
-        endIcon={<AddRounded />}
+        endIcon={<AddRounded sx={{ fontSize: isMobile ? 18 : 20 }} />}
         onClick={() => setOpenCreate(true)}
-        sx={{ height: 40, px: 2.5 }}
+        sx={{
+          height: isMobile ? 34 : 40,
+          px: isMobile ? 1.5 : 2.5,
+          fontSize: isMobile ? 13 : 15,
+        }}
       />
     );
     return () => setPageAction(null);
-  }, [setPageAction, tApi ,isMobile]);
+  }, [setPageAction, tApi, isMobile]);
 
   return (
     <>

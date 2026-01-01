@@ -727,10 +727,7 @@ const Register = () => {
     // Store translation keys as messages so UI can translate live on language change
     firstName: yup.string().required("firstNameRequired"),
     lastName: yup.string().required("lastNameRequired"),
-    email: yup
-      .string()
-      .email("emailInvalid")
-      .required("emailRequired"),
+    email: yup.string().email("emailInvalid").required("emailRequired"),
     password: yup
       .string()
       .required("passwordRequired")
@@ -960,7 +957,14 @@ const Register = () => {
                     ? rawValue.charAt(0).toUpperCase() + rawValue.slice(1)
                     : rawValue;
                 setFirstName(capitalized);
-                if (firstNameError) validateField("firstName", { firstName: capitalized });
+                if (firstNameError)
+                  validateField("firstName", { firstName: capitalized });
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !userState.loading) {
+                  e.preventDefault();
+                  handleSignUp();
+                }
               }}
               error={!!firstNameError}
               helperText={firstNameError ? t(firstNameError) : ""}
@@ -980,7 +984,14 @@ const Register = () => {
                     ? rawValue.charAt(0).toUpperCase() + rawValue.slice(1)
                     : rawValue;
                 setLastName(capitalized);
-                if (lastNameError) validateField("lastName", { lastName: capitalized });
+                if (lastNameError)
+                  validateField("lastName", { lastName: capitalized });
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !userState.loading) {
+                  e.preventDefault();
+                  handleSignUp();
+                }
               }}
               error={!!lastNameError}
               helperText={lastNameError ? t(lastNameError) : ""}
@@ -997,12 +1008,18 @@ const Register = () => {
               // Remove all spaces from email
               const valueWithoutSpaces = e.target.value.replace(/\s/g, "");
               setEmail(valueWithoutSpaces);
-              if (emailError) validateField("email", { email: valueWithoutSpaces });
+              if (emailError)
+                validateField("email", { email: valueWithoutSpaces });
             }}
             onKeyDown={(e) => {
               // Prevent space key from being entered
               if (e.key === " " || e.key === "Spacebar") {
                 e.preventDefault();
+              }
+              // Submit on Enter
+              if (e.key === "Enter" && !userState.loading) {
+                e.preventDefault();
+                handleSignUp();
               }
             }}
             error={!!emailError}
@@ -1017,6 +1034,7 @@ const Register = () => {
             <InputField
               type={showPassword ? "text" : "password"}
               value={password}
+              autoComplete="off"
               label={t("password")}
               onChange={(e) => {
                 handlePasswordChange(e.target.value);
@@ -1028,6 +1046,12 @@ const Register = () => {
               }}
               onBlur={() => {
                 handlePasswordBlur();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !userState.loading) {
+                  e.preventDefault();
+                  handleSignUp();
+                }
               }}
               placeholder={t("passwordPlaceHolder")}
               // Show red border when there is a password error or
@@ -1059,6 +1083,8 @@ const Register = () => {
                   />
                 )
               }
+              sideButtonIconWidth={isMobile ? "14px" : "18px"}
+              sideButtonIconHeight={isMobile ? "14px" : "18px"}
               onSideButtonClick={() => {
                 setShowPassword(!showPassword);
               }}
@@ -1093,6 +1119,7 @@ const Register = () => {
           <InputField
             type={showConfirmPassword ? "text" : "password"}
             value={confirmPassword}
+            autoComplete="off"
             label={t("confirmPassword")}
             onChange={(e) => {
               // Remove spaces from confirm password
@@ -1102,16 +1129,24 @@ const Register = () => {
                 // Only show error when both passwords have a value
                 setConfirmPasswordError("");
               } else if (value !== password) {
-                setConfirmPasswordError("passwordAndConfirmPasswordShouldBeSame");
+                setConfirmPasswordError(
+                  "passwordAndConfirmPasswordShouldBeSame"
+                );
               } else {
                 setConfirmPasswordError("");
               }
             }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !userState.loading) {
+                e.preventDefault();
+                handleSignUp();
+              }
+            }}
             placeholder={t("confirmPasswordPlaceHolder")}
-            error={confirmPasswordError === "passwordAndConfirmPasswordShouldBeSame"}
-            helperText={
-              confirmPasswordError ? t(confirmPasswordError) : ""
+            error={
+              confirmPasswordError === "passwordAndConfirmPasswordShouldBeSame"
             }
+            helperText={confirmPasswordError ? t(confirmPasswordError) : ""}
             sideButton={true}
             sideButtonType="primary"
             sideButtonIcon={
@@ -1137,6 +1172,8 @@ const Register = () => {
                 />
               )
             }
+            sideButtonIconWidth={isMobile ? "14px" : "18px"}
+            sideButtonIconHeight={isMobile ? "14px" : "18px"}
             onSideButtonClick={() => {
               setShowConfirmPassword(!showConfirmPassword);
             }}

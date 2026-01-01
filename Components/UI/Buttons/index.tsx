@@ -4,10 +4,11 @@ import { borderRadius, fontFamily, SxProps, Theme } from "@mui/system";
 import Image from "next/image";
 import { StaticImageData } from "next/image";
 import { theme } from "@/styles/theme";
+import useIsMobile from "@/hooks/useIsMobile";
 
 export interface CustomButtonProps {
   label: string;
-  variant?: "primary" | "secondary" | "outlined";
+  variant?: "primary" | "secondary" | "outlined" | "danger";
   size?: "small" | "medium" | "large";
   disabled?: boolean;
   fullWidth?: boolean;
@@ -45,6 +46,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   showSuccessAnimation = false,
   showErrorAnimation = false,
 }) => {
+  const isMobile = useIsMobile("sm");
   // Size configuration
   const sizeConfig = {
     small: {
@@ -72,22 +74,46 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   // Variant configuration
   const variantConfig = {
     primary: {
-      backgroundColor: "#0004FF",
-      color: "#FFFFFF",
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.common.white,
       fontFamily: "UrbanistBold",
       borderRadius: "6px",
     },
     secondary: {
-      backgroundColor: "#FFFFFF",
-      color: "#0004FF",
-      border: "1px solid #0004FF",
+      backgroundColor: theme.palette.common.white,
+      color: theme.palette.primary.main,
+      border: `1px solid ${theme.palette.primary.main}`,
+      fontWeight: 500,
     },
     outlined: {
-      backgroundColor: "#FFFFFF",
+      backgroundColor: theme.palette.common.white,
       color: theme.palette.text.primary,
       border: `1px solid ${theme.palette.border.main}`,
+      fontWeight: 400,
       fontFamily: "UrbanistRegular",
       fontSize: "15px",
+      "&:hover": {
+        backgroundColor: theme.palette.common.white,
+        color: theme.palette.text.primary,
+      },
+      "&:disabled": {
+        backgroundColor: theme.palette.common.white,
+        color: theme.palette.text.primary,
+      },
+    },
+    danger: {
+      backgroundColor: theme.palette.error.main,
+      color: theme.palette.common.white,
+      border: `1px solid ${theme.palette.error.main}`,
+      fontFamily: "UrbanistBold",
+      "&:hover": {
+        backgroundColor: theme.palette.error.main,
+        color: theme.palette.common.white,
+      },
+      "&:disabled": {
+        backgroundColor: theme.palette.error.main,
+        color: theme.palette.common.white,
+      },
     },
   };
 
@@ -109,6 +135,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
           width={iconSize}
           height={iconSize}
           style={{ display: "flex", objectFit: "contain" }}
+          draggable={false}
         />
       );
     }
@@ -138,7 +165,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         padding: config.padding,
         fontSize: config.fontSize,
         height: config.height,
-        borderRadius: "8px",
+        borderRadius: "6px",
         lineHeight: "1",
         textTransform: "none",
         cursor: disabled ? "not-allowed" : "pointer",
@@ -148,15 +175,17 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         justifyContent: "center",
         gap: config.gap,
         ...variantStyle,
-        ...(variant === "primary" && !disabled && {
-          "&:hover": {
-            backgroundColor: "#0004FF99",
-            color: "#FFFFFF",
-          },
-        }),
+        ...(variant === "primary" &&
+          !disabled && {
+            "&:hover": {
+              backgroundColor: "#0004FF99",
+              color: "#FFFFFF",
+            },
+          }),
         ...(disabled && {
           backgroundColor: variant === "primary" ? "#B0BEC5" : "#FFFFFF",
-          color: variant === "primary" ? "#FFFFFF !important" : "#676768 !important",
+          color:
+            variant === "primary" ? "#FFFFFF !important" : "#676768 !important",
           border: `1px solid ${variant === "primary" ? "#B0BEC5" : "#676768"}`,
           cursor: "not-allowed",
           lineHeight: "1",
@@ -204,7 +233,9 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         </Box>
       )}
 
-      {!shouldHideLabel && <span>{label}</span>}
+      {!shouldHideLabel && (
+        <span className="custom-button-label" style={{ fontSize: isMobile ? "13px" : "15px" ,fontFamily: "UrbanistMedium", fontWeight: 500 }}>{label}</span>
+      )}
 
       {endIcon && (
         <Box

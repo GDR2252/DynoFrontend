@@ -7,7 +7,8 @@ import InputField from "@/Components/UI/AuthLayout/InputFields";
 import PanelCard from "@/Components/UI/PanelCard";
 import useIsMobile from "@/hooks/useIsMobile";
 import * as yup from "yup";
-import { Lock, ArrowBack } from "@mui/icons-material";
+import { ArrowBack } from "@mui/icons-material";
+import LockIcon from "@/assets/Icons/lock-icon.svg";
 import { DialogCloseButton } from "../OtpDialog/styled";
 import CloseIcon from "@/assets/Icons/close-icon.svg";
 import OtpDialog from "@/Components/UI/OtpDialog";
@@ -21,6 +22,7 @@ export interface ForgotPasswordDialogProps {
   onResendCode?: (email: string) => void;
   countdown?: number;
   loading?: boolean;
+  currentEmail?: string;
   emailError?: string;
   otpError?: string;
 }
@@ -33,6 +35,7 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
   onResendCode,
   countdown = 0,
   loading = false,
+  currentEmail,
   emailError,
   otpError,
 }) => {
@@ -40,7 +43,7 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
   const theme = useTheme();
   const isMobile = useIsMobile("sm");
   const [step, setStep] = useState<"email" | "otp">("email");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(currentEmail || "");
   const [emailTouched, setEmailTouched] = useState(false);
   const [localEmailError, setLocalEmailError] = useState("");
 
@@ -66,6 +69,13 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
     }
   }, [open]);
 
+  // Update email state when currentEmail prop changes
+  useEffect(() => {
+    if (currentEmail) {
+      setEmail(currentEmail);
+    }
+  }, [currentEmail]);
+
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
     if (emailTouched && localEmailError) {
@@ -73,13 +83,14 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
     }
   };
 
-  const validateEmail = async () => {
-    if (!email) {
+  const validateEmail = async (emailToValidate?: string) => {
+    const emailValue = emailToValidate || currentEmail || email;
+    if (!emailValue) {
       setLocalEmailError(t("emailRequired"));
       return false;
     }
     try {
-      await emailSchema.validate({ email });
+      await emailSchema.validate({ email: emailValue });
       setLocalEmailError("");
       return true;
     } catch (err: any) {
@@ -90,24 +101,27 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
 
   const handleEmailSubmit = async () => {
     setEmailTouched(true);
-    const isValid = await validateEmail();
+    const emailToUse = currentEmail || email;
+    const isValid = await validateEmail(emailToUse);
     if (!isValid) return;
 
     if (onEmailSubmit) {
-      onEmailSubmit(email);
+      onEmailSubmit(emailToUse);
       setStep("otp");
     }
   };
 
   const handleOtpVerify = (otp: string) => {
     if (onOtpVerify) {
-      onOtpVerify(otp, email);
+      const emailToUse = currentEmail || email;
+      onOtpVerify(otp, emailToUse);
     }
   };
 
   const handleResendCode = () => {
     if (onResendCode) {
-      onResendCode(email);
+      const emailToUse = currentEmail || email;
+      onResendCode(emailToUse);
     }
   };
 
@@ -153,7 +167,15 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
       >
         <PanelCard
           title={t("passwordRecovery")}
-          headerIcon={<Lock sx={{ width: 24, height: 24, color: "#242428" }} />}
+          headerIcon={
+            <Image
+              src={LockIcon.src}
+              alt="lock icon"
+              width={24}
+              height={24}
+              draggable={false}
+            />
+          }
           headerAction={
             <DialogCloseButton onClick={handleClose}>
               <Image
@@ -161,6 +183,7 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
                 alt="close icon"
                 width={16}
                 height={16}
+                draggable={false}
               />
             </DialogCloseButton>
           }
@@ -169,7 +192,7 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
           headerPadding="0"
           headerSx={{
             "& .MuiTypography-root": {
-              fontWeight: 700,
+              fontWeight: 500,
               fontSize: "20px",
               color: "#242428",
             },
@@ -191,11 +214,11 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
           {/* Instructions */}
           <Typography
             sx={{
-              fontSize: "15px",
+              fontSize: isMobile ? "13px" : "15px",
               color: "#6B7280",
               fontFamily: "UrbanistMedium",
-              marginBottom: "24px",
-              marginTop: "12px",
+              marginBottom: isMobile ? "14px" : "16px",
+              marginTop: isMobile ? "10px" : "12px",
               lineHeight: "1.5",
             }}
           >
@@ -203,11 +226,12 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
           </Typography>
 
           {/* Email Input Field */}
-          <Box sx={{ marginBottom: "24px" }}>
+          <Box sx={{ marginBottom: "14px" }}>
             <InputField
               label={`${t("email")} *`}
               type="email"
-              value={email}
+              readOnly={!!currentEmail}
+              value={currentEmail || email}
               onChange={handleEmailChange}
               placeholder={t("emailPlaceHolder")}
               error={emailTouched && (!!localEmailError || !!emailError)}
@@ -221,7 +245,7 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
           <Box sx={{ marginBottom: "16px" }}>
             <CustomButton
               variant="primary"
-              size="medium"
+              size={isMobile ? "small" : "medium"}
               label={t("getCode")}
               onClick={handleEmailSubmit}
               disabled={loading}
@@ -279,7 +303,7 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
       onClose={handleClose}
       title={t("passwordRecovery")}
       subtitle=""
-      contactInfo={email}
+      contactInfo={currentEmail || email}
       contactType="email"
       otpLength={6}
       resendCodeLabel={t("resendCode")}
@@ -289,6 +313,7 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
       onVerify={handleOtpVerify}
       countdown={countdown}
       loading={loading}
+      preventClose={countdown > 0}
       error={otpError}
     />
   );

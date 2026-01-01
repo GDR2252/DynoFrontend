@@ -9,7 +9,7 @@ export const SidebarWrapper = styled("aside")(({ theme }) => ({
   flexDirection: "column",
   justifyContent: "space-between",
   borderRadius: "14px",
-  outline: `1px solid ${theme.palette.border.main}`,
+  border: `1px solid ${theme.palette.border.main}`,
   padding: "16px",
   overflow: "auto",
 }));
@@ -26,7 +26,8 @@ export const MenuItem = styled("div")<{ active?: boolean }>(
   ({ active, theme }) => ({
     display: "flex",
     alignItems: "center",
-    gap: "12px",
+    gap: "10px",
+    maxHeight: "44px",
     padding: "10px 14px",
     borderRadius: "7px",
     cursor: "pointer",
@@ -49,7 +50,7 @@ export const ActiveIndicator = styled("div")<{ active?: boolean }>(
     left: "-16px",
     top: 0,
     bottom: 0,
-    width: "4px",
+    width: "6px",
     background: active ? theme.palette.primary.main : "transparent",
     borderRadius: "0 7px 7px 0",
     transition: "all 0.2s ease",
@@ -69,7 +70,7 @@ export const IconBox = styled("div")<{ active?: boolean }>(
     "& img": {
       filter: active
         ? "brightness(0) saturate(100%) invert(13%) sepia(94%) saturate(7151%) hue-rotate(240deg) brightness(101%) contrast(150%)"
-        : "brightness(0) saturate(100%) invert(27%) sepia(8%) saturate(1018%) hue-rotate(182deg) brightness(95%) contrast(88%)",
+        : "brightness(0) saturate(100%) invert(15%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(100%)",
     },
   })
 );
@@ -85,7 +86,8 @@ export const KnowledgeBaseBtn = styled("button")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "center",
   gap: "8px",
-  padding: "10px 14px",
+  padding: "12px 14px",
+  maxHeight: "40px",
   borderRadius: "6px",
   cursor: "pointer",
   background: theme.palette.common.white,
@@ -96,8 +98,12 @@ export const KnowledgeBaseBtn = styled("button")(({ theme }) => ({
 
 export const KnowledgeBaseTitle = styled("div")(({ theme }) => ({
   fontSize: "15px",
+  fontFamily: "UrbanistMedium",
   fontWeight: 500,
   color: theme.palette.text.secondary,
+  [theme.breakpoints.down("md")]: {
+    fontSize: "13px",
+  },
 }));
 
 export const ReferralCard = styled("div")(({ theme }) => ({
@@ -136,6 +142,9 @@ export const ReferralCardContentValueContainer = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "space-between",
   gap: "12px",
+  [theme.breakpoints.down("md")]: {
+    gap: "8px",
+  },
 }));
 
 export const ReferralCardContentValue = styled("span")(({ theme }) => ({
@@ -148,6 +157,13 @@ export const ReferralCardContentValue = styled("span")(({ theme }) => ({
   fontFamily: "UrbanistMedium",
   color: theme.palette.primary.main,
   flex: 1,
+  lineHeight: 1.2,
+  maxHeight: "40px",
+  [theme.breakpoints.down("md")]: {
+    fontSize: "13px",
+    padding: "8px 10px",
+    maxHeight: "32px",
+  },
 }));
 
 export const CopyButton = styled("button")(({ theme }) => ({
@@ -162,4 +178,8 @@ export const CopyButton = styled("button")(({ theme }) => ({
   height: "40px",
   transition: "background 0.2s ease",
   flexShrink: 0,
+  [theme.breakpoints.down("md")]: {
+    width: "32px",
+    height: "32px",
+  },
 }));

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -7,8 +7,6 @@ import {
   Typography,
 } from "@mui/material";
 import { SxProps, Theme } from "@mui/system";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import EditIcon from "@mui/icons-material/Edit";
 import { useTheme } from "@mui/material/styles";
 import Image from "next/image";
@@ -16,7 +14,7 @@ import { StaticImageData } from "next/image";
 import useIsMobile from "@/hooks/useIsMobile";
 
 export interface InputFieldProps {
-  label?: string;
+  label?: string | React.ReactNode | React.ReactElement;
   placeholder?: string;
   value?: string;
   name?: string;
@@ -25,7 +23,7 @@ export interface InputFieldProps {
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onPaste?: (e: React.ClipboardEvent<HTMLInputElement>) => void;
-  type?: "text" | "email" | "password" | "number" | "tel" | "url";
+  type?: "text" | "email" | "password" | "number" | "tel" | "url" | string;
   variant?: "outlined" | "filled" | "standard";
   size?: "small" | "medium";
   disabled?: boolean;
@@ -41,6 +39,8 @@ export interface InputFieldProps {
   onSideButtonClick?: () => void;
   sideButtonIcon?: React.ReactNode | StaticImageData;
   sideButtonType?: "primary" | "secondary";
+  sideButtonIconWidth?: string;
+  sideButtonIconHeight?: string;
   sx?: SxProps<Theme>;
   multiline?: boolean;
   rows?: number;
@@ -57,6 +57,9 @@ export interface InputFieldProps {
     | "decimal"
     | "search";
   inputRef?: React.Ref<HTMLInputElement>;
+  autoComplete?: string;
+  minRows?: number;
+  maxRows?: number;
 }
 
 /**
@@ -92,6 +95,8 @@ const InputField: React.FC<InputFieldProps> = ({
   onSideButtonClick,
   sideButtonIcon,
   sideButtonType = "primary",
+  sideButtonIconWidth,
+  sideButtonIconHeight,
   sx,
   multiline = false,
   rows = 1,
@@ -99,75 +104,196 @@ const InputField: React.FC<InputFieldProps> = ({
   inputMode,
   inputHeight,
   iconBoxSize,
+  minRows = 1,
+  maxRows,
   inputRef,
+  autoComplete,
 }) => {
   const theme = useTheme();
   const isMobile = useIsMobile("sm");
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordArray, setPasswordArray] = useState<string[]>([]);
+  const inputRefInternal = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (type === "password") {
+      if (value) {
+        setPasswordArray(value.split(""));
+      } else {
+        setPasswordArray([]);
+      }
+    }
+  }, [value, type]);
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
   };
 
-  const inputType =
-    showPasswordToggle && type === "password" && showPassword ? "text" : type;
+  const handlePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (type === "password" && !showPassword) {
+      const inputEvent = e.nativeEvent as InputEvent;
+      const input = e.target;
+      let newArray: string[];
 
-  const borderColor = success ? "#4CAF50" : error ? "#F44336" : "#E9ECF2";
+      if (
+        !inputEvent.data &&
+        inputEvent.inputType === "deleteContentBackward"
+      ) {
+        newArray = passwordArray.slice(0, -1);
+        setPasswordArray(newArray);
+      } else if (inputEvent.data !== null && inputEvent.data !== undefined) {
+        if (inputEvent.data.trim() === "" && inputEvent.data === " ") {
+          newArray = passwordArray;
+        } else {
+          newArray = [...passwordArray, inputEvent.data];
+        }
+        setPasswordArray(newArray);
+      } else {
+        const asteriskCount = (input.value.match(/\*/g) || []).length;
+        if (asteriskCount < passwordArray.length) {
+          newArray = passwordArray.slice(0, asteriskCount);
+        } else if (asteriskCount > passwordArray.length) {
+          newArray = passwordArray;
+        } else {
+          newArray = passwordArray;
+        }
+        setPasswordArray(newArray);
+      }
+
+      if (!newArray) {
+        newArray = passwordArray;
+      }
+
+      const displayValue = showPassword
+        ? newArray.join("")
+        : newArray.map(() => "*").join("");
+
+      const syntheticEvent = {
+        ...e,
+        target: {
+          ...e.target,
+          name: e.target.name,
+          value: newArray.join(""),
+        },
+      } as React.ChangeEvent<HTMLInputElement>;
+
+      if (onChange) {
+        onChange(syntheticEvent);
+      }
+    } else if (onChange) {
+      onChange(e);
+    }
+  };
+
+  const inputType =
+    type === "password"
+      ? "text"
+      : showPasswordToggle && type === "password" && showPassword
+      ? "text"
+      : type;
+
+  const inputValue =
+    type === "password"
+      ? showPassword
+        ? passwordArray.join("")
+        : passwordArray.map(() => "*").join("")
+      : value;
+
+  const handleNumberKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (type === "number") {
+      if (e.key === "e" || e.key === "E" || e.key === "+" || e.key === "-") {
+        e.preventDefault();
+        return;
+      }
+    }
+
+    if (type === "password" && e.key === " ") {
+      e.preventDefault();
+      return;
+    }
+
+    if (onKeyDown) {
+      onKeyDown(e as React.KeyboardEvent<HTMLInputElement>);
+    }
+  };
+  const handleNumberPaste = (
+    e: React.ClipboardEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (type === "number") {
+      const pastedText = e.clipboardData.getData("text");
+      if (pastedText.includes("e") || pastedText.includes("E")) {
+        e.preventDefault();
+        return;
+      }
+    }
+
+    if (onPaste) {
+      onPaste(e as React.ClipboardEvent<HTMLInputElement>);
+    }
+  };
+  const borderColor = success
+    ? theme.palette.success.main
+    : error
+    ? theme.palette.error.main
+    : theme.palette.border.main;
   const borderWidth = "1px";
   const focusBorderColor = success
-    ? "#4CAF50"
+    ? theme.palette.success.main
     : error
-    ? "#F44336"
-    : theme.palette.primary.light;
+    ? theme.palette.error.main
+    : theme.palette.border.focus;
 
-  // Helper function to render the side button icon
   const renderSideButtonIcon = () => {
-    const iconSize = isMobile ? "16px" : "18px";
+    const iconWidth = sideButtonIconWidth ?? (isMobile ? "16px" : "18px");
+    const iconHeight = sideButtonIconHeight ?? (isMobile ? "16px" : "18px");
 
     if (!sideButtonIcon) {
       return (
         <EditIcon
           sx={{
-            fontSize: iconSize,
-            width: iconSize,
-            height: iconSize,
+            fontSize: iconWidth,
+            width: iconWidth,
+            height: iconHeight,
           }}
         />
       );
     }
 
-    // Check if it's a StaticImageData (SVG import from Next.js)
     if (typeof sideButtonIcon === "object" && "src" in sideButtonIcon) {
+      const widthNum = parseInt(iconWidth.replace("px", "")) || 12;
+      const heightNum = parseInt(iconHeight.replace("px", "")) || 12;
+
       return (
         <Image
           src={sideButtonIcon}
           alt="icon"
-          width={12}
-          height={12}
+          width={widthNum}
+          height={heightNum}
           style={{
             display: "flex",
             objectFit: "contain",
-            width: iconSize,
-            height: iconSize,
+            width: iconWidth,
+            height: iconHeight,
           }}
+          draggable={false}
         />
       );
     }
 
-    // Otherwise, treat it as a React component (MUI icon or custom component)
-    // Wrap it to ensure consistent sizing
     return (
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          width: iconSize,
-          height: iconSize,
+          width: iconWidth,
+          height: iconHeight,
           "& svg": {
-            fontSize: iconSize,
-            width: iconSize,
-            height: iconSize,
+            fontSize: iconWidth,
+            width: iconWidth,
+            height: iconHeight,
           },
         }}
       >
@@ -191,13 +317,15 @@ const InputField: React.FC<InputFieldProps> = ({
           variant="body2"
           sx={{
             fontWeight: 500,
+            fontFamily: "UrbanistMedium",
             fontSize: isMobile ? "13px" : "15px",
             textAlign: "start",
-            color: disabled ? "#B0BEC5" : "#242428",
+            color: "#242428",
             lineHeight: "1.2",
           }}
+          className="label"
         >
-          {label}
+          {typeof label === "string" ? <span>{label}</span> : label}
         </Typography>
       )}
 
@@ -211,34 +339,115 @@ const InputField: React.FC<InputFieldProps> = ({
         <Box
           sx={{
             display: "flex",
-            alignItems: "center",
+            alignItems: multiline ? "flex-start" : "center",
             gap: "8px",
             width: fullWidth ? "100%" : "auto",
           }}
         >
           <TextField
             placeholder={placeholder}
-            value={value}
+            value={inputValue}
             name={name}
-            onChange={onChange}
+            onChange={
+              type === "password" && !showPassword
+                ? handlePasswordInput
+                : type === "password" && showPassword
+                ? (
+                    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+                  ) => {
+                    const newValue = e.target.value;
+                    const valueWithoutSpaces = newValue.replace(/\s/g, "");
+                    const newArray = valueWithoutSpaces.split("");
+                    setPasswordArray(newArray);
+                    if (onChange) {
+                      const inputEvent = {
+                        ...e,
+                        target: {
+                          ...(e.target as HTMLInputElement),
+                          value: newArray.join(""),
+                        },
+                      } as React.ChangeEvent<HTMLInputElement>;
+                      onChange(inputEvent);
+                    }
+                    if (
+                      inputRefInternal.current &&
+                      newValue !== valueWithoutSpaces
+                    ) {
+                      inputRefInternal.current.value = valueWithoutSpaces;
+                    }
+                  }
+                : onChange
+            }
             onBlur={onBlur}
             onFocus={onFocus}
-            onKeyDown={onKeyDown}
+            onKeyDown={handleNumberKeyDown as any}
+            onPaste={
+              type === "number" || onPaste
+                ? (e: React.ClipboardEvent<HTMLDivElement>) => {
+                    handleNumberPaste(e as any);
+                  }
+                : type === "password"
+                ? (e: React.ClipboardEvent<HTMLDivElement>) => {
+                    e.preventDefault();
+                    const pastedText = e.clipboardData.getData("text");
+                    const pastedTextWithoutSpaces = pastedText.replace(
+                      /\s/g,
+                      ""
+                    );
+                    const newArray = [
+                      ...passwordArray,
+                      ...pastedTextWithoutSpaces.split(""),
+                    ];
+                    setPasswordArray(newArray);
+                    if (onChange) {
+                      const syntheticEvent = {
+                        ...e,
+                        target: {
+                          ...e.target,
+                          name: name || "",
+                          value: newArray.join(""),
+                        },
+                      } as any;
+                      onChange(syntheticEvent);
+                    }
+                  }
+                : undefined
+            }
             type={inputType}
             variant={variant}
             disabled={disabled}
-            inputRef={inputRef}
+            inputRef={(el) => {
+              if (inputRef) {
+                if (typeof inputRef === "function") {
+                  inputRef(el);
+                } else {
+                  (
+                    inputRef as React.MutableRefObject<HTMLInputElement | null>
+                  ).current = el;
+                }
+              }
+              inputRefInternal.current = el;
+            }}
             inputProps={{
               readOnly: readOnly,
               maxLength: maxLength,
               inputMode: inputMode,
+              autoComplete:
+                type === "password"
+                  ? "new-password"
+                  : autoComplete || "off",
+              "data-form-type": type === "password" ? "other" : undefined,
+              "data-lpignore": type === "password" ? "true" : undefined,
+              "data-1p-ignore": type === "password" ? "true" : undefined,
               style: {
                 cursor: readOnly ? "not-allowed" : "auto",
               },
             }}
             fullWidth={sideButton ? false : fullWidth}
             multiline={multiline}
-            rows={multiline ? rows : undefined}
+            rows={multiline && !minRows && !maxRows ? rows : undefined}
+            minRows={multiline ? minRows : undefined}
+            maxRows={multiline ? maxRows : undefined}
             error={error}
             helperText={undefined}
             InputProps={{
@@ -257,20 +466,45 @@ const InputField: React.FC<InputFieldProps> = ({
               boxShadow: "none",
               fontFamily: "UrbanistMedium",
               "& .MuiInputBase-root": {
-                height: inputHeight ?? (isMobile ? "32px" : "40px"),
+                ...(multiline
+                  ? {
+                      minHeight: inputHeight ?? (isMobile ? "32px" : "40px"),
+                      alignItems: "flex-start",
+                      padding: "0px !important",
+                    }
+                  : {
+                      height: inputHeight ?? (isMobile ? "32px" : "40px"),
+                    }),
                 borderRadius: "6px",
                 boxSizing: "border-box",
-                "& input, & textarea & input[type='password']": {
-                  padding: "12px 14px",
+                "& input, & textarea": {
+                  padding: "11px 14px",
                   boxSizing: "border-box",
                   fontSize: isMobile ? "13px" : "15px",
                   lineHeight: "1.5",
                   color: disabled ? "#B0BEC5" : "#333",
                   "&::placeholder": {
-                    color: "#BDBDBD",
+                    color: theme.palette.secondary.contrastText,
                     fontFamily: "UrbanistMedium",
+                    fontSize: isMobile ? "10px" : "13px",
+                    lineHeight: 1.2,
                   },
                   fontFamily: "UrbanistMedium",
+                  ...(type === "number" && {
+                    MozAppearance: "textfield",
+                    "&::-webkit-outer-spin-button": {
+                      WebkitAppearance: "none",
+                      margin: 0,
+                    },
+                    "&::-webkit-inner-spin-button": {
+                      WebkitAppearance: "none",
+                      margin: 0,
+                    },
+                  }),
+                },
+                "& textarea": {
+                  resize: "none",
+                  overflow: "auto",
                 },
               },
               "& .MuiOutlinedInput-root": {
@@ -278,7 +512,7 @@ const InputField: React.FC<InputFieldProps> = ({
                 backgroundColor: disabled
                   ? "#F5F5F5"
                   : success
-                  ? "#F1F8F6"
+                  ? "#E5EDFF"
                   : error
                   ? "#FFFBFB"
                   : "#FFFFFF",
@@ -297,7 +531,7 @@ const InputField: React.FC<InputFieldProps> = ({
                 },
                 "&.Mui-disabled": {
                   backgroundColor: "#F5F5F5",
-                  opacity: 0.6,
+                  opacity: 1,
                 },
                 "& input": {
                   "&:-webkit-autofill": {
@@ -307,7 +541,7 @@ const InputField: React.FC<InputFieldProps> = ({
                 },
               },
               "& .MuiOutlinedInput-input.Mui-disabled": {
-                WebkitTextFillColor: "#B0BEC5",
+                WebkitTextFillColor: "#6b728080",
               },
             }}
           />
@@ -358,12 +592,15 @@ const InputField: React.FC<InputFieldProps> = ({
             sx={{
               margin: "4px 0 0 0",
               fontSize: isMobile ? "10px" : "13px",
-              // fontFamily: "UrbanistRegular",
+              fontFamily: "UrbanistMedium",
               fontWeight: 500,
-              color: error ? "#F44336" : "#676768",
-              lineHeight: "1.5",
+              color: error
+                ? theme.palette.error.main
+                : theme.palette.secondary.contrastText,
+              lineHeight: "1.2",
               textAlign: "start",
             }}
+            className="helper-text"
           >
             {helperText}
           </Typography>

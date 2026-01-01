@@ -16,12 +16,14 @@ import { Provider } from "react-redux";
 import "../i18n";
 import LanguageBootstrap from "@/helpers/LanguageBootstrap";
 import type { ReactNode } from "react";
+import { SxProps, Theme } from "@mui/material";
 
 export default function App({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();
   const [pageName, setPageName] = useState("");
   const [pageDescription, setPageDescription] = useState("");
   const [pageAction, setPageAction] = useState<ReactNode | null>(null);
+  const [pageHeaderSx, setPageHeaderSx] = useState<SxProps<Theme> | null>(null);
 
   return (
     <>
@@ -36,12 +38,14 @@ export default function App({ Component, pageProps }: AppProps) {
                   pageName={pageName}
                   pageDescription={pageDescription}
                   pageAction={pageAction}
+                  pageHeaderSx={pageHeaderSx || undefined}
                 >
                   <Component
                     {...pageProps}
                     setPageName={setPageName}
                     setPageDescription={setPageDescription}
                     setPageAction={setPageAction}
+                    setPageHeaderSx={setPageHeaderSx}
                   />
                 </ClientLayout>
               )}

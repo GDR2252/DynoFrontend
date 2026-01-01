@@ -3,12 +3,14 @@ import { Box, Typography, IconButton } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { TOAST_HIDE, ToastAction } from "../../../Redux/Actions/ToastAction";
 import LoadingIcon from "@/assets/Icons/LoadingIcon";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import CloseIcon from "@mui/icons-material/Close";
 import { IToastProps } from "@/utils/types";
 import useIsMobile from "@/hooks/useIsMobile";
-
+import BgImage from "@/assets/Images/toast-bg.png";
+import Image from "next/image";
+import { theme } from "@/styles/theme";
+import SuccessIcon from "@/assets/Icons/success-icon.svg";
 const Toast = (props: IToastProps) => {
   const dispatch = useDispatch();
   const { open, severity, message, loading } = props;
@@ -16,7 +18,6 @@ const Toast = (props: IToastProps) => {
 
   const handleClose = () => {
     dispatch({ type: TOAST_HIDE });
-
   };
 
   // Auto-hide toast after 4 seconds (unless it's loading)
@@ -25,7 +26,6 @@ const Toast = (props: IToastProps) => {
     if (open && !loading) {
       const timer = setTimeout(() => {
         dispatch({ type: TOAST_HIDE });
-
       }, 4000);
       return () => clearTimeout(timer);
     }
@@ -38,25 +38,28 @@ const Toast = (props: IToastProps) => {
     if (loading) {
       return {
         borderColor: "#4CAF50",
-        backgroundColor: "#FFFFFF",
-        icon: <LoadingIcon size={20} fill="#4CAF50" />,
+        icon: <LoadingIcon size={14} fill="#4CAF50" />,
       };
     }
-    
+
     // Explicitly check for error severity
     if (severity === "error") {
       return {
-        borderColor: "#F44336",
-        backgroundColor: "#FFFFFF",
-        icon: <ErrorOutlineIcon sx={{ color: "#F44336", fontSize: "20px" }} />,
+        borderColor: theme.palette.border.error,
+        textColor: theme.palette.border.error,
+        icon: (
+          <ErrorOutlineIcon
+            sx={{ color: theme.palette.border.error, fontSize: "14px" }}
+          />
+        ),
       };
     }
-    
+
     // Default to success (green)
     return {
-      borderColor: "#4CAF50",
-      backgroundColor: "#FFFFFF",
-      icon: <CheckCircleOutlineIcon sx={{ color: "#4CAF50", fontSize: "20px" }} />,
+      borderColor: theme.palette.border.success,
+      textColor: theme.palette.border.success,
+      icon: <Image src={SuccessIcon} alt="success" width={14} height={14} />,
     };
   };
 
@@ -69,16 +72,15 @@ const Toast = (props: IToastProps) => {
         bottom: isMobile ? "16px" : "24px",
         right: isMobile ? "16px" : "24px",
         zIndex: 99999,
-        minWidth: isMobile ? "280px" : "320px",
-        maxWidth: isMobile ? "calc(100vw - 32px)" : "400px",
-        backgroundColor: toastStyles.backgroundColor,
+        backgroundColor: theme.palette.secondary.light,
         border: `1px solid ${toastStyles.borderColor}`,
-        borderRadius: "8px",
+        borderRadius: "14px",
         boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
-        padding: "12px 16px",
+        padding: isMobile ? "15px 24px" : "20px 24px",
         display: "flex",
         alignItems: "center",
         gap: "12px",
+        overflow: "hidden",
         animation: "slideInRight 0.3s ease-out",
         "@keyframes slideInRight": {
           "0%": {
@@ -92,46 +94,83 @@ const Toast = (props: IToastProps) => {
         },
       }}
     >
-      {/* Icon */}
+      {/* Background Image */}
       <Box
         sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
+          position: "absolute",
+          top: isMobile ? "0px" : "6px",
+          left: isMobile ? "-6px" : "0px",
+          right: 0,
+          bottom: 0,
+          zIndex: -1,
+          width: "276px",
+          height: "100%",
         }}
       >
-        {toastStyles.icon}
+        <Image
+          src={BgImage}
+          alt="background"
+          style={{
+            objectFit: "contain",
+            width: "100%",
+            height: "100%",
+          }}
+          draggable={false}
+        />
       </Box>
 
-      {/* Message */}
-      <Typography
+      {/* Content */}
+      <Box
         sx={{
-          flex: 1,
-          fontSize: isMobile ? "13px" : "14px",
-          fontFamily: "UrbanistMedium",
-          color: "#242428",
-          lineHeight: "1.5",
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          alignItems: "center",
+          gap: isMobile ? "8px" : "12px",
+          width: "100%",
         }}
       >
-        {message}
-      </Typography>
+        {/* Icon */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          {toastStyles.icon}
+        </Box>
 
-      {/* Close Button */}
-      <IconButton
-        onClick={handleClose}
-        sx={{
-          padding: "4px",
-          color: "#676768",
-          flexShrink: 0,
-          "&:hover": {
-            backgroundColor: "rgba(0, 0, 0, 0.04)",
-          },
-        }}
-        size="small"
-      >
-        <CloseIcon sx={{ fontSize: "18px" }} />
-      </IconButton>
+        {/* Message */}
+        <Typography
+          sx={{
+            flex: 1,
+            fontSize: isMobile ? "13px" : "15px",
+            fontFamily: "UrbanistMedium",
+            color: toastStyles.textColor,
+            lineHeight: "1.5",
+          }}
+        >
+          {message}
+        </Typography>
+
+        {/* Close Button */}
+        {/* <IconButton
+          onClick={handleClose}
+          sx={{
+            padding: "4px",
+            color: "#676768",
+            flexShrink: 0,
+            "&:hover": {
+              backgroundColor: "rgba(0, 0, 0, 0.04)",
+            },
+          }}
+          size="small"
+        >
+          <CloseIcon sx={{ fontSize: "18px" }} />
+        </IconButton> */}
+      </Box>
     </Box>
   );
 };

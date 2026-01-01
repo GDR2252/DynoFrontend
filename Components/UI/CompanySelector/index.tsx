@@ -27,13 +27,19 @@ export default function CompanySelector() {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { openAddCompany, openEditCompany } = useCompanyDialog();
-  const companyState = useSelector((state: rootReducer) => state.companyReducer);
+  const companyState = useSelector(
+    (state: rootReducer) => state.companyReducer
+  );
 
-  const companies = useMemo(() => companyState.companyList ?? [], [companyState.companyList]);
+  const companies = useMemo(
+    () => companyState.companyList ?? [],
+    [companyState.companyList]
+  );
   const [active, setActive] = useState<number | null>(null);
 
   useEffect(() => {
-    if (active == null && companies.length > 0) setActive(companies[0].company_id);
+    if (active == null && companies.length > 0)
+      setActive(companies[0].company_id);
   }, [active, companies]);
 
   const selected = companies.find((c) => c.company_id === active);
@@ -92,7 +98,7 @@ export default function CompanySelector() {
             fontWeight: 500,
           }}
         >
-          {t("companySelectorTitle")} :
+          {t("companySelectorTitle")}:
         </Box>
 
         <CompanyListWrapper>
@@ -130,7 +136,13 @@ export default function CompanySelector() {
                 role="button"
                 tabIndex={0}
               >
-                <Image src={EditIcon} width={18} height={18} alt="edit" />
+                <Image
+                  src={EditIcon}
+                  width={18}
+                  height={18}
+                  alt="edit"
+                  draggable={false}
+                />
               </ItemRight>
             </CompanyItem>
           ))}

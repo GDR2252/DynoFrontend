@@ -65,7 +65,7 @@ const PasswordValidation: React.FC<PasswordValidationProps> = ({
         display: "flex",
         alignItems: "center",
         gap: "4px",
-        color: isValid ? "#47B464" : "#E8484A",
+        color: isValid ? theme.palette.success.dark : theme.palette.error.main,
       }}
     >
       {isValid ? (
@@ -77,6 +77,7 @@ const PasswordValidation: React.FC<PasswordValidationProps> = ({
           style={{
             flexShrink: 0,
           }}
+          draggable={false}
         />
       ) : (
         <Image
@@ -87,6 +88,7 @@ const PasswordValidation: React.FC<PasswordValidationProps> = ({
           style={{
             flexShrink: 0,
           }}
+          draggable={false}
         />
       )}
       <Typography

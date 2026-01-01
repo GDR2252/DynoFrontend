@@ -1,39 +1,18 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
-import {
-  Box,
-  Chip,
-  Grid,
-  IconButton,
-  InputAdornment,
-  Typography,
-} from "@mui/material";
-import {
-  ContentCopyRounded,
-  DeleteOutlineRounded,
-  VisibilityOffOutlined,
-  VisibilityOutlined,
-  CloseRounded,
-  ErrorOutlineRounded,
-} from "@mui/icons-material";
+import { Box, Grid, Typography } from "@mui/material";
+
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 
 import PanelCard from "@/Components/UI/PanelCard";
-import TextBox from "@/Components/UI/TextBox";
 import CustomButton from "@/Components/UI/Buttons";
-import PopupModal from "@/Components/UI/PopupModal";
-import Dropdown from "@/Components/UI/Dropdown";
-import FormManager from "@/Components/Page/Common/FormManager";
-import CustomAlert from "@/Components/UI/CustomAlert";
 
 import { ApiAction, CompanyAction } from "@/Redux/Actions";
 import { API_DELETE, API_FETCH, API_INSERT } from "@/Redux/Actions/ApiAction";
 import { COMPANY_FETCH } from "@/Redux/Actions/CompanyAction";
 import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
 import { menuItem, rootReducer } from "@/utils/types";
-import { stringShorten } from "@/helpers";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import TrashIcon from "@/assets/Icons/trash-icon.svg";
@@ -53,22 +32,21 @@ import {
   ApiKeyDeleteButton,
   ApiKeyViewButton,
   Tags,
-  ApiDocsCardRoot,
   InfoText,
+  ApiKeyCardSubTitle,
+  ApiDocumentationCardDescription,
 } from "./styled";
 import { theme } from "@/styles/theme";
 import InputField from "@/Components/UI/AuthLayout/InputFields";
+import CreateApiModel from "@/Components/UI/ApiKeysModel/CreateApiModel";
+import DeleteModel from "@/Components/UI/DeleteModel";
+import UnitedStatesFlag from "@/assets/Images/Icons/flags/united-states-flag.png";
 
 const companyInitial = {
   company_id: 0,
   base_currency: "USD",
   withdrawal_whitelist: false,
 };
-
-const base_currency = [
-  { label: "USD", value: "USD" },
-  { label: "NGN", value: "NGN" },
-];
 
 function isProdKey(key: string) {
   const k = key.toLowerCase();
@@ -78,19 +56,6 @@ function isProdKey(key: string) {
 function isDevKey(key: string) {
   const k = key.toLowerCase();
   return k.includes("test") || k.startsWith("dpk_test") || k.startsWith("test");
-}
-
-function formatCreatedAt(raw: any) {
-  if (!raw) return "";
-  const d = new Date(raw);
-  if (Number.isNaN(d.getTime())) return String(raw);
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const yyyy = d.getFullYear();
-  const hh = String(d.getHours()).padStart(2, "0");
-  const min = String(d.getMinutes()).padStart(2, "0");
-  const ss = String(d.getSeconds()).padStart(2, "0");
-  return `${dd}.${mm}.${yyyy} at ${hh}:${min}:${ss}`;
 }
 
 type ApiRow = any;
@@ -107,6 +72,7 @@ const ApiDocumentationCard = ({ docsUrl }: { docsUrl: string }) => {
           alt={t("documentation.infoIconAlt")}
           width={18}
           height={18}
+          draggable={false}
         />
       }
       showHeaderBorder={false}
@@ -115,7 +81,6 @@ const ApiDocumentationCard = ({ docsUrl }: { docsUrl: string }) => {
       sx={{
         position: "relative",
         overflow: "hidden",
-        height: "100%",
         borderRadius: "14px",
         "&::after": {
           content: '""',
@@ -127,6 +92,14 @@ const ApiDocumentationCard = ({ docsUrl }: { docsUrl: string }) => {
           backgroundRepeat: "no-repeat",
           zIndex: 0,
           pointerEvents: "none",
+          width: "70%",
+          height: "100%",
+          marginLeft: "auto",
+          marginRight: "0.5rem",
+          [theme.breakpoints.down("md")]: {
+            backgroundPosition: "left",
+            marginRight: "0",
+          },
         },
       }}
       headerSx={{
@@ -141,9 +114,9 @@ const ApiDocumentationCard = ({ docsUrl }: { docsUrl: string }) => {
       }}
     >
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <Typography variant="body2" color="text.secondary">
+        <ApiDocumentationCardDescription>
           {t("documentation.description")}
-        </Typography>
+        </ApiDocumentationCardDescription>
         <CustomButton
           label={t("documentation.viewDocumentation")}
           variant="secondary"
@@ -195,9 +168,35 @@ const ApiKeyCard = ({
       }
       sx={{ height: "100%", borderRadius: "14px" }}
     >
+      <ApiKeyCardSubTitle>
+        Base currency
+        <span className="flag">
+          <Image
+            src={UnitedStatesFlag.src}
+            alt="United States Flag"
+            width={16}
+            height={16}
+            draggable={false}
+          />
+        </span>
+        USD
+      </ApiKeyCardSubTitle>
+
       <ApiKeyCardBody sx={{ pt: "18px" }}>
         <ApiKeyCardTopRow sx={{ gap: 1.25 }}>
-          <InputField />
+          <InputField
+            label={t("generate.yourKey")}
+            sx={{
+              width: "100%",
+              "& .label": {
+                fontSize: "13px",
+                lineHeight: "16px",
+                fontFamily: "UrbanistMedium",
+                fontWeight: 500,
+                color: theme.palette.text.secondary,
+              },
+            }}
+          />
 
           <ApiKeyCopyButton>
             <Image
@@ -205,6 +204,7 @@ const ApiKeyCard = ({
               alt={t("icons.copyAlt")}
               width={14}
               height={14}
+              draggable={false}
             />
           </ApiKeyCopyButton>
           <ApiKeyViewButton size="small" onClick={() => setShow(!show)}>
@@ -213,19 +213,52 @@ const ApiKeyCard = ({
               alt={t("icons.eyeAlt")}
               width={20}
               height={14}
+              draggable={false}
             />
           </ApiKeyViewButton>
         </ApiKeyCardTopRow>
-        <ApiKeyCardTopRow>
-          <ApiKeyDeleteButton
-            size="small"
-            onClick={() => onDelete(Number(apiRow?.api_id))}
-          >
+        <ApiKeyCardTopRow sx={{ gap: 1.25 }}>
+          <InputField
+            label={t("generate.adminToken")}
+            sx={{
+              width: "100%",
+              "& .label": {
+                fontSize: "13px",
+                lineHeight: "16px",
+                fontFamily: "UrbanistMedium",
+                fontWeight: 500,
+                color: theme.palette.text.secondary,
+              },
+            }}
+          />
+
+          <ApiKeyCopyButton>
+            <Image
+              src={CopyIcon.src}
+              alt={t("icons.copyAlt")}
+              width={14}
+              height={14}
+              draggable={false}
+            />
+          </ApiKeyCopyButton>
+          <ApiKeyViewButton size="small" onClick={() => setShow(!show)}>
+            <Image
+              src={EyeIcon.src}
+              alt={t("icons.eyeAlt")}
+              width={20}
+              height={14}
+              draggable={false}
+            />
+          </ApiKeyViewButton>
+        </ApiKeyCardTopRow>
+        <ApiKeyCardTopRow sx={{ alignItems: "center" }}>
+          <ApiKeyDeleteButton size="small" onClick={() => onDelete(Number(1))}>
             <Image
               src={TrashIcon.src}
               alt={t("icons.trashAlt")}
               width={16}
               height={16}
+              draggable={false}
             />
           </ApiKeyDeleteButton>
 
@@ -233,7 +266,7 @@ const ApiKeyCard = ({
             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
               <AccessTimeFilledIcon sx={{ fontSize: 13 }} />
             </Box>
-            <Typography component="span">
+            <Typography component="span" className="created-on-text">
               {t("createdOn", { date: "17/12/2025 at 10:00:00" })}
             </Typography>
           </ApiKeyCreatedText>
@@ -251,7 +284,6 @@ const ApiKeysPage = ({
   setOpenCreate?: (open: boolean) => void;
 }) => {
   const dispatch = useDispatch();
-  const router = useRouter();
   const { t } = useTranslation("apiScreen");
 
   const companyList = useSelector(
@@ -292,7 +324,10 @@ const ApiKeysPage = ({
         label: c.company_name,
         value: c.company_id,
       }));
-      setMenuItems([{ label: t("company.selectCompany"), value: 0 }, ...tempList]);
+      setMenuItems([
+        { label: t("company.selectCompany"), value: 0 },
+        ...tempList,
+      ]);
     }
   }, [companyList, t]);
 
@@ -320,16 +355,6 @@ const ApiKeysPage = ({
     setOpenCreate(false);
   };
 
-  const handleCreateSubmit = (values: any) => {
-    dispatch(
-      ApiAction(API_INSERT, {
-        ...values,
-        withdrawal_whitelist: values.withdrawal_whitelist,
-      })
-    );
-    setOpenCreate(false);
-  };
-
   const requestDelete = (apiId: number) => {
     if (!apiId) return;
     setDeleteId(apiId);
@@ -348,7 +373,17 @@ const ApiKeysPage = ({
 
   return (
     <>
-      <CustomAlert
+      <DeleteModel
+        open={confirmDeleteOpen}
+        onClose={() => {
+          setConfirmDeleteOpen(false);
+          setDeleteId(0);
+        }}
+        onConfirm={confirmDelete}
+        title={t("delete.title")}
+        message={t("delete.confirmMessage")}
+      />
+      {/* <CustomAlert
         open={confirmDeleteOpen}
         handleClose={() => {
           setConfirmDeleteOpen(false);
@@ -357,10 +392,10 @@ const ApiKeysPage = ({
         message={t("delete.confirmMessage")}
         confirmText={t("delete.confirmButton")}
         onConfirm={confirmDelete}
-      />
+      /> */}
 
-      <Grid container spacing={2.5} sx={{ mb: 2.5 }}>
-        <Grid item xs={12} md={4}>
+      <Grid container spacing={2.5} sx={{ mb: 2.5 }} alignItems="flex-start">
+        <Grid item xs={12} md={6} lg={6} xl={4}>
           <ApiKeyCard
             title={t("keys.production")}
             apiRow={prodKey}
@@ -368,7 +403,7 @@ const ApiKeysPage = ({
             onDelete={requestDelete}
           />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={6} lg={6} xl={4}>
           <ApiKeyCard
             title={t("keys.development")}
             apiRow={devKey}
@@ -376,7 +411,7 @@ const ApiKeysPage = ({
             onDelete={requestDelete}
           />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={6} lg={6} xl={4}>
           <ApiDocumentationCard docsUrl={docsUrl} />
         </Grid>
       </Grid>
@@ -388,7 +423,7 @@ const ApiKeysPage = ({
           py: 1.25,
           borderRadius: "6px",
           display: "flex",
-          flexDirection: { xs: "column", sm: "row" }, 
+          flexDirection: { xs: "column", sm: "row" },
           alignItems: "flex-start",
           justifyContent: "start",
           gap: 1,
@@ -417,8 +452,8 @@ const ApiKeysPage = ({
               flex: "0 0 auto",
             }}
           />
-          <InfoText 
-            sx={{ 
+          <InfoText
+            sx={{
               color: theme.palette.error.main,
               whiteSpace: "nowrap",
             }}
@@ -438,182 +473,7 @@ const ApiKeysPage = ({
         </InfoText>
       </Box>
 
-      <PopupModal
-        open={openCreate}
-        showClose
-        headerText={t("generate.modalTitle")}
-        handleClose={handleCreateClose}
-      >
-        <Box sx={{ minWidth: "400px" }}>
-          <FormManager
-            initialValues={initialValue}
-            yupSchema={apiSchema}
-            onSubmit={handleCreateSubmit}
-          >
-            {({
-              errors,
-              handleBlur,
-              handleChange,
-              submitDisable,
-              touched,
-              values,
-            }) => (
-              <>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    flexDirection: "column",
-                    width: "100%",
-                  }}
-                >
-                  <Dropdown
-                    fullWidth={true}
-                    label={t("company.label")}
-                    menuItems={menuItems}
-                    value={values.company_id}
-                    error={touched.company_id && errors.company_id}
-                    helperText={
-                      touched.company_id &&
-                      errors.company_id &&
-                      errors.company_id
-                    }
-                    getValue={(value: any) => {
-                      const e: any = { target: { name: "company_id", value } };
-                      handleChange(e);
-                    }}
-                    onBlur={handleBlur}
-                  />
-                  <Box sx={{ width: "100%", mt: 3 }}>
-                    <Dropdown
-                      fullWidth={true}
-                      label={t("currency.baseCurrency")}
-                      menuItems={base_currency}
-                      value={values.base_currency}
-                      error={touched.base_currency && errors.base_currency}
-                      helperText={
-                        touched.base_currency &&
-                        errors.base_currency &&
-                        errors.base_currency
-                      }
-                      getValue={(value: any) => {
-                        const e: any = {
-                          target: { name: "base_currency", value },
-                        };
-                        handleChange(e);
-                      }}
-                      onBlur={handleBlur}
-                    />
-                  </Box>
-
-                  <Box
-                    sx={{
-                      width: "100%",
-                      mt: 3,
-                      p: 2.5,
-                      border: "1px solid",
-                      borderColor: "divider",
-                      borderRadius: 2,
-                      bgcolor: "background.paper",
-                    }}
-                  >
-                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
-                      {t("withdrawalWhitelist.title")}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {t("withdrawalWhitelist.description")}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        mt: 1.5,
-                        fontWeight: 600,
-                        color: "warning.main",
-                        cursor: "pointer",
-                        width: "fit-content",
-                      }}
-                      onClick={() => router.push("/walletAddress")}
-                    >
-                      {t("withdrawalWhitelist.addressManagement")}
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 2,
-                        mt: 3,
-                      }}
-                    >
-                      <CustomButton
-                        label={t("withdrawalWhitelist.off")}
-                        variant={
-                          values.withdrawal_whitelist ? "outlined" : "primary"
-                        }
-                        size="medium"
-                        endIcon={<CloseRounded />}
-                        onClick={() => {
-                          const eOff: any = {
-                            target: {
-                              name: "withdrawal_whitelist",
-                              value: false,
-                            },
-                          };
-                          handleChange(eOff);
-                        }}
-                        sx={{
-                          backgroundColor: values.withdrawal_whitelist
-                            ? "#fff"
-                            : "#E03B2C",
-                          border: values.withdrawal_whitelist
-                            ? "1px solid #E9ECF2"
-                            : "none",
-                          color: values.withdrawal_whitelist
-                            ? "#242428"
-                            : "#fff",
-                        }}
-                      />
-                      <CustomButton
-                        label={t("withdrawalWhitelist.enable")}
-                        variant={
-                          values.withdrawal_whitelist ? "primary" : "secondary"
-                        }
-                        size="medium"
-                        onClick={() => {
-                          const eOn: any = {
-                            target: {
-                              name: "withdrawal_whitelist",
-                              value: true,
-                            },
-                          };
-                          handleChange(eOn);
-                        }}
-                      />
-                    </Box>
-                  </Box>
-                </Box>
-
-                <Box
-                  sx={{
-                    mt: 3,
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <CustomButton
-                    label={t("generate.submit")}
-                    type="submit"
-                    disabled={submitDisable}
-                    variant="primary"
-                    size="medium"
-                  />
-                </Box>
-              </>
-            )}
-          </FormManager>
-        </Box>
-      </PopupModal>
+      <CreateApiModel open={openCreate} onClose={handleCreateClose} />
     </>
   );
 };

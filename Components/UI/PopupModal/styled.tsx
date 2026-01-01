@@ -5,6 +5,11 @@ interface customProps {
 export const ModalContainer = styled(Dialog, {
   shouldForwardProp: (prop) => prop !== "customProps",
 })<{ customProps: customProps }>(({ theme, customProps }) => ({
+  "& .MuiBackdrop-root": {
+    backdropFilter: "blur(8px)",
+    WebkitBackdropFilter: "blur(8px)",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+  },
   "& .MuiDialogContent-root": {
     paddingBottom: 0,
     ...(customProps.transparent && { padding: 0 }),

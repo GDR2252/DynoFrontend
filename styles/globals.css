@@ -94,3 +94,45 @@ a {
   font-weight: 800;
   font-style: normal;
 }
+
+@font-face {
+  font-family: "OutfitLight";
+  src: url("/fonts/Outfit-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "OutfitRegular";
+  src: url("/fonts/Outfit-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "OutfitMedium";
+  src: url("/fonts/Outfit-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "OutfitSemiBold";
+  src: url("/fonts/Outfit-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "OutfitBold";
+  src: url("/fonts/Outfit-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "OutfitExtraBold";
+  src: url("/fonts/Outfit-ExtraBold.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+}

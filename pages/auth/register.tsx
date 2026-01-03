@@ -737,7 +737,7 @@ const Register = () => {
 
   useEffect(() => {
     if (userState.name) {
-      router.push("/");
+      router.push("/dashboard");
     }
   }, [userState]);
 

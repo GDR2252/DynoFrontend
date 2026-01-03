@@ -17,6 +17,8 @@ import "../i18n";
 import LanguageBootstrap from "@/helpers/LanguageBootstrap";
 import type { ReactNode } from "react";
 import { SxProps, Theme } from "@mui/material";
+import HomeLayout from "@/Containers/Home";
+import { homeTheme } from "@/styles/homeTheme";
 
 export default function App({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();
@@ -25,13 +27,30 @@ export default function App({ Component, pageProps }: AppProps) {
   const [pageAction, setPageAction] = useState<ReactNode | null>(null);
   const [pageHeaderSx, setPageHeaderSx] = useState<SxProps<Theme> | null>(null);
 
+  const homePaths = [
+    "/",
+    "/terms-conditions",
+    "/privacy-policy",
+    "/aml-policy",
+    "/api-status",
+  ];
+  const isHomePath = homePaths.includes(pathname);
   return (
     <>
       <Provider store={store}>
-      <LanguageBootstrap />
+        <LanguageBootstrap />
         <SessionProvider session={pageProps.session}>
           <ThemeProvider theme={theme}>
-            {!pathname.includes("auth") &&
+            {isHomePath && (
+              <ThemeProvider theme={homeTheme}>
+                <HomeLayout>
+                  <Component {...pageProps} />
+                </HomeLayout>
+              </ThemeProvider>
+            )}
+
+            {!isHomePath &&
+              !pathname.includes("auth") &&
               !pathname.includes("payment") &&
               !pathname.includes("admin") && (
                 <ClientLayout
@@ -51,7 +70,10 @@ export default function App({ Component, pageProps }: AppProps) {
               )}
             {(pathname.includes("auth") ||
               pathname.includes("admin/login")) && (
-              <LoginLayout pageName={pageName} pageDescription={pageDescription}>
+              <LoginLayout
+                pageName={pageName}
+                pageDescription={pageDescription}
+              >
                 <Component
                   {...pageProps}
                   setPageName={setPageName}
@@ -61,7 +83,10 @@ export default function App({ Component, pageProps }: AppProps) {
               </LoginLayout>
             )}
             {pathname.includes("payment") && (
-              <PaymentLayout pageName={pageName} pageDescription={pageDescription}>
+              <PaymentLayout
+                pageName={pageName}
+                pageDescription={pageDescription}
+              >
                 <Component
                   {...pageProps}
                   setPageName={setPageName}
@@ -72,7 +97,10 @@ export default function App({ Component, pageProps }: AppProps) {
             )}
             {pathname.includes("admin") &&
               !pathname.includes("admin/login") && (
-                <AdminLayout pageName={pageName} pageDescription={pageDescription}>
+                <AdminLayout
+                  pageName={pageName}
+                  pageDescription={pageDescription}
+                >
                   <Component
                     {...pageProps}
                     setPageName={setPageName}

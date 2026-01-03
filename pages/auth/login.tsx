@@ -1002,7 +1002,7 @@ export default function Login() {
       setShowSuccessAnimation(true);
       setEmailOtpDialogOpen(false); // Close dialog on successful login
       setTimeout(() => {
-        router.replace("/");
+        router.replace("/dashboard");
       }, 600);
     }
   }, [userState, router, isPasswordRecoveryMode]);

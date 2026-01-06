@@ -204,7 +204,7 @@ const ApiKeyCard = ({
             }}
           />
 
-          <ApiKeyCopyButton>
+          <ApiKeyCopyButton onClick={() => onCopy(apiKey)}>
             <Image
               src={CopyIcon.src}
               alt={t("icons.copyAlt")}

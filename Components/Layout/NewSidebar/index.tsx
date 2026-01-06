@@ -21,7 +21,7 @@ const NewSidebar = () => {
   const { t } = useTranslation("dashboardLayout");
 
   const menuItems = [
-    { label: t("dashboard"), icon: "dashboard", path: "/" },
+    { label: t("dashboard"), icon: "dashboard", path: "/dashboard" },
     {
       label: t("transactions"),
       icon: "transactions",
@@ -110,6 +110,10 @@ const NewSidebar = () => {
                   }}
                 >
                   <AddIcon
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push("/create-pay-link");
+                    }}
                     sx={{
                       marginLeft: "auto",
                       color: theme.palette.primary.main,

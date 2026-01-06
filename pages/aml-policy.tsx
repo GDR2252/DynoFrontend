@@ -13,7 +13,6 @@ const AMLPolicy = () => {
         width: isMobile ? "100%" : 768,
         px: isMobile ? "15px" : 0,
         mx: "auto",
-        fontFamily: "UrbanistMedium",
         mb: isMobile ? "52px" : "93px",
         mt: isMobile ? "35px" : "63px",
       }}
@@ -25,11 +24,12 @@ const AMLPolicy = () => {
         sx={{
           fontSize: isMobile ? "45px" : "60px",
           color: "#131520",
-          fontWeight: 600,
+          fontWeight: 500,
           textAlign: "center",
-          fontFamily: "UrbanistMedium",
+          fontFamily: "OutfitMedium",
+          lineHeight: "60px",
+          letterSpacing: 0,
           mb: "15px",
-          lineHeight: 1.1,
         }}
       >
         AML Policy
@@ -50,7 +50,9 @@ const AMLPolicy = () => {
             fontSize: "18px",
             color: "#676B7E",
             fontWeight: 400,
-            fontFamily: "UrbanistMedium",
+            fontFamily: "OutfitRegular",
+            lineHeight: "28px",
+            letterSpacing: 0,
           }}
         >
           This AML Policy describes how DynoPay (“we”, “us”, “our”) works to prevent money laundering, terrorist financing, and other illicit activity when users interact with our crypto payment services (“the Service”).
@@ -64,7 +66,9 @@ const AMLPolicy = () => {
                 fontSize: "18px",
                 color: "#676B7E",
                 fontWeight: 600,
-                fontFamily: "UrbanistMedium",
+                fontFamily: "OutfitRegular",
+                lineHeight: "28px",
+                letterSpacing: 0,
               }}
             >
               {section.title}
@@ -78,7 +82,9 @@ const AMLPolicy = () => {
                   fontSize: "18px",
                   color: "#676B7E",
                   fontWeight: 400,
-                  fontFamily: "UrbanistMedium",
+                  fontFamily: "OutfitRegular",
+                  lineHeight: "28px",
+                  letterSpacing: 0,
                   whiteSpace: "pre-line",
                 }}
               >
@@ -101,7 +107,9 @@ const AMLPolicy = () => {
                       fontSize: "18px",
                       color: "#676B7E",
                       fontWeight: 400,
-                      fontFamily: "UrbanistMedium",
+                      fontFamily: "OutfitRegular",
+                      lineHeight: "28px",
+                      letterSpacing: 0,
                     }}
                   >
                     {point}
@@ -117,7 +125,9 @@ const AMLPolicy = () => {
                   fontSize: "18px",
                   color: "#676B7E",
                   fontWeight: 400,
-                  fontFamily: "UrbanistMedium",
+                  fontFamily: "OutfitRegular",
+                  lineHeight: "28px",
+                  letterSpacing: 0,
                 }}
               >
                 {section.footer}

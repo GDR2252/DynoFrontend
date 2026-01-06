@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   SidebarFooter,
   ReferralCard,
@@ -20,8 +20,26 @@ import Toast from "@/Components/UI/Toast";
 
 const ReferralAndKnowledge = ({ isMobile }: { isMobile: boolean }) => {
   const { t } = useTranslation("common");
-   const tCommon = useCallback((key: string) => t(key, { ns: "common" }), [t]);
+  const tCommon = useCallback((key: string) => t(key, { ns: "common" }), [t]);
   const [openToast, setOpenToast] = useState(false);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText("DYNO2024XYZ");
+    setOpenToast(false);
+
+    setTimeout(() => {
+      setOpenToast(true);
+    }, 0);
+
+    if (toastTimer.current) {
+      clearTimeout(toastTimer.current);
+    }
+
+    toastTimer.current = setTimeout(() => {
+      setOpenToast(false);
+    }, 2000);
+  }
 
   return (
     <SidebarFooter>
@@ -50,14 +68,7 @@ const ReferralAndKnowledge = ({ isMobile }: { isMobile: boolean }) => {
           <ReferralCardContentValueContainer>
             <ReferralCardContentValue>DYNO2024XYZ</ReferralCardContentValue>
             <CopyButton
-              onClick={() => {
-                navigator.clipboard.writeText("DYNO2024XYZ");
-                setOpenToast(true);
-
-                setTimeout(() => {
-                  setOpenToast(false);
-                }, 2000);
-              }}
+              onClick={handleCopy}
             >
               <Image
                 src={CopyIcon}
@@ -81,11 +92,11 @@ const ReferralAndKnowledge = ({ isMobile }: { isMobile: boolean }) => {
         />
         <KnowledgeBaseTitle>{t("knowledgeBase")}</KnowledgeBaseTitle>
       </KnowledgeBaseBtn>
-          <Toast
-            open={openToast}
-            message={tCommon("copiedToClipboard")}
-            severity="success"
-          />
+      <Toast
+        open={openToast}
+        message={tCommon("copiedToClipboard")}
+        severity="success"
+      />
     </SidebarFooter>
   );
 };

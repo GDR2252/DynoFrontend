@@ -10,9 +10,9 @@ import {
 } from "@/Components/UI/HomeCard/styled";
 import { homeTheme } from "@/styles/homeTheme";
 import { ImageCenter } from "@/Containers/Login/styled";
-import CompanySelectorImage from "@/assets/Images/home/Company Dropdown.png";
-import AllWalletsImage from "@/assets/Images/home/all-wallets.png";
-import PaymentLinkAddImage from "@/assets/Images/home/payment-link-create.png";
+import CompanySelectorImage from "@/assets/Images/home/company-dropdown.svg";
+import AllWalletsImage from "@/assets/Images/home/all-wallets.svg";
+import PaymentLinkAddImage from "@/assets/Images/home/payment-link-create.svg";
 import HomeSectionTitle from "@/Components/UI/SectionTitle";
 
 const GoLiveSection = () => {

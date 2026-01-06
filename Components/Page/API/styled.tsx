@@ -67,22 +67,27 @@ export const ApiKeyViewButton = styled(IconButton)(({ theme }) => ({
 }));
 
 export const ApiKeyCopyButton = styled(IconButton)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "40px",
+  height: "40px",
+  padding: "6px",
+  borderRadius: "7px",
   border: `1px solid ${theme.palette.primary.main}`,
-  borderRadius: 6,
-  width: 40,
-  height: 40,
-  backgroundColor: "#fff",
-  [theme.breakpoints.down("md")]: {
-    width: 32,
-    height: 32,
+  backgroundColor: theme.palette.common.white,
+  cursor: "pointer",
+  transition: "all 0.2s ease",
+  "&:hover": {
+    backgroundColor: theme.palette.primary.light,
   },
-  "& img": {
-    width: 14,
-    height: 14,
-    [theme.breakpoints.down("md")]: {
-      width: 12,
-      height: 12,
-    },
+  "&:active": {
+    transform: "scale(0.95)",
+  },
+  [theme.breakpoints.down("md")]: {
+    width: "32px",
+    height: "32px",
+    padding: "6px",
   },
 }));
 

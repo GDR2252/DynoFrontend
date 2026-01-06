@@ -36,6 +36,13 @@ const companyInitial: CompanyFormValues = {
   website: "",
 };
 
+const FormValueWatcher = ({ values, valueRef }: { values: any, valueRef: React.MutableRefObject<any> }) => {
+  React.useEffect(() => {
+    valueRef.current = values;
+  }, [values, valueRef]);
+  return null;
+};
+
 export default function CompanyDialog({
   open,
   mode,
@@ -59,6 +66,7 @@ export default function CompanyDialog({
   const [fileName, setFileName] = useState<string | undefined>();
   const [imagePreview, setImagePreview] = useState<string | undefined>();
   const [formKey, setFormKey] = useState(0);
+  const currentValuesRef = useRef<CompanyFormValues>(companyInitial);
 
   const initialValues = useMemo<CompanyFormValues>(() => {
     if (mode === "edit" && company) {
@@ -98,10 +106,26 @@ export default function CompanyDialog({
     [t]
   );
 
+  const isDataChanged = () => {
+    const hasImageChanged = !!mediaFile;
+    const hasValuesChanged = JSON.stringify(currentValuesRef.current) !== JSON.stringify(initialValues);
+
+    return hasImageChanged || hasValuesChanged;
+  };
+
   const resetLocal = () => {
     setFileName(undefined);
     setMediaFile(undefined);
     setImagePreview(undefined);
+  };
+
+  const handleRequestClose = () => {
+    if (!isDataChanged()) {
+      handleClose();
+    } else {
+      console.log("Form has changes, preventing auto-close");
+      // Optional: You could show a "Discard changes?" alert here
+    }
   };
 
   const handleClose = () => {
@@ -144,7 +168,7 @@ export default function CompanyDialog({
       open={open}
       showHeader={false}
       transparent
-      handleClose={handleClose}
+      handleClose={handleRequestClose}
       sx={{
         "& .MuiDialog-paper": {
           width: "100%",
@@ -152,7 +176,7 @@ export default function CompanyDialog({
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          p:2
+          p: 2
         },
       }}
     >
@@ -170,6 +194,7 @@ export default function CompanyDialog({
         }}
         headerAction={
           <IconButton
+            onClick={handleRequestClose}
             sx={{
               position: "absolute",
               top: 12,
@@ -222,6 +247,7 @@ export default function CompanyDialog({
             values,
           }) => (
             <>
+              <FormValueWatcher values={values} valueRef={currentValuesRef} />
               <Grid container spacing={"14px"}>
                 <Grid item xs={12}>
                   <InputField
@@ -408,7 +434,19 @@ export default function CompanyDialog({
                     }}
                     onClick={() => fileRef.current?.click()}
                   >
-                    {!imagePreview && (
+                    <input
+                      type="file"
+                      ref={fileRef}
+                      hidden
+                      accept="image/*"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        handleFileChange(file);
+                        e.target.value = "";
+                      }}
+                    />
+                    {!imagePreview ? (
                       <>
                         <Box
                           sx={{
@@ -452,18 +490,8 @@ export default function CompanyDialog({
                         >
                           {t("fields.brandLogo.uploadHint")}
                         </Typography>
-                        <input
-                          type="file"
-                          ref={fileRef}
-                          hidden
-                          accept="image/*"
-                          onChange={(e: any) =>
-                            handleFileChange(e.target.files?.[0])
-                          }
-                        />
                       </>
-                    )}
-                    {imagePreview && (
+                    ) : (
                       <Box sx={{ mt: 1.5 }}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <Image

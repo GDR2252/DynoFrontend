@@ -1,6 +1,6 @@
-import { Link, styled } from "@mui/material";
+import { Box, styled } from "@mui/material";
 
-export const Navigation = styled(Link)(() => ({
+export const Navigation = styled(Box)(() => ({
   color: "#FCFBF8",
   textDecoration: "underline",
   fontSize: 14,

@@ -167,19 +167,26 @@ export const ReferralCardContentValue = styled("span")(({ theme }) => ({
 }));
 
 export const CopyButton = styled("button")(({ theme }) => ({
-  border: `1px solid ${theme.palette.primary.main}`,
-  borderRadius: "7px",
-  padding: "6px",
-  cursor: "pointer",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   width: "40px",
   height: "40px",
-  transition: "background 0.2s ease",
-  flexShrink: 0,
+  padding: "6px",
+  borderRadius: "7px",
+  border: `1px solid ${theme.palette.primary.main}`,
+  backgroundColor: theme.palette.common.white,
+  cursor: "pointer",
+  transition: "all 0.2s ease",
+  "&:hover": {
+    backgroundColor: theme.palette.primary.light,
+  },
+  "&:active": {
+    transform: "scale(0.95)",
+  },
   [theme.breakpoints.down("md")]: {
     width: "32px",
     height: "32px",
+    padding: "6px",
   },
 }));

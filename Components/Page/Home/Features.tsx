@@ -10,8 +10,8 @@ import {
 } from "@/Components/UI/HomeCard/styled";
 import { ImageCenter } from "@/Containers/Login/styled";
 import HomeSectionTitle from "@/Components/UI/SectionTitle";
-import PaymentLinkSuccessImage from "@/assets/Images/home/payment-link-success.png";
-import TransactionDashboardImage from "@/assets/Images/home/transaction-dashboard.png";
+import PaymentLinkSuccessImage from "@/assets/Images/home/payment-link-success.svg";
+import TransactionDashboardImage from "@/assets/Images/home/transaction-dashboard.svg";
 import WalletSelectorImage from "@/assets/Images/home/wallet-selector.png";
 import APIKeyImage from "@/assets/Images/home/api-key.png";
 import ProgressCounterImage from "@/assets/Images/home/progress-counter.png";

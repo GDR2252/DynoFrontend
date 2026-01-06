@@ -13,7 +13,7 @@ const TermsConditions = () => {
         width: isMobile ? "100%" : 768,
         px: isMobile ? "15px" : 0,
         mx: "auto",
-        fontFamily: "UrbanistMedium",
+        fontFamily: "OutfitMedium",
         mb: isMobile ? "52px" : "93px",
         mt: isMobile ? "35px" : "63px",
       }}
@@ -25,11 +25,12 @@ const TermsConditions = () => {
         sx={{
           fontSize: isMobile ? "45px" : "60px",
           color: "#131520",
-          fontWeight: 600,
+          fontWeight: 500,
           textAlign: "center",
-          fontFamily: "UrbanistMedium",
+          fontFamily: "OutfitMedium",
           mb: "15px",
-          lineHeight: 1.1,
+          lineHeight: "60px",
+          letterSpacing: 0,
         }}
       >
         Terms & Conditions
@@ -52,7 +53,9 @@ const TermsConditions = () => {
                 fontSize: "18px",
                 color: "#676B7E",
                 fontWeight: 600,
-                fontFamily: "UrbanistMedium",
+                fontFamily: "OutfitBold",
+                lineHeight: "28px",
+                letterSpacing: 0,
               }}
             >
               {section.title}
@@ -65,8 +68,9 @@ const TermsConditions = () => {
                 sx={{
                   fontSize: "18px",
                   color: "#676B7E",
-                  fontWeight: 400,
-                  fontFamily: "UrbanistMedium",
+                  fontFamily: "OutfitRegular",
+                  lineHeight: "28px",
+                  letterSpacing: 0,
                 }}
               >
                 {section.description1}
@@ -79,8 +83,9 @@ const TermsConditions = () => {
                 sx={{
                   fontSize: "18px",
                   color: "#676B7E",
-                  fontWeight: 400,
-                  fontFamily: "UrbanistMedium",
+                  fontFamily: "OutfitRegular",
+                  lineHeight: "28px",
+                  letterSpacing: 0,
                 }}
               >
                 {section.description2}
@@ -99,7 +104,9 @@ const TermsConditions = () => {
                       fontSize: "18px",
                       color: "#676B7E",
                       fontWeight: 400,
-                      fontFamily: "UrbanistMedium",
+                      fontFamily: "OutfitRegular",
+                      lineHeight: "28px",
+                      letterSpacing: 0,
                     }}
                   >
                     {point}
@@ -115,7 +122,9 @@ const TermsConditions = () => {
                   fontSize: "18px",
                   color: "#676B7E",
                   fontWeight: 400,
-                  fontFamily: "UrbanistMedium",
+                  fontFamily: "OutfitRegular",
+                  lineHeight: "28px",
+                  letterSpacing: 0,
                 }}
               >
                 {section.footer}

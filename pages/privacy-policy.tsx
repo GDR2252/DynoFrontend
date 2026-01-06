@@ -11,7 +11,6 @@ const PrivacyPolicy = () => {
         width: isMobile ? "100%" : 768,
         px: isMobile ? "15px" : 0,
         mx: "auto",
-        fontFamily: "UrbanistMedium",
         mb: isMobile ? "52px" : "93px",
         mt: isMobile ? "35px" : "63px",
       }}
@@ -23,9 +22,11 @@ const PrivacyPolicy = () => {
         sx={{
           fontSize: isMobile ? "45px" : "60px",
           color: "#131520",
-          fontWeight: 600,
+          fontWeight: 500,
           textAlign: "center",
-          fontFamily: "UrbanistMedium",
+          fontFamily: "OutfitMedium",
+          lineHeight: "60px",
+          letterSpacing: 0,
           mb: "15px",
         }}
       >
@@ -46,7 +47,9 @@ const PrivacyPolicy = () => {
             fontSize: "18px",
             color: "#676B7E",
             fontWeight: 400,
-            fontFamily: "UrbanistMedium",
+            fontFamily: "OutfitRegular",
+            lineHeight: "28px",
+            letterSpacing: 0,
           }}
         >
           This Privacy Policy explains how DynoPay (“we”, “us”, “our”) collects,
@@ -56,14 +59,16 @@ const PrivacyPolicy = () => {
 
         {/* PRIVACY POLICY SECTIONS */}
         {privacyData.map((section, sectionIndex) => (
-          <Box key={sectionIndex}>
+          <Box key={section.title}>
             {/* SECTION HEADING */}
             <Typography
               sx={{
                 fontSize: "18px",
                 color: "#676B7E",
                 fontWeight: 600,
-                fontFamily: "UrbanistMedium",
+                fontFamily: "OutfitRegular",
+                lineHeight: "28px",
+                letterSpacing: 0,
               }}
             >
               {section.title}
@@ -74,7 +79,9 @@ const PrivacyPolicy = () => {
                 fontSize: "18px",
                 color: "#676B7E",
                 fontWeight: 400,
-                fontFamily: "UrbanistMedium",
+                fontFamily: "OutfitRegular",
+                lineHeight: "28px",
+                letterSpacing: 0,
               }}
             >
               {section.description}
@@ -92,7 +99,9 @@ const PrivacyPolicy = () => {
                         fontSize: "18px",
                         color: "#676B7E",
                         fontWeight: 400,
-                        fontFamily: "UrbanistMedium",
+                        fontFamily: "OutfitRegular",
+                        lineHeight: "28px",
+                        letterSpacing: 0,
                       }}
                     >
                       {info.title}
@@ -100,12 +109,13 @@ const PrivacyPolicy = () => {
 
                     {/* INFO DESCRIPTION */}
                     <Typography
-                      key={infoIndex}
                       sx={{
                         fontSize: "18px",
                         color: "#676B7E",
                         fontWeight: 400,
-                        fontFamily: "UrbanistMedium",
+                        fontFamily: "OutfitRegular",
+                        lineHeight: "28px",
+                        letterSpacing: 0,
                       }}
                     >
                       {info.details}
@@ -125,7 +135,9 @@ const PrivacyPolicy = () => {
                       fontSize: "18px",
                       color: "#676B7E",
                       fontWeight: 400,
-                      fontFamily: "UrbanistMedium",
+                      fontFamily: "OutfitRegular",
+                      lineHeight: "28px",
+                      letterSpacing: 0,
                     }}
                   >
                     {item}
@@ -138,7 +150,9 @@ const PrivacyPolicy = () => {
                 fontSize: "18px",
                 color: "#676B7E",
                 fontWeight: 400,
-                fontFamily: "UrbanistMedium",
+                fontFamily: "OutfitRegular",
+                lineHeight: "28px",
+                letterSpacing: 0,
               }}
             >
               {section.footer}

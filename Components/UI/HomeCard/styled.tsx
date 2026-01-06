@@ -194,3 +194,42 @@ export const HeaderSubTitle = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary,
   fontFamily: "OutfitRegular",
 }));
+
+export const SuccessChip = styled(Box)(({ theme }) => ({
+  backgroundColor: "#22C55E1A",
+  height: "50px",
+  width: "260px",
+  border: "1px solid",
+  borderColor: "#22C55E33",
+  borderRadius: "9999px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "12px",
+}));
+
+export const TypographyTitle = styled(Typography)(({ theme }) => ({
+  fontWeight: 600,
+  fontFamily: "OutfitSemiBold",
+  lineHeight: "24px",
+  letterSpacing: 0,
+  color: "#131520"
+}));
+
+export const TypographyDescription = styled(Typography)(({ theme }) => ({
+  fontSize: "14px",
+  fontFamily: "OutfitRegular",
+  fontWeight: 400,
+  lineHeight: "20px",
+  letterSpacing: 0,
+  color: "#676B7E"
+}));
+
+export const TypographyTime = styled(Typography)(({ theme }) => ({
+  fontSize: "12px",
+  fontFamily: "OutfitRegular",
+  fontWeight: 400,
+  lineHeight: "16px",
+  letterSpacing: 0,
+  color: "#676B7E"
+}));

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Box, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
@@ -96,7 +96,9 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
     },
     [t]
   );
-    const [openToast, setOpenToast] = useState(false);
+  const [openToast, setOpenToast] = useState(false);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   if (!transaction) return null;
 
   const getCryptoIcon = (crypto: string) => {
@@ -135,9 +137,18 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    setOpenToast(true);
+
+    setOpenToast(false);
 
     setTimeout(() => {
+      setOpenToast(true);
+    }, 0);
+
+    if (toastTimer.current) {
+      clearTimeout(toastTimer.current);
+    }
+
+    toastTimer.current = setTimeout(() => {
       setOpenToast(false);
     }, 2000);
   };
@@ -151,285 +162,309 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
 
   return (
     <>
-    <PopupModal
-      open={open}
-      handleClose={onClose}
-      showHeader={false}
-      transparent
-      hasFooter={false}
-      sx={{
-        "& .MuiDialog-paper": {
-          width: "100%",
-          maxWidth: "640px",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          p: isMobile ? theme.spacing(2) : "20px 0",
-        },
-      }}
-    >
-      <PanelCard
-        title={tTransactions("transactionDetails")}
-        showHeaderBorder={false}
-        headerPadding={theme.spacing(3.75, 3.75, 0, 3.75)}
-        bodyPadding={theme.spacing(3, 3.75, 3.75, 3.75)}
-        headerAction={
-          <StatusBadge status={transaction.status}>
-            <StatusIconWrapper status={transaction.status}>
-              {getStatusIcon(transaction.status)}
-            </StatusIconWrapper>
-            <StatusText status={transaction.status}>
-              {tTransactions(transaction.status)}
-            </StatusText>
-          </StatusBadge>
-        }
-        headerIcon={
-          <Image
-            src={TransactionIcon}
-            alt="Transaction Details"
-            width={18}
-            height={14}
-            draggable={false}
-          />
-        }
+      <PopupModal
+        open={open}
+        handleClose={onClose}
+        showHeader={false}
+        transparent
+        hasFooter={false}
         sx={{
-          width: "100%",
-          borderRadius: "14px",
-          // maxWidth: "600px",
-          mx: "auto",
+          "& .MuiDialog-paper": {
+            width: "100%",
+            maxWidth: "640px",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            p: isMobile ? theme.spacing(2) : "20px 0",
+          },
         }}
       >
-        <Box sx={{ marginBottom: 3 }}>
-          <HeaderTitleRow>
-            <TitleColumn>
-              <TitleLabel>{tTransactions("transactionId")}</TitleLabel>
-              <TitleValue>{transaction.id}</TitleValue>
-            </TitleColumn>
-            <TitleColumn>
-              <TitleLabel>{tTransactions("dateTime")}</TitleLabel>
-              <TitleValue>{transaction.dateTime}</TitleValue>
-            </TitleColumn>
-          </HeaderTitleRow>
-        </Box>
-        <SectionDivider />
-
-        <Box sx={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          <SectionTitleWithIcon>
+        <PanelCard
+          title={tTransactions("transactionDetails")}
+          showHeaderBorder={false}
+          headerPadding={theme.spacing(3.75, 3.75, 0, 3.75)}
+          bodyPadding={theme.spacing(3, 3.75, 3.75, 3.75)}
+          headerAction={
+            <StatusBadge status={transaction.status}>
+              <StatusIconWrapper status={transaction.status}>
+                {getStatusIcon(transaction.status)}
+              </StatusIconWrapper>
+              <StatusText status={transaction.status}>
+                {tTransactions(transaction.status)}
+              </StatusText>
+            </StatusBadge>
+          }
+          headerIcon={
             <Image
-              src={RoundedStackIcon}
-              alt="Amount Details"
-              width={15}
-              height={15}
+              src={TransactionIcon}
+              alt="Transaction Details"
+              width={18}
+              height={14}
               draggable={false}
             />
-            <SectionTitle>{tTransactions("amountDetails")}</SectionTitle>
-          </SectionTitleWithIcon>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-            <DetailRow>
-              <TitleLabel>{tTransactions("cryptocurrency")}</TitleLabel>
-              <CryptoIconChip sx={{ width: "fit-content" }}>
-                <Image
-                  src={getCryptoIcon(transaction.crypto)}
-                  alt={transaction.crypto}
-                  draggable={false}
-                />
-                <Typography
-                  component={"span"}
-                  sx={{
-                    color:
-                      transaction.crypto === "BTC"
-                        ? theme.palette.text.primary
-                        : theme.palette.text.secondary,
-                  }}
-                >
-                  {transaction.crypto}
-                </Typography>
-              </CryptoIconChip>
-            </DetailRow>
-            <DetailRow>
-              <TitleLabel>{tTransactions("amount")}</TitleLabel>
-              <TitleValue>{transaction.amount}</TitleValue>
-            </DetailRow>
-            <DetailRow>
-              <TitleLabel>{tTransactions("usdValue")}</TitleLabel>
-              <TitleValue>{transaction.usdValue}</TitleValue>
-            </DetailRow>
-            {transaction.fees && (
-              <DetailRow>
-                <TitleLabel>{tTransactions("fees")}</TitleLabel>
-                <TitleValue>{transaction.fees}</TitleValue>
-              </DetailRow>
-            )}
-            {transaction.confirmations && (
-              <DetailRow>
-                <TitleLabel>{tTransactions("confirmations")}</TitleLabel>
-                <TitleValue>{transaction.confirmations}</TitleValue>
-              </DetailRow>
-            )}
+          }
+          sx={{
+            width: "100%",
+            borderRadius: "14px",
+            // maxWidth: "600px",
+            mx: "auto",
+          }}
+        >
+          <Box sx={{ marginBottom: 3 }}>
+            <HeaderTitleRow>
+              <TitleColumn>
+                <TitleLabel>{tTransactions("transactionId")}</TitleLabel>
+                <TitleValue>{transaction.id}</TitleValue>
+              </TitleColumn>
+              <TitleColumn>
+                <TitleLabel>{tTransactions("dateTime")}</TitleLabel>
+                <TitleValue>{transaction.dateTime}</TitleValue>
+              </TitleColumn>
+            </HeaderTitleRow>
           </Box>
-        </Box>
-        <SectionDivider />
+          <SectionDivider />
 
-        {(transaction.incomingTransactionId ||
-          transaction.outgoingTransactionId) && (
-          <>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <SectionTitleWithIcon>
+              <Image
+                src={RoundedStackIcon}
+                alt="Amount Details"
+                width={15}
+                height={15}
+                draggable={false}
+              />
+              <SectionTitle>{tTransactions("amountDetails")}</SectionTitle>
+            </SectionTitleWithIcon>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+              <DetailRow>
+                <TitleLabel>{tTransactions("cryptocurrency")}</TitleLabel>
+                <CryptoIconChip sx={{ width: "fit-content" }}>
+                  <Image
+                    src={getCryptoIcon(transaction.crypto)}
+                    alt={transaction.crypto}
+                    draggable={false}
+                  />
+                  <Typography
+                    component={"span"}
+                    sx={{
+                      color:
+                        transaction.crypto === "BTC"
+                          ? theme.palette.text.primary
+                          : theme.palette.text.secondary,
+                    }}
+                  >
+                    {transaction.crypto}
+                  </Typography>
+                </CryptoIconChip>
+              </DetailRow>
+              <DetailRow>
+                <TitleLabel>{tTransactions("amount")}</TitleLabel>
+                <TitleValue>{transaction.amount}</TitleValue>
+              </DetailRow>
+              <DetailRow>
+                <TitleLabel>{tTransactions("usdValue")}</TitleLabel>
+                <TitleValue>{transaction.usdValue}</TitleValue>
+              </DetailRow>
+              {transaction.fees && (
+                <DetailRow>
+                  <TitleLabel>{tTransactions("fees")}</TitleLabel>
+                  <TitleValue>{transaction.fees}</TitleValue>
+                </DetailRow>
+              )}
+              {transaction.confirmations && (
+                <DetailRow>
+                  <TitleLabel>{tTransactions("confirmations")}</TitleLabel>
+                  <TitleValue>{transaction.confirmations}</TitleValue>
+                </DetailRow>
+              )}
+            </Box>
+          </Box>
+          <SectionDivider />
+
+          {(transaction.incomingTransactionId ||
+            transaction.outgoingTransactionId) && (
+              <>
+                <Box
+                  sx={{ display: "flex", flexDirection: "column", gap: "20px" }}
+                >
+                  <SectionTitleWithIcon>
+                    <Image
+                      src={HashIcon}
+                      alt="Transaction Hashes"
+                      width={20}
+                      height={20}
+                      draggable={false}
+                    />
+                    <SectionTitle>
+                      {tTransactions("transactionHashes")}
+                    </SectionTitle>
+                  </SectionTitleWithIcon>
+                  <Box
+                    sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
+                  >
+                    {transaction.incomingTransactionId && (
+                      <Box>
+                        <HashRow>
+                          <InputField
+                            value={transaction.incomingTransactionId}
+                            readOnly
+                            label={
+                              <TitleLabel>
+                                {tTransactions("incomingTransactionId")}
+                              </TitleLabel>
+                            }
+                            inputHeight={isMobile ? "32px" : "40px"}
+                            sx={{
+                              gap: isMobile ? "6px" : "12px",
+                            }}
+                          />
+                          <ActionButtonGroup>
+                            <CopyButton
+                              onClick={() =>
+                                handleCopy(transaction.incomingTransactionId!)
+                              }
+                              title={tTransactions("copy")}
+                            >
+                              <Image
+                                src={CopyIcon}
+                                alt="Copy"
+                                width={isMobile ? 12 : 16}
+                                height={isMobile ? 12 : 16}
+                                draggable={false}
+                              />
+                            </CopyButton>
+                            <ExplorerButton
+                              title={tTransactions("viewOnExplorer")}
+                            >
+                              <Image
+                                src={RightArrowIcon}
+                                alt="Right Arrow"
+                                width={isMobile ? 12 : 16}
+                                height={isMobile ? 12 : 16}
+                                draggable={false}
+                              />
+                            </ExplorerButton>
+                          </ActionButtonGroup>
+                        </HashRow>
+                      </Box>
+                    )}
+                    {transaction.outgoingTransactionId && (
+                      <Box>
+                        <HashRow>
+                          <InputField
+                            value={transaction.outgoingTransactionId}
+                            readOnly
+                            label={
+                              <TitleLabel>
+                                {tTransactions("outgoingTransactionId")}
+                              </TitleLabel>
+                            }
+                            inputHeight={isMobile ? "32px" : "40px"}
+                            sx={{
+                              gap: isMobile ? "6px" : "12px",
+                            }}
+                          />
+
+                          <ActionButtonGroup>
+                            <CopyButton
+                              onClick={() =>
+                                handleCopy(transaction.outgoingTransactionId!)
+                              }
+                              title={tTransactions("copy")}
+                            >
+                              <Image
+                                src={CopyIcon}
+                                alt="Copy"
+                                width={isMobile ? 12 : 16}
+                                height={isMobile ? 12 : 16}
+                                draggable={false}
+                              />
+                            </CopyButton>
+                            <ExplorerButton
+                              title={tTransactions("viewOnExplorer")}
+                            >
+                              <Image
+                                src={RightArrowIcon}
+                                alt="Right Arrow"
+                                width={isMobile ? 12 : 16}
+                                height={isMobile ? 12 : 16}
+                                draggable={false}
+                              />
+                            </ExplorerButton>
+                          </ActionButtonGroup>
+                        </HashRow>
+                      </Box>
+                    )}
+                  </Box>
+                </Box>
+                <SectionDivider />
+              </>
+            )}
+
+          {(transaction.callbackUrl || transaction.webhookResponse) && (
             <Box sx={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-              <SectionTitleWithIcon>
-                <Image
-                  src={HashIcon}
-                  alt="Transaction Hashes"
-                  width={20}
-                  height={20}
-                  draggable={false}
-                />
-                <SectionTitle>{tTransactions("transactionHashes")}</SectionTitle>
-              </SectionTitleWithIcon>
+              <SectionTitle>
+                {tTransactions("callbackInformation")}
+              </SectionTitle>
               <Box
                 sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
               >
-                {transaction.incomingTransactionId && (
+                {transaction.callbackUrl && (
                   <Box>
                     <HashRow>
                       <InputField
-                        value={transaction.incomingTransactionId}
+                        value={transaction.callbackUrl}
                         readOnly
-                        label={<TitleLabel>{tTransactions("incomingTransactionId")}</TitleLabel>}
+                        label={
+                          <TitleLabel>
+                            {tTransactions("callbackUrl")}
+                          </TitleLabel>
+                        }
                         inputHeight={isMobile ? "32px" : "40px"}
                         sx={{
                           gap: isMobile ? "6px" : "12px",
                         }}
                       />
-                      <ActionButtonGroup>
-                        <CopyButton
-                          onClick={() =>
-                            handleCopy(transaction.incomingTransactionId!)
-                          }
-                          title={tTransactions("copy")}
-                        >
-                          <Image
-                            src={CopyIcon}
-                            alt="Copy"
-                            width={isMobile ? 12 : 16}
-                            height={isMobile ? 12 : 16}
-                            draggable={false}
-                          />
-                        </CopyButton>
-                        <ExplorerButton title={tTransactions("viewOnExplorer")}>
-                          <Image
-                            src={RightArrowIcon}
-                            alt="Right Arrow"
-                            width={isMobile ? 12 : 16}
-                            height={isMobile ? 12 : 16}
-                            draggable={false}
-                          />
-                        </ExplorerButton>
-                      </ActionButtonGroup>
-                    </HashRow>
-                  </Box>
-                )}
-                {transaction.outgoingTransactionId && (
-                  <Box>
-                    <HashRow>
-                      <InputField
-                        value={transaction.outgoingTransactionId}
-                        readOnly
-                        label={<TitleLabel>{tTransactions("outgoingTransactionId")}</TitleLabel>}
-                        inputHeight={isMobile ? "32px" : "40px"}
-                        sx={{
-                          gap: isMobile ? "6px" : "12px",
-                        }}
-                      />
-
-                      <ActionButtonGroup>
-                        <CopyButton
-                          onClick={() =>
-                            handleCopy(transaction.outgoingTransactionId!)
-                          }
-                          title={tTransactions("copy")}
-                        >
-                          <Image
-                            src={CopyIcon}
-                            alt="Copy"
-                            width={isMobile ? 12 : 16}
-                            height={isMobile ? 12 : 16}
-                            draggable={false}
-                          />
-                        </CopyButton>
-                        <ExplorerButton title={tTransactions("viewOnExplorer")}>
-                          <Image
-                            src={RightArrowIcon}
-                            alt="Right Arrow"
-                            width={isMobile ? 12 : 16}
-                            height={isMobile ? 12 : 16}
-                            draggable={false}
-                          />
-                        </ExplorerButton>
-                      </ActionButtonGroup>
-                    </HashRow>
-                  </Box>
-                )}
-              </Box>
-            </Box>
-            <SectionDivider />
-          </>
-        )}
-
-          {(transaction.callbackUrl || transaction.webhookResponse) && (
-          <Box sx={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-            <SectionTitle>{tTransactions("callbackInformation")}</SectionTitle>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {transaction.callbackUrl && (
-                <Box>
-                  <HashRow>
-                    <InputField
-                      value={transaction.callbackUrl}
-                      readOnly
-                      label={<TitleLabel>{tTransactions("callbackUrl")}</TitleLabel>}
-                      inputHeight={isMobile ? "32px" : "40px"}
-                      sx={{
-                        gap: isMobile ? "6px" : "12px",
-                      }}
-                    />
                       <CopyButton
                         onClick={() => handleCopy(transaction.callbackUrl!)}
                         title={tTransactions("copy")}
                       >
-                      <Image
-                        src={CopyIcon}
-                        alt="Copy"
-                        width={isMobile ? 12 : 16}
-                        height={isMobile ? 12 : 16}
-                        draggable={false}
-                      />
-                    </CopyButton>
-                  </HashRow>
-                </Box>
-              )}
-              {transaction.webhookResponse && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: isMobile ? "6px" : "12px",
-                  }}
-                >
-                  <TitleLabel>{tTransactions("webhookResponse")}</TitleLabel>
-                  <WebhookResponseBox>
-                    <pre
-                      style={{
-                        margin: 0,
-                        fontFamily: "monospace",
-                        fontSize: "13px",
-                      }}
-                    >
-                      {JSON.stringify(transaction.webhookResponse, null, 2)}
-                    </pre>
-                  </WebhookResponseBox>
-                </Box>
-              )}
+                        <Image
+                          src={CopyIcon}
+                          alt="Copy"
+                          width={isMobile ? 12 : 16}
+                          height={isMobile ? 12 : 16}
+                          draggable={false}
+                        />
+                      </CopyButton>
+                    </HashRow>
+                  </Box>
+                )}
+                {transaction.webhookResponse && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: isMobile ? "6px" : "12px",
+                    }}
+                  >
+                    <TitleLabel>{tTransactions("webhookResponse")}</TitleLabel>
+                    <WebhookResponseBox>
+                      <pre
+                        style={{
+                          margin: 0,
+                          fontFamily: "monospace",
+                          fontSize: "13px",
+                        }}
+                      >
+                        {JSON.stringify(transaction.webhookResponse, null, 2)}
+                      </pre>
+                    </WebhookResponseBox>
+                  </Box>
+                )}
+              </Box>
             </Box>
-          </Box>
-        )}
+          )}
 
           <Box sx={{ display: "flex", gap: 2, marginTop: 3 }}>
             <CustomButton
@@ -460,13 +495,13 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
               }}
             />
           </Box>
-      </PanelCard>
-    </PopupModal>
-    <Toast
-      open={openToast}
-      message={tTransactions("copiedToClipboard")}
-      severity="success"
-    />
+        </PanelCard>
+      </PopupModal>
+      <Toast
+        open={openToast}
+        message={tTransactions("copiedToClipboard")}
+        severity="success"
+      />
     </>
   );
 };

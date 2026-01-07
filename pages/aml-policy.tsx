@@ -66,7 +66,7 @@ const AMLPolicy = () => {
                 fontSize: "18px",
                 color: "#676B7E",
                 fontWeight: 600,
-                fontFamily: "OutfitRegular",
+                fontFamily: "OutfitBold",
                 lineHeight: "28px",
                 letterSpacing: 0,
               }}

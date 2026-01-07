@@ -33,7 +33,7 @@ const Heading = styled(Typography)<{ type: "small" | "large" }>(
     maxWidth: type === "large" ? 705 : "auto",
     marginTop: type === "large" ? "24px" : "16px",
     marginBottom: type === "large" ? "15px" : "16px",
-    padding: "0 16px",
+    padding: "0 15px",
     [theme.breakpoints.down("md")]: {
       fontSize: type === "large" ? "45px" : "36px",
       lineHeight: type === "large" ? "48px" : "40px",
@@ -43,6 +43,7 @@ const Heading = styled(Typography)<{ type: "small" | "large" }>(
 
 const SubText = styled(Typography)<{ type: "small" | "large" }>(
   ({ theme, type }) => ({
+    padding: "0 15px",
     fontSize: type === "large" ? "18px" : "16px",
     lineHeight: type === "large" ? "28px" : "24px",
     fontWeight: 400,

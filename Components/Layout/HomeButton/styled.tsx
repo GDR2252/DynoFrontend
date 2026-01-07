@@ -10,9 +10,10 @@ const bounceUpDown = keyframes`
   }
 `;
 
-export const StyledHomeButton = styled(Button)<{
-  buttonVariant?: "primary" | "outlined";
-}>(({ theme, buttonVariant = "primary" }) => ({
+export const StyledHomeButton = styled(Button, {
+  shouldForwardProp: (prop) => prop !== "intent",
+})<{ intent?: "primary" | "outlined" }>(
+  ({ theme, intent = "primary" }) => ({
   padding: "12px 32px",
   fontSize: "14px",
   maxHeight: "44px",
@@ -28,7 +29,7 @@ export const StyledHomeButton = styled(Button)<{
   gap: "8px",
   boxShadow: "none",
   transition: "all 0.3s ease",
-  ...(buttonVariant === "primary"
+  ...(intent === "primary"
     ? {
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.common.white,

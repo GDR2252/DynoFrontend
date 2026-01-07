@@ -34,7 +34,7 @@ export const PageHeaderTitle = styled(Typography)(({ theme }) => ({
 
 export const PageHeaderDescription = styled(Typography)(({ theme }) => ({
   fontSize: "15px",
-  fontWeight: 400,
+  fontWeight: 500,
   color: theme.palette.text.secondary,
   lineHeight: 1.5,
   fontFamily: "UrbanistMedium",

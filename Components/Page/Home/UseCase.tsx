@@ -48,9 +48,10 @@ const UseCaseTitleWrapper = styled(Box)(() => ({
 const UseCaseTitle = styled(Typography)(() => ({
   fontSize: "18px",
   fontWeight: 500,
-  fontFamily: "OutfitMedium",
+  fontFamily: "OutfitSemiBold",
   color: homeTheme.palette.text.primary,
   lineHeight: "28px",
+  letterSpacing: 0,
 }));
 
 const UseCaseDescription = styled(Typography)(() => ({
@@ -58,6 +59,7 @@ const UseCaseDescription = styled(Typography)(() => ({
   lineHeight: "20px",
   fontWeight: 400,
   fontFamily: "OutfitRegular",
+  letterSpacing: 0,
   color: homeTheme.palette.text.secondary,
 }));
 
@@ -112,7 +114,7 @@ const UseCaseSection = () => {
       <Box sx={{ py: "53px" }}>
         <Box
           sx={{
-            p: "30px 16px",
+            p: "30px 0",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",

@@ -65,7 +65,7 @@ export default function Home({
       </Head>
 
       <main>
-        <Grid container spacing={3}>
+        <Grid container spacing={2.5}>
           {/* Left Section - Stat Cards and Graph */}
           <Grid item xs={12} lg={8}>
             <DashboardLeftSection />

@@ -195,6 +195,8 @@ const FeeTierProgress: React.FC<FeeTierProgressProps> = ({
               fontWeight: 500,
               color: theme.palette.primary.main,
               fontFamily: "UrbanistMedium",
+              lineHeight: "100%",
+              letterSpacing: 0,
             }}
           >
             {percentage.toFixed(1)}% {tDashboard("complete")}
@@ -204,7 +206,9 @@ const FeeTierProgress: React.FC<FeeTierProgressProps> = ({
               fontSize: isMobile ? "10px" : "13px",
               fontWeight: 500,
               color: theme.palette.text.secondary,
-              fontFamily: "UrbanistRegular",
+              fontFamily: "UrbanistMedium",
+              lineHeight: "100%",
+              letterSpacing: 0,
             }}
           >
             {getCurrencySymbol("USD", formattedRemaining)}{" "}

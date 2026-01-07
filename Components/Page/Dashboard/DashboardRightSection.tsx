@@ -49,7 +49,7 @@ const DashboardRightSection = () => {
         title={tDashboard("feeTierProgress")}
         subTitle={tDashboard("yourProgressTowardsTheNextFeeTier")}
         showHeaderBorder={false}
-        headerPadding={theme.spacing(2.5, 2.5, 0, 2.5)}
+        headerPadding={theme.spacing(2.5, 1.5, 0, 2.5)}
         bodyPadding={theme.spacing("26px", 2.5, 2.5, 2.5)}
         headerAction={
           <IconButton
@@ -63,8 +63,12 @@ const DashboardRightSection = () => {
             <Image
               src={CurrencyIcon}
               alt="Currency Icon"
-              width={isMobile ? 14 : 18}
-              height={isMobile ? 14 : 18}
+              width={18}
+              height={18}
+              style={{
+                width: "clamp(14px, 2vw, 18px)",
+                height: "auto",
+              }}
               draggable={false}
             />
           </IconButton>
@@ -83,7 +87,9 @@ const DashboardRightSection = () => {
               sx={{
                 fontSize: isMobile ? "10px" : "13px",
                 color: themeHook.palette.text.secondary,
-                fontFamily: "UrbanistRegular",
+                fontFamily: "UrbanistMedium",
+                fontWeight: 500,
+                lineHeight: "100%",
               }}
             >
               {tDashboard("monthlyVolume")}
@@ -93,7 +99,7 @@ const DashboardRightSection = () => {
                 fontFamily: "UrbanistMedium",
               }}
             >
-              <span
+              <Box component="span"
                 style={{
                   fontSize: isMobile ? "13px" : "15px",
                   color: themeHook.palette.text.primary,
@@ -101,26 +107,25 @@ const DashboardRightSection = () => {
                 }}
               >
                 {getCurrencySymbol("USD", formatNumberWithComma(usedAmount))}
-              </span>
-              <span
-                style={{
-                  display: "inline-block",
-                  padding: "0 6px",
+              </Box>
+              <Box
+                component="span"
+                sx={{
+                  px: "6px",
                   fontSize: isMobile ? "10px" : "13px",
-                  color: themeHook.palette.text.secondary,
-                  verticalAlign: "middle",
+                  color: theme.palette.text.secondary,
                 }}
               >
                 /
-              </span>
-              <span
-                style={{
+              </Box>
+              <Box component="span"
+                sx={{
                   fontSize: isMobile ? "10px" : "13px",
                   color: themeHook.palette.text.secondary,
                 }}
               >
                 {getCurrencySymbol("USD", monthlyLimit?.toLocaleString())}
-              </span>
+              </Box>
             </Typography>
           </Box>
 
@@ -140,19 +145,20 @@ const DashboardRightSection = () => {
               width: "100%",
               gap: 0.75,
               px: 1.5,
-              py: 0.75,
+              py: 1.4,
               borderRadius: "100px",
               background: theme.palette.success.main,
               border: `1px solid ${theme.palette.success.light}`,
             }}
           >
             <Typography
-              component="span"
               sx={{
                 fontSize: isMobile ? "13px" : "15px",
                 fontWeight: 500,
                 color: theme.palette.success.dark,
                 fontFamily: "UrbanistMedium",
+                lineHeight: "100%",
+                letterSpacing: 0,
                 display: "flex",
                 alignItems: "center",
                 gap: 1,

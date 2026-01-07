@@ -72,11 +72,11 @@ export const TransactionsTableHeaderItem = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     gap: 8,
     "& span": {
-      fontSize: "13px",
+      fontSize: "10px",
     },
     "& img": {
       width: "14px",
-      height: "14px",
+      height: "11px",
     },
   },
 }));

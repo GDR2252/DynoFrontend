@@ -100,6 +100,10 @@ export const WalletLabel = styled(Box)(({ theme }) => ({
     color: theme.palette.text.secondary,
     lineHeight: "18px",
     fontFamily: "UrbanistMedium",
+    [theme.breakpoints.down("md")]: {
+      fontSize: "13px",
+      lineHeight: "16px",
+    },
   },
 }));
 

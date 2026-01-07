@@ -239,7 +239,12 @@ export default function TimePeriodSelector({
               sx={{
                 borderRadius: "63px",
                 fontSize: isMobile ? "13px !important" : "15px",
-                mb: 0.2,
+                fontFamily: "UrbanistMedium",
+                fontWeight: 500,
+                lineHeight: "100%",
+                letterSpacing: 0,
+                height: "32px",
+                mb: 0.5,
                 py: isMobile ? "6px !important" : "7px !important",
                 background:
                   period.value === value || focusedIndex === index

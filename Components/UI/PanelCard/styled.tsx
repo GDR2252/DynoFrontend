@@ -36,7 +36,7 @@ export const HeaderTitle = styled(Typography)({
   fontSize: "20px",
   fontWeight: 500,
   lineHeight: 1.2,
-  letterSpacing: "-0.02em",
+  letterSpacing: "100%",
   fontFamily: "UrbanistMedium",
   color: "#242428",
   [theme.breakpoints.down("md")]: {

@@ -119,6 +119,7 @@ const TransactionVolumeChart = ({
   selectedPeriod: TimePeriod;
 }) => {
   const isMobile = useIsMobile("md");
+  const isSmall = useIsMobile("sm");
 
   // Raw transaction data (this would come from API in real app)
   // SAMPLE DATA FOR TESTING - Uncomment the scenarios you want to test:
@@ -153,11 +154,11 @@ const TransactionVolumeChart = ({
   // Scenario 4: Large value fluctuation - tests Y-axis domain
   const rawTransactionData = useMemo(
     () => [
-      { date: "Dec 24", value: 800 },
-      { date: "Dec 25", value: 12000 },
-      { date: "Dec 26", value: 6000 },
-      { date: "Dec 27", value: 114500 },
-      { date: "Dec 28", value: 12000 },
+      { date: "Jan 1", value: 800 },
+      { date: "Jan 2", value: 12000 },
+      { date: "Jan 3", value: 6000 },
+      { date: "Jan 4", value: 114500 },
+      { date: "Jan 5", value: 12000 },
     ],
     []
   );
@@ -227,7 +228,7 @@ const TransactionVolumeChart = ({
         gridColor="#D9D9D9"
         gridStrokeDasharray="3 3"
         curveType="monotone"
-        margin={{ top: 10, right: 0, bottom: 0, left: 0 }}
+        margin={{ top: 20, right: 0, bottom: 0, left: 10 }}
         yAxisTickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
         yAxisDomain={[0, 16000]}
         tooltipLabelFormatter={(data) => data.date}
@@ -243,8 +244,8 @@ const TransactionVolumeChart = ({
         isAnimationActive={true}
         animationDuration={500}
         enableHorizontalScroll={true}
-        gridCellWidthMobile={82}
-        gridCellHeightMobile={57.25}
+        gridCellWidthMobile={selectedPeriod === "7days" && isSmall ? 82 : isMobile ? 132: 105}
+        gridCellHeightMobile={60}
         gridCellWidthDesktop={150.5}
         gridCellHeightDesktop={72.25}
         hasData={hasData}
@@ -570,10 +571,11 @@ const DashboardLeftSection = () => {
         <PanelCard
           title={tDashboard("totalTransactions")}
           showHeaderBorder={false}
-          headerPadding={theme.spacing(2.5, 2.5, 0, 2.5)}
-          bodyPadding={theme.spacing(2, 2.5, 2.5, 2.5)}
+          headerPadding={isMobile ? theme.spacing(2, 2, 0, 2) : theme.spacing(2.5, 2.5, 0, 2.5)}
+          bodyPadding={isMobile ? theme.spacing(1.5, 2, 2, 2) : theme.spacing(2, 2.5, 2.5, 2.5)}
           sx={{
             width: isMobile ? "200px" : "315px",
+            height: isMobile ? "128px" : "176px",
             flexShrink: 0,
           }}
           headerAction={
@@ -588,8 +590,12 @@ const DashboardLeftSection = () => {
               <Image
                 src={TransactionIcon}
                 alt="Transaction Icon"
-                width={isMobile ? 14 : 17}
-                height={isMobile ? 14 : 14}
+                width={17}
+                height={14}
+                style={{
+                  width: "clamp(14px, 2vw, 17px)",
+                  height: "auto",
+                }}
                 draggable={false}
               />
             </IconButton>
@@ -601,6 +607,8 @@ const DashboardLeftSection = () => {
               color: theme.palette.text.primary,
               fontFamily: "UrbanistMedium",
               lineHeight: 1.2,
+              fontWeight: 500,
+              letterSpacing: 0,
             }}
           >
             4
@@ -609,20 +617,23 @@ const DashboardLeftSection = () => {
           <Box
             sx={{
               display: "flex",
-              justifyContent: "start",
               alignItems: "center",
               gap: 1,
-              mt: 2.5,
+              mt: isMobile ? "18px" : 2.5,
             }}
           >
             <PercentageChip
-              sx={{ padding: isMobile ? "8px 6px" : "6px 8px", lineHeight: 0 }}
+              sx={{ padding: isMobile ? "7px 3px" : "5px 7px", lineHeight: 0 }}
             >
               <Image
                 src={ArrowUpSuccessIcon}
                 alt="Arrow Up Success Icon"
-                width={isMobile ? 8 : 11}
-                height={isMobile ? 8 : 11}
+                width={11}
+                height={11}
+                style={{
+                  width: "clamp(8px, 2vw, 11px)",
+                  height: "auto",
+                }}
               />
               <Typography
                 component="span"
@@ -632,6 +643,8 @@ const DashboardLeftSection = () => {
                   fontFamily: "UrbanistMedium",
                   lineHeight: 0,
                   padding: isMobile ? "0px 2px" : "8px 0px",
+                  fontWeight: 500,
+                  letterSpacing: 0,
                 }}
               >
                 12%
@@ -642,7 +655,9 @@ const DashboardLeftSection = () => {
                 fontSize: isMobile ? "10px" : "13px",
                 color: theme.palette.text.secondary,
                 fontFamily: "UrbanistMedium",
-                lineHeight: 1.2,
+                lineHeight: "100%",
+                fontWeight: 500,
+                letterSpacing: 0,
               }}
             >
               {t("comparedToLastMonth")}
@@ -654,10 +669,11 @@ const DashboardLeftSection = () => {
         <PanelCard
           title={t("totalVolume")}
           showHeaderBorder={false}
-          headerPadding={theme.spacing(2.5, 2.5, 0, 2.5)}
-          bodyPadding={theme.spacing(2, 2.5, 2.5, 2.5)}
+          headerPadding={isMobile ? theme.spacing(2, 2, 0, 2) : theme.spacing(2.5, 2.5, 0, 2.5)}
+          bodyPadding={isMobile ? theme.spacing(1.5, 2, 2, 2) : theme.spacing(2, 2.5, 2.5, 2.5)}
           sx={{
             width: isMobile ? "200px" : "315px",
+            height: isMobile ? "128px" : "176px",
             flexShrink: 0,
           }}
           headerAction={
@@ -672,8 +688,12 @@ const DashboardLeftSection = () => {
               <Image
                 src={RoundedStackIcon}
                 alt="Rounded Stack Icon"
-                width={isMobile ? 14 : 17}
-                height={isMobile ? 14 : 14}
+                width={17}
+                height={14}
+                style={{
+                  width: "clamp(14px, 2vw, 17px)",
+                  height: "auto",
+                }}
                 draggable={false}
               />
             </IconButton>
@@ -685,6 +705,8 @@ const DashboardLeftSection = () => {
               color: theme.palette.text.primary,
               fontFamily: "UrbanistMedium",
               lineHeight: 1.2,
+              fontWeight: 500,
+              letterSpacing: 0,
             }}
           >
             {getCurrencySymbol("USD", formatNumberWithComma(6479.25))}
@@ -696,17 +718,21 @@ const DashboardLeftSection = () => {
               justifyContent: "start",
               alignItems: "center",
               gap: 1,
-              mt: 2.5,
+              mt: isMobile ? "18px" : 2.5,
             }}
           >
             <PercentageChip
-              sx={{ padding: isMobile ? "8px 6px" : "6px 8px", lineHeight: 0 }}
+              sx={{ padding: isMobile ? "7px 3px" : "5px 7px", lineHeight: 0 }}
             >
               <Image
                 src={ArrowUpSuccessIcon}
                 alt="Arrow Up Success Icon"
-                width={isMobile ? 8 : 11}
-                height={isMobile ? 8 : 11}
+                width={11}
+                height={11}
+                style={{
+                  width: "clamp(8px, 2vw, 11px)",
+                  height: "auto",
+                }}
               />
               <Typography
                 component="span"
@@ -716,6 +742,8 @@ const DashboardLeftSection = () => {
                   fontFamily: "UrbanistMedium",
                   lineHeight: 0,
                   padding: isMobile ? "0px 2px" : "8px 0px",
+                  fontWeight: 500,
+                  letterSpacing: 0,
                 }}
               >
                 8.5%
@@ -726,7 +754,9 @@ const DashboardLeftSection = () => {
                 fontSize: isMobile ? "10px" : "13px",
                 color: theme.palette.text.secondary,
                 fontFamily: "UrbanistMedium",
-                lineHeight: 1.2,
+                lineHeight: "100%",
+                fontWeight: 500,
+                letterSpacing: 0,
                 paddingRight: "0px !important",
               }}
             >
@@ -739,12 +769,12 @@ const DashboardLeftSection = () => {
         <PanelCard
           title={tDashboard("activeWallets")}
           showHeaderBorder={false}
-          headerPadding={theme.spacing(2.5, 2.5, 0, 2.5)}
-          bodyPadding={theme.spacing(2, 2.5, 2.5, 2.5)}
+          headerPadding={isMobile ? theme.spacing(2, 2, 0, 2) : theme.spacing(2.5, 2.5, 0, 2.5)}
+          bodyPadding={isMobile ? theme.spacing(1.5, 2, 2, 2) : theme.spacing(2, 2.5, 2.5, 2.5)}
           sx={{
             width: isMobile ? "200px" : "315px",
+            height: isMobile ? "128px" : "176px",
             flexShrink: 0,
-            height: "100%",
           }}
           headerAction={
             <IconButton
@@ -758,8 +788,12 @@ const DashboardLeftSection = () => {
               <Image
                 src={WalletIcon}
                 alt="Wallet Icon"
-                width={isMobile ? 12 : 17}
-                height={isMobile ? 12 : 14}
+                width={17}
+                height={14}
+                style={{
+                  width: "clamp(12px, 2vw, 17px)",
+                  height: "auto",
+                }}
                 draggable={false}
               />
             </IconButton>
@@ -770,7 +804,9 @@ const DashboardLeftSection = () => {
               fontSize: isMobile ? "20px" : "40px",
               color: theme.palette.text.primary,
               fontFamily: "UrbanistMedium",
-              lineHeight: 1.2,
+              lineHeight: "100%",
+              fontWeight: 500,
+              letterSpacing: 0,
             }}
           >
             {activeWalletsData.length}
@@ -786,8 +822,8 @@ const DashboardLeftSection = () => {
               display: "flex",
               justifyContent: "start",
               alignItems: "center",
-              gap: 1,
-              mt: 2.5,
+              gap: isMobile ? "6px" : "8px",
+              mt: isMobile ? "18px" : 2.5,
               overflowX: "auto",
               overflowY: "hidden",
               flexWrap: "nowrap",
@@ -897,7 +933,7 @@ const DashboardLeftSection = () => {
       <PanelCard
         showHeaderBorder={false}
         headerPadding={theme.spacing(2.5)}
-        bodyPadding={theme.spacing(2.5, 2.5, 3, 2.5)}
+        bodyPadding={theme.spacing(2.5, 2, 2.5, 2)}
         headerActionLayout="inline"
         sx={{ mb: 2.5, boxShadow: "none !important" }}
       >

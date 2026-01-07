@@ -3,11 +3,15 @@ import { Box, Card, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { homeTheme } from "@/styles/homeTheme";
 
-export const StyledCard = styled(Card)(({ theme }) => ({
+interface StyledCardProps {
+  height?: number | string;
+  width?: number | string;
+}
+
+export const StyledCard = styled(Card)<StyledCardProps>(({ theme, height, width }) => ({
   background: "#fff",
-  width: "100%",
-  height: "100%",
-  maxHeight: "612px",
+  width: width,
+  height: height,
   border: `1px solid ${homeTheme.palette.border.main}`,
   boxShadow: "none !important",
   borderRadius: "20px",
@@ -23,7 +27,7 @@ export const StyledCard = styled(Card)(({ theme }) => ({
     top: "220px",
     width: "100%",
     boxShadow: "none !important",
-    height: "576px",
+    height: height,
     borderRadius: "1000px",
     background: "radial-gradient(at center bottom, #0004FF4D, #FFFFFF)",
     filter: "blur(100px)",
@@ -51,8 +55,8 @@ export const GoLiveCount = styled(Typography)(({ theme }) => ({
   opacity: 0.2,
 }));
 
-export const GoLiveTitle = styled(Typography)(({ theme }) => ({
-  fontSize: "20px",
+export const FeatureTitle = styled(Typography)(({ theme }) => ({
+  fontSize: "18px",
   fontWeight: 500,
   lineHeight: "28px",
   letterSpacing: 0,
@@ -61,9 +65,9 @@ export const GoLiveTitle = styled(Typography)(({ theme }) => ({
 }));
 
 export const GoLiveDescription = styled(Typography)(({ theme }) => ({
-  fontSize: "16px",
+  fontSize: "14px",
   fontWeight: 400,
-  lineHeight: "24px",
+  lineHeight: "20px",
   letterSpacing: 0,
   fontFamily: "OutfitRegular",
   color: theme.palette.text.secondary,
@@ -75,6 +79,8 @@ export const FeatureIcon = styled(Box)(() => ({
   justifyContent: "center",
   width: "48px",
   height: "48px",
+  minHeight: "48px",
+  minWidth: "48px",
   borderRadius: "16px",
   background: homeTheme.palette.background.default,
 }));

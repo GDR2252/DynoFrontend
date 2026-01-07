@@ -64,7 +64,7 @@ const HomeButton: React.FC<HomeButtonProps> = ({
 
   return (
     <StyledHomeButton
-      buttonVariant={variant}
+      intent={variant}
       onClick={handleClick}
       disabled={disabled}
       fullWidth={fullWidth}

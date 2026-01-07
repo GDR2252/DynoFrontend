@@ -56,14 +56,14 @@ const MobileNavigationBar = () => {
 
   // First row items (5 items)
   const firstRowItems = [
-    { label: t("dash"), icon: "dashboard", path: "/", id: "dash" },
+    { label: t("dash"), icon: "dashboard", path: "/dashboard", id: "dash" },
     {
       label: t("transactions"),
       icon: "transactions",
       path: "/transactions",
       id: "transactions",
     },
-    { label: t("create"), icon: "add", path: "/create", id: "create" },
+    { label: t("create"), icon: "add", path: "/create-pay-link", id: "create-pay-link" },
     { label: t("wallets"), icon: "wallets", path: "/wallet", id: "wallets" },
     {
       label: isExpanded ? t("close") : t("more"),

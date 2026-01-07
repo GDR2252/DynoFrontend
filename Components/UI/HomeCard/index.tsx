@@ -108,6 +108,14 @@ export interface HomeCardProps {
    * Click handler for the entire card
    */
   onClick?: () => void;
+  /**
+ * Custom height for the card
+ */
+  height?: number | string;
+  /**
+   * Custom width for the card
+   */
+  width?: number | string;
 }
 
 const HomeCard: React.FC<HomeCardProps> = ({
@@ -126,10 +134,19 @@ const HomeCard: React.FC<HomeCardProps> = ({
   subTitleSx,
   bodySx,
   onClick,
+  height,
+  width,
 }) => {
   const isMobile = useIsMobile("md");
   return (
-    <StyledCard sx={sx} onClick={onClick}>
+    <StyledCard
+      height={height}
+      width={width}
+      sx={{
+        ...sx,
+      }}
+      onClick={onClick}
+    >
       <CardBody
         sx={{
           padding: bodyPadding,

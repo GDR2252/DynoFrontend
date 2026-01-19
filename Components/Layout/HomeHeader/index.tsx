@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Box, Button, Divider, IconButton, Drawer } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import DynopayLogo from "@/assets/Images/auth/dynopay-logo.svg";
@@ -13,10 +12,11 @@ import {
   MobileDrawer,
   MobileNavItem,
 } from "./styled";
-import CustomButton from "@/Components/UI/Buttons";
 import { homeTheme } from "@/styles/homeTheme";
 import useIsMobile from "@/hooks/useIsMobile";
 import HomeButton from "../HomeButton";
+import { theme } from "@/styles/theme";
+import { MenuRounded } from "@mui/icons-material";
 
 const HomeHeader = () => {
   const router = useRouter();
@@ -24,15 +24,44 @@ const HomeHeader = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const HeaderItems = [
-    { label: "How It Works", path: "/" },
-    { label: "Features", path: "/" },
-    { label: "Use Cases", path: "/" },
+    { label: "How It Works", sectionId: "how-it-works", path: "/" },
+    { label: "Features", sectionId: "features", path: "/" },
+    { label: "Use Cases", sectionId: "use-cases", path: "/" },
     { label: "Documentation", path: "/" },
   ];
 
-  const handleNavClick = (path: string) => {
-    router.push(path);
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const headerOffset = 100; // Adjust this value based on your header height
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
     setMobileMenuOpen(false);
+  };
+
+  const handleNavClick = (item: typeof HeaderItems[0]) => {
+    if (item.sectionId) {
+      // If we're not on the home page, navigate first then scroll
+      if (router.pathname !== "/") {
+        router.push("/").then(() => {
+          // Wait for page to load, then scroll
+          setTimeout(() => {
+            scrollToSection(item.sectionId!);
+          }, 100);
+        });
+      } else {
+        scrollToSection(item.sectionId);
+      }
+    } else {
+      router.push(item.path);
+      setMobileMenuOpen(false);
+    }
   };
 
   return (
@@ -42,46 +71,49 @@ const HomeHeader = () => {
         <Image
           src={DynopayLogo}
           alt="Dynopay"
-          width={120}
-          height={40}
+          width={134}
+          height={45}
           draggable={false}
           className="logo"
+          style={{ width: "134px", height: "45px" }}
           onClick={() => router.push("/")}
         />
 
         {/* Center Nav - Desktop Only */}
         <NavLinks className="desktop-nav">
           {HeaderItems.map((item) => (
-            <Button key={item.path} onClick={() => handleNavClick(item.path)}>
+            <Button key={item.label} onClick={() => handleNavClick(item)}>
               {item.label}
             </Button>
           ))}
         </NavLinks>
 
-        {/* Right Actions */}
-        <Actions>
-          <Button className="signin" onClick={() => router.push("/auth/login")}>
-            Sign In
-          </Button>
+        <Box sx={{ display: "flex", alignItems: "center", gap: "11px" }}>
+          {/* Right Actions */}
+          <Actions>
+            <Button className="signin" onClick={() => router.push("/auth/login")}>
+              Sign In
+            </Button>
 
-          <HomeButton
-            variant="primary"
-            label="Get Started"
-            onClick={() => router.push("/auth/register")}
-            showIcon={false}
-            sx={{
-              borderRadius: "8px",
-              padding: "8px 12px",
-              maxWidth: "fit-content",
-            }}
-          />
+            <HomeButton
+              variant="primary"
+              label="Get Started"
+              onClick={() => router.push("/auth/register")}
+              showIcon={false}
+              sx={{
+                borderRadius: "8px !important",
+                padding: "8px 12px !important",
+                minWidth: "98px !important",
+              }}
+            />
+          </Actions>
           {/* Mobile Menu Button */}
           {isMobile && (
             <MobileMenuButton onClick={() => setMobileMenuOpen(true)}>
-              <MenuIcon sx={{ fontSize: 24 }} />
+              <MenuRounded sx={{ color: theme.palette.text.primary, fontSize: 24 }} />
             </MobileMenuButton>
           )}
-        </Actions>
+        </Box>
       </HeaderContainer>
 
       {/* Mobile Drawer */}
@@ -142,8 +174,8 @@ const HomeHeader = () => {
           >
             {HeaderItems.map((item) => (
               <MobileNavItem
-                key={item.path}
-                onClick={() => handleNavClick(item.path)}
+                key={item.label}
+                onClick={() => handleNavClick(item)}
               >
                 {item.label}
               </MobileNavItem>

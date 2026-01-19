@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Box, IconButton, Typography } from "@mui/material";
 import Image from "next/image";
 import PopupModal from "@/Components/UI/PopupModal";
@@ -20,10 +20,13 @@ import CloseIcon from "@/assets/Icons/close-icon.svg";
 import RoundedStackIcon from "@/assets/Icons/roundedStck-icon.svg";
 import HourglassIcon from "@/assets/Icons/hourglass-icon.svg";
 import PaymentIcon from "@/assets/Icons/payment-icon.svg";
+import TransactionIcon from "@/assets/Icons/transaction-icon.svg";
 import NoteIcon from "@/assets/Icons/note-icon.svg";
 import CopyIcon from "@/assets/Icons/copy-icon.svg";
+import ShareIcon from "@/assets/Icons/ShareIcon.svg";
 import PanelCard from "@/Components/UI/PanelCard";
 import { ApiKeyCopyButton } from "../API/styled";
+import Toast from "@/Components/UI/Toast";
 
 interface PaymentLinkSuccessModalProps {
   open: boolean;
@@ -34,6 +37,7 @@ interface PaymentLinkSuccessModalProps {
     expire: string;
     description: string;
     blockchainFees: string;
+    linkId: string;
   };
   onCopyLink: () => void;
 }
@@ -91,6 +95,9 @@ const PaymentLinkSuccessModal: React.FC<PaymentLinkSuccessModalProps> = ({
     },
     [t]
   );
+  const tCommon = useCallback((key: string) => t(key, { ns: "common" }), [t]);
+  const [openToast, setOpenToast] = useState(false);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const getExpireText = () => {
     if (paymentSettings.expire === "no") return tPaymentLink("noExpiration");
@@ -107,143 +114,179 @@ const PaymentLinkSuccessModal: React.FC<PaymentLinkSuccessModalProps> = ({
     if (paymentLink) {
       navigator.clipboard.writeText(paymentLink);
     }
+    setOpenToast(false);
+
+    setTimeout(() => {
+      setOpenToast(true);
+    }, 0);
+
+    if (toastTimer.current) {
+      clearTimeout(toastTimer.current);
+    }
+
+    toastTimer.current = setTimeout(() => {
+      setOpenToast(false);
+    }, 2000);
   };
 
   return (
-    <PopupModal
-      open={open}
-      handleClose={onClose}
-      showHeader={false}
-      transparent
-      hasFooter={false}
-      sx={{
-        "& .MuiDialog-paper": {
-          width: "100%",
-          maxWidth: "481px",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          p: 2,
-        },
-      }}
-    >
-      <PanelCard
-        title={tPaymentLink("paymentLinkSuccessfullyCreated")}
-        subTitle={tPaymentLink("shareLinkToReceivePayment")}
-        showHeaderBorder={false}
-        bodyPadding={
-          isMobile
-            ? theme.spacing(1.5, 2, 2, 2)
-            : theme.spacing(2, 3.75, 3.75, 3.75)
-        }
-        headerPadding={
-          isMobile
-            ? theme.spacing(2, 2, 0, 2)
-            : theme.spacing(3.75, 3.75, 0, 3.75)
-        }
-        headerActionLayout="inline"
-        headerAction={
-          <CloseIconButton onClick={onClose}>
-            <Image
-              src={CloseIcon.src}
-              alt="close icon"
-              width={16}
-              height={16}
-              draggable={false}
-            />
-          </CloseIconButton>
-        }
+    <>
+      <PopupModal
+        open={open}
+        handleClose={onClose}
+        showHeader={false}
+        transparent
+        hasFooter={false}
+        sx={{
+          "& .MuiDialog-paper": {
+            width: "100%",
+            maxWidth: "481px",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            p: 2,
+          },
+        }}
       >
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-          <Box sx={{ display: "flex", gap: 1, alignItems: "flex-end" }}>
-            <InputField
-              value={paymentLink}
-              readOnly
-              label={tPaymentLink("paymentLink")}
-              inputHeight={isMobile ? "32px" : "40px"}
-            />
-            <ApiKeyCopyButton onClick={handleCopyPaymentLink}>
+        <PanelCard
+          title={tPaymentLink("paymentLinkSuccessfullyCreated")}
+          subTitle={tPaymentLink("shareLinkToReceivePayment")}
+          showHeaderBorder={false}
+          bodyPadding={
+            isMobile
+              ? theme.spacing(1.5, 2, 2, 2)
+              : theme.spacing(2, 3.75, 3.75, 3.75)
+          }
+          headerPadding={
+            isMobile
+              ? theme.spacing(2, 2, 0, 2)
+              : theme.spacing(3.75, 3.75, 0, 3.75)
+          }
+          headerActionLayout="inline"
+          headerAction={
+            <CloseIconButton onClick={onClose}>
               <Image
-                src={CopyIcon.src}
-                alt="copy"
-                width={14}
-                height={14}
+                src={CloseIcon.src}
+                alt="close icon"
+                width={16}
+                height={16}
                 draggable={false}
               />
-            </ApiKeyCopyButton>
-          </Box>
-
-          <PaymentDetailsContainer>
-            <PaymentDetailsTitle>{tPaymentLink("paymentDetails")}</PaymentDetailsTitle>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              <PaymentDetailRow
-                icon={RoundedStackIcon.src}
-                alt="value"
-                label={tPaymentLink("value").replace(" ($)", "")}
-                value={`$${paymentSettings.value || "0.00"}`}
+            </CloseIconButton>
+          }
+        >
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            <Box sx={{ display: "flex", gap: 1, alignItems: "flex-end" }}>
+              <InputField
+                value={paymentLink}
+                readOnly
+                label={tPaymentLink("paymentLink")}
+                inputHeight={isMobile ? "32px" : "40px"}
               />
+              <ApiKeyCopyButton sx={{ display: { xs: "flex", lg: "none" } }}>
+                <Image
+                  src={ShareIcon.src}
+                  alt="share"
+                  width={14}
+                  height={14}
+                  draggable={false}
+                />
+              </ApiKeyCopyButton>
+              <ApiKeyCopyButton onClick={handleCopyPaymentLink}>
+                <Image
+                  src={CopyIcon.src}
+                  alt="copy"
+                  width={14}
+                  height={14}
+                  draggable={false}
+                />
+              </ApiKeyCopyButton>
+            </Box>
 
-              <PaymentDetailRow
-                icon={HourglassIcon.src}
-                alt="expire"
-                label={tPaymentLink("expiresOn")}
-                value={getExpireText()}
+            <PaymentDetailsContainer>
+              <PaymentDetailsTitle>{tPaymentLink("paymentDetails")}</PaymentDetailsTitle>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                <PaymentDetailRow
+                  icon={RoundedStackIcon.src}
+                  alt="value"
+                  label={tPaymentLink("value").replace(" ($)", "")}
+                  value={`$${paymentSettings.value || "0.00"}`}
+                />
+
+                <PaymentDetailRow
+                  icon={HourglassIcon.src}
+                  alt="expire"
+                  label={tPaymentLink("expiresOn")}
+                  value={getExpireText()}
+                />
+
+                <PaymentDetailRow
+                  icon={PaymentIcon.src}
+                  alt="blockchain fees"
+                  label={tPaymentLink("blockchainFees")}
+                  value={getBlockchainFeesText()}
+                />
+
+                <PaymentDetailRow
+                  icon={NoteIcon.src}
+                  alt="description"
+                  label={tPaymentLink("description")}
+                  value={paymentSettings.description || tPaymentLink("nA")}
+                />
+
+                <PaymentDetailRow
+                  icon={TransactionIcon.src}
+                  alt="Link Id"
+                  label={tPaymentLink("linkId")}
+                  value={paymentSettings.linkId || tPaymentLink("nA")}
+                />
+              </Box>
+            </PaymentDetailsContainer>
+
+            {/* Action Buttons */}
+            <Box
+              sx={{
+                display: "flex",
+                gap: 1.5,
+                marginTop: 1,
+              }}
+            >
+              <CustomButton
+                label={tPaymentLink("toClose")}
+                variant="outlined"
+                size="medium"
+                onClick={onClose}
+                fullWidth
+                sx={{
+                  [theme.breakpoints.down("md")]: {
+                    height: "32px",
+                    fontSize: "13px",
+                  },
+                }}
               />
-
-              <PaymentDetailRow
-                icon={PaymentIcon.src}
-                alt="blockchain fees"
-                label={tPaymentLink("blockchainFees")}
-                value={getBlockchainFeesText()}
-              />
-
-              <PaymentDetailRow
-                icon={NoteIcon.src}
-                alt="description"
-                label={tPaymentLink("description")}
-                value={paymentSettings.description || tPaymentLink("nA")}
+              <CustomButton
+                label={tPaymentLink("copyLink")}
+                variant="primary"
+                size="medium"
+                onClick={onCopyLink}
+                fullWidth
+                sx={{
+                  [theme.breakpoints.down("md")]: {
+                    height: "32px",
+                    fontSize: "13px",
+                  },
+                }}
               />
             </Box>
-          </PaymentDetailsContainer>
-
-          {/* Action Buttons */}
-          <Box
-            sx={{
-              display: "flex",
-              gap: 1.5,
-              marginTop: 1,
-            }}
-          >
-            <CustomButton
-              label={tPaymentLink("toClose")}
-              variant="outlined"
-              size="medium"
-              onClick={onClose}
-              fullWidth
-              sx={{
-                [theme.breakpoints.down("md")]: {
-                  height: "32px",
-                  fontSize: "13px",
-                },
-              }}
-            />
-            <CustomButton
-              label={tPaymentLink("copyLink")}
-              variant="primary"
-              size="medium"
-              onClick={onCopyLink}
-              fullWidth
-              sx={{
-                [theme.breakpoints.down("md")]: {
-                  height: "32px",
-                  fontSize: "13px",
-                },
-              }}
-            />
           </Box>
-        </Box>
-      </PanelCard>
-    </PopupModal>
+        </PanelCard>
+      </PopupModal>
+      <Toast
+        open={openToast}
+        message={tCommon("copiedToClipboard")}
+        severity="success"
+      />
+    </>
   );
 };
 

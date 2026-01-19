@@ -73,8 +73,8 @@ const ReferralAndKnowledge = ({ isMobile }: { isMobile: boolean }) => {
               <Image
                 src={CopyIcon}
                 alt="Copy Icon"
-                width={isMobile ? 12 : 20}
-                height={isMobile ? 12 : 20}
+                width={isMobile ? 12 : 14}
+                height={isMobile ? 12 : 14}
                 draggable={false}
               />
             </CopyButton>

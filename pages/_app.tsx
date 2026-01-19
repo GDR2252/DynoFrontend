@@ -25,6 +25,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const [pageName, setPageName] = useState("");
   const [pageDescription, setPageDescription] = useState("");
   const [pageAction, setPageAction] = useState<ReactNode | null>(null);
+  const [pageWarning, setPageWarning] = useState<ReactNode | null>(null);
   const [pageHeaderSx, setPageHeaderSx] = useState<SxProps<Theme> | null>(null);
 
   const homePaths = [
@@ -57,6 +58,7 @@ export default function App({ Component, pageProps }: AppProps) {
                   pageName={pageName}
                   pageDescription={pageDescription}
                   pageAction={pageAction}
+                  pageWarning={pageWarning}
                   pageHeaderSx={pageHeaderSx || undefined}
                 >
                   <Component
@@ -64,24 +66,25 @@ export default function App({ Component, pageProps }: AppProps) {
                     setPageName={setPageName}
                     setPageDescription={setPageDescription}
                     setPageAction={setPageAction}
+                    setPageWarning={setPageWarning}
                     setPageHeaderSx={setPageHeaderSx}
                   />
                 </ClientLayout>
               )}
             {(pathname.includes("auth") ||
               pathname.includes("admin/login")) && (
-              <LoginLayout
-                pageName={pageName}
-                pageDescription={pageDescription}
-              >
-                <Component
-                  {...pageProps}
-                  setPageName={setPageName}
-                  setPageDescription={setPageDescription}
-                  setPageAction={setPageAction}
-                />
-              </LoginLayout>
-            )}
+                <LoginLayout
+                  pageName={pageName}
+                  pageDescription={pageDescription}
+                >
+                  <Component
+                    {...pageProps}
+                    setPageName={setPageName}
+                    setPageDescription={setPageDescription}
+                    setPageAction={setPageAction}
+                  />
+                </LoginLayout>
+              )}
             {pathname.includes("payment") && (
               <PaymentLayout
                 pageName={pageName}

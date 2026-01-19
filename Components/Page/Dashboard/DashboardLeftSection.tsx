@@ -6,7 +6,6 @@ import { ArrowOutward, TrendingUp, Add, Remove } from "@mui/icons-material";
 import Image from "next/image";
 import TransactionIcon from "@/assets/Icons/transaction.svg";
 import WalletIcon from "@/assets/Icons/wallet-grey.svg";
-import { theme } from "@/styles/theme";
 import { useTranslation } from "react-i18next";
 import { PercentageChip } from "./styled";
 import ArrowUpSuccessIcon from "@/assets/Icons/up-success.svg";
@@ -17,20 +16,20 @@ import {
   IconChip,
 } from "@/Components/UI/CryptocurrencySelector/styled";
 import useIsMobile from "@/hooks/useIsMobile";
-import BitcoinIcon from "@/assets/cryptocurrency/Bitcoin-icon.svg";
-import EthereumIcon from "@/assets/cryptocurrency/Ethereum-icon.svg";
-import LitecoinIcon from "@/assets/cryptocurrency/Litecoin-icon.svg";
-import BNBIcon from "@/assets/cryptocurrency/BNB-icon.svg";
-import DogecoinIcon from "@/assets/cryptocurrency/Dogecoin-icon.svg";
-import BitcoinCashIcon from "@/assets/cryptocurrency/BitcoinCash-icon.svg";
-import TronIcon from "@/assets/cryptocurrency/Tron-icon.svg";
-import USDTIcon from "@/assets/cryptocurrency/USDT-icon.svg";
-import FeeTierProgress from "./FeeTierProgress";
 import ReusableAreaChart from "@/Components/UI/AreaChart";
 import TimePeriodSelector, {
   TimePeriod,
 } from "@/Components/UI/TimePeriodSelector";
 import { useRouter } from "next/router";
+import { DateRange } from "@/Components/UI/DatePicker";
+import {
+  eachDayOfInterval,
+  endOfDay,
+  isAfter,
+  isValid,
+  startOfDay,
+} from "date-fns";
+import { useWalletData } from "@/hooks/useWalletData";
 
 // Active wallets data array
 interface ActiveWallet {
@@ -38,16 +37,16 @@ interface ActiveWallet {
   icon: any;
 }
 
-const activeWalletsData: ActiveWallet[] = [
-  { code: "BTC", icon: BitcoinIcon },
-  { code: "ETH", icon: EthereumIcon },
-  { code: "LTC", icon: LitecoinIcon },
-  { code: "BNB", icon: BNBIcon },
-  { code: "DOGE", icon: DogecoinIcon },
-  { code: "BCH", icon: BitcoinCashIcon },
-  { code: "TRX", icon: TronIcon },
-  { code: "USDT", icon: USDTIcon },
-];
+// const activeWalletsData: ActiveWallet[] = [
+//   { code: "BTC", icon: BitcoinIcon },
+//   { code: "ETH", icon: EthereumIcon },
+//   { code: "LTC", icon: LitecoinIcon },
+//   // { code: "BNB", icon: BNBIcon },
+//   { code: "DOGE", icon: DogecoinIcon },
+//   { code: "BCH", icon: BitcoinCashIcon },
+//   { code: "TRX", icon: TronIcon },
+//   { code: "USDT", icon: USDTIcon },
+// ];
 
 // Helper function to format date as "MMM D" (e.g., "Nov 30")
 const formatDate = (date: Date): string => {
@@ -69,20 +68,61 @@ const formatDate = (date: Date): string => {
 };
 
 // Helper function to generate date range based on period
-const generateDateRange = (period: TimePeriod): Date[] => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+type SelectedPeriod = TimePeriod | DateRange;
 
-  let days = 7; // default
+const isDateRange = (value: SelectedPeriod): value is DateRange => {
+  return typeof value !== "string";
+};
+
+const normalizeDateRange = (range: DateRange): DateRange => {
+  const normalizedStart =
+    range.startDate && isValid(range.startDate)
+      ? startOfDay(range.startDate)
+      : null;
+  const normalizedEnd =
+    range.endDate && isValid(range.endDate) ? endOfDay(range.endDate) : null;
+
+  if (
+    normalizedStart &&
+    normalizedEnd &&
+    isAfter(normalizedStart, normalizedEnd)
+  ) {
+    return { startDate: normalizedStart, endDate: null };
+  }
+
+  return { startDate: normalizedStart, endDate: normalizedEnd };
+};
+
+const generateDateRange = (period: SelectedPeriod): Date[] => {
+  const today = startOfDay(new Date());
+
+  if (isDateRange(period)) {
+    const normalized = normalizeDateRange(period);
+    if (!normalized.startDate) {
+      return [];
+    }
+    const intervalEnd = normalized.endDate
+      ? startOfDay(normalized.endDate)
+      : normalized.startDate;
+    if (isAfter(normalized.startDate, intervalEnd)) {
+      return [];
+    }
+    return eachDayOfInterval({
+      start: normalized.startDate,
+      end: intervalEnd,
+    }).map((d) => startOfDay(d));
+  }
+
+  let days = 7;
   if (period === "30days") days = 30;
   else if (period === "90days") days = 90;
-  else if (period === "custom") days = 7; // For custom, you might want to handle differently
+  else if (period === "custom") days = 7;
 
   const dates: Date[] = [];
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
-    dates.push(date);
+    dates.push(startOfDay(date));
   }
   return dates;
 };
@@ -90,9 +130,11 @@ const generateDateRange = (period: TimePeriod): Date[] => {
 // Helper function to process and fill in missing dates
 const processTransactionData = (
   rawData: Array<{ date: string; value: number }>,
-  period: TimePeriod
+  period: SelectedPeriod
 ): Array<{ date: string; value: number }> => {
   const dateRange = generateDateRange(period);
+  const safeDateRange =
+    dateRange.length > 0 ? dateRange : generateDateRange("7days");
   const dateMap = new Map<string, number>();
 
   // Create a map of existing data by date string
@@ -101,7 +143,7 @@ const processTransactionData = (
   });
 
   // Fill in all dates in the range
-  const result = dateRange.map((date) => {
+  const result = safeDateRange.map((date) => {
     const dateStr = formatDate(date);
     return {
       date: dateStr,
@@ -116,7 +158,7 @@ const processTransactionData = (
 const TransactionVolumeChart = ({
   selectedPeriod,
 }: {
-  selectedPeriod: TimePeriod;
+  selectedPeriod: SelectedPeriod;
 }) => {
   const isMobile = useIsMobile("md");
   const isSmall = useIsMobile("sm");
@@ -154,11 +196,11 @@ const TransactionVolumeChart = ({
   // Scenario 4: Large value fluctuation - tests Y-axis domain
   const rawTransactionData = useMemo(
     () => [
-      { date: "Jan 1", value: 800 },
-      { date: "Jan 2", value: 12000 },
-      { date: "Jan 3", value: 6000 },
-      { date: "Jan 4", value: 114500 },
-      { date: "Jan 5", value: 12000 },
+      { date: "Jan 12", value: 800 },
+      { date: "Jan 13", value: 12000 },
+      { date: "Jan 14", value: 6000 },
+      { date: "Jan 15", value: 114500 },
+      { date: "Jan 16", value: 12000 },
     ],
     []
   );
@@ -223,7 +265,7 @@ const TransactionVolumeChart = ({
         height={320}
         strokeWidth={3}
         dotRadius={5}
-        showDots={hasData}
+        showDots={true}
         showGrid={true}
         gridColor="#D9D9D9"
         gridStrokeDasharray="3 3"
@@ -244,7 +286,9 @@ const TransactionVolumeChart = ({
         isAnimationActive={true}
         animationDuration={500}
         enableHorizontalScroll={true}
-        gridCellWidthMobile={selectedPeriod === "7days" && isSmall ? 82 : isMobile ? 132: 105}
+        gridCellWidthMobile={
+          selectedPeriod === "7days" && isSmall ? 82 : isMobile ? 132 : 105
+        }
         gridCellHeightMobile={60}
         gridCellWidthDesktop={150.5}
         gridCellHeightDesktop={72.25}
@@ -400,12 +444,18 @@ const DashboardLeftSection = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [isStatCardsDragging, setIsStatCardsDragging] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>("7days");
+  const [customDateRange, setCustomDateRange] = useState<DateRange>({
+    startDate: null,
+    endDate: null,
+  });
 
   const { t } = useTranslation(namespaces);
   const tDashboard = useCallback(
     (key: string) => t(key, { ns: "dashboardLayout" }),
     [t]
   );
+
+  const { activeWalletsData } = useWalletData();
 
   const maxWalletsToShow = isMobile ? 2 : 3;
   const walletsToDisplay = showAllWallets
@@ -528,7 +578,7 @@ const DashboardLeftSection = () => {
         sx={{
           mb: 2.5,
           display: "flex",
-          gap: isMobile ? "8px" : "20px",
+          gap: isMobile ? "8px" : "16px",
           overflowX: "auto",
           overflowY: "hidden",
           cursor: isStatCardsDragging ? "grabbing" : "grab",
@@ -571,11 +621,19 @@ const DashboardLeftSection = () => {
         <PanelCard
           title={tDashboard("totalTransactions")}
           showHeaderBorder={false}
-          headerPadding={isMobile ? theme.spacing(2, 2, 0, 2) : theme.spacing(2.5, 2.5, 0, 2.5)}
-          bodyPadding={isMobile ? theme.spacing(1.5, 2, 2, 2) : theme.spacing(2, 2.5, 2.5, 2.5)}
+          headerPadding={
+            isMobile
+              ? theme.spacing(2, 2, 0, 2)
+              : theme.spacing(2.5, 2.5, 0, 2.5)
+          }
+          bodyPadding={
+            isMobile
+              ? theme.spacing(1.5, 2, 2, 2)
+              : theme.spacing(2, 2, 2.5, 2.5)
+          }
           sx={{
-            width: isMobile ? "200px" : "315px",
-            height: isMobile ? "128px" : "176px",
+            width: { xs: "200px", sm: "240px", md: "315px" },
+            height: { xs: "128px", sm: "140px", md: "176px" },
             flexShrink: 0,
           }}
           headerAction={
@@ -619,7 +677,7 @@ const DashboardLeftSection = () => {
               display: "flex",
               alignItems: "center",
               gap: 1,
-              mt: isMobile ? "18px" : 2.5,
+              mt: { xs: "18px", sm: 3, md: 2.5 },
             }}
           >
             <PercentageChip
@@ -669,11 +727,17 @@ const DashboardLeftSection = () => {
         <PanelCard
           title={t("totalVolume")}
           showHeaderBorder={false}
-          headerPadding={isMobile ? theme.spacing(2, 2, 0, 2) : theme.spacing(2.5, 2.5, 0, 2.5)}
-          bodyPadding={isMobile ? theme.spacing(1.5, 2, 2, 2) : theme.spacing(2, 2.5, 2.5, 2.5)}
+          headerPadding={
+            isMobile
+              ? theme.spacing(2, 2, 0, 2)
+              : theme.spacing(2.5, 2.5, 0, 2.5)
+          }
+          bodyPadding={
+            isMobile ? theme.spacing(1.5, 2, 2, 2) : theme.spacing(2, 2, 2.5, 2)
+          }
           sx={{
-            width: isMobile ? "200px" : "315px",
-            height: isMobile ? "128px" : "176px",
+            width: { xs: "200px", sm: "240px", md: "315px" },
+            height: { xs: "128px", sm: "140px", md: "176px" },
             flexShrink: 0,
           }}
           headerAction={
@@ -718,7 +782,7 @@ const DashboardLeftSection = () => {
               justifyContent: "start",
               alignItems: "center",
               gap: 1,
-              mt: isMobile ? "18px" : 2.5,
+              mt: { xs: "18px", sm: 3, md: 2.5 },
             }}
           >
             <PercentageChip
@@ -769,11 +833,19 @@ const DashboardLeftSection = () => {
         <PanelCard
           title={tDashboard("activeWallets")}
           showHeaderBorder={false}
-          headerPadding={isMobile ? theme.spacing(2, 2, 0, 2) : theme.spacing(2.5, 2.5, 0, 2.5)}
-          bodyPadding={isMobile ? theme.spacing(1.5, 2, 2, 2) : theme.spacing(2, 2.5, 2.5, 2.5)}
+          headerPadding={
+            isMobile
+              ? theme.spacing(2, 2, 0, 2)
+              : theme.spacing(2.5, 2.5, 0, 2.5)
+          }
+          bodyPadding={
+            isMobile
+              ? theme.spacing(1.5, 2, 2, 2)
+              : theme.spacing(2, 2, 2.5, 2.5)
+          }
           sx={{
-            width: isMobile ? "200px" : "315px",
-            height: isMobile ? "128px" : "176px",
+            width: { xs: "200px", sm: "240px", md: "315px" },
+            height: { xs: "128px", sm: "140px", md: "176px" },
             flexShrink: 0,
           }}
           headerAction={
@@ -823,7 +895,7 @@ const DashboardLeftSection = () => {
               justifyContent: "start",
               alignItems: "center",
               gap: isMobile ? "6px" : "8px",
-              mt: isMobile ? "18px" : 2.5,
+              mt: { xs: "18px", sm: 3, md: 2.5 },
               overflowX: "auto",
               overflowY: "hidden",
               flexWrap: "nowrap",
@@ -981,6 +1053,8 @@ const DashboardLeftSection = () => {
             <TimePeriodSelector
               value={selectedPeriod}
               onChange={(period) => setSelectedPeriod(period)}
+              dateRange={customDateRange}
+              onDateRangeChange={setCustomDateRange}
               sx={{ flexShrink: 0 }}
             />
             <Box>
@@ -995,7 +1069,11 @@ const DashboardLeftSection = () => {
             </Box>
           </Box>
         </Box>
-        <TransactionVolumeChart selectedPeriod={selectedPeriod} />
+        <TransactionVolumeChart
+          selectedPeriod={
+            selectedPeriod === "custom" ? customDateRange : selectedPeriod
+          }
+        />
       </PanelCard>
     </Box>
   );

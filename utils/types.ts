@@ -143,7 +143,7 @@ export interface LayoutProps {
   children: JSX.Element | JSX.Element[];
   pageName: string;
   pageDescription?: string;
-  component?: any;
+  pageWarning?: ReactNode;
   pageAction?: ReactNode;
   pageHeaderSx?: SxProps<Theme>;
 }
@@ -168,7 +168,7 @@ export interface pageProps {
   setPageDescription?: (description: string) => void;
   setPageAction?: (action: ReactNode | null) => void;
   setPageHeaderSx?: (sx: SxProps<Theme> | null) => void;
-  setComponent?: Function;
+  setPageWarning?: (warning: ReactNode | null) => void;
   discription?: Function;
 }
 

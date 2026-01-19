@@ -102,14 +102,17 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
       const file = e.target.files[0];
       setUserPhoto(URL.createObjectURL(file));
       setMedia(file);
-      setImageError(false); 
+      setImageError(false);
     }
   };
 
   const handleRemovePhoto = () => {
     setUserPhoto("");
     setMedia(null);
-    setImageError(false); 
+    setImageError(false);
+    if (fileRef.current) {
+      fileRef.current.value = "";
+    }
   };
 
   return (
@@ -206,7 +209,7 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                 onClick={() => fileRef.current?.click()}
                 sx={{
                   width: { xs: "100%", sm: "auto" },
-                  padding: "0px 16px",
+                  padding: { xs: "0px 10px", md: "0px 16px" },
                   fontSize: { xs: "13px", sm: "15px" },
                 }}
               />
@@ -311,9 +314,9 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                       touched.lastName && errors.lastName && errors.lastName
                     }
                     sx={{
-                        gap: "8px",
-                        marginTop: { xs: "12px", sm: "0px" },
-                     }}
+                      gap: "8px",
+                      marginTop: { xs: "12px", sm: "0px" },
+                    }}
                   />
                 </Grid>
               </Grid>

@@ -490,6 +490,7 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
               sx={{
                 [theme.breakpoints.down("md")]: {
                   width: "fit-content",
+                  flex: 1,
                   height: "32px",
                 },
               }}

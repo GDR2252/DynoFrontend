@@ -151,7 +151,7 @@ const PanelCard: React.FC<PanelCardProps> = ({
             {headerIcon && <>{headerIcon}</>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: "4px" }}>
               {title && <HeaderTitle sx={{ ...headerSx }}>{title}</HeaderTitle>}
-              {subTitle && <HeaderSubTitle sx={{ ...subTitleSx}}>{subTitle}</HeaderSubTitle>}
+              {subTitle && <HeaderSubTitle sx={{ ...subTitleSx }}>{subTitle}</HeaderSubTitle>}
             </Box>
           </HeaderContent>
           {headerAction &&

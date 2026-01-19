@@ -21,11 +21,14 @@ import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import { theme } from "@/styles/theme";
 import { useTranslation } from "react-i18next";
 import useIsMobile from "@/hooks/useIsMobile";
+import { useWalletData } from "@/hooks/useWalletData";
+import Link from "next/link";
 
 const NewHeader = () => {
   const router = useRouter();
-  const { t } = useTranslation("dashboardLayout");
+  const { t } = useTranslation("walletScreen");
   const isMobile = useIsMobile("md");
+  const { walletWarning } = useWalletData();
   return (
     <HeaderContainer>
       <Grid container spacing={{ xs: 0.5, md: 3 }} alignItems="center">
@@ -38,8 +41,8 @@ const NewHeader = () => {
                 onClick={() => router.push("/")}
                 src={Logo}
                 alt="logo"
-                width={108}
-                height={37}
+                width={114}
+                height={39}
                 draggable={false}
                 className="logo"
               />
@@ -74,7 +77,7 @@ const NewHeader = () => {
               <Box sx={{ display: { xs: "none", lg: "flex" }, gap: 2 }}>
                 <LanguageSwitcher />
 
-                <RequiredKYC>
+                {/* <RequiredKYC>
                   <InfoIcon
                     sx={{ fontSize: 20, color: theme.palette.error.main }}
                   />
@@ -83,7 +86,17 @@ const NewHeader = () => {
                   <ArrowOutwardIcon
                     sx={{ color: theme.palette.text.secondary, fontSize: 20 }}
                   />
-                </RequiredKYC>
+                </RequiredKYC> */}
+                {walletWarning && (
+                  <Link href='/wallet'>
+                    <RequiredKYC>
+                      <InfoIcon
+                        sx={{ fontSize: 20, color: theme.palette.error.main }}
+                      />
+                      <RequiredKYCText>{t("walletSetUpWarnnigTitle")}</RequiredKYCText>
+                    </RequiredKYC>
+                  </Link>
+                )}
               </Box>
 
               <UserMenu />

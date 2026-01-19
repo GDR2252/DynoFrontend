@@ -9,6 +9,7 @@
   "transactions": "Transactions",
   "create": "Create",
   "wallets": "Wallets",
+  "payLinks": "Payment Links",
   "more": "More",
   "close": "Close",
   "language": "Language",
@@ -38,5 +39,7 @@
   "last7Days": "Last 7 Days",
   "last30Days": "Last 30 Days",
   "last90Days": "Last 90 Days",
-  "customPeriod": "Custom Period"
+  "customPeriod": "Custom Period",
+  "pay-links": "Payment Links",
+  "walletSetUpWarnnigTitle": "Complete wallet setup"
 }

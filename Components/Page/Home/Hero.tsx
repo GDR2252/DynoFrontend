@@ -77,7 +77,7 @@ const HeroSection = () => {
           sx={{
             display: "flex",
             flexDirection: { xs: "column", sm: "row" },
-            gap: { xs: 1, sm: 2 },
+            gap: { xs: "10px", sm: 2 },
             marginTop: "24px",
             justifyContent: "center",
             zIndex: 10,
@@ -228,7 +228,8 @@ const HeroSection = () => {
       <Box
         sx={{
           display: { md: "none", sm: "block", xs: "block" },
-          my: 4,
+          mt: 4,
+          mb: 10,
           position: "relative",
           height: "450px",
           "&:before": {

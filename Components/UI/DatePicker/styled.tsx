@@ -104,10 +104,12 @@ export const CalendarHeader = styled(Box)(({ theme }) => ({
 
 export const CalendarHeaderText = styled(Typography)(({ theme }) => ({
   textAlign: "center",
-  fontSize: "16px",
-  fontWeight: 600,
+  fontSize: "13px",
+  fontWeight: 500,
   color: theme.palette.text.primary,
-  fontFamily: "UrbanistSemiBold",
+  fontFamily: "UrbanistMedium",
+  lineHeight: "100%",
+  letterSpacing: 0,
   margin: "0",
 }));
 
@@ -123,12 +125,13 @@ export const WeekdayCell = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  fontSize: "11px",
+  fontSize: "13px",
   fontWeight: 500,
+  lineHeight: "100%",
   color: theme.palette.text.secondary,
   fontFamily: "UrbanistMedium",
   textTransform: "uppercase",
-  letterSpacing: "0.3px",
+  letterSpacing: "0",
 }));
 
 export const CalendarGrid = styled(Box)(({ theme }) => ({
@@ -153,32 +156,32 @@ export const DateCellWrapper = styled(Box)<{
   ...(inRange &&
     !isStart &&
     !isEnd && {
-      backgroundColor: "#E5EDFF",
-      ...(isWeekStart && {
-        borderTopLeftRadius: "20px",
-        borderBottomLeftRadius: "20px",
-      }),
-      ...(isWeekEnd && {
-        borderTopRightRadius: "20px",
-        borderBottomRightRadius: "20px",
-      }),
+    backgroundColor: "#E5EDFF",
+    ...(isWeekStart && {
+      borderTopLeftRadius: "20px",
+      borderBottomLeftRadius: "20px",
     }),
+    ...(isWeekEnd && {
+      borderTopRightRadius: "20px",
+      borderBottomRightRadius: "20px",
+    }),
+  }),
   ...(isStart &&
     !isEnd && {
-      background:
-        "linear-gradient(to right, transparent 0%, transparent 50%, #E5EDFF 50%)",
-      borderRadius: "20px 0 0 20px",
-    }),
+    background:
+      "linear-gradient(to right, transparent 0%, transparent 50%, #E5EDFF 50%)",
+    borderRadius: "20px 0 0 20px",
+  }),
   ...(isEnd &&
     !isStart && {
-      background:
-        "linear-gradient(to left, transparent 0%, transparent 50%, #E5EDFF 50%)",
-      borderRadius: "0 20px 20px 0",
-    }),
+    background:
+      "linear-gradient(to left, transparent 0%, transparent 50%, #E5EDFF 50%)",
+    borderRadius: "0 20px 20px 0",
+  }),
   ...(isStart &&
     isEnd && {
-      borderRadius: "20px",
-    }),
+    borderRadius: "20px",
+  }),
 }));
 
 export const DateButton = styled(Button)<{
@@ -193,12 +196,15 @@ export const DateButton = styled(Button)<{
   borderRadius: selected
     ? "50%"
     : isStart && !isEnd
-    ? "20px 0 0 20px"
-    : isEnd && !isStart
-    ? "0 20px 20px 0"
-    : "50%",
-  fontSize: "12px",
+      ? "20px 0 0 20px"
+      : isEnd && !isStart
+        ? "0 20px 20px 0"
+        : "50%",
+  fontSize: "13px",
   fontFamily: "UrbanistMedium",
+  fontWeight: 500,
+  lineHeight: "100%",
+  letterSpacing: 0,
   color: iscurrentmonth
     ? theme.palette.text.primary
     : theme.palette.text.secondary,
@@ -208,15 +214,15 @@ export const DateButton = styled(Button)<{
   padding: 0,
   ...(!selected &&
     iscurrentmonth && {
-      "&:hover": {
-        backgroundColor: "#E5EDFF",
-        color: theme.palette.primary.main,
-      },
-    }),
+    "&:hover": {
+      backgroundColor: "#E5EDFF",
+      color: theme.palette.primary.main,
+    },
+  }),
   ...(selected && {
     backgroundColor: theme.palette.primary.main,
     color: "#FFFFFF",
-    fontWeight: 600,
+    fontWeight: 500,
     boxShadow: "0 2px 4px rgba(0, 4, 255, 0.3)",
     "&:hover": {
       backgroundColor: theme.palette.primary.main,

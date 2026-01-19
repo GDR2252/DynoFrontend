@@ -45,6 +45,7 @@ const SubText = styled(Typography)(() => ({
   fontFamily: "OutfitRegular",
   color: homeTheme.palette.text.secondary,
   lineHeight: "28px",
+  letterSpacing: "0",
 }));
 
 const HighlightText = styled("span")(() => ({

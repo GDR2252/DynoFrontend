@@ -22,7 +22,7 @@ const TransactionsPage = ({
     }
   }, [setPageName, setPageDescription, tTransactions]);
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
       {/* <CustomDatePicker /> */}
 
       <TransactionPage />

@@ -38,8 +38,11 @@ const GoLiveSection = () => {
 
   return (
     <section
+      id="how-it-works"
       style={{
-        padding: isMobile ? "126px 0" : "96px 0",
+        padding: "96px 0",
+        maxWidth: "1280px",
+        margin: "0 auto",
       }}
     >
       {/* Section Title */}
@@ -57,7 +60,7 @@ const GoLiveSection = () => {
         <Grid container spacing={4} justifyContent="center">
           {cardData.map((card, index) => (
             <Grid
-              key={index}
+              key={card.title}
               item
               xs={12}
               sm={12}
@@ -119,6 +122,8 @@ const GoLiveSection = () => {
                     <Image
                       src={card.image}
                       alt={card.title}
+                      quality={100}
+                      priority={index < 3}
                       style={{
                         width: isMobile ? card.title === "Generate Payment Links or Integrate API" ? "110%" : "120%" : "100%",
                         height: "100%",

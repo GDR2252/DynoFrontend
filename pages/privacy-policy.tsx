@@ -58,7 +58,7 @@ const PrivacyPolicy = () => {
         </Typography>
 
         {/* PRIVACY POLICY SECTIONS */}
-        {privacyData.map((section, sectionIndex) => (
+        {privacyData.map((section) => (
           <Box key={section.title}>
             {/* SECTION HEADING */}
             <Typography

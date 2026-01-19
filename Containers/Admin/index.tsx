@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import adminAuth from "@/Components/Page/Common/HOC/adminAuth";
 import AdminHeader from "@/Components/Layout/AdminHeader";
 
-const AdminLayout = ({ children, pageName, pageDescription, component }: LayoutProps) => {
+const AdminLayout = ({ children, pageName, pageDescription, }: LayoutProps) => {
   const theme = useTheme();
   const tokenData = useTokenData();
   const ToastState = useSelector((state: rootReducer) => state.toastReducer);
@@ -49,7 +49,7 @@ const AdminLayout = ({ children, pageName, pageDescription, component }: LayoutP
           mt: { sm: `${toolbarHeight}px`, xs: `${toolbarHeight * 2 - 5}px` },
         }}
       >
-        <AdminHeader pageName={pageName} pageDescription={pageDescription} component={component} />
+        <AdminHeader pageName={pageName} pageDescription={pageDescription} />
         <Box
           component="main"
           sx={{

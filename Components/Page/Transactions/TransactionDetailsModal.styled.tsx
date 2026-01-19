@@ -288,7 +288,7 @@ export const ExplorerButton = styled("button")(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
   cursor: "pointer",
   transition: "all 0.2s ease",
-    color: theme.palette.text.primary,
+  color: theme.palette.text.primary,
   "&:hover": {
     backgroundColor: theme.palette.common.white,
     color: theme.palette.text.primary,

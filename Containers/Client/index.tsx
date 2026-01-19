@@ -8,14 +8,14 @@ import { useSelector } from "react-redux";
 import NewHeader from "@/Components/Layout/NewHeader";
 import NewSidebar from "@/Components/Layout/NewSidebar";
 import MobileNavigationBar from "@/Components/Layout/MobileNavigationBar";
-import { PageHeader, PageHeaderDescription, PageHeaderTitle } from "./styled";
+import { MainPageHeader, PageHeader, PageHeaderDescription, PageHeaderTitle } from "./styled";
 import { CompanyDialogProvider } from "@/Components/UI/CompanyDialog/context";
 
 const ClientLayout = ({
   children,
   pageName,
   pageDescription,
-  component,
+  pageWarning,
   pageAction,
   pageHeaderSx,
 }: LayoutProps) => {
@@ -80,46 +80,55 @@ const ClientLayout = ({
                 height: "100%",
                 overflowY: "auto",
                 overflowX: "hidden",
+                display: "flex",
+                flexDirection: "column",
                 pb: { xs: 10, lg: 0 },
               }}
             >
               {(pageName || pageDescription) && (
-                <PageHeader
-                  sx={
-                    pageHeaderSx
-                      ? ([
+                <MainPageHeader>
+                  <PageHeader
+                    sx={
+                      pageHeaderSx
+                        ? ([
                           { pt: 0, pb: { lg: 2.5, md: 1.5, xs: 1 }, mb: 0 },
                           pageHeaderSx,
                         ] as SxProps<Theme>)
-                      : { pt: 0, pb: { lg: 2.5, md: 1.5, xs: 1 }, mb: 0 }
-                  }
-                >
-                  <Box sx={{ flex: 1, minWidth: 0 }}>
-                    {pageName && (
-                      <PageHeaderTitle variant="h1">{pageName}</PageHeaderTitle>
-                    )}
-                    {pageDescription && (
-                      <PageHeaderDescription variant="body1">
-                        {pageDescription}
-                      </PageHeaderDescription>
-                    )}
-                  </Box>
+                        : { pt: 0, pb: { lg: 2.5, md: 1.5, xs: 1 }, mb: 0 }
+                    }
+                  >
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      {pageName && (
+                        <PageHeaderTitle variant="h1">{pageName}</PageHeaderTitle>
+                      )}
+                      {pageDescription && (
+                        <PageHeaderDescription variant="body1">
+                          {pageDescription}
+                        </PageHeaderDescription>
+                      )}
+                    </Box>
 
-                  {pageAction && (
-                    <Box
-                      sx={{
-                        flexShrink: 0,
-                        pt: { xs: 0.5, md: 0 },
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        gap: { xs: 1, md: 2 },
-                      }}
-                      className="pageAction"
-                    >
-                      {pageAction}
+                    {pageAction && (
+                      <Box
+                        sx={{
+                          flexShrink: 0,
+                          pt: { xs: 0.5, md: 0 },
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          gap: { xs: 1, md: 2 },
+                        }}
+                        className="pageAction"
+                      >
+                        {pageAction}
+                      </Box>
+                    )}
+                  </PageHeader>
+                  {pageWarning && (
+                    <Box sx={{ mb: { xs: 1, md: 2 }, mt: { xs: 1, md: 0 } }}>
+                      {pageWarning}
                     </Box>
                   )}
-                </PageHeader>
+                </MainPageHeader>
               )}
               {children}
             </Grid>

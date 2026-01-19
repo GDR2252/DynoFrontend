@@ -14,23 +14,23 @@ export const StyledHomeButton = styled(Button, {
   shouldForwardProp: (prop) => prop !== "intent",
 })<{ intent?: "primary" | "outlined" }>(
   ({ theme, intent = "primary" }) => ({
-  padding: "12px 32px",
-  fontSize: "14px",
-  maxHeight: "44px",
-  lineHeight: "20px",
-  fontWeight: 500,
-  fontFamily: "OutfitMedium",
-  borderRadius: "10px !important",
-  letterSpacing: "0px !important",
-  textTransform: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "8px",
-  boxShadow: "none",
-  transition: "all 0.3s ease",
-  ...(intent === "primary"
-    ? {
+    padding: "12px 32px",
+    fontSize: "14px",
+    maxHeight: "44px",
+    lineHeight: "20px",
+    fontWeight: 500,
+    fontFamily: "OutfitMedium",
+    borderRadius: "10px !important",
+    letterSpacing: "0px !important",
+    textTransform: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    boxShadow: "none",
+    transition: "all 0.3s ease",
+    ...(intent === "primary"
+      ? {
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.common.white,
         "& .MuiSvgIcon-root": {
@@ -53,7 +53,7 @@ export const StyledHomeButton = styled(Button, {
           },
         },
       }
-    : {
+      : {
         backgroundColor: theme.palette.common.white,
         color: theme.palette.text.primary,
         border: `1px solid ${theme.palette.border.main}`,
@@ -67,4 +67,4 @@ export const StyledHomeButton = styled(Button, {
           backgroundColor: theme.palette.common.white,
         },
       }),
-}));
+  }));

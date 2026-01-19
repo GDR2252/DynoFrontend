@@ -791,17 +791,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
-  Card,
   Typography,
-  TextField,
-  Button,
   Divider,
   useTheme,
-  Radio,
   RadioGroup,
   FormControlLabel,
-  InputAdornment,
-  Input,
 } from "@mui/material";
 import Image from "next/image";
 import GoogleIcon from "@/assets/Images/googleIcon.svg";
@@ -833,9 +827,7 @@ import {
   USER_SEND_OTP,
   UserAction,
 } from "@/Redux/Actions/UserAction";
-import Link from "next/link";
 import CustomButton from "@/Components/UI/Buttons";
-import { ContentWrapper } from "@/Containers/Login/styled";
 import useIsMobile from "@/hooks/useIsMobile";
 import LoadingIcon from "@/assets/Icons/LoadingIcon";
 import { signIn } from "next-auth/react";
@@ -2298,8 +2290,8 @@ export default function Login() {
                           }
                           helperText={
                             loginMethod === "password" &&
-                            passwordTouched &&
-                            passwordError
+                              passwordTouched &&
+                              passwordError
                               ? passwordError.includes(" ")
                                 ? passwordError
                                 : t(passwordError)
@@ -2377,10 +2369,10 @@ export default function Login() {
                   }}
                   endIcon={
                     userState.loading &&
-                    !(
-                      (loginMethod === "email" && emailOtpDialogOpen) ||
-                      (loginMethod === "sms" && smsOtpDialogOpen)
-                    ) ? (
+                      !(
+                        (loginMethod === "email" && emailOtpDialogOpen) ||
+                        (loginMethod === "sms" && smsOtpDialogOpen)
+                      ) ? (
                       <LoadingIcon size={20} />
                     ) : undefined
                   }
@@ -2644,10 +2636,10 @@ export default function Login() {
                 position: "absolute",
                 ...(isMobile &&
                   theme.breakpoints.down("lg") && {
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    width: "100%",
-                  }),
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: "100%",
+                }),
                 zIndex: 5,
               }}
             >

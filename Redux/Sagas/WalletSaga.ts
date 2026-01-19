@@ -35,7 +35,7 @@ export function* getWallet(): unknown {
       payload: data,
     });
   } catch (e: any) {
-    const message = e.response.data.message ?? e.message;
+    const message = e?.response?.data?.message ?? e?.message ?? "Failed to fetch wallets";
     yield put({
       type: TOAST_SHOW,
       payload: {
@@ -73,7 +73,7 @@ export function* validateWalletAddress(payload: any): unknown {
       payload: data,
     });
   } catch (e: any) {
-    const message = e.response.data.message ?? e.message;
+    const message = e?.response?.data?.message ?? e?.message ?? "Failed to validate wallet address";
     yield put({
       type: TOAST_SHOW,
       payload: {

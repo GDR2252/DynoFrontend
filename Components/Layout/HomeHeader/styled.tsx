@@ -54,15 +54,7 @@ export const NavLinks = styled("div")(({ theme }) => ({
 export const Actions = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  gap: 16,
-
-  [theme.breakpoints.down("md")]: {
-    gap: 8,
-  },
-
-  [theme.breakpoints.down("sm")]: {
-    gap: 6,
-  },
+  gap: "12px",
 
   ".signin": {
     textTransform: "none",
@@ -91,14 +83,7 @@ export const Actions = styled("div")(({ theme }) => ({
 }));
 
 export const MobileMenuButton = styled(IconButton)(({ theme }) => ({
-  padding: "8px",
-  marginLeft: "8px",
-  "&:hover": {
-    backgroundColor: "transparent",
-  },
-  "& img": {
-    display: "block",
-  },
+  padding: "0px",
 }));
 
 export const MobileDrawer = styled("div")({

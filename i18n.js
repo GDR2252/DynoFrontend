@@ -23,6 +23,7 @@ i18n.use(initReactI18next).init({
       companyDialog: require("./langs/locales/en/companyDialog.json"),
       transactions: require("./langs/locales/en/transactions.json"),
       createPaymentLinkScreen: require("./langs/locales/en/createPaymentLinkScreen.json"),
+      paymentLinks: require("./langs/locales/en/paymentLinks.json"),
     },
     pt: {
       common: require("./langs/locales/pt/common.json"),
@@ -35,6 +36,7 @@ i18n.use(initReactI18next).init({
       companyDialog: require("./langs/locales/pt/companyDialog.json"),
       transactions: require("./langs/locales/pt/transactions.json"),
       createPaymentLinkScreen: require("./langs/locales/pt/createPaymentLinkScreen.json"),
+      paymentLinks: require("./langs/locales/pt/paymentLinks.json"),
     },
     fr: {
       common: require("./langs/locales/fr/common.json"),

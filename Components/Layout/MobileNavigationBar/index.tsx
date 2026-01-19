@@ -20,6 +20,7 @@ import portugalFlag from "@/assets/Images/Icons/flags/portugal-flag.png";
 import unitedStatesFlag from "@/assets/Images/Icons/flags/united-states-flag.png";
 import franceFlag from "@/assets/Images/Icons/flags/france-flag.png";
 import spainFlag from "@/assets/Images/Icons/flags/spain-flag.png";
+import Link from "next/link";
 
 import {
   NavigationBarContainer,
@@ -76,6 +77,12 @@ const MobileNavigationBar = () => {
   // Second row items (3 items) - shown when expanded
   const secondRowItems = [
     { label: t("language"), icon: "language", path: null, id: "language" },
+    {
+      label: t("payLinks"),
+      icon: "payment-links",
+      path: "/pay-links",
+      id: "pay-links",
+    },
     { label: t("api"), icon: "api", path: "/apis", id: "api" },
     {
       label: t("notifications"),
@@ -140,8 +147,8 @@ const MobileNavigationBar = () => {
                 color: isCreate
                   ? theme.palette.primary.main
                   : active
-                  ? theme.palette.primary.main
-                  : theme.palette.text.primary,
+                    ? theme.palette.primary.main
+                    : theme.palette.text.primary,
               }}
             />
           );
@@ -174,6 +181,7 @@ const MobileNavigationBar = () => {
                   "wallets",
                   "api",
                   "notifications",
+                  "payment-links",
                 ];
                 const useSidebarIcon = supportedIcons.includes(item.icon);
                 return (
@@ -251,7 +259,7 @@ const MobileNavigationBar = () => {
             )}
           </MainNavRow>
 
-          <ExpandedContent isExpanding={isExpanded}>
+          {/* <ExpandedContent isExpanding={isExpanded}>
             <AlertBanner>
               <ErrorIcon
                 sx={{ color: theme.palette.error.main, fontSize: "20px" }}
@@ -263,6 +271,17 @@ const MobileNavigationBar = () => {
                 sx={{ color: theme.palette.text.secondary, fontSize: "16px" }}
               />
             </AlertBanner>
+          </ExpandedContent> */}
+
+          <ExpandedContent isExpanding={isExpanded}>
+            <Link href='/wallet' onClick={() => setIsExpanded(false)}>
+              <AlertBanner>
+                <ErrorIcon
+                  sx={{ color: theme.palette.error.main, fontSize: "20px" }}
+                />
+                <AlertText>{t("walletSetUpWarnnigTitle")}</AlertText>
+              </AlertBanner>
+            </Link>
           </ExpandedContent>
         </NavigationBar>
 

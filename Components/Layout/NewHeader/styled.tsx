@@ -20,7 +20,7 @@ export const LogoContainer = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "start",
-  padding: "10px 24px 9px ",
+  padding: "9px 24px 8px ",
   borderRadius: "14px",
   outline: "1px solid ",
   outlineColor: theme?.palette?.border?.main,
@@ -38,7 +38,7 @@ export const MainContainer = styled("div")(({ theme }) => ({
   justifyContent: "space-between",
   borderRadius: "14px",
   gap: "10px",
-  padding: 8,
+  padding: "6px 8px",
   outline: "1px solid",
   outlineColor: theme?.palette?.border?.main,
 

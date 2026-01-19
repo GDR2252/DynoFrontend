@@ -14,12 +14,18 @@ import { theme } from "@/styles/theme";
 import Wallet from "@/Components/Page/Wallet";
 import AddWalletModal from "@/Components/UI/AddWalletModal";
 import { useRouter } from "next/router";
+import { SetupWarnnigContainer } from "@/Components/Page/Wallet/styled";
+import { WarningIconContainer } from "@/Components/UI/AddWalletModal/styled";
+import Image from "next/image";
+import InfoIcon from "@/assets/Icons/info-icon.svg";
+import { useWalletData } from "@/hooks/useWalletData";
 
 const WalletPage = ({
   setPageName,
   setPageDescription,
   setPageAction,
   setPageHeaderSx,
+  setPageWarning,
 }: pageProps) => {
   const router = useRouter();
   const namespaces = ["walletScreen", "common"];
@@ -32,6 +38,8 @@ const WalletPage = ({
   );
 
   const [openCreate, setOpenCreate] = useState(false);
+
+  const { walletWarning } = useWalletData();
 
   useEffect(() => {
     if (setPageName && setPageDescription) {
@@ -69,6 +77,51 @@ const WalletPage = ({
       }
     };
   }, [setPageHeaderSx]);
+
+  useEffect(() => {
+    if (!setPageWarning) return;
+    setPageWarning(
+      <>
+        {walletWarning && (
+          <SetupWarnnigContainer >
+            <WarningIconContainer>
+              <Image
+                src={InfoIcon}
+                alt="info icon"
+                width={16}
+                height={16}
+                draggable={false}
+                style={{ filter: "brightness(0)" }}
+              />
+            </WarningIconContainer>
+            <Box>
+              <Typography sx={{ fontFamily: "UrbanistSemibold", fontWeight: "600", fontSize: isMobile ? "10px" : "15px", lineHeight: "130%", letterSpacing: 0 }}>{t("walletSetUpWarnnigTitle")}</Typography>
+              <Typography sx={{ fontFamily: "UrbanistMedium", fontWeight: "500", fontSize: isMobile ? "10px" : "15px", lineHeight: "130%", letterSpacing: 0 }}>
+                {(() => {
+                  const text = t("walletSetUpWarnnigSubtitle");
+                  const boldText = t("walletSetUpWarnnigSubtitleBold");
+                  const parts = text.split(boldText);
+                  if (parts.length === 2) {
+                    return (
+                      <>
+                        {parts[0]}
+                        <Typography component="span" sx={{ fontFamily: "UrbanistSemibold", fontWeight: "600", fontSize: isMobile ? "10px" : "15px", lineHeight: "130%", letterSpacing: 0 }}>
+                          {boldText}
+                        </Typography>
+                        {parts[1]}
+                      </>
+                    );
+                  }
+                  return text;
+                })()}
+              </Typography>
+            </Box>
+          </SetupWarnnigContainer>
+        )}
+      </>
+    );
+    return () => setPageWarning(null);
+  }, [setPageWarning, isMobile, t, walletWarning]);
 
   useEffect(() => {
     if (!setPageAction) return;
@@ -135,7 +188,7 @@ const WalletPage = ({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Box>
+      <Box sx={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
         <Wallet />
         <AddWalletModal
           open={openCreate}

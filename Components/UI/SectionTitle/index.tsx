@@ -15,12 +15,13 @@ const Badge = styled(Box)(() => ({
   width: "fit-content",
   fontSize: 14,
   lineHeight: "20px",
+  letterSpacing: "0px !important",
   fontWeight: 500,
   fontFamily: "OutfitMedium",
   color: homeTheme.palette.primary.main,
   backgroundColor: homeTheme.palette.background.default,
   padding: "6px 16px",
-  borderRadius: "100px",
+  borderRadius: "9999px",
 }));
 
 const Heading = styled(Typography)<{ type: "small" | "large" }>(
@@ -43,13 +44,14 @@ const Heading = styled(Typography)<{ type: "small" | "large" }>(
 
 const SubText = styled(Typography)<{ type: "small" | "large" }>(
   ({ theme, type }) => ({
-    padding: "0 15px",
+    padding: "0",
     fontSize: type === "large" ? "18px" : "16px",
     lineHeight: type === "large" ? "28px" : "24px",
     fontWeight: 400,
+    letterSpacing: "0px !important",
     fontFamily: "OutfitRegular",
     color: homeTheme.palette.text.secondary,
-    maxWidth: type === "large" ? 500 : "auto",
+    maxWidth: type === "large" ? 500 : 576,
     [theme.breakpoints.down("md")]: {
       fontSize: type === "large" ? "18px" : "16px",
       lineHeight: type === "large" ? "28px" : "24px",
@@ -105,10 +107,10 @@ const HomeSectionTitle: React.FC<HomeSectionTitleProps> = ({
   const alignItems = align === "start" ? "flex-start" : "center";
 
   return (
-    <HomeSectionTitleWrapper 
-      sx={{ 
+    <HomeSectionTitleWrapper
+      sx={{
         alignItems,
-        ...sx 
+        ...sx
       }}
     >
       {badgeText && (
@@ -117,18 +119,18 @@ const HomeSectionTitle: React.FC<HomeSectionTitleProps> = ({
         </Badge>
       )}
 
-      <Heading 
-        className="title" 
-        type={type} 
+      <Heading
+        className="title"
+        type={type}
         variant="h1"
         sx={{ textAlign: textAlign || "center" }}
       >
         {renderTitle()}
       </Heading>
 
-      <SubText 
-        className="subtitle" 
-        type={type} 
+      <SubText
+        className="subtitle"
+        type={type}
         variant="body1"
         sx={{ textAlign: textAlign || "center" }}
       >

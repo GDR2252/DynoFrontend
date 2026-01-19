@@ -31,6 +31,7 @@ import DogecoinIcon from "@/assets/cryptocurrency/Dogecoin-icon.svg";
 import BitcoinCashIcon from "@/assets/cryptocurrency/BitcoinCash-icon.svg";
 import TronIcon from "@/assets/cryptocurrency/Tron-icon.svg";
 import USDTIcon from "@/assets/cryptocurrency/USDT-icon.svg";
+import { useWalletData } from "@/hooks/useWalletData";
 
 // Cryptocurrency data
 export interface Cryptocurrency {
@@ -39,16 +40,18 @@ export interface Cryptocurrency {
   icon: any;
 }
 
-export const cryptocurrencies: Cryptocurrency[] = [
-  { code: "BTC", name: "Bitcoin", icon: BitcoinIcon },
-  { code: "ETH", name: "Ethereum", icon: EthereumIcon },
-  { code: "LTC", name: "Litecoin", icon: LitecoinIcon },
-  { code: "BNB", name: "BNB", icon: BNBIcon },
-  { code: "DOGE", name: "Dogecoin", icon: DogecoinIcon },
-  { code: "BCH", name: "Bitcoin Cash", icon: BitcoinCashIcon },
-  { code: "TRX", name: "Tron", icon: TronIcon },
-  { code: "USDT", name: "USDT", icon: USDTIcon },
-];
+// export const cryptocurrencies: Cryptocurrency[] = [
+//   { code: "BTC", name: "Bitcoin", icon: BitcoinIcon },
+//   { code: "ETH", name: "Ethereum", icon: EthereumIcon },
+//   { code: "LTC", name: "Litecoin", icon: LitecoinIcon },
+//   { code: "BNB", name: "BNB", icon: BNBIcon },
+//   { code: "DOGE", name: "Dogecoin", icon: DogecoinIcon },
+//   { code: "BCH", name: "Bitcoin Cash", icon: BitcoinCashIcon },
+//   { code: "TRX", name: "Tron", icon: TronIcon },
+//   { code: "USDT", name: "USDT", icon: USDTIcon },
+// ];
+
+
 
 export interface CryptocurrencySelectorProps {
   label?: string;
@@ -79,6 +82,8 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
   const isMobile = useIsMobile("sm");
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
+
+  const { cryptocurrencies } = useWalletData();
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -198,7 +203,7 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
               flex: 1,
             }}
           >
-            <IconChip sx={{ minWidth: "fit-content",height: "28px", ...sxIconChip }}>
+            <IconChip sx={{ minWidth: "fit-content", height: "28px", ...sxIconChip }}>
               <CryptocurrencyIcon
                 src={selectedCrypto.icon}
                 alt={selectedCrypto.name}

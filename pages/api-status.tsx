@@ -70,7 +70,7 @@ const ApiStatus = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: "48px",
+        gap: isMobile ? "23px" : "48px",
       }}
     >
       {/* STATUS */}

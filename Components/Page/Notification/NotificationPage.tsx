@@ -40,19 +40,21 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
         <Box sx={{ flex: 1, pr: 2 }}>
           <Typography
             sx={{
-              fontSize: "15px",
-              fontWeight: 500,
-              fontFamily: "UrbanistMedium",
+              fontSize: { xs: "13px", md: "15px" },
+              fontWeight: 700,
+              fontFamily: "UrbanistBold",
               color: "#242428",
               mb: 0.5,
+              lineHeight: "100%",
+              letterSpacing: 0
             }}
           >
             {title}
           </Typography>
           <Typography
             sx={{
-              fontSize: "13px",
-              fontFamily: "UrbanistRegular",
+              fontSize: { xs: "13px", md: "15px" },
+              fontFamily: "UrbanistMedium",
               color: theme.palette.text.secondary,
               lineHeight: 1.5,
             }}
@@ -112,6 +114,8 @@ const NotificationPage = () => {
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
             {/* Transaction Alerts Card */}
             <PanelCard
+              headerSx={{ fontSize: { xs: "15px", md: "20px" } }}
+              subTitleSx={{ fontSize: { xs: "13px", md: "15px" } }}
               title={tNotifications("transactionAlertsTitle")}
               subTitle={tNotifications("transactionAlertsSubtitle")}
               showHeaderBorder={false}
@@ -140,7 +144,7 @@ const NotificationPage = () => {
                   display: "flex",
                   flexDirection: "column",
                   gap: 2,
-                  pt: 5.5,
+                  pt: { xs: 3, md: 5.5 },
                 }}
               >
                 <NotificationItem
@@ -161,6 +165,7 @@ const NotificationPage = () => {
 
             {/* Weekly Reports Card */}
             <PanelCard
+              headerSx={{ fontSize: { xs: "15px", md: "20px" } }}
               title={tNotifications("weeklyReportsTitle")}
               subTitle={tNotifications("weeklyReportsSubtitle")}
               showHeaderBorder={false}
@@ -184,7 +189,7 @@ const NotificationPage = () => {
               }
               sx={{ height: "100%" }}
             >
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 5.5 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: { xs: 3, md: 5.5 }, }}>
                 <NotificationItem
                   title={tNotifications("weeklySummaryTitle")}
                   description={tNotifications("weeklySummaryDescription")}
@@ -215,6 +220,7 @@ const NotificationPage = () => {
             }}
           >
             <PanelCard
+              headerSx={{ fontSize: { xs: "15px", md: "20px" } }}
               title={tNotifications("emailNotificationsCardTitle")}
               subTitle={tNotifications("emailNotificationsCardSubtitle")}
               showHeaderBorder={false}
@@ -238,7 +244,7 @@ const NotificationPage = () => {
               }
               sx={{ height: "fit-content" }}
             >
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 5.5 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: { xs: 3, md: 5.5 } }}>
                 <NotificationItem
                   title={tNotifications("emailNotificationsTitle")}
                   description={tNotifications("emailNotificationsDescription")}
@@ -262,18 +268,20 @@ const NotificationPage = () => {
                   <Box sx={{ flex: 1, pr: 2 }}>
                     <Typography
                       sx={{
-                        fontSize: "15px",
-                        fontWeight: 500,
+                        fontSize: { xs: "13px", md: "15px" },
+                        fontWeight: 700,
                         fontFamily: "UrbanistMedium",
                         color: "#242428",
                         mb: 0.5,
+                        lineHeight: "100%",
+                        letterSpacing: 0
                       }}
                     >
                       {tNotifications("browserNotificationsTitle")}
                     </Typography>
                     <Typography
                       sx={{
-                        fontSize: "13px",
+                        fontSize: { xs: "13px", md: "15px" },
                         fontFamily: "UrbanistRegular",
                         color: theme.palette.text.secondary,
                         lineHeight: 1.5,

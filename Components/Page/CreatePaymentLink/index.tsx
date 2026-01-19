@@ -58,6 +58,7 @@ const CreatePaymentLinkPage = () => {
     expire: "no",
     description: "",
     blockchainFees: "company",
+    linkId: "",
   });
 
   // Validation errors for Payment Settings tab
@@ -119,7 +120,7 @@ const CreatePaymentLinkPage = () => {
 
   const handlePaymentSettingsChange = (field: string, value: string) => {
     setPaymentSettings((prev) => ({ ...prev, [field]: value }));
-    
+
     // Clear error when user starts typing
     if (paymentSettingsErrors[field as keyof typeof paymentSettingsErrors]) {
       setPaymentSettingsErrors((prev) => ({ ...prev, [field]: "" }));
@@ -346,11 +347,11 @@ const CreatePaymentLinkPage = () => {
                         }}
                       >
                         <ExpireText isMobile={isMobile}>
-                          {paymentSettings.expire === "no" 
-                            ? tPaymentLink("no") 
+                          {paymentSettings.expire === "no"
+                            ? tPaymentLink("no")
                             : paymentSettings.expire === "yes"
-                            ? tPaymentLink("yes")
-                            : tPaymentLink("no")}
+                              ? tPaymentLink("yes")
+                              : tPaymentLink("no")}
                         </ExpireText>
                       </Box>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -419,11 +420,11 @@ const CreatePaymentLinkPage = () => {
                           >
                             <ListItemText
                               primary={
-                                option === "no" 
+                                option === "no"
                                   ? tPaymentLink("no")
                                   : option === "yes"
-                                  ? tPaymentLink("yes")
-                                  : option.charAt(0).toUpperCase() + option.slice(1)
+                                    ? tPaymentLink("yes")
+                                    : option.charAt(0).toUpperCase() + option.slice(1)
                               }
                               primaryTypographyProps={{
                                 sx: {
@@ -510,7 +511,7 @@ const CreatePaymentLinkPage = () => {
                   }
                   helperText={
                     paymentSettingsTouched.description &&
-                    paymentSettingsErrors.description
+                      paymentSettingsErrors.description
                       ? paymentSettingsErrors.description
                       : undefined
                   }

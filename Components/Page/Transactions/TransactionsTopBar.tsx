@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
 import { Box, Typography, useTheme, Menu, ListItemButton } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -32,6 +32,7 @@ import BitcoinIcon from "@/assets/cryptocurrency/Bitcoin-icon.svg";
 import EthereumIcon from "@/assets/cryptocurrency/Ethereum-icon.svg";
 import LitecoinIcon from "@/assets/cryptocurrency/Litecoin-icon.svg";
 import Image from "next/image";
+import { ALLCRYPTOCURRENCIES } from "@/hooks/useWalletData";
 interface TransactionsTopBarProps {
   onSearch?: (searchTerm: string) => void;
   onDateRangeChange?: (dateRange: DateRange) => void;
@@ -122,27 +123,23 @@ const TransactionsTopBar: React.FC<TransactionsTopBarProps> = ({
     return isMobile ? tTransactions("period") : tTransactions("selectDateRange");
   };
 
-  const walletOptions = [
-    { value: "all", label: tTransactions("allWallets"), code: "ALL", icon: WalletIcon },
-    {
-      value: "wallet1",
-      label: tTransactions("mainBitcoinWallet"),
-      code: "BTC",
-      icon: BitcoinIcon,
-    },
-    {
-      value: "wallet2",
-      label: tTransactions("ethereumPayments"),
-      code: "ETH",
-      icon: EthereumIcon,
-    },
-    {
-      value: "wallet3",
-      label: tTransactions("litecoinWallet"),
-      code: "LTC",
-      icon: LitecoinIcon,
-    },
-  ];
+  const walletOptions = useMemo(
+    () => [
+      {
+        value: "all",
+        label: tTransactions("allWallets"),
+        code: "ALL",
+        icon: WalletIcon,
+      },
+      ...ALLCRYPTOCURRENCIES.map((crypto, index) => ({
+        value: `wallet${index + 1}`,
+        label: crypto.name,
+        code: crypto.code,
+        icon: crypto.icon,
+      })),
+    ],
+    [tTransactions]
+  );
 
   return (
     <TransactionsTopBarContainer>

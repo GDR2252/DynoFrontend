@@ -19,6 +19,12 @@ export const StyledCard = styled(Card)<StyledCardProps>(({ theme, height, width 
   flexDirection: "column",
   overflow: "hidden",
   position: "relative",
+  // Fix for iOS Safari shadow clipping
+  // WebkitMaskImage: "-webkit-radial-gradient(at center bottom, #0004FF4D, #FFFFFF)",
+  // maskImage: "radial-gradient(white, black)",
+  // transform: "translateZ(0)",
+  // WebkitTransform: "translateZ(0)",
+  // willChange: "transform",
 
   "&::before": {
     content: '""',
@@ -35,6 +41,8 @@ export const StyledCard = styled(Card)<StyledCardProps>(({ theme, height, width 
     opacity: 0.5,
     zIndex: 0,
     pointerEvents: "none",
+    // WebkitMaskImage: "-webkit-radial-gradient(at center bottom, #0004FF4D, #FFFFFF)",
+    // maskImage: "radial-gradient(at center bottom, #0004FF4D, #FFFFFF)",
   },
   "& > *": {
     position: "relative",
@@ -88,18 +96,25 @@ export const FeatureIcon = styled(Box)(() => ({
 export const WhyChooseUsCard = styled(Box)(() => ({
   display: "flex",
   alignItems: "center",
-  justifyContent: "center",
+  justifyContent: "flex-start",
   textAlign: "center",
   flexDirection: "column",
   width: "100%",
   height: "100%",
-  maxWidth: "294px",
-  maxHeight: "218px",
+  minWidth: "328px",
+  minHeight: "218px",
   padding: "25px",
   background: theme.palette.primary.contrastText,
   border: `1px solid #E7E8EF`,
   boxShadow: "none !important",
   borderRadius: "20px",
+  margin: "0 auto",
+  [theme.breakpoints.up("md")]: {
+    minWidth: "294px",
+    maxWidth: "294px",
+    minHeight: "218px",
+    maxHeight: "218px",
+  },
 }));
 
 export const WhyChooseDynoPayTitle = styled(Typography)(() => ({

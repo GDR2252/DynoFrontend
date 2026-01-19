@@ -8,6 +8,7 @@
   "dash": "Painel",
   "transactions": "Transações",
   "create": "Criar",
+  "payLinks": "Links de pagamento",
   "wallets": "Carteiras",
   "more": "Mais",
   "close": "Fechar",
@@ -38,5 +39,6 @@
   "last7Days": "Últimos 7 dias",
   "last30Days": "Últimos 30 dias",
   "last90Days": "Últimos 90 dias",
-  "customPeriod": "Período personalizado"
+  "customPeriod": "Período personalizado",
+  "walletSetUpWarnnigTitle": "Configuração completa da carteira"
 }

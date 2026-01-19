@@ -10,7 +10,7 @@ import Toast from "@/Components/UI/Toast";
 import { useSelector } from "react-redux";
 import paymentAuth from "@/Components/Page/Common/HOC/paymentAuth";
 
-const PaymentLayout = ({ children, pageName, pageDescription, component }: LayoutProps) => {
+const PaymentLayout = ({ children, pageName, pageDescription }: LayoutProps) => {
   const theme = useTheme();
   const tokenData = useTokenData();
   const ToastState = useSelector((state: rootReducer) => state.toastReducer);

@@ -52,7 +52,7 @@ const HomeButton: React.FC<HomeButtonProps> = ({
     // Default navigation logic for primary variant
     if (variant === "primary") {
       const token = localStorage.getItem("token");
-      const isLoggedIn = token && (userState.email || userState.name);
+      const isLoggedIn = token;
 
       if (isLoggedIn) {
         router.push("/dashboard");

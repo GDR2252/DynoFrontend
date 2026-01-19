@@ -11,6 +11,7 @@ import useCase4 from "@/assets/Images/UseCase/use-case-4.png";
 import { theme } from "@/styles/theme";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import UseCaseBanner from "@/Components/UI/UseCaseBanner";
+import useIsMobile from "@/hooks/useIsMobile";
 
 const UseCaseCard = styled(Box)(() => ({
   backgroundColor: "#FFFFFF",
@@ -81,6 +82,9 @@ const UseCaseTag = styled(Typography)(() => ({
 }));
 
 const UseCaseSection = () => {
+
+  const isMobile = useIsMobile("md");
+
   const useCases = [
     {
       image: useCase1,
@@ -110,7 +114,7 @@ const UseCaseSection = () => {
   ];
 
   return (
-    <section>
+    <section id="use-cases">
       <Box sx={{ py: "53px" }}>
         <Box
           sx={{
@@ -134,9 +138,9 @@ const UseCaseSection = () => {
             subtitle="See how different businesses use DynoPay to accept crypto payments."
           />
 
-          <Grid container spacing={3} sx={{ width: "100%" }}>
-            {useCases.map((useCase, index) => (
-              <Grid item xs={12} md={6} key={index}>
+          <Grid container spacing={isMobile ? 0 : 3} sx={{ width: "100%" }}>
+            {useCases.map((useCase) => (
+              <Grid item xs={12} md={6} key={useCase.title}>
                 <UseCaseCard>
                   <Box
                     sx={{

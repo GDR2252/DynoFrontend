@@ -1,115 +1,148 @@
-import React from "react";
-import { Box } from "@mui/material";
+import React, { useEffect, useState, useMemo } from "react";
+import { Box, CircularProgress } from "@mui/material";
 import TransactionsTable, { Transaction } from "./TransactionsTable";
 import TransactionsTopBar from "./TransactionsTopBar";
+import { useDispatch, useSelector } from "react-redux";
+import { rootReducer, ICustomerTransactions } from "@/utils/types";
+import { TransactionAction } from "@/Redux/Actions";
+import { TRANSACTION_FETCH } from "@/Redux/Actions/TransactionAction";
+import { DateRange } from "@/Components/UI/DatePicker";
+import { isWithinInterval, parseISO, startOfDay, endOfDay } from "date-fns";
+import EmptyDataModel from "@/Components/UI/EmptyDataModel";
 
 const TransactionPage = () => {
-  // Sample transaction data matching the image
-  const sampleTransactions: Transaction[] = [
-    {
-      id: "TX001",
-      crypto: "BTC",
-      amount: "0.0245 BTC",
-      usdValue: "$1,250",
-      dateTime: "07.11.2025 14:32:00",
-      status: "done",
-      fees: "0.0001 BTC",
-      confirmations: "6/6",
-      incomingTransactionId:
-        "3a7b9cd2e3f4a5b6c7d8e9f0ab2c3d4e5f6a7b8c9d0e1f2a0b4c5d6e718a9b",
-      outgoingTransactionId:
-        "98a7b6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0c9f8e7d6c5b4a3f2e1d0c9b8a",
-      callbackUrl: "https://api.example.com/callback",
-      webhookResponse: {
-        status: "done",
-        txid: "3a7b9c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a0b3b4c5d6e7780a9b",
-        amount: 0.0245,
-        confirmations: 6,
-      },
-    },
-    {
-      id: "TX002",
-      crypto: "LTC",
-      amount: "0.0245 LTC",
-      usdValue: "$1,250",
-      dateTime: "07.11.2025 14:32:00",
-      status: "pending",
-      fees: "0.0001 LTC",
-      confirmations: "3/6",
-      incomingTransactionId:
-        "4b8c0de3f4a5b6c7d8e9f0ab2c3d4e5f6a7b8c9d0e1f2a0b4c5d6e718a9c",
-    },
-    {
-      id: "TX003",
-      crypto: "ETH",
-      amount: "0.0245 ETH",
-      usdValue: "$1,250",
-      dateTime: "07.11.2025 14:32:00",
-      status: "done",
-      fees: "0.0001 ETH",
-      confirmations: "12/12",
-      incomingTransactionId:
-        "5c9d1ef4a5b6c7d8e9f0ab2c3d4e5f6a7b8c9d0e1f2a0b4c5d6e718a9d",
-      callbackUrl: "https://api.example.com/callback",
-    },
-    {
-      id: "TX004",
-      crypto: "LTC",
-      amount: "0.0245 LTC",
-      usdValue: "$1,250",
-      dateTime: "07.11.2025 14:32:00",
-      status: "failed",
-    },
-    {
-      id: "TX005",
-      crypto: "BTC",
-      amount: "0.0245 BTC",
-      usdValue: "$1,250",
-      dateTime: "07.11.2025 14:32:00",
-      status: "done",
-      fees: "0.0001 BTC",
-      confirmations: "6/6",
-      incomingTransactionId:
-        "6d0e2fa5b6c7d8e9f0ab2c3d4e5f6a7b8c9d0e1f2a0b4c5d6e718a9e",
-    },
-    {
-      id: "TX006",
-      crypto: "ETH",
-      amount: "0.0245 ETH",
-      usdValue: "$1,250",
-      dateTime: "07.11.2025 14:32:00",
-      status: "done",
-      fees: "0.0001 ETH",
-      confirmations: "12/12",
-    },
-  ];
+  const dispatch = useDispatch();
 
-  const handleSearch = (searchTerm: string) => {
-    console.log("Search:", searchTerm);
-    // Implement search logic
+  // State for filters
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dateRange, setDateRange] = useState<DateRange>({
+    startDate: null,
+    endDate: null,
+  });
+  const [selectedWallet, setSelectedWallet] = useState("all");
+
+  const transactionState = useSelector(
+    (state: rootReducer) => state.transactionReducer
+  );
+
+  useEffect(() => {
+    dispatch(TransactionAction(TRANSACTION_FETCH));
+  }, [dispatch]);
+
+  // Wallet mapping for filtering: Matches values in TransactionsTopBar
+  const walletMapping: { [key: string]: string } = {
+    all: "all",
+    wallet1: "BTC",
+    wallet2: "ETH",
+    wallet3: "LTC",
+    wallet4: "DOGE",
+    wallet5: "BCH",
+    wallet6: "TRX",
+    wallet7: "USDT-ERC20",
+    wallet8: "USDT-TRC20",
   };
 
-  const handleDateRangeChange = (dateRange: any) => {
-    console.log("Date range:", dateRange);
-    // Implement date filter logic
+  const processedTransactions: Transaction[] = useMemo(() => {
+    if (!transactionState?.customers_transactions) return [];
+
+    return transactionState.customers_transactions
+      .filter((item: ICustomerTransactions) => {
+        // 1. Search Filter
+        if (searchTerm) {
+          const lowerSearch = searchTerm.toLowerCase();
+          const matchesId = item.id?.toLowerCase().includes(lowerSearch);
+          const matchesAmount = item.base_amount
+            ?.toString()
+            .includes(lowerSearch);
+          const matchesCrypto = item.base_currency?.toLowerCase().includes(lowerSearch);
+
+          if (!matchesId && !matchesAmount && !matchesCrypto) return false;
+        }
+
+        // 2. Wallet Filter
+        if (selectedWallet !== "all") {
+          const targetCurrency = walletMapping[selectedWallet];
+          // If strict matching is required. Note: 'item.base_currency' might be "BTC" etc.
+          if (targetCurrency && item.base_currency !== targetCurrency) {
+            return false;
+          }
+        }
+
+        // 3. Date Range Filter
+        if (dateRange.startDate && dateRange.endDate && item.createdAt) {
+          try {
+            const transactionDate = parseISO(item.createdAt);
+            if (
+              !isWithinInterval(transactionDate, {
+                start: startOfDay(dateRange.startDate),
+                end: endOfDay(dateRange.endDate),
+              })
+            ) {
+              return false;
+            }
+          } catch (e) {
+            console.error("Date parsing error", item.createdAt);
+            return false;
+          }
+        }
+
+        return true;
+      })
+      .map((item: ICustomerTransactions) => ({
+        id: item.id || `TX-${Math.random().toString(36).substr(2, 9)}`,
+        crypto: item.base_currency,
+        amount: `${item.base_amount} ${item.base_currency}`,
+        usdValue: `$${item.base_amount}`, // Adjust if you have a conversion rate
+        dateTime: item.createdAt,
+        status: (item.status === "success" || item.status === "successful") ? "done" : (item.status === "failed" ? "failed" : "pending"),
+        // Additional fields for the extended transaction type if needed
+        fees: "0",
+        confirmations: "0/0",
+        incomingTransactionId: item.transaction_reference,
+      }));
+  }, [transactionState.customers_transactions, searchTerm, selectedWallet, dateRange]);
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+  };
+
+  const handleDateRangeChange = (range: DateRange) => {
+    setDateRange(range);
   };
 
   const handleWalletChange = (wallet: string) => {
-    console.log("Wallet:", wallet);
-    // Implement wallet filter logic
+    setSelectedWallet(wallet);
   };
 
   const handleExport = () => {
-    console.log("Export");
-    // Implement export logic
+    console.log("Export triggered");
+    // TODO: Implement export functionality
   };
+
+  if (transactionState.loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (transactionState?.customers_transactions?.length === 0 && !transactionState.loading) {
+    return (
+      <EmptyDataModel pageName="transactions" />
+    );
+  }
 
   return (
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: { md: "20px", xs: "16px" },
+        flex: 1,
+        minHeight: 0,
+        "> :not(:last-child)": {
+          marginBottom: { md: "20px", xs: "16px" },
+        },
       }}
     >
       <TransactionsTopBar
@@ -118,7 +151,7 @@ const TransactionPage = () => {
         onWalletChange={handleWalletChange}
         onExport={handleExport}
       />
-      <TransactionsTable transactions={sampleTransactions} rowsPerPage={10} />
+      <TransactionsTable transactions={processedTransactions} rowsPerPage={5} />
     </Box>
   );
 };

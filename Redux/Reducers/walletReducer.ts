@@ -55,7 +55,7 @@ const walletReducer = (state = walletInitialState, action: ReducerAction) => {
       return {
         ...state,
         loading: false,
-        walletList: payload,
+        walletList: Array.isArray(payload) ? payload : [],
       };
 
     case WALLET_DELETE:

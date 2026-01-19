@@ -36,7 +36,7 @@ export default function UserMenu() {
       customWindow.location.replace("/auth/login");
     }
   };
-  
+
   // Safely get firstName, handle cases where name might be undefined
   const firstName = tokenData?.name?.split(" ")[0] || "";
   const lastName = tokenData?.name?.split(" ")[1] || "";
@@ -102,7 +102,7 @@ export default function UserMenu() {
           </UserName>
         </Box>
 
-        {!isMobile && <VerticalLine />}
+        <VerticalLine />
         {anchorEl ? (
           <ExpandLessIcon
             fontSize="small"
@@ -178,7 +178,7 @@ export default function UserMenu() {
               }
               sx={{ padding: "8px 34px" }}
               fullWidth
-              // size="medium"
+            // size="medium"
             />
           </Box>
         </PopWrapper>

@@ -1,13 +1,12 @@
 import React, { useMemo, useRef, useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 import {
   AreaChart,
   Area,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   ResponsiveContainer,
-  Dot,
 } from "recharts";
 import Image from "next/image";
 import { Box, Typography, useTheme } from "@mui/material";
@@ -21,12 +20,9 @@ export interface AreaChartData {
 }
 
 export interface AreaChartProps {
-  // Data
   data: AreaChartData[];
-  dataKey: string; // Key for X-axis (e.g., "date", "label")
-  valueKey: string; // Key for Y-axis values (e.g., "value", "volume")
-
-  // Styling
+  dataKey: string;
+  valueKey: string;
   height?: number;
   width?: string | number;
   strokeColor?: string;
@@ -41,8 +37,6 @@ export interface AreaChartProps {
   showVerticalGrid?: boolean;
   showXAxisLine?: boolean;
   showYAxisLine?: boolean;
-
-  // Axis customization
   showXAxis?: boolean;
   showYAxis?: boolean;
   xAxisLabel?: string;
@@ -52,61 +46,45 @@ export interface AreaChartProps {
   yAxisDomain?: [number | string, number | string];
   yAxisInterval?: number;
   yAxisTickCount?: number;
-
-  // Tooltip
   showTooltip?: boolean;
   tooltipLabelFormatter?: (value: any) => string;
   tooltipValueFormatter?: (value: any, name: string) => [string, string];
   tooltipLabel?: string;
   tooltipValuePrefix?: string;
   tooltipValueSuffix?: string;
-
-  // Area fill
   fillOpacity?: number;
   gradientId?: string;
   gradientStartColor?: string;
   gradientEndColor?: string;
   gradientStartOpacity?: number;
   gradientEndOpacity?: number;
-
-  // Spacing
   margin?: {
     top?: number;
     right?: number;
     bottom?: number;
     left?: number;
   };
-
-  // Additional customization
   curveType?:
-    | "monotone"
-    | "linear"
-    | "natural"
-    | "step"
-    | "stepBefore"
-    | "stepAfter";
+  | "monotone"
+  | "linear"
+  | "natural"
+  | "step"
+  | "stepBefore"
+  | "stepAfter";
   connectNulls?: boolean;
   isAnimationActive?: boolean;
   animationDuration?: number;
-
-  // Container styling
   containerSx?: any;
   chartSx?: any;
-
-  // Fixed width and scroll
   fixedWidth?: number;
   enableHorizontalScroll?: boolean;
-
-  // Grid cell dimensions (for fixed grid sizing)
-  gridCellWidth?: number; // Width of each grid cell (horizontal spacing between data points)
-  gridCellHeight?: number; // Height of each grid cell (vertical spacing between Y-axis ticks)
-  gridCellWidthMobile?: number; // Mobile grid cell width (default: 70)
-  gridCellHeightMobile?: number; // Mobile grid cell height (default: 70)
-  gridCellWidthDesktop?: number; // Desktop grid cell width (default: 150)
-  gridCellHeightDesktop?: number; // Desktop grid cell height (default: 75)
-  
-  // Data visibility
-  hasData?: boolean; // Whether to show the area/line (default: true, calculated from data if not provided)
+  gridCellWidth?: number;
+  gridCellHeight?: number;
+  gridCellWidthMobile?: number;
+  gridCellHeightMobile?: number;
+  gridCellWidthDesktop?: number;
+  gridCellHeightDesktop?: number;
+  hasData?: boolean;
 }
 
 const CustomTooltip = ({
@@ -119,10 +97,24 @@ const CustomTooltip = ({
   valueSuffix = "",
   isMobile,
   coordinate,
+  chartRef,
 }: any) => {
   const theme = useTheme();
 
   if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    if (data?.__isEmpty || data?.__isSinglePoint) {
+      return null;
+    }
+  }
+
+  if (
+    active &&
+    payload &&
+    payload.length &&
+    typeof document !== "undefined" &&
+    chartRef?.current
+  ) {
     const data = payload[0].payload;
     const labelText = labelFormatter
       ? labelFormatter(data)
@@ -132,116 +124,180 @@ const CustomTooltip = ({
       ? valueFormatter(value, payload[0].name)
       : [`${valuePrefix}${value}${valueSuffix}`, label || "Value"];
 
-    return (
-      <Box
-        sx={{
-          backgroundColor: "#FFFFFF",
-          padding: isMobile ? "8px" : "12px",
-          border: `1px solid ${theme.palette.border.main}`,
-          borderRadius: "14px",
-          position: "relative",
-          boxShadow: "0 4px 6.3px 0 rgba(52, 93, 157, 0.09)",
-          zIndex: 50,
-          transform: "translateX(-50%)", // Center the tooltip horizontally below the dot
+    const rect = chartRef.current.getBoundingClientRect();
+    const left = rect.left + (coordinate?.x ?? rect.width / 2);
+    const offsetY = 12;
+    const top = rect.top + (coordinate?.y ?? 0) + offsetY;
 
-          "&::before": {
-            content: '""',
-            position: "absolute",
-            left: "50%",
-            top: "-7px",
-            transform: "translateX(-50%)",
-            width: 0,
-            height: 0,
-            borderLeft: "7px solid transparent",
-            borderRight: "7px solid transparent",
-            borderBottom: `7px solid ${theme.palette.border.main}`,
-            zIndex: -1,
-          },
-          "&::after": {
-            content: '""',
-            position: "absolute",
-            left: "50%",
-            top: "-5px",
-            transform: "translateX(-50%)",
-            width: 0,
-            height: 0,
-            borderLeft: "7px solid transparent",
-            borderRight: "7px solid transparent",
-            borderBottom: "7px solid #fff",
-            zIndex: 2,
-          },
+    const clampedLeft = Math.max(8, Math.min(left, window.innerWidth - 8));
+    const clampedTop = Math.max(8, Math.min(top, window.innerHeight - 8));
+
+    const tooltipElement = (
+      <Box
+        data-areachart-tooltip="true"
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+        sx={{
+          position: "absolute",
+          left: clampedLeft,
+          top: clampedTop,
+          transform: "translate(-50%, 0)",
+          zIndex: 2000,
+          pointerEvents: "auto",
         }}
       >
         <Box
           sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: isMobile ? "4px" : "5px",
+            backgroundColor: "#FFFFFF",
+            padding: isMobile ? "8px" : "12px",
+            border: `1px solid ${theme.palette.border.main}`,
+            borderRadius: "14px",
+            position: "relative",
+            boxShadow: "0 4px 6.3px 0 rgba(52, 93, 157, 0.09)",
+            zIndex: 50,
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              left: "50%",
+              top: "-7px",
+              transform: "translateX(-50%)",
+              width: 0,
+              height: 0,
+              borderLeft: "7px solid transparent",
+              borderRight: "7px solid transparent",
+              borderBottom: `7px solid ${theme.palette.border.main}`,
+              zIndex: -1,
+            },
+            "&::after": {
+              content: '""',
+              position: "absolute",
+              left: "50%",
+              top: "-5px",
+              transform: "translateX(-50%)",
+              width: 0,
+              height: 0,
+              borderLeft: "7px solid transparent",
+              borderRight: "7px solid transparent",
+              borderBottom: "7px solid #fff",
+              zIndex: 2,
+            },
           }}
         >
-          <Image
-            src={CalendarTodayIcon}
-            alt="calendar-icon"
-            width={isMobile ? 11 : 14}
-            height={isMobile ? 11 : 14}
-          />
-          <Typography
-            sx={{
-              fontSize: isMobile ? "10px" : "12px",
-              fontFamily: "UrbanistMedium",
-              color: theme.palette.text.secondary,
-              lineHeight: 1.2,
-            }}
-          >
-            {labelText}
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: isMobile ? "4px" : "5px",
-            paddingTop: isMobile ? "8px" : "10px",
-          }}
-        >
-          <RoundedStackIcon fill={theme.palette.primary.main} size={isMobile ? 10 : 12} />
-          {/* <Image
-            src={RoundedStackIcon}
-            alt="Rounded Stack Icon"
-            width={isMobile ? 10 : 12}
-            height={isMobile ? 10 : 12}
-            style={{
-              color: theme.palette.primary.main,
-              filter:
-                "invert(9%) sepia(100%) saturate(6955%) hue-rotate(246deg) brightness(96%) contrast(142%)",
-            }}
-          /> */}
-          <Typography
-            sx={{
-              fontSize: isMobile ? "10px" : "12px",
-              fontFamily: "UrbanistMedium",
-              color: theme.palette.primary.main,
-              lineHeight: 1.2,
-            }}
-          >
-            {typeof formattedValue === "string"
-              ? formattedValue
-              : `${formattedValue[1]}: ${formattedValue[0]}`}
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: isMobile ? "4px" : "5px" }}>
+            <Image src={CalendarTodayIcon} alt="calendar-icon" width={isMobile ? 11 : 14} height={isMobile ? 11 : 14} />
+            <Typography
+              sx={{
+                fontSize: isMobile ? "10px" : "12px",
+                fontFamily: "UrbanistMedium",
+                color: theme.palette.text.secondary,
+                lineHeight: 1.2,
+              }}
+            >
+              {labelText}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: "flex", alignItems: "center", gap: isMobile ? "4px" : "5px", paddingTop: isMobile ? "8px" : "10px" }}>
+            <RoundedStackIcon fill={theme.palette.primary.main} size={isMobile ? 10 : 12} />
+            <Typography sx={{ fontSize: isMobile ? "10px" : "12px", fontFamily: "UrbanistMedium", color: theme.palette.primary.main, lineHeight: 1.2 }}>
+              {typeof formattedValue === "string" ? formattedValue : `${formattedValue[1]}: ${formattedValue[0]}`}
+            </Typography>
+          </Box>
         </Box>
       </Box>
     );
+
+    return createPortal(tooltipElement, document.body);
   }
 
   return null;
 };
 
-const CustomDot = ({ cx = 20, cy = 20, fill, r = 5, ...props }: any) => {
-  // Use a static filter ID since all dots can share the same filter
-  // Ensure dots are interactive for tooltip
+interface CustomDotProps extends React.SVGProps<SVGGElement> {
+  cx?: number;
+  cy?: number;
+  fill?: string;
+  r?: number;
+  onDotEnter?: (payload: any, cx: number, cy: number) => void;
+  onDotLeave?: () => void;
+  onDotClick?: (payload: any, cx: number, cy: number) => void;
+  payload?: any;
+}
+
+const CustomDot = ({ cx = 20, cy = 20, fill, r = 5, onDotEnter, onDotLeave, onDotClick, payload, ...props }: CustomDotProps) => {
+
+  const isInsideRef = useRef(false);
+
+  if (payload?.__isEmpty || payload?.__isSinglePoint) {
+    return null;
+  }
+
+  const ENTER_BUFFER = 8;
+  const LEAVE_BUFFER = 6;
+  const enterRadius = (r ?? 5) + ENTER_BUFFER;
+  const leaveRadius = (r ?? 5) + LEAVE_BUFFER;
+  const enterRadiusSq = enterRadius * enterRadius;
+  const leaveRadiusSq = leaveRadius * leaveRadius;
+
+  const handlePointerMove = (e: React.PointerEvent<SVGCircleElement>) => {
+    e.stopPropagation();
+
+    const svg = (e.currentTarget as SVGCircleElement).ownerSVGElement;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+
+    const dotClientX = rect.left + (cx ?? 0);
+    const dotClientY = rect.top + (cy ?? 0);
+    const dx = e.clientX - dotClientX;
+    const dy = e.clientY - dotClientY;
+    const distSq = dx * dx + dy * dy;
+
+    if (distSq <= enterRadiusSq) {
+      if (!isInsideRef.current) {
+        isInsideRef.current = true;
+        onDotEnter?.(payload, cx ?? 0, cy ?? 0);
+      }
+    } else if (distSq > leaveRadiusSq) {
+      if (isInsideRef.current) {
+        isInsideRef.current = false;
+        onDotLeave?.();
+      }
+    }
+  };
+
+  const handlePointerEnter = (e: React.PointerEvent<SVGCircleElement>) => {
+    e.stopPropagation();
+    handlePointerMove(e);
+  };
+
+  const handlePointerLeave = (e: React.PointerEvent<SVGCircleElement>) => {
+    e.stopPropagation();
+    if (isInsideRef.current) {
+      isInsideRef.current = false;
+      onDotLeave?.();
+    }
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDotClick?.(payload, cx ?? 0, cy ?? 0);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<SVGCircleElement>) => {
+    e.stopPropagation();
+    isInsideRef.current = true;
+    onDotEnter?.(payload, cx ?? 0, cy ?? 0);
+  };
+  const handleTouchEnd = (e: React.TouchEvent<SVGCircleElement>) => {
+    e.stopPropagation();
+    if (isInsideRef.current) {
+      isInsideRef.current = false;
+      onDotLeave?.();
+    }
+  };
+
   return (
-    <g {...props} style={{ pointerEvents: "all", cursor: "pointer" }}>
-      {/* Blurred background circle */}
+    <g {...props} style={{ pointerEvents: "none" }}>
       <circle
         cx={cx}
         cy={cy}
@@ -251,9 +307,25 @@ const CustomDot = ({ cx = 20, cy = 20, fill, r = 5, ...props }: any) => {
         stroke={fill}
         filter={`blur(12px)`}
         opacity={0.6}
+        style={{ pointerEvents: "none" }}
       />
-      {/* Sharp foreground circle */}
-      <circle cx={cx} cy={cy} r={r} strokeWidth={1} fill={fill} />
+
+      <circle cx={cx} cy={cy} r={r} strokeWidth={1} fill={fill} style={{ pointerEvents: "none" }} />
+
+      <circle
+        cx={cx}
+        cy={cy}
+        r={enterRadius}
+        data-recharts-dot="true"
+        fill="transparent"
+        onPointerMove={handlePointerMove}
+        onPointerEnter={handlePointerEnter}
+        onPointerLeave={handlePointerLeave}
+        onClick={handleClick}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        style={{ pointerEvents: "all", cursor: "pointer", opacity: 0 }}
+      />
     </g>
   );
 };
@@ -317,14 +389,13 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
   const theme = useTheme();
   const isMobile = useIsMobile("md");
 
-  // Drag scroll refs and state
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
+  const chartInnerRef = useRef<HTMLDivElement>(null);
 
-  // Use theme colors if not provided
   const finalStrokeColor = strokeColor || theme.palette.primary.main;
   const finalFillColor = fillColor || theme.palette.primary.main;
   const finalDotColor = dotColor || theme.palette.primary.main;
@@ -332,45 +403,70 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
     gradientStartColor || theme.palette.primary.main;
   const finalGradientEndColor = gradientEndColor || theme.palette.primary.main;
 
-  // Determine if we should show the area/line
+  const normalizedChartData = useMemo(() => {
+    const markedData = data.map((item) => ({
+      ...item,
+      __isOriginalPoint: true,
+    }));
+
+    if (markedData.length === 0) {
+      return [
+        {
+          [dataKey]: "No Data",
+          [valueKey]: 0,
+          __isEmpty: true,
+          __isOriginalPoint: false,
+        },
+      ];
+    }
+
+    if (markedData.length === 1) {
+      const originalPoint = markedData[0];
+      const syntheticPoint = {
+        ...originalPoint,
+        [dataKey]: `${String(originalPoint[dataKey as keyof typeof originalPoint])} +1`,
+        __isSinglePoint: true,
+        __isOriginalPoint: false,
+      };
+      return [originalPoint, syntheticPoint];
+    }
+
+    return markedData;
+  }, [data, dataKey, valueKey]);
+
   const shouldShowArea = useMemo(() => {
     if (hasDataProp !== undefined) return hasDataProp;
-    // Auto-detect: check if there are any non-zero values
-    const values = data
-      .map((item) => Number(item[valueKey]))
-      .filter((v) => !isNaN(v));
-    return values.some((v) => v > 0);
-  }, [hasDataProp, data, valueKey]);
 
-  // Use the provided data directly (it should already be processed with all dates filled)
-  const chartData = data;
+    return normalizedChartData.length > 0;
+  }, [hasDataProp, normalizedChartData.length]);
 
-  // Calculate Y-axis domain if not provided
+  const chartData = normalizedChartData;
+
   const calculatedYAxisDomain = useMemo(() => {
     const values = chartData
-      .map((item) => Number(item[valueKey]))
+      .map((item) => Number((item as AreaChartData)[valueKey]))
       .filter((v) => !isNaN(v));
-    
+
     if (values.length === 0) {
-      // If no data, return default domain or provided domain
-      return yAxisDomain || [0, 16000];
+      const domain = yAxisDomain || [0, 16000];
+      const [minD, maxD] = domain;
+      const minNum = typeof minD === "string" ? parseFloat(minD) : Number(minD);
+      const maxNum = typeof maxD === "string" ? parseFloat(maxD) : Number(maxD);
+      return [minNum, Math.max(maxNum, 1)];
     }
 
     const maxValue = Math.max(...values);
     const minValue = Math.min(...values);
 
     if (yAxisDomain) {
-      // If domain is provided, ensure it accommodates all data points
       const [minDomain, maxDomain] = yAxisDomain;
       const minNum = typeof minDomain === "string" ? parseFloat(minDomain) : Number(minDomain);
       const maxNum = typeof maxDomain === "string" ? parseFloat(maxDomain) : Number(maxDomain);
-      
-      // Always ensure the domain can accommodate the max value with padding for curve interpolation
+
       if (maxValue > maxNum) {
-        // Calculate appropriate rounding based on value magnitude
         let roundedMax;
         if (maxValue >= 100000) {
-          roundedMax = Math.ceil((maxValue * 1.3) / 10000) * 10000; // 30% padding for large values
+          roundedMax = Math.ceil((maxValue * 1.3) / 10000) * 10000;
         } else if (maxValue >= 10000) {
           roundedMax = Math.ceil((maxValue * 1.3) / 5000) * 5000;
         } else if (maxValue >= 1000) {
@@ -380,7 +476,6 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
         }
         return [minNum, roundedMax];
       }
-      // If max value fits, use the provided domain but ensure it's properly rounded
       let roundedMax;
       if (maxNum >= 100000) {
         roundedMax = Math.ceil(maxNum / 10000) * 10000;
@@ -391,36 +486,30 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
       } else {
         roundedMax = Math.ceil(maxNum / 100) * 100;
       }
-      return [minNum, roundedMax];
+      return [minNum, Math.max(roundedMax, 1)];
     }
 
-    // Auto-calculate domain if not provided
-    // Add padding to ensure all values fit within the domain
-    // For natural curves, add extra padding as interpolation can create peaks beyond data points
     const valueRange = maxValue - minValue;
     const basePadding = Math.max(
-      valueRange * 0.15, // 15% padding based on range
-      maxValue * 0.1 // Or 10% of max value, whichever is larger
+      valueRange * 0.15,
+      maxValue * 0.1
     );
-    
-    // Add extra padding for natural/curved interpolation types
+
     let curvePadding = 0;
     if (curveType === "natural") {
-      // For natural curves, use aggressive padding for large value jumps
       const hasLargeJump = valueRange > maxValue * 0.5;
       if (hasLargeJump) {
-        curvePadding = maxValue * 0.4; // 40% for large jumps
+        curvePadding = maxValue * 0.4;
       } else {
-        curvePadding = maxValue * 0.25; // 25% for smaller ranges
+        curvePadding = maxValue * 0.25;
       }
     } else if (curveType === "monotone") {
-      curvePadding = maxValue * 0.15; // 15% for monotone
+      curvePadding = maxValue * 0.15;
     }
-    
+
     const padding = basePadding + curvePadding;
     const paddedMax = maxValue + padding;
 
-    // Determine appropriate rounding based on value magnitude
     let roundedMax;
     if (paddedMax >= 100000) {
       roundedMax = Math.ceil((paddedMax + 1000) / 10000) * 10000;
@@ -432,7 +521,6 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
       roundedMax = Math.ceil((paddedMax + 10) / 100) * 100;
     }
 
-    // Final safety check: ensure roundedMax is always significantly greater than maxValue
     if (roundedMax <= maxValue) {
       if (maxValue >= 100000) {
         roundedMax = Math.ceil((maxValue * 1.5) / 10000) * 10000;
@@ -444,13 +532,11 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
         roundedMax = Math.ceil((maxValue * 1.5) / 100) * 100;
       }
     } else {
-      // Add additional safety buffer for curve interpolation
-      const safetyBuffer = curveType === "natural" 
-        ? roundedMax * 0.15 // 15% extra buffer for natural curves
-        : roundedMax * 0.1; // 10% for others
+      const safetyBuffer = curveType === "natural"
+        ? roundedMax * 0.15
+        : roundedMax * 0.1;
       roundedMax = roundedMax + safetyBuffer;
-      
-      // Re-round after adding buffer
+
       if (roundedMax >= 100000) {
         roundedMax = Math.ceil(roundedMax / 10000) * 10000;
       } else if (roundedMax >= 10000) {
@@ -460,8 +546,7 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
       } else {
         roundedMax = Math.ceil(roundedMax / 100) * 100;
       }
-      
-      // Final verification: ensure it's at least 20% above maxValue for natural curves
+
       if (curveType === "natural" && roundedMax < maxValue * 1.2) {
         if (maxValue >= 100000) {
           roundedMax = Math.ceil((maxValue * 1.2) / 10000) * 10000;
@@ -475,12 +560,10 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
       }
     }
 
-    return [0, roundedMax];
+    return [0, Math.max(roundedMax, 1)];
   }, [chartData, valueKey, yAxisDomain, curveType]);
 
-  // Calculate chart dimensions based on grid cell size
   const calculatedChartDimensions = useMemo(() => {
-    // Check if any grid cell props are provided
     const hasGridCellProps =
       gridCellWidth ||
       gridCellHeight ||
@@ -490,10 +573,8 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
       gridCellHeightDesktop;
 
     if (hasGridCellProps) {
-      const dataPoints = data.length;
+      const dataPoints = chartData.length;
 
-      // Adjust cell width based on data points count
-      // If data points > 10, reduce cell width to make chart more compact
       let baseCellWidth =
         gridCellWidth ||
         (isMobile ? gridCellWidthMobile : gridCellWidthDesktop);
@@ -502,42 +583,37 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
         (isMobile ? gridCellHeightMobile : gridCellHeightDesktop);
 
       if (dataPoints > 10) {
-        // Reduce cell width proportionally for mobile and desktop
         if (isMobile) {
-          // Mobile: reduce more aggressively
-          baseCellWidth = baseCellWidth * (10 / dataPoints) * 0.8; // Scale down more
+          baseCellWidth = baseCellWidth * (10 / dataPoints) * 0.8;
         } else {
-          // Desktop: reduce less aggressively
-          baseCellWidth = baseCellWidth * (10 / dataPoints) * 0.9; // Scale down less
+          baseCellWidth = baseCellWidth * (10 / dataPoints) * 0.9;
         }
       }
 
       const cellWidth = baseCellWidth;
       const cellHeight = baseCellHeight;
 
-        // Calculate width: (number of data points - 1) * cell width + margins
-        const calculatedWidth =
-          (dataPoints - 1) * cellWidth +
-          (margin?.left || 0) +
-          (margin?.right || 0) +
-          20; // Minimal padding for Y-axis labels
+      const calculatedWidth =
+        (dataPoints - 1) * cellWidth +
+        (margin?.left || 0) +
+        (margin?.right || 0) +
+        20;
 
-        // Calculate height: number of Y-axis intervals * cell height + margins
-        const [minDomain, maxDomain] = calculatedYAxisDomain;
-        const minNum =
-          typeof minDomain === "string"
-            ? parseFloat(minDomain)
-            : Number(minDomain);
-        const maxNum =
-          typeof maxDomain === "string"
-            ? parseFloat(maxDomain)
-            : Number(maxDomain);
-        const yIntervals = 4; // Based on our tick count
-        const calculatedHeight =
-          yIntervals * cellHeight +
-          (margin?.top || 0) +
-          (margin?.bottom || 0) +
-          10; // Minimal padding
+      const [minDomain, maxDomain] = calculatedYAxisDomain;
+      const minNum =
+        typeof minDomain === "string"
+          ? parseFloat(minDomain)
+          : Number(minDomain);
+      const maxNum =
+        typeof maxDomain === "string"
+          ? parseFloat(maxDomain)
+          : Number(maxDomain);
+      const yIntervals = 4;
+      const calculatedHeight =
+        yIntervals * cellHeight +
+        (margin?.top || 0) +
+        (margin?.bottom || 0) +
+        10;
 
       return { width: calculatedWidth, height: calculatedHeight };
     }
@@ -561,40 +637,101 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
     (enableHorizontalScroll ? 800 : undefined);
   const chartHeight = calculatedChartDimensions?.height || height;
 
-  // Enable scroll if: explicitly enabled OR chart width is calculated (grid cells provided)
-  // This ensures scroll works on all screen sizes when grid dimensions are set
-  const shouldScroll =
-    enableHorizontalScroll || calculatedChartDimensions?.width !== undefined;
+  const shouldScroll = enableHorizontalScroll || calculatedChartDimensions?.width !== undefined;
 
-  // Drag scroll handlers
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!scrollContainerRef.current || !shouldScroll) return;
-      // Don't start drag if clicking on interactive elements
-      if (
-        (e.target as HTMLElement).closest("button") ||
-        (e.target as HTMLElement).closest("a") ||
-        (e.target as HTMLElement).closest(".recharts-tooltip-wrapper")
-      )
-        return;
-      e.preventDefault();
-      e.stopPropagation();
-      isDraggingRef.current = true;
-      setIsDragging(true);
-      startXRef.current =
-        e.pageX - (scrollContainerRef.current.offsetLeft || 0);
-      scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
+  const isInteractiveElement = (el: HTMLElement | null) =>
+    !!el?.closest?.("button") ||
+    !!el?.closest?.("a") ||
+    !!el?.closest?.(".recharts-tooltip-wrapper") ||
+    !!el?.closest?.("[data-recharts-dot]") ||
+    !!el?.closest?.(".recharts-dot") ||
+    !!el?.closest?.("[data-areachart-tooltip]");
+
+  const [hoveredDot, setHoveredDot] = useState<null | { cx: number; cy: number; payload: any; value: any; label?: string }>(null);
+  const [pinned, setPinned] = useState(false);
+  const pinnedRef = useRef(false);
+
+  React.useEffect(() => {
+    pinnedRef.current = pinned;
+  }, [pinned]);
+
+  const handleDotEnter = useCallback(
+    (payload: any, cx: number, cy: number) => {
+      setHoveredDot((prev) => {
+        if (prev && prev.payload === payload) return prev;
+        const value = payload?.[valueKey];
+        const label = tooltipLabelFormatter ? tooltipLabelFormatter(payload) : payload?.[dataKey] ?? tooltipLabel;
+        return { cx, cy, payload, value, label };
+      });
     },
-    [shouldScroll]
+    [valueKey, dataKey, tooltipLabelFormatter, tooltipLabel]
   );
+
+  const handleDotLeave = useCallback(() => {
+    if (pinnedRef.current) return;
+    setHoveredDot(null);
+  }, []);
+
+  const handleDotClick = useCallback((payload: any, cx: number, cy: number) => {
+    const value = payload?.[valueKey];
+    const label = tooltipLabelFormatter ? tooltipLabelFormatter(payload) : payload?.[dataKey] ?? tooltipLabel;
+    setHoveredDot({ cx, cy, payload, value, label });
+    setPinned(true);
+    pinnedRef.current = true;
+  }, [valueKey, dataKey, tooltipLabelFormatter, tooltipLabel]);
+
+  React.useEffect(() => {
+    const handleDocPointerDown = (e: PointerEvent) => {
+      const target = e.target as Element | null;
+      if (!target) return;
+      if (
+        target.closest?.("[data-recharts-dot]") ||
+        target.closest?.(".recharts-dot") ||
+        target.closest?.("[data-areachart-tooltip]")
+      ) {
+        return;
+      }
+      if (pinnedRef.current) {
+        pinnedRef.current = false;
+        setPinned(false);
+        setHoveredDot(null);
+      }
+    };
+
+    document.addEventListener("pointerdown", handleDocPointerDown);
+    return () => document.removeEventListener("pointerdown", handleDocPointerDown);
+  }, []);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!scrollContainerRef.current || !shouldScroll) return;
+    if (isInteractiveElement(e.target as HTMLElement)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setHoveredDot(null);
+    isDraggingRef.current = true;
+    setIsDragging(true);
+    startXRef.current = e.pageX - (scrollContainerRef.current.offsetLeft || 0);
+    scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
+  }, [shouldScroll]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!isDraggingRef.current || !scrollContainerRef.current) return;
     e.preventDefault();
     e.stopPropagation();
     const x = e.pageX - (scrollContainerRef.current.offsetLeft || 0);
-    const walk = (x - startXRef.current) * 2; // Scroll speed multiplier
+    const walk = (x - startXRef.current) * 2;
     scrollContainerRef.current.scrollLeft = scrollLeftRef.current - walk;
+  }, []);
+
+  const handlePointerMoveGeneral = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement | null;
+    if (!isInteractiveElement(target)) {
+      setHoveredDot(null);
+      if (pinnedRef.current) {
+        pinnedRef.current = false;
+        setPinned(false);
+      }
+    }
   }, []);
 
   const handleMouseUp = useCallback((e?: React.MouseEvent<HTMLDivElement>) => {
@@ -610,6 +747,11 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
       if (e) {
         e.stopPropagation();
       }
+      setHoveredDot(null);
+      if (pinnedRef.current) {
+        pinnedRef.current = false;
+        setPinned(false);
+      }
       isDraggingRef.current = false;
       setIsDragging(false);
     },
@@ -621,6 +763,7 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
       ref={scrollContainerRef}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
+      onPointerMove={handlePointerMoveGeneral}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
       sx={{
@@ -667,12 +810,12 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
         "&::-webkit-scrollbar-thumb": {
           display: "none",
         },
-        // For Firefox
         scrollbarWidth: "none",
         ...containerSx,
       }}
     >
       <Box
+        ref={chartInnerRef}
         sx={{
           width: shouldScroll ? chartWidth : "100%",
           height: chartHeight || "100%",
@@ -754,6 +897,7 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
                 stroke={gridColor}
                 vertical={showVerticalGrid}
                 horizontal={true}
+                style={{ pointerEvents: "none" }}
               />
             )}
 
@@ -772,10 +916,10 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
                 label={
                   xAxisLabel
                     ? {
-                        value: xAxisLabel,
-                        position: "insideBottom",
-                        offset: -5,
-                      }
+                      value: xAxisLabel,
+                      position: "insideBottom",
+                      offset: -5,
+                    }
                     : undefined
                 }
                 padding={{ left: 0, right: 0 }}
@@ -788,7 +932,7 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
                   fontSize: isMobile ? 10 : 12,
                   fill: theme.palette.text.secondary,
                   fontFamily: "UrbanistRegular",
-                  dx: isMobile ? -3 : -6, // Add padding between text and tick line
+                  dx: isMobile ? -3 : -6,
                 }}
                 tickLine={true}
                 axisLine={showYAxisLine}
@@ -802,14 +946,12 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
                     typeof min === "string" ? parseFloat(min) : Number(min);
                   const maxNum =
                     typeof max === "string" ? parseFloat(max) : Number(max);
-                  
-                  // If domain is default (0, 16000) or max is 16000, use 4000 intervals
+
                   if ((!yAxisDomain && maxNum === 16000) || (yAxisDomain && maxNum === 16000)) {
                     return [0, 4000, 8000, 12000, 16000];
                   }
-                  
-                  // Otherwise, calculate equal intervals
-                  const interval = (maxNum - minNum) / 4; // 5 ticks = 4 equal intervals
+
+                  const interval = (maxNum - minNum) / 4;
                   return [
                     minNum,
                     minNum + interval,
@@ -824,39 +966,25 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
                     : undefined
                 }
                 padding={{ top: 0, bottom: 0 }}
-                width={40} // Reduced width to minimize extra space
+                width={40}
               />
             )}
 
-            {showTooltip && (
-              <Tooltip
-                content={(props: any) => {
-                  // Only show tooltip when hovering over a dot
-                  // shared={false} ensures tooltip only shows on specific data points
-                  if (!props.active || !props.payload || props.payload.length === 0) {
-                    return null;
-                  }
-                  return (
-                    <CustomTooltip
-                      {...props}
-                      labelFormatter={tooltipLabelFormatter}
-                      valueFormatter={tooltipValueFormatter}
-                      label={tooltipLabel}
-                      valuePrefix={tooltipValuePrefix}
-                      valueSuffix={tooltipValueSuffix}
-                      isMobile={isMobile}
-                    />
-                  );
-                }}
-                cursor={false}
-                shared={false}
-                allowEscapeViewBox={{ x: false, y: true }}
-                offset={0}
-                filterNull={false}
+            {showTooltip && hoveredDot && (
+              <CustomTooltip
+                active={true}
+                payload={[{ payload: hoveredDot.payload, dataKey, value: hoveredDot.value, name: "" }]}
+                labelFormatter={tooltipLabelFormatter}
+                valueFormatter={tooltipValueFormatter}
+                label={hoveredDot.label ?? tooltipLabel}
+                valuePrefix={tooltipValuePrefix}
+                valueSuffix={tooltipValueSuffix}
+                isMobile={isMobile}
+                coordinate={{ x: hoveredDot.cx, y: hoveredDot.cy }}
+                chartRef={chartInnerRef}
               />
             )}
 
-            {/* Only render Area if we have actual data, otherwise just show the grid */}
             {shouldShowArea && (
               <Area
                 type={curveType}
@@ -870,17 +998,18 @@ const ReusableAreaChart: React.FC<AreaChartProps> = ({
                 animationDuration={animationDuration}
                 dot={
                   showDots ? (
-                    <CustomDot fill={finalDotColor} r={dotRadius} />
+                    <CustomDot
+                      fill={finalDotColor}
+                      r={dotRadius}
+                      onDotEnter={handleDotEnter}
+                      onDotLeave={handleDotLeave}
+                      onDotClick={handleDotClick}
+                    />
                   ) : (
                     false
                   )
                 }
-                activeDot={{
-                  r: dotRadius + 3,
-                  fill: finalDotColor,
-                  stroke: "none",
-                  strokeWidth: 0,
-                }}
+                activeDot={false}
                 style={{
                   outline: "none",
                   border: "none",

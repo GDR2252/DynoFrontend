@@ -17,6 +17,34 @@ import GlobalReachIcon from "@/assets/Icons/home/global-icon.svg";
 
 const WhyChooseDynopaySection = () => {
   const isMobile = useIsMobile("md");
+
+  const whyChooseItems = [
+    {
+      icon: LowerFeesIcon,
+      iconAlt: "lower fees icon",
+      title: "Lower Fees",
+      description: "Minimal blockchain costs, nothing hidden. Save more on every transaction.",
+    },
+    {
+      icon: FullControlOfFundsIcon,
+      iconAlt: "full control of funds icon",
+      title: "Full Control of Funds",
+      description: "Crypto goes directly into your own wallets. Non-custodial by design.",
+    },
+    {
+      icon: FastIntegrationIcon,
+      iconAlt: "fast integration icon",
+      title: "Fast Integration",
+      description: "Payment links for non-dev teams, powerful API for developers.",
+    },
+    {
+      icon: GlobalReachIcon,
+      iconAlt: "global reach icon",
+      title: "Global Reach",
+      description: "Let customers pay from anywhere in the world, instantly.",
+    },
+  ];
+
   return (
     <section
       style={{
@@ -42,124 +70,38 @@ const WhyChooseDynopaySection = () => {
         }}
       >
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={6} lg={3} xl={3}>
-            <Box
-              sx={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <WhyChooseUsCard>
-                <WhyChooseDynoPayIcon>
-                  <Image
-                    src={LowerFeesIcon}
-                    alt="lower fees icon"
-                    width={28}
-                    height={28}
-                  />
-                </WhyChooseDynoPayIcon>
+          {whyChooseItems.map((item, index) => (
+            <Grid key={index} item xs={12} sm={6} md={6} lg={3} xl={3}>
+              <Box
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <WhyChooseUsCard>
+                  <WhyChooseDynoPayIcon>
+                    <Image
+                      src={item.icon}
+                      alt={item.iconAlt}
+                      width={28}
+                      height={28}
+                      draggable={false}
+                    />
+                  </WhyChooseDynoPayIcon>
 
-                <WhyChooseDynoPayTitle sx={{ marginTop: 2 }}>
-                  Lower Fees
-                </WhyChooseDynoPayTitle>
-                <WhyChooseDynoPayDescription sx={{ marginTop: 1 }}>
-                  Minimal blockchain costs, nothing hidden. Save more on every
-                  transaction.
-                </WhyChooseDynoPayDescription>
-              </WhyChooseUsCard>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={6} md={6} lg={3} xl={3}>
-            <Box
-              sx={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <WhyChooseUsCard>
-                <WhyChooseDynoPayIcon>
-                  <Image
-                    src={FullControlOfFundsIcon}
-                    alt="full control of funds icon"
-                    width={28}
-                    height={28}
-                  />
-                </WhyChooseDynoPayIcon>
-
-                <WhyChooseDynoPayTitle sx={{ marginTop: 2 }}>
-                  Full Control of Funds
-                </WhyChooseDynoPayTitle>
-                <WhyChooseDynoPayDescription sx={{ marginTop: 1 }}>
-                  Crypto goes directly into your own wallets. Non-custodial by
-                  design.
-                </WhyChooseDynoPayDescription>
-              </WhyChooseUsCard>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={6} md={6} lg={3} xl={3}>
-            <Box
-              sx={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <WhyChooseUsCard>
-                <WhyChooseDynoPayIcon>
-                  <Image
-                    src={FastIntegrationIcon}
-                    alt="fast integration icon"
-                    width={28}
-                    height={28}
-                  />
-                </WhyChooseDynoPayIcon>
-
-                <WhyChooseDynoPayTitle sx={{ marginTop: 2 }}>
-                  Fast Integration
-                </WhyChooseDynoPayTitle>
-                <WhyChooseDynoPayDescription sx={{ marginTop: 1 }}>
-                  Payment links for non-dev teams, powerful API for developers.
-                </WhyChooseDynoPayDescription>
-              </WhyChooseUsCard>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={6} md={6} lg={3} xl={3}>
-            <Box
-              sx={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <WhyChooseUsCard>
-                <WhyChooseDynoPayIcon>
-                  <Image
-                    src={GlobalReachIcon}
-                    alt="global reach icon"
-                    width={28}
-                    height={28}
-                  />
-                </WhyChooseDynoPayIcon>
-
-                <WhyChooseDynoPayTitle sx={{ marginTop: 2 }}>
-                  Global Reach
-                </WhyChooseDynoPayTitle>
-                <WhyChooseDynoPayDescription sx={{ marginTop: 1 }}>
-                  Let customers pay from anywhere in the world, instantly.
-                </WhyChooseDynoPayDescription>
-              </WhyChooseUsCard>
-            </Box>
-          </Grid>
+                  <WhyChooseDynoPayTitle sx={{ marginTop: 2 }}>
+                    {item.title}
+                  </WhyChooseDynoPayTitle>
+                  <WhyChooseDynoPayDescription sx={{ marginTop: 1 }}>
+                    {item.description}
+                  </WhyChooseDynoPayDescription>
+                </WhyChooseUsCard>
+              </Box>
+            </Grid>
+          ))}
         </Grid>
       </Box>
     </section>

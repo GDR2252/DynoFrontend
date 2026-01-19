@@ -136,7 +136,7 @@ export const ExpandedContent = styled(Box)<{ isExpanding?: boolean }>(
     display: "flex",
     flexDirection: "column",
     gap: "8px",
-    width: "100%",
+    width: "fit-content",
     opacity: isExpanding ? 1 : 0,
     transform: isExpanding ? "translateY(0)" : "translateY(-10px)",
     maxHeight: isExpanding ? "400px" : "0",
@@ -154,7 +154,7 @@ export const AlertBanner = styled(Box)(({ theme }) => ({
   gap: "12px",
   background: theme.palette.common.white,
   borderRadius: "40px",
-  padding: "10px",
+  padding: "10px 15px",
   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
   outline: `1px solid ${theme.palette.border.main}`,
 }));

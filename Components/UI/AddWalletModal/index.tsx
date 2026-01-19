@@ -334,7 +334,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
         </Typography>
         <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <InputField
-            label={tWallet("walletName")}
+            label={tWallet("walletName") + " *"}
             placeholder={tWallet("walletNamePlaceholder")}
             value={walletName}
             onChange={(e) => {
@@ -344,7 +344,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
             helperText={errors.walletName}
           />
           <CryptocurrencySelector
-            label={tWallet("cryptocurrency")}
+            label={tWallet("cryptocurrency") + " *"}
             value={cryptocurrency}
             onChange={(value) => {
               setCryptocurrency(value);
@@ -363,7 +363,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
             }}
           />
           <InputField
-            label={tWallet("walletAddress")}
+            label={tWallet("walletAddress") + " *"}
             placeholder={tWallet("walletAddressPlaceholder")}
             value={walletAddress}
             onChange={(e) => {
@@ -384,6 +384,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
                 width={16}
                 height={16}
                 draggable={false}
+                style={{filter: "brightness(0)"}}
               />
             </WarningIconContainer>
             <WarningContent>

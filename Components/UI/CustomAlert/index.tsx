@@ -35,8 +35,9 @@ const CustomAlert = ({
           {successIcon ? (
             <CheckCircleRounded fontSize="large" color="success" />
           ) : (
-            <WarningRounded fontSize="large" color="warning" />
+            <WarningRounded fontSize="large" sx={{ color: "#E5484D" }} />
           )}
+
           <Typography variant="h4" fontWeight={700} marginLeft={1.5}>
             {heading ?? "Are you sure?"}
           </Typography>
@@ -56,7 +57,14 @@ const CustomAlert = ({
           my: 2,
         }}
       >
-        <Typography sx={{ fontSize: "18px", fontWeight: 500 }}>
+        <Typography
+          sx={{
+            fontSize: "15px",
+            fontWeight: 400,
+            color: "text.secondary",
+            lineHeight: 1.6,
+          }}
+        >
           {message}
         </Typography>
       </Box>

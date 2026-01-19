@@ -10,14 +10,19 @@ export const FixedBottomWrapper = styled(Box)(({ theme }) => ({
 }));
 
 export const PageHeader = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: theme.spacing(2),
+}));
+
+export const MainPageHeader = styled(Box)(({ theme }) => ({
   position: "sticky",
   top: 0,
   zIndex: 10,
   backgroundColor: theme.palette.secondary.main,
   display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: theme.spacing(2),
+  flexDirection: "column",
 }));
 
 export const PageHeaderTitle = styled(Typography)(({ theme }) => ({

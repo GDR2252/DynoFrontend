@@ -29,5 +29,8 @@
   "cancel": "Cancelar",
   "continue": "Continuar",
   "emailVerification": "Verificação de E-mail",
-  "emailVerificationSubtitle": "Enviamos um código de verificação para o seu e-mail."
+  "emailVerificationSubtitle": "Enviamos um código de verificação para o seu e-mail.",
+  "walletSetUpWarnnigTitle": "Configuração completa da carteira",
+  "walletSetUpWarnnigSubtitle": "Por favor, adicione os oito endereços de carteira de criptomoedas. Algumas funcionalidades permanecerão indisponíveis até que todas as carteiras sejam adicionadas.",
+  "walletSetUpWarnnigSubtitleBold": "os oito endereços de carteira de criptomoedas"
 }

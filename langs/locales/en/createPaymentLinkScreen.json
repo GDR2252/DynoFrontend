@@ -35,11 +35,11 @@
   "paymentLink": "Payment Link",
   "paymentDetails": "Payment Details",
   "expiresOn": "Expires on",
-  "blockchainFees": "Blockchain Fees",
+  "blockchainFees": "Taxas Blockchain",
+  "linkId": "Link ID",
   "paidByCustomer": "Paid by the Customer",
   "paidByClient": "Paid by the Client",
   "toClose": "To close",
   "copyLink": "Copy Link",
   "nA": "N/A"
 }
-

@@ -35,10 +35,10 @@
   "paymentDetails": "Detalhes do Pagamento",
   "expiresOn": "Expira em",
   "blockchainFees": "Taxas Blockchain",
+  "linkId": "Link ID",
   "paidByCustomer": "Pago pelo Cliente",
   "paidByClient": "Pago pela Empresa",
   "toClose": "Fechar",
   "copyLink": "Copiar Link",
   "nA": "N/A"
 }
-

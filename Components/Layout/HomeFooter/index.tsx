@@ -53,7 +53,7 @@ const HomeFooter = () => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          px: isMobile ? 0 : 2,
+          px: 2,
         }}
       >
         {/* TOP */}
@@ -65,16 +65,18 @@ const HomeFooter = () => {
               display: "flex",
               flexDirection: isMobile ? "column" : "row",
               justifyContent: "space-between",
-              gap: isMobile ? 6 : 0,
+              gap: 6,
             }}
           >
             <Typography
               sx={{
+                minWidth: "316px",
                 color: theme.palette.common.white,
                 opacity: 0.6,
                 fontSize: 14,
                 maxWidth: 420,
                 fontFamily: "OutfitRegular",
+                textWrap: "nowrap",
               }}
             >
               Accept crypto payments in minutes. The modern
@@ -86,7 +88,7 @@ const HomeFooter = () => {
               sx={{
                 display: "flex",
                 flexWrap: "wrap",
-                gap: isMobile ? 2 : 3,
+                gap: { xs: "27px", lg: 3 },
                 alignItems: "flex-end",
               }}
             >
@@ -133,8 +135,6 @@ const HomeFooter = () => {
               >
                 <Box
                   sx={{
-                    // background: theme.palette.common.white,
-                    // opacity: 0.1,
                     background: "rgba(255, 255, 255, 0.1)",
                     p: "10px",
                     borderRadius: "50%",

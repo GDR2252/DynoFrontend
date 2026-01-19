@@ -161,7 +161,7 @@ export const InfoText = styled(Typography)(({ theme }) => ({
   lineHeight: "18px",
   fontFamily: "UrbanistMedium",
   [theme.breakpoints.down("md")]: {
-    fontSize: 13,
+    fontSize: "10px",
     lineHeight: "17px",
   },
 }));

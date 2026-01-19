@@ -18,12 +18,20 @@ export const HeaderIcon = styled(IconButton)(({ theme }) => ({
     height: 24,
     width: 24,
   },
+  [theme.breakpoints.down("md")]: {
+    width: 30,
+    height: 30,
+    "& img": {
+      height: 14,
+      width: 14,
+    },
+  },
 }));
 
 export const WalletHeaderAction = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  gap: 4,
+  gap: 6,
   backgroundColor: theme.palette.secondary.light,
   padding: "6px 8px",
   borderRadius: 50,
@@ -44,7 +52,21 @@ export const WalletHeaderAction = styled(Box)(({ theme }) => ({
     fontSize: 13,
     fontWeight: 500,
     lineHeight: "18px",
+    letterSpacing: "0",
     fontFamily: "UrbanistMedium",
+    color: theme.palette.text.secondary,
+  },
+  [theme.breakpoints.down("md")]: {
+    gap: 4,
+    padding: "6px 5px",
+    "& img": {
+      height: 14,
+      width: 14,
+    },
+    "& span": {
+      fontSize: 10,
+      lineHeight: "100%",
+    },
   },
 }));
 
@@ -52,13 +74,19 @@ export const WalletCardBody = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: 20,
+  [theme.breakpoints.down("md")]: {
+    gap: 12,
+  },
 }));
 
 export const WalletCardBodyRow = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "end",
   justifyContent: "space-between",
-  gap: 18,
+  gap: "10px",
+  [theme.breakpoints.down("md")]: {
+    gap: "8px",
+  },
 }));
 
 export const WalletCopyButton = styled(IconButton)(({ theme }) => ({
@@ -116,4 +144,19 @@ export const WalletEditButton = styled(IconButton)(({ theme }) => ({
   "&:hover": {
     backgroundColor: theme.palette.common.white,
   },
+  [theme.breakpoints.down("md")]: {
+    width: 32,
+    height: 32,
+  },
+}));
+
+export const SetupWarnnigContainer = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.light,
+  padding: theme.spacing(1, 1.8),
+  borderRadius: "7px",
+  border: `1px solid ${theme.palette.border.main}`,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-start",
+  gap: theme.spacing(1.5),
 }));

@@ -39,7 +39,7 @@ export default function Home({
       <CustomButton
         label={
           isMobile
-            ? tDashboard("createNewKey")
+            ? tDashboard("create")
             : tDashboard("createPaymentLink")
         }
         variant="primary"

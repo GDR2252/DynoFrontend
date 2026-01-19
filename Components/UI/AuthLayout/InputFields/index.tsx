@@ -49,14 +49,14 @@ export interface InputFieldProps {
   iconBoxSize?: string;
   inputBgColor?: string;
   inputMode?:
-    | "none"
-    | "text"
-    | "tel"
-    | "url"
-    | "email"
-    | "numeric"
-    | "decimal"
-    | "search";
+  | "none"
+  | "text"
+  | "tel"
+  | "url"
+  | "email"
+  | "numeric"
+  | "decimal"
+  | "search";
   inputRef?: React.Ref<HTMLInputElement>;
   autoComplete?: string;
   minRows?: number;
@@ -191,8 +191,8 @@ const InputField: React.FC<InputFieldProps> = ({
     type === "password"
       ? "text"
       : showPasswordToggle && type === "password" && showPassword
-      ? "text"
-      : type;
+        ? "text"
+        : type;
 
   const inputValue =
     type === "password"
@@ -238,14 +238,14 @@ const InputField: React.FC<InputFieldProps> = ({
   const borderColor = success
     ? theme.palette.success.main
     : error
-    ? theme.palette.error.main
-    : theme.palette.border.main;
+      ? theme.palette.error.main
+      : theme.palette.border.main;
   const borderWidth = "1px";
   const focusBorderColor = success
     ? theme.palette.success.main
     : error
-    ? theme.palette.error.main
-    : theme.palette.border.focus;
+      ? theme.palette.error.main
+      : theme.palette.border.focus;
 
   const renderSideButtonIcon = () => {
     const iconWidth = sideButtonIconWidth ?? (isMobile ? "16px" : "18px");
@@ -354,7 +354,7 @@ const InputField: React.FC<InputFieldProps> = ({
               type === "password" && !showPassword
                 ? handlePasswordInput
                 : type === "password" && showPassword
-                ? (
+                  ? (
                     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
                   ) => {
                     const newValue = e.target.value;
@@ -378,7 +378,7 @@ const InputField: React.FC<InputFieldProps> = ({
                       inputRefInternal.current.value = valueWithoutSpaces;
                     }
                   }
-                : onChange
+                  : onChange
             }
             onBlur={onBlur}
             onFocus={onFocus}
@@ -386,10 +386,10 @@ const InputField: React.FC<InputFieldProps> = ({
             onPaste={
               type === "number" || onPaste
                 ? (e: React.ClipboardEvent<HTMLDivElement>) => {
-                    handleNumberPaste(e as any);
-                  }
+                  handleNumberPaste(e as any);
+                }
                 : type === "password"
-                ? (e: React.ClipboardEvent<HTMLDivElement>) => {
+                  ? (e: React.ClipboardEvent<HTMLDivElement>) => {
                     e.preventDefault();
                     const pastedText = e.clipboardData.getData("text");
                     const pastedTextWithoutSpaces = pastedText.replace(
@@ -413,7 +413,7 @@ const InputField: React.FC<InputFieldProps> = ({
                       onChange(syntheticEvent);
                     }
                   }
-                : undefined
+                  : undefined
             }
             type={inputType}
             variant={variant}
@@ -469,13 +469,13 @@ const InputField: React.FC<InputFieldProps> = ({
               "& .MuiInputBase-root": {
                 ...(multiline
                   ? {
-                      minHeight: inputHeight ?? (isMobile ? "32px" : "40px"),
-                      alignItems: "flex-start",
-                      padding: "0px !important",
-                    }
+                    minHeight: inputHeight ?? (isMobile ? "32px" : "40px"),
+                    alignItems: "flex-start",
+                    padding: "0px !important",
+                  }
                   : {
-                      height: inputHeight ?? (isMobile ? "32px" : "40px"),
-                    }),
+                    height: inputHeight ?? (isMobile ? "32px" : "40px"),
+                  }),
                 borderRadius: "6px",
                 boxSizing: "border-box",
                 "& input, & textarea": {
@@ -515,10 +515,10 @@ const InputField: React.FC<InputFieldProps> = ({
                   (disabled
                     ? "#F5F5F5"
                     : success
-                    ? "#E5EDFF"
-                    : error
-                    ? "#FFFBFB"
-                    : "#FFFFFF"),
+                      ? "#E5EDFF"
+                      : error
+                        ? "#FFFBFB"
+                        : "#FFFFFF"),
                 transition: "all 0.3s ease",
                 boxShadow: "rgba(16, 24, 40, 0.05) 0px 1px 2px 0px",
                 "& fieldset": {
@@ -563,9 +563,8 @@ const InputField: React.FC<InputFieldProps> = ({
                 maxWidth: isMobile ? "32px" : "40px",
                 maxHeight: iconBoxSize ?? (isMobile ? "32px" : "40px"),
                 borderRadius: "6px",
-                border: `1px solid ${
-                  sideButtonType === "primary" ? "#676768" : "#0004FF"
-                }`,
+                border: `1px solid ${sideButtonType === "primary" ? "#676768" : "#0004FF"
+                  }`,
                 backgroundColor: "#FFFFFF",
                 color: "#242428",
                 padding: isMobile ? "8px" : "11px",

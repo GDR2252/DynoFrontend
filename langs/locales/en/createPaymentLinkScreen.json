@@ -1,7 +1,7 @@
 {
   "createPaymentLinkTitle": "Create Payment Link",
-  "paymentSettings": "Payment Settings",
-  "postPaymentSettings": "Post-Payment Settings",
+  "paymentSettings": "1. Payment Settings",
+  "postPaymentSettings": "2. Post-Payment Settings",
   "value": "Value ($)",
   "expire": "Expire",
   "no": "No",

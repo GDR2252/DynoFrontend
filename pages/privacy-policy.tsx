@@ -12,7 +12,7 @@ const PrivacyPolicy = () => {
         px: isMobile ? "15px" : 0,
         mx: "auto",
         mb: isMobile ? "52px" : "93px",
-        mt: isMobile ? "35px" : "63px",
+        pt: isMobile ? "100px" : "128px",
       }}
     >
 
@@ -22,7 +22,7 @@ const PrivacyPolicy = () => {
         sx={{
           fontSize: isMobile ? "45px" : "60px",
           color: "#131520",
-          fontWeight: 500,
+          fontWeight: isMobile ? 600 : 500,
           textAlign: "center",
           fontFamily: "OutfitMedium",
           lineHeight: "60px",

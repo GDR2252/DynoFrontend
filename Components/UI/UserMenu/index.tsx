@@ -131,10 +131,10 @@ export default function UserMenu() {
         }}
         PaperProps={{
           sx: {
-            width: isMobile ? 220 : triggerWidth,
-            minWidth: 200,
+            width: isMobile ? 'fit-content' : triggerWidth,
+            border: "1px solid #E9ECF2",
             borderRadius: "8px",
-            boxShadow: "0 6px 30px rgba(0,0,0,0.2)",
+            boxShadow: "0 4px 16px 0 rgba(47, 47, 101, 0.15)",
             overflow: "hidden",
           },
         }}
@@ -156,13 +156,13 @@ export default function UserMenu() {
               },
             }}
           >
-            <SettingsIcon sx={{ fontSize: 20 }} />
-            <span style={{ fontSize: isMobile ? "13px" : "15px" }}>
+            <SettingsIcon sx={{ fontSize: isMobile ? "16px" : "16px" }} />
+            <span style={{ fontFamily: "UrbanistMedium", lineHeight: "1.2", letterSpacing: "0", fontSize: isMobile ? "13px" : "15px" }}>
               {t("settings")}
             </span>
           </MenuItemRow>
 
-          <Box mt={2}>
+          <Box mt={isMobile ? 1.5 : 2}>
             <CustomButton
               label={t("logout")}
               onClick={handleLogout}
@@ -176,7 +176,7 @@ export default function UserMenu() {
                   draggable={false}
                 />
               }
-              sx={{ padding: "8px 34px" }}
+              sx={{ padding: "8px 34px", height: isMobile ? "32px" : "40px" }}
               fullWidth
             // size="medium"
             />

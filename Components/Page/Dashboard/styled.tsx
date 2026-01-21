@@ -29,4 +29,5 @@ export const PremiumTierCard = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     padding: theme.spacing("14px"),
   },
+  zIndex: 2,
 }));

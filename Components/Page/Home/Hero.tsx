@@ -1,7 +1,4 @@
-import CustomButton from "@/Components/UI/Buttons";
 import HomeSectionTitle from "@/Components/UI/SectionTitle";
-import { homeTheme } from "@/styles/homeTheme";
-import { RightArrowIcon } from "@/utils/customIcons";
 import { Box } from "@mui/material";
 import React from "react";
 
@@ -41,6 +38,17 @@ const HeroSection = () => {
               height: "40px",
               zIndex: 10,
               filter: "blur(1px)",
+              animation: "floatBitcoin 5s ease-in-out infinite",
+              "@keyframes floatBitcoin": {
+                "0%, 100%": {
+                  transform: "translateY(0px) rotate(0deg)",
+                  opacity: 0.8,
+                },
+                "50%": {
+                  transform: "translateY(-20px) rotate(5deg)",
+                  opacity: 1,
+                },
+              },
             }}
           >
             <Image
@@ -61,6 +69,17 @@ const HeroSection = () => {
               height: "58px",
               zIndex: 10,
               filter: "blur(1px)",
+              animation: "floatEthereum 5s ease-in-out infinite",
+              "@keyframes floatEthereum": {
+                "0%, 100%": {
+                  transform: "translateY(0px) rotate(0deg)",
+                  opacity: 0.8,
+                },
+                "50%": {
+                  transform: "translateY(-25px) rotate(-5deg)",
+                  opacity: 1,
+                },
+              },
             }}
           >
             <Image
@@ -151,6 +170,22 @@ const HeroSection = () => {
                 zIndex: 0,
                 pointerEvents: "none",
                 filter: "blur(3px)",
+                opacity: 0.8,
+                animation: "floatLitecoin 6s ease-in-out infinite",
+                "@keyframes floatLitecoin": {
+                  "0%, 100%": {
+                    transform: "translateY(0px) translateX(0px) rotate(0deg)",
+                    opacity: 0.8,
+                  },
+                  "33%": {
+                    transform: "translateY(-15px) translateX(10px) rotate(3deg)",
+                    opacity: 1,
+                  },
+                  "66%": {
+                    transform: "translateY(10px) translateX(-10px) rotate(-3deg)",
+                    opacity: 0.9,
+                  },
+                },
               }}
             >
               <Image
@@ -291,6 +326,21 @@ const HeroSection = () => {
             height: "97px",
             filter: "blur(3px)",
             zIndex: 0,
+            animation: "floatLitecoinMobile 6s ease-in-out infinite",
+            "@keyframes floatLitecoinMobile": {
+              "0%, 100%": {
+                transform: "translateY(0px) translateX(0px) rotate(0deg)",
+                opacity: 0.8,
+              },
+              "33%": {
+                transform: "translateY(-15px) translateX(10px) rotate(3deg)",
+                opacity: 1,
+              },
+              "66%": {
+                transform: "translateY(10px) translateX(-10px) rotate(-3deg)",
+                opacity: 0.9,
+              },
+            },
           }}
         >
           <Image

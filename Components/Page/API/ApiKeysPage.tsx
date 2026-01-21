@@ -55,6 +55,7 @@ type ApiRow = any;
 
 const ApiDocumentationCard = ({ docsUrl }: { docsUrl: string }) => {
   const { t } = useTranslation("apiScreen");
+  const isMobile = useIsMobile("md");
 
   return (
     <PanelCard
@@ -62,9 +63,12 @@ const ApiDocumentationCard = ({ docsUrl }: { docsUrl: string }) => {
       headerIcon={
         <Image
           src={InfoIcon.src}
+          style={{
+            filter: "brightness(0) saturate(100%) invert(15%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(100%)",
+          }}
           alt={t("documentation.infoIconAlt")}
-          width={18}
-          height={18}
+          width={isMobile ? 14 : 16}
+          height={isMobile ? 14 : 16}
           draggable={false}
         />
       }
@@ -158,12 +162,12 @@ const ApiKeyCard = ({
   const displayApiKey = showApiKey
     ? apiKey
     : apiKey
-      ? stringShorten(apiKey)
+      ? stringShorten(apiKey, 12, 4)
       : "";
   const displayAdminToken = showAdminToken
     ? adminToken
     : adminToken
-      ? stringShorten(adminToken)
+      ? stringShorten(adminToken, 10, 5)
       : "";
 
   return (
@@ -181,7 +185,7 @@ const ApiKeyCard = ({
       sx={{ height: "100%", borderRadius: "14px" }}
     >
       <ApiKeyCardSubTitle>
-        Base currency
+        {t("currency.baseCurrency")}
         <span className="flag">
           <Image
             src={UnitedStatesFlag.src}

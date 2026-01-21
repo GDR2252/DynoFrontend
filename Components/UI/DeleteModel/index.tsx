@@ -58,6 +58,7 @@ const DeleteModel = ({
           width: "100%",
           borderRadius: "14px",
           mx: "auto",
+          maxWidth: isMobile ? "313px" : "531px",
         }}
         headerIcon={
           <IconButton>

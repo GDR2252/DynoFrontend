@@ -26,12 +26,12 @@ const NewSidebar = () => {
       label: t("transactions"),
       icon: "transactions",
       path: "/transactions",
-      plus: true,
     },
     {
       label: t("payLinks"),
       icon: "payment-links",
       path: "/pay-links",
+      plus: true,
     },
     { label: t("wallets"), icon: "wallets", path: "/wallet" },
     { label: t("api"), icon: "api", path: "/apis" },
@@ -102,7 +102,7 @@ const NewSidebar = () => {
               {item.plus && !isMobile && (
                 <Box
                   sx={{
-                    background: theme.palette.primary.light,
+                    background: theme.palette.secondary.light,
                     borderRadius: "50%",
                     padding: "4px",
                     width: "28px",

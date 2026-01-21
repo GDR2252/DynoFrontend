@@ -50,27 +50,27 @@ export const MainContainer = styled("div")(({ theme }) => ({
 export const RightSection = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  gap: "20px",
+  gap: "6px",
 }));
 
 export const RequiredKYC = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  gap: "10px",
   padding: "9px 12px",
   borderRadius: "6px",
-  borderColor: theme?.palette?.border?.main,
   border: "1px solid",
   cursor: "pointer",
   background: "white",
-  color: theme?.palette?.error?.main,
+  color: theme?.palette?.border?.main,
 }));
 
 export const RequiredKYCText = styled("span")(({ theme }) => ({
   color: theme.palette.error.main,
+  paddingLeft: "4px",
   fontWeight: 500,
   whiteSpace: "nowrap",
   fontSize: "15px",
-  lineHeight: "16px",
+  lineHeight: "1.2",
+  letterSpacing: "0",
   fontFamily: "UrbanistMedium",
 }));

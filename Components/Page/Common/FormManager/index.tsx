@@ -62,6 +62,26 @@ const FormManager = ({
     }
   };
 
+  const handleFieldsChange = (updates: Partial<Values>) => {
+    if (yupSchema) {
+      const tempData = { ...values, ...updates };
+      setValues(tempData);
+      const tempErrors = checkValidation(yupSchema, tempData);
+      const tempInitialValues: any = {};
+      Object.keys(initialValues).map((item) => {
+        if (Number.isInteger(initialTouchValue && initialTouchValue[item]))
+          tempInitialValues[item] = "";
+        else tempInitialValues[item] = "";
+      });
+      setErrors(tempErrors ?? { ...tempInitialValues });
+      setSubmitDisable(tempErrors ? true : false);
+    } else {
+      const tempData = { ...values, ...updates };
+      setValues(tempData);
+      setSubmitDisable(false);
+    }
+  };
+
   const handleSubmit = (e: any) => {
     if (yupSchema) {
       e.preventDefault();
@@ -113,6 +133,7 @@ const FormManager = ({
         values,
         submitDisable,
         revalidate,
+        handleFieldsChange,
       })}
     </form>
   );

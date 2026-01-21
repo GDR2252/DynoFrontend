@@ -105,7 +105,7 @@ const countDecimals = (number: number) => {
 const stringShorten = (string: string, startChars = 10, endChars = 5) => {
   const firstString = string.substring(0, startChars);
   const lastString = string.substring(string.length - endChars);
-  return firstString + "........" + lastString;
+  return firstString + "••••••••••••••••••••" + lastString;
 };
 
 const formatNumberWithComma = (number: number): string => {

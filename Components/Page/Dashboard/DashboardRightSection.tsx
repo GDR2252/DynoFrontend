@@ -16,7 +16,8 @@ import { formatNumberWithComma, getCurrencySymbol } from "@/helpers";
 import CurrencyIcon from "@/assets/Icons/dollar-sign-icon.svg";
 import CheckCircleIcon from "@/assets/Icons/correct-icon.png";
 import CrownIcon from "@/assets/Icons/premium-icon.svg";
-import BgImage from "@/assets/Images/bg-white.png";
+import BgMobileImage from "@/assets/Images/premium-card-bg.png";
+import BgDesktopImage from "@/assets/Images/bg-white.png"
 
 import { PremiumTierCard } from "./styled";
 
@@ -51,7 +52,7 @@ const DashboardRightSection = () => {
         subTitle={tDashboard("yourProgressTowardsTheNextFeeTier")}
         showHeaderBorder={false}
         headerPadding={theme.spacing(2.5, 1.5, 0, 2.5)}
-        bodyPadding={theme.spacing("26px", 2.5, 2.5, 2.5)}
+        bodyPadding={isMobile ? theme.spacing("12px", 2, 2, 2) : theme.spacing("26px", 2.5, 2.5, 2.5)}
         headerActionLayout="inline"
         headerSx={{ alignItems: "start" }}
         headerAction={
@@ -189,12 +190,14 @@ const DashboardRightSection = () => {
               sx={{
                 position: "absolute",
                 inset: 0,
+                top: "6px",
+                left: "-10px",
                 zIndex: -1,
                 maxWidth: 310,
               }}
             >
               <Image
-                src={BgImage}
+                src={isMobile ? BgMobileImage : BgDesktopImage}
                 alt="Background"
                 fill
                 draggable={false}
@@ -209,6 +212,9 @@ const DashboardRightSection = () => {
                     fontSize: isMobile ? 13 : 15,
                     fontWeight: 500,
                     fontFamily: "UrbanistMedium",
+                    lineHeight: "1.2",
+                    letterSpacing: "0",
+                    wordBreak: "break-all"
                   }}
                 >
                   {tDashboard("upgradeToPremiumTier")}
@@ -221,6 +227,9 @@ const DashboardRightSection = () => {
                     color: theme.palette.text.secondary,
                     fontFamily: "UrbanistMedium",
                     mt: isMobile ? 0.75 : 1.5,
+                    lineHeight: "1.2",
+                    letterSpacing: "0",
+                    wordBreak: "break-all"
                   }}
                 >
                   {tDashboard("lowerFeesAndPrioritySupport")}
@@ -229,8 +238,12 @@ const DashboardRightSection = () => {
 
               <Box
                 sx={{
+                  position: "absolute",
+                  right: isMobile ? "6px" : "24px",
+                  top: isMobile ? "6px" : "24px",
                   width: isMobile ? 32 : 49,
                   height: isMobile ? 32 : 49,
+                  border: `1px solid ${theme.palette.border.main}`,
                   borderRadius: "50%",
                   background: "#fff",
                   display: "flex",

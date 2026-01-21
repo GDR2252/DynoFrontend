@@ -18,6 +18,7 @@ interface childrenProps {
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => void;
+  handleFieldsChange: (updates: Partial<Values>) => void;
 
   values: Values;
   errors: Values;

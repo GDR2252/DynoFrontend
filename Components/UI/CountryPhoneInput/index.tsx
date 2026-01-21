@@ -50,6 +50,15 @@ const CountryPhoneInput: React.FC<CountryPhoneInputProps> = ({
         forceCallingCode
         disableFormatting
         disabled={disabled}
+        MenuProps={{
+          PaperProps: {
+            sx: {
+              maxHeight: "200px",
+              overflowY: "auto",
+              boxShadow: "0px 4px 16px 0px rgba(47, 47, 101, 0.15)",
+            },
+          },
+        }}
         sx={{
           width: "100%",
           borderRadius: "6px !important",

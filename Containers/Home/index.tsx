@@ -6,6 +6,7 @@ import { rootReducer } from "@/utils/types";
 import HomeHeader from "@/Components/Layout/HomeHeader";
 import HomeFooter from "@/Components/Layout/HomeFooter";
 import { HomeContainer } from "./styled";
+import ScrollToTopButton from "@/Components/Layout/ScrollToTopButton";
 
 const HomeLayout = ({ children }: { children: React.ReactNode }) => {
   const homeTheme = useTheme();
@@ -16,6 +17,7 @@ const HomeLayout = ({ children }: { children: React.ReactNode }) => {
       <HomeHeader />
       {children}
       <HomeFooter />
+      <ScrollToTopButton />
     </>
   );
 };

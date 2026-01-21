@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Box, Button, Divider, IconButton, Drawer } from "@mui/material";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -22,6 +22,9 @@ const HomeHeader = () => {
   const router = useRouter();
   const isMobile = useIsMobile("md");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const lastScrollY = useRef(0);
+  const scrollThreshold = 10; // Minimum scroll distance to trigger hide/show
 
   const HeaderItems = [
     { label: "How It Works", sectionId: "how-it-works", path: "/" },
@@ -64,8 +67,51 @@ const HomeHeader = () => {
     }
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // Show header at the top of the page
+      if (currentScrollY < scrollThreshold) {
+        setIsHeaderVisible(true);
+      } else {
+        // Determine scroll direction
+        if (currentScrollY > lastScrollY.current) {
+          // Scrolling down - hide header
+          setIsHeaderVisible(false);
+        } else if (currentScrollY < lastScrollY.current) {
+          // Scrolling up - show header
+          setIsHeaderVisible(true);
+        }
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    // Add scroll event listener
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <div>
+    <div
+      style={{
+        overflow: "hidden",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 999,
+        backgroundColor: "white",
+        transform: isHeaderVisible ? "translateY(0)" : "translateY(-100%)",
+        transition: "transform 0.3s ease-in-out",
+        width: "100%",
+      }}
+    >
       <HeaderContainer>
         {/* Logo */}
         <Image
@@ -82,7 +128,7 @@ const HomeHeader = () => {
         {/* Center Nav - Desktop Only */}
         <NavLinks className="desktop-nav">
           {HeaderItems.map((item) => (
-            <Button key={item.label} onClick={() => handleNavClick(item)}>
+            <Button disableRipple key={item.label} onClick={() => handleNavClick(item)}>
               {item.label}
             </Button>
           ))}
@@ -91,7 +137,7 @@ const HomeHeader = () => {
         <Box sx={{ display: "flex", alignItems: "center", gap: "11px" }}>
           {/* Right Actions */}
           <Actions>
-            <Button className="signin" onClick={() => router.push("/auth/login")}>
+            <Button disableRipple className="signin" onClick={() => router.push("/auth/login")}>
               Sign In
             </Button>
 

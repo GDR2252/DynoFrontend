@@ -102,8 +102,8 @@ export const ApiKeyDeleteButton = styled(IconButton)(({ theme }) => ({
     height: 32,
   },
   "& img": {
-    width: 14,
-    height: 14,
+    width: 16,
+    height: 16,
     [theme.breakpoints.down("md")]: {
       width: 12,
       height: 12,
@@ -168,11 +168,12 @@ export const InfoText = styled(Typography)(({ theme }) => ({
 
 export const ApiDocumentationCardDescription = styled(Typography)(
   ({ theme }) => ({
+    fontFamily: "UrbanistMedium",
     fontSize: 13,
     color: theme.palette.text.secondary,
     fontWeight: 500,
     lineHeight: "17px",
-    fontFamily: "UrbanistMedium",
+    maxWidth: "309px",
     [theme.breakpoints.down("md")]: {
       fontSize: 10,
       lineHeight: "14px",

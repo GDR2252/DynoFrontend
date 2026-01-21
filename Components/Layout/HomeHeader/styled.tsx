@@ -8,7 +8,6 @@ export const HeaderContainer = styled("nav")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "space-between",
   backgroundColor: "#fff",
-
   maxWidth: 1280,
   margin: "0 auto",
 
@@ -30,7 +29,6 @@ export const NavLinks = styled("div")(({ theme }) => ({
   display: "flex",
   gap: 24,
   alignItems: "center",
-
   [theme.breakpoints.down("md")]: {
     display: "none",
   },

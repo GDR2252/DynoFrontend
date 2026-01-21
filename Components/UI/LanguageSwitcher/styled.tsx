@@ -1,7 +1,6 @@
 import styled from "@emotion/styled";
 import { styled as muiStyled } from "@mui/material/styles";
 import { Box } from "@mui/material";
-import CheckIcon from "@mui/icons-material/Check";
 
 export const LangTrigger = muiStyled(Box)(({ theme }: any) => ({
   display: "flex",
@@ -22,8 +21,8 @@ export const LangTrigger = muiStyled(Box)(({ theme }: any) => ({
 }));
 
 export const LangFlag = styled.img`
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
 `;
 
@@ -33,9 +32,9 @@ export const LangText = styled.span`
   font-family: UrbanistMedium;
 `;
 
-export const CheckIconStyled = styled(CheckIcon)`
-  font-size: 18px;
-  color: #000;
+export const CheckIconStyled = styled.img`
+  width: 18px;
+  height: 18px;
 `;
 
 export const VerticalLine = styled.div`

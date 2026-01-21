@@ -323,7 +323,8 @@ const InputField: React.FC<InputFieldProps> = ({
             fontSize: isMobile ? "13px" : "15px",
             textAlign: "start",
             color: theme.palette.text.primary,
-            lineHeight: "1.2",
+            lineHeight: "100%",
+            letterSpacing: 0,
           }}
           className="label"
         >

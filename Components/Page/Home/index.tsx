@@ -8,30 +8,34 @@ import {
 } from "@/Containers/Home/styled";
 import UseCaseSection from "./UseCase";
 import WhyChooseDynopaySection from "./WhyChooseDynoPay";
+import useIsMobile from "@/hooks/useIsMobile";
 
 const HomePage = () => {
+  const isMobile = useIsMobile("md");
   return (
-    <div>
-      <HomeContainer>
-        <HeroSection />
-      </HomeContainer>
+    <>
+      <div style={{ paddingTop: isMobile ? "76px" : "65px" }}>
+        <HomeContainer>
+          <HeroSection />
+        </HomeContainer>
 
-      <HomeFullWidthContainer>
-        <GoLiveSection />
-      </HomeFullWidthContainer>
+        <HomeFullWidthContainer>
+          <GoLiveSection />
+        </HomeFullWidthContainer>
 
-      <HomeContainer>
-        <FeaturesSection />
-      </HomeContainer>
+        <HomeContainer>
+          <FeaturesSection />
+        </HomeContainer>
 
-      <HomeFullWidthContainer>
-        <WhyChooseDynopaySection />
-      </HomeFullWidthContainer>
+        <HomeFullWidthContainer>
+          <WhyChooseDynopaySection />
+        </HomeFullWidthContainer>
 
-      <HomeContainer>
-        <UseCaseSection />
-      </HomeContainer>
-    </div>
+        <HomeContainer>
+          <UseCaseSection />
+        </HomeContainer>
+      </div>
+    </>
   );
 };
 

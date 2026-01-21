@@ -50,7 +50,8 @@ export const CryptocurrencyText = styled.span<{ isMobile?: boolean }>(
     fontWeight: 500,
     fontFamily: "UrbanistMedium",
     color: theme.palette.text.primary,
-    lineHeight: "1.5",
+    lineHeight: "100%",
+    letterSpacing: 0,
   })
 );
 
@@ -76,7 +77,7 @@ export const IconChip = styled(Box)({
   fontWeight: 500,
   color: theme.palette.text.primary,
   flexShrink: 0,
-  border:`1px solid ${theme.palette.border.main}`,
+  border: `1px solid ${theme.palette.border.main}`,
 
   "& span": {
     fontSize: "13px",

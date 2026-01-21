@@ -22,6 +22,7 @@ import portugalFlag from "@/assets/Images/Icons/flags/portugal-flag.png";
 import unitedStatesFlag from "@/assets/Images/Icons/flags/united-states-flag.png";
 import franceFlag from "@/assets/Images/Icons/flags/france-flag.png";
 import spainFlag from "@/assets/Images/Icons/flags/spain-flag.png";
+import CheckIcon from "@/assets/Icons/true-icon.svg";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { ExpandLess } from "@mui/icons-material";
@@ -95,16 +96,16 @@ export default function LanguageSwitcher({ sx }: { sx?: SxProps<Theme> }) {
             <ExpandMoreIcon
               style={{
                 color: theme.palette.text.secondary,
-                width: isMobile ? "16px" : "24px",
-                height: isMobile ? "16px" : "24px",
+                width: isMobile ? "16px" : "20px",
+                height: isMobile ? "16px" : "20px",
               }}
             />
           ) : (
             <ExpandLess
               style={{
                 color: theme.palette.text.secondary,
-                width: isMobile ? "16px" : "24px",
-                height: isMobile ? "16px" : "24px",
+                width: isMobile ? "16px" : "20px",
+                height: isMobile ? "16px" : "20px",
               }}
             />
           )}
@@ -118,48 +119,63 @@ export default function LanguageSwitcher({ sx }: { sx?: SxProps<Theme> }) {
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
         PaperProps={{
           sx: {
+            border: `1px solid ${theme.palette.border.main}`,
             borderRadius: "6px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+            boxShadow: "0 4px 16px 0 rgba(47, 47, 101, 0.15)",
             overflow: "hidden",
+
+            "& .MuiTypography-root span": {
+              fontSize: isMobile ? "13px !important" : "15px !important",
+              lineHeight: 1.2,
+            },
           },
         }}
       >
-        <List sx={{ width: "100%", p: 1.5 }}>
+        <List sx={{ width: "100%", p: 0.75 }}>
           {languages.map((lng) => (
             <ListItemButton
               key={lng.code}
               onClick={() => changeLang(lng.code)}
               sx={{
-                borderRadius: "50px",
+                // borderRadius: "50px",
                 fontSize: isMobile ? "12px !important" : "15px",
                 mb: 0.5,
+                px: isMobile ? "8px" : 1,
                 py: isMobile ? "4px" : 1,
-                gap: isMobile ? "4px" : 2,
+                borderRadius: "63px",
+                height: "32px",
+                minHeight: "32px",
                 background: lng.code === current ? "#E8F0FF" : "transparent",
                 "&:hover": {
                   background: "#E8F0FF",
                 },
               }}
             >
-              <ListItemIcon sx={{ minWidth: "fit-content" }}>
-                <LangFlag src={lng.flag.src} alt={lng.label} />
+              <ListItemIcon sx={{ minWidth: "fit-content", paddingRight: "4px" }}>
+                <LangFlag src={lng.flag.src} alt={lng.label} style={{
+                  height: isMobile ? "14px" : "16px",
+                  width: isMobile ? "14px" : "16px",
+                }} />
               </ListItemIcon>
 
               <ListItemText
-                sx={{
-                  fontFamily: "UrbanistMedium",
-                  fontWeight: 500,
-                }}
                 primaryTypographyProps={{
                   sx: {
-                    fontSize: isMobile ? "13px !important" : "15px",
-                    lineHeight: 1.2,
+                    fontSize: isMobile ? "12px !important" : "15px !important",
+                    fontFamily: "UrbanistMedium !important",
+                    fontWeight: "500 !important",
+                    lineHeight: "1.2 !important",
+                    color: theme.palette.text.primary,
+                    paddingRight: "11px",
                   },
                 }}
                 primary={`${lng.code.toUpperCase()} – ${lng.label}`}
               />
 
-              {lng.code === current && <CheckIconStyled />}
+              {lng.code === current && <CheckIconStyled style={{
+                width: isMobile ? "16px" : "11px",
+                height: isMobile ? "16px" : "8px",
+              }} src={CheckIcon.src} alt="check" />}
             </ListItemButton>
           ))}
         </List>

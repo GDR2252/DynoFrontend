@@ -39,7 +39,7 @@ export const MenuItem = styled("div")<{ active?: boolean }>(
     position: "relative",
 
     "&:hover": {
-      background: active ? theme.palette.primary.light : "#f9fafb",
+      background: theme.palette.primary.light
     },
   })
 );
@@ -125,15 +125,23 @@ export const ReferralCardTitle = styled("div")(({ theme }) => ({
   fontWeight: 500,
   fontFamily: "UrbanistMedium",
   color: theme.palette.text.primary,
+  [theme.breakpoints.down("md")]: {
+    fontSize: "13px",
+  },
+  lineHeight: "1.2",
+  letterSpacing: "0",
 }));
 
 export const ReferralCardContent = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: "8px",
+  gap: "12px",
   zIndex: 1,
   color: theme.palette.text.primary,
   position: "relative",
+  [theme.breakpoints.down("md")]: {
+    gap: "6px",
+  },
 }));
 
 export const ReferralCardContentValueContainer = styled("div")(({ theme }) => ({
@@ -141,15 +149,12 @@ export const ReferralCardContentValueContainer = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  gap: "12px",
-  [theme.breakpoints.down("md")]: {
-    gap: "8px",
-  },
+  gap: "8px",
 }));
 
 export const ReferralCardContentValue = styled("span")(({ theme }) => ({
   borderRadius: "7px",
-  padding: "10px 12px",
+  padding: "11px",
   border: `1px dashed ${theme.palette.border.main}`,
   background: theme.palette.common.white,
   fontSize: "15px",

@@ -64,6 +64,13 @@ export interface ICompany {
   photo: string;
   email: string;
   website: string;
+  country: string;
+  state: string;
+  city: string;
+  address_line_1: string;
+  address_line_2: string;
+  zip_code: string;
+  VAT_number: string;
 }
 
 export interface IApi {

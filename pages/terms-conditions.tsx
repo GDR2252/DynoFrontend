@@ -15,7 +15,7 @@ const TermsConditions = () => {
         mx: "auto",
         fontFamily: "OutfitMedium",
         mb: isMobile ? "52px" : "93px",
-        mt: isMobile ? "35px" : "63px",
+        pt: isMobile ? "100px" : "128px",
       }}
     >
 
@@ -25,7 +25,7 @@ const TermsConditions = () => {
         sx={{
           fontSize: isMobile ? "45px" : "60px",
           color: "#131520",
-          fontWeight: 500,
+          fontWeight: isMobile ? 600 : 500,
           textAlign: "center",
           fontFamily: "OutfitMedium",
           mb: "15px",

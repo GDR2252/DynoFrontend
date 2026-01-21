@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Box, Grid } from "@mui/material";
 import {
   HeaderContainer,
@@ -26,7 +26,16 @@ import Link from "next/link";
 
 const NewHeader = () => {
   const router = useRouter();
-  const { t } = useTranslation("walletScreen");
+  const namespaces = ["dashboardLayout", "walletScreen"];
+  const { t } = useTranslation(namespaces);
+  const tDashboard = useCallback(
+    (key: string) => t(key, { ns: "dashboardLayout" }),
+    [t]
+  );
+  const tWallet = useCallback(
+    (key: string) => t(key, { ns: "walletScreen" }),
+    [t]
+  );
   const isMobile = useIsMobile("md");
   const { walletWarning } = useWalletData();
   return (
@@ -81,10 +90,10 @@ const NewHeader = () => {
                   <InfoIcon
                     sx={{ fontSize: 20, color: theme.palette.error.main }}
                   />
-                  <RequiredKYCText>{t("requiredKYC")}</RequiredKYCText>
-                  <VerticalLine />
+                  <RequiredKYCText>{tDashboard("requiredKYC")}</RequiredKYCText>
+                  <VerticalLine style={{ margin: "0 14px" }} />
                   <ArrowOutwardIcon
-                    sx={{ color: theme.palette.text.secondary, fontSize: 20 }}
+                    sx={{ color: theme.palette.text.secondary, fontSize: 16 }}
                   />
                 </RequiredKYC> */}
                 {walletWarning && (
@@ -93,7 +102,7 @@ const NewHeader = () => {
                       <InfoIcon
                         sx={{ fontSize: 20, color: theme.palette.error.main }}
                       />
-                      <RequiredKYCText>{t("walletSetUpWarnnigTitle")}</RequiredKYCText>
+                      <RequiredKYCText>{tWallet("walletSetUpWarnnigTitle")}</RequiredKYCText>
                     </RequiredKYC>
                   </Link>
                 )}

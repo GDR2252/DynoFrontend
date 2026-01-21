@@ -64,7 +64,7 @@ const ApiStatus = () => {
         minWidth: 320,
         px: "24px",
         mx: "auto",
-        mt: isMobile ? 6 : "63px",
+        pt: isMobile ? "113px" : "128px",
         mb: isMobile ? 6 : "93px",
         display: "flex",
         flexDirection: "column",

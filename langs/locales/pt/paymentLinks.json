@@ -27,5 +27,6 @@
   "expiresHeader": "Expira em",
   "statusHeader": "Status",
   "timesUsedHeader": "Vezes usadas",
-  "actionsHeader": "Ações"
+  "actionsHeader": "Ações",
+  "searchInputPlaceholder": "Pesquisar links..."
 }

@@ -1,17 +1,22 @@
 import { styled } from "@mui/material";
 
 export const SelectorTrigger = styled("div")(({ theme }) => ({
+  height: "40px",
   display: "flex",
+  justifyContent: "space-between",
   alignItems: "center",
-  gap: "10px",
-  padding: "9px 12px",
+  gap: "0px",
+  padding: "11px 14px",
   borderRadius: "6px",
   border: "1px solid ",
   borderColor: theme?.palette?.border?.main,
   cursor: "pointer",
   background: "white",
+  zIndex: 2,
+  position: "relative",
   color: theme?.palette?.text?.primary,
   [theme.breakpoints.down("md")]: {
+    height: "16px",
     padding: "0px",
     gap: "8px",
     border: "none",
@@ -19,11 +24,12 @@ export const SelectorTrigger = styled("div")(({ theme }) => ({
 }));
 
 export const TriggerText = styled("span")(({ theme }) => ({
-  color: theme.palette.primary.main,
   fontWeight: 500,
   whiteSpace: "nowrap",
   fontSize: "15px",
   fontFamily: "UrbanistMedium",
+  lineHeight: "100%",
+  letterSpacing: 0,
   [theme.breakpoints.down("md")]: {
     fontSize: "13px",
   },
@@ -40,16 +46,11 @@ export const CompanyItem = styled("div")<{ active: boolean }>(
   ({ active, theme }) => ({
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center",
     padding: "6px",
     borderRadius: "6px",
     cursor: "pointer",
-    maxHeight: "50px",
     background: active ? theme.palette.primary.light : "transparent",
     transition: "0.2s ease-in-out",
-    fontFamily: "UrbanistMedium",
-    lineHeight: "1.2",
-    letterSpacing: "0",
 
     "&:hover": {
       background: "#eef2ff",
@@ -82,7 +83,8 @@ export const CompanyItem = styled("div")<{ active: boolean }>(
 
 export const ItemLeft = styled("div")(() => ({
   display: "flex",
-  alignItems: "center",
+  flexDirection: "column",
+  justifyContent: "space-between",
 }));
 
 export const ItemRight = styled("div")<{ active: boolean }>(

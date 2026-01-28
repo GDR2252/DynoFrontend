@@ -510,7 +510,7 @@ export const DatePickerTriggerButton = styled(Button)(({ theme }) => ({
   width: "100%",
   height: "40px",
   "&:hover": {
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#FFFFFF",
     borderColor: theme.palette.border.focus,
   },
   "&:focus": {

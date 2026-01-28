@@ -47,7 +47,6 @@ export const MenuItemRow = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: 12,
-  padding: "8px 4px",
   cursor: "pointer",
   fontSize: 15,
   fontWeight: 500,

@@ -7,8 +7,8 @@ export const PeriodTrigger = muiStyled(Box)(({ theme }: any) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  gap: "8px",
-  padding: "7px 12px",
+  gap: "14px",
+  padding: "7px 14px",
   borderRadius: "6px",
   border: "1px solid",
   borderColor: theme?.palette?.border?.main,
@@ -21,10 +21,12 @@ export const PeriodTrigger = muiStyled(Box)(({ theme }: any) => ({
   "&:hover": {
     borderColor: theme?.palette?.border?.focus,
   },
+  [theme.breakpoints.down("md")]: {
+    padding: "5px 8px",
+  },
 }));
 
 export const PeriodText = styled.span`
-  font-size: 14px;
   font-weight: 500;
   font-family: UrbanistMedium;
   white-space: nowrap;

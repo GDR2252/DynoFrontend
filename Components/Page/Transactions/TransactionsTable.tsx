@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
@@ -83,6 +83,10 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
   const endIndex = startIndex + rowsPerPage;
   const currentTransactions = transactions.slice(startIndex, endIndex);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [transactions]);
+
   const getCryptoIcon = (crypto: string) => {
     switch (crypto) {
       case "BTC":
@@ -165,20 +169,6 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
     },
   ];
 
-  const formatDateTime = (isoString: string) => {
-    const date = new Date(isoString);
-
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
-
-    return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
-  }
-
   return (
     <Box sx={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, maxHeight: "fit-content" }}>
       <TransactionsTableContainer>
@@ -256,7 +246,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
                       })()}
                     </TransactionsTableCell>
                     <TransactionsTableCell>
-                      {formatDateTime(transaction.dateTime)}
+                      {transaction.dateTime}
                     </TransactionsTableCell>
                     <TransactionsTableCell>
                       <StatusBadge status={transaction.status}>
@@ -325,7 +315,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
                   sx={{ height: "20px", width: "20px" }}
                 />
               }
-              disabled={currentPage === 1}
+              disabled={currentPage === 1 || currentTransactions.length === 0}
               onClick={() => setCurrentPage(currentPage - 1)}
             />
             <CustomButton
@@ -358,13 +348,13 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
                   sx={{ height: "20px", width: "20px" }}
                 />
               }
-              disabled={currentPage === totalPages}
+              disabled={currentPage === totalPages || currentTransactions.length === 0}
               onClick={() => setCurrentPage(currentPage + 1)}
             />
 
             <MobileNavigationButtons
               onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
+              disabled={currentPage === 1 || currentTransactions.length === 0}
             >
               <KeyboardArrowLeftRoundedIcon
                 sx={{ height: "16px", width: "16px", color: "inherit" }}
@@ -372,7 +362,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
             </MobileNavigationButtons>
             <MobileNavigationButtons
               onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
+              disabled={currentPage === totalPages || currentTransactions.length === 0}
             >
               <KeyboardArrowRightRoundedIcon
                 sx={{ height: "16px", width: "16px", color: "inherit" }}

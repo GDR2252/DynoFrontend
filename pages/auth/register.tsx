@@ -892,6 +892,7 @@ const Register = () => {
           alignItems: "center",
           padding: isMobile ? "10px 18px" : "8px 27px",
           height: isMobile ? "49px" : "56px",
+          overflow: "visible",
         }}
       >
         {/* Logo */}
@@ -1098,10 +1099,10 @@ const Register = () => {
                 position: "absolute",
                 ...(isMobile &&
                   theme.breakpoints.down("lg") && {
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    width: "100%",
-                  }),
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: "100%",
+                }),
                 zIndex: 5,
               }}
             >

@@ -31,14 +31,14 @@ export const StyledHomeButton = styled(Button, {
     transition: "all 0.3s ease",
     ...(intent === "primary"
       ? {
-        backgroundColor: theme.palette.primary.main,
+        backgroundColor: homeTheme.palette.primary.main,
         color: theme.palette.common.white,
         "& .MuiSvgIcon-root": {
           animation: `${bounceUpDown} 1.5s ease-in-out infinite`,
           transition: "transform 0.3s ease",
         },
         "&:hover": {
-          backgroundColor: "#0004FF99",
+          backgroundColor: "#0004FFE5",
           boxShadow: "none",
           "& .MuiSvgIcon-root": {
             animation: "none",
@@ -59,8 +59,7 @@ export const StyledHomeButton = styled(Button, {
         border: `1px solid ${theme.palette.border.main}`,
         "&:hover": {
           backgroundColor: theme.palette.common.white,
-          borderColor: homeTheme.palette.text.primary,
-          color: homeTheme.palette.text.primary,
+          color: homeTheme.palette.primary.main,
           boxShadow: "none",
         },
         "&:active": {

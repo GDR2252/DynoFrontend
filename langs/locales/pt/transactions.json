@@ -11,7 +11,7 @@
   "export": "Exportar",
   "transactionId": "ID da Transação",
   "id": "ID",
-  "crypto": "Cripto",
+  "crypto": "Criptomoedas",
   "amount": "Quantia",
   "usdValue": "Valor em USD",
   "dateTime": "Data e Hora",
@@ -39,5 +39,3 @@
   "copy": "Copiar",
   "copiedToClipboard": "Copiado para a área de transferência"
 }
-
-

@@ -14,7 +14,7 @@ export const CryptocurrencyTrigger = muiStyled(Box)<{
   alignItems: "center",
   justifyContent: "space-between",
   gap: "8px",
-  padding: "8px",
+  padding: "14px",
   borderRadius: "6px",
   border: "1px solid",
   borderColor: error ? theme.palette.error.main : theme.palette.border.main,
@@ -46,12 +46,16 @@ export const CryptocurrencyIcon = styled(Image)({
 
 export const CryptocurrencyText = styled.span<{ isMobile?: boolean }>(
   ({ isMobile }) => ({
-    fontSize: isMobile ? "13px" : "15px",
+    fontSize: "15px",
     fontWeight: 500,
     fontFamily: "UrbanistMedium",
     color: theme.palette.text.primary,
     lineHeight: "100%",
     letterSpacing: 0,
+
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "13px",
+    },
   })
 );
 
@@ -69,7 +73,7 @@ export const IconChip = styled(Box)({
   display: "flex",
   alignItems: "center",
   gap: "6px",
-  padding: "6px 9px",
+  padding: "5px 9px",
   borderRadius: "999px",
   background: theme.palette.secondary.light,
   fontFamily: "UrbanistMedium",
@@ -84,6 +88,10 @@ export const IconChip = styled(Box)({
     fontWeight: 500,
     color: theme.palette.text.primary,
     flexShrink: 0,
+
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "10px",
+    },
   },
 });
 

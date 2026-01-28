@@ -19,6 +19,7 @@ import MenuIcon from "@/assets/Icons/menu-icon.svg";
 import Image from "next/image";
 import useIsMobile from "@/hooks/useIsMobile";
 import { useTranslation } from "react-i18next";
+import CheckIcon from "@/assets/Icons/true-icon.svg";
 
 interface RowsPerPageSelectorProps {
   value: number;
@@ -147,28 +148,46 @@ const RowsPerPageSelector: React.FC<RowsPerPageSelectorProps> = ({
             },
           }}
         >
-          <MenuList sx={{ padding: "4px" }}>
+          <MenuList sx={{ padding: "10px 6px", width: isMobile ? "80px" : "88px", display: "flex", flexDirection: "column", gap: "2px" }}>
             {menuItems.map((item) => (
-              <MenuItem
+              <Box
                 key={item.value}
                 onClick={() => handleSelect(item.value)}
-                selected={item.value === value}
                 sx={{
-                  fontSize: "15px",
-                  fontWeight: item.value === value ? 500 : 500,
-                  fontFamily: "UrbanistMedium",
-                  lineHeight: "18px",
-                  padding: "8px 12px",
-                  "&.Mui-selected": {
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  cursor: "pointer",
+                  borderRadius: "82px",
+                  backgroundColor:
+                    item.value === value ? theme.palette.primary.light : "transparent",
+                  "&:hover": {
                     backgroundColor: theme.palette.primary.light,
-                    "&:hover": {
-                      backgroundColor: theme.palette.primary.light,
-                    },
                   },
                 }}
               >
-                {item.label}
-              </MenuItem>
+                <Typography
+                  sx={{
+                    fontSize: "15px",
+                    fontWeight: 500,
+                    fontFamily: "UrbanistMedium",
+                    lineHeight: "18px",
+                    padding: "8px 12px",
+                  }}
+                >
+                  {item.label}
+                </Typography>
+
+                {item.value === value && (
+                  <Image
+                    src={CheckIcon}
+                    alt="check"
+                    width={11}
+                    height={8}
+                    style={{ marginRight: 12 }}
+                  />
+                )}
+              </Box>
             ))}
           </MenuList>
         </Popover>

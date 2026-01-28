@@ -42,6 +42,20 @@ const TransactionPage = () => {
     wallet8: "USDT-TRC20",
   };
 
+  const formatDateTime = (isoString: string) => {
+    const date = new Date(isoString);
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+
+    return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+  }
+
   const processedTransactions: Transaction[] = useMemo(() => {
     if (!transactionState?.customers_transactions) return [];
 
@@ -93,12 +107,19 @@ const TransactionPage = () => {
         crypto: item.base_currency,
         amount: `${item.base_amount} ${item.base_currency}`,
         usdValue: `$${item.base_amount}`, // Adjust if you have a conversion rate
-        dateTime: item.createdAt,
+        dateTime: formatDateTime(item.createdAt),
         status: (item.status === "success" || item.status === "successful") ? "done" : (item.status === "failed" ? "failed" : "pending"),
-        // Additional fields for the extended transaction type if needed
         fees: "0",
         confirmations: "0/0",
-        incomingTransactionId: item.transaction_reference,
+        incomingTransactionId: "3a7b9c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b",
+        outgoingTransactionId: "9b8a7f6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a",
+        callbackUrl: "https://api.example.com/callback",
+        webhookResponse: {
+          "status": "done",
+          "txid": "3a7b9c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b",
+          "amount": 0.0245,
+          "confirmations": 6
+        }
       }));
   }, [transactionState.customers_transactions, searchTerm, selectedWallet, dateRange]);
 

@@ -19,13 +19,14 @@ import {
   VerticalLine,
 } from "./styled";
 import CalendarTodayIcon from "@/assets/Icons/calendar-icon.svg";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { ExpandLess } from "@mui/icons-material";
 import useIsMobile from "@/hooks/useIsMobile";
 import { useTranslation } from "react-i18next";
 import CustomDatePicker, { DateRange, DatePickerRef } from "@/Components/UI/DatePicker";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { endOfDay, format, isAfter, isValid, startOfDay } from "date-fns";
+
+import ExpandLessIcon from "@/assets/Icons/ExpendLess-Arrow.svg";
+import ExpandMoreIcon from "@/assets/Icons/ExpendMore-Arrow.svg";
 import Image from "next/image";
 
 export type TimePeriod = "7days" | "30days" | "90days" | "custom";
@@ -79,6 +80,8 @@ export default function TimePeriodSelector({
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [focusedIndex, setFocusedIndex] = useState<number>(0);
   const listRef = useRef<HTMLUListElement>(null);
+
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const handleCalendarButtonClick = (e: React.MouseEvent<HTMLElement>) => {
     datePickerRef.current?.open(e);
@@ -224,8 +227,31 @@ export default function TimePeriodSelector({
 
   const selected = timePeriods.find((p) => p.value === value) ?? timePeriods[0];
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        handleClose();
+      }
+    };
+
+    if (anchorEl) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [anchorEl]);
+
   return (
-    <>
+    <Box
+      ref={wrapperRef}
+      sx={{
+        position: "relative",
+        width: "fit-content",
+        mt: Boolean(anchorEl) && isMobile ? "-16px !important" : "0px",
+      }}
+    >
       {value === "custom" ? (
         <>
           <Button
@@ -235,7 +261,7 @@ export default function TimePeriodSelector({
               {
                 display: "flex",
                 alignItems: "center",
-                gap: isMobile ? "6px" : "12px",
+                gap: "6px",
                 padding: isMobile ? "8px 10px" : "9px 16px",
                 borderRadius: "6px",
                 textTransform: "none",
@@ -254,234 +280,144 @@ export default function TimePeriodSelector({
                   backgroundColor: "#F5F5F5",
                   borderColor: theme.palette.border.focus,
                 },
-                "&:focus": {
-                  borderColor: theme.palette.border.focus,
-                },
                 "& .separator": {
                   width: "1px",
                   height: isMobile ? "16px" : "20px",
                   backgroundColor: theme.palette.border.main,
-                  flexShrink: 0,
-                },
-                "& .arrow-icon": {
-                  fontSize: isMobile ? "14px" : "16px",
-                  color: theme.palette.text.secondary,
-                  flexShrink: 0,
                 },
               },
               ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
             ]}
           >
-            <Image
-              src={CalendarTodayIcon}
-              alt="calendar"
-              width={isMobile ? 13 : 14}
-              height={isMobile ? 13 : 14}
-              style={{ filter: "brightness(0) saturate(100%) invert(0%)" }}
-            />
+            <Image src={CalendarTodayIcon} alt="calendar" width={isMobile ? 13 : 14} height={isMobile ? 13 : 14} />
+
             <Typography
               sx={{
-                color: theme.palette.text.primary,
                 fontSize: isMobile ? "13px" : "15px",
                 fontFamily: "UrbanistMedium",
-                fontWeight: 500,
-                lineHeight: 1.2,
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textAlign: "left",
                 flex: 1,
+                textAlign: "left",
               }}
             >
               {formatCustomDateRange()}
             </Typography>
-            <Box className="separator" />
-            <KeyboardArrowDownIcon
-              className="arrow-icon"
+
+            <Box
+              sx={{ display: "flex", alignItems: "center", gap: "14px" }}
               onClick={(e) => {
                 e.stopPropagation();
-                const closestButton = (e.currentTarget as Element).closest("button") as
-                  | HTMLElement
-                  | null;
-                setAnchorEl(
-                  closestButton ?? (e.currentTarget as unknown as HTMLElement)
-                );
+                setAnchorEl(e.currentTarget.closest("button"));
                 setFocusedIndex(timePeriods.findIndex((p) => p.value === value) || 0);
               }}
-            />
+            >
+              <Box className="separator" />
+              <Image
+                src={ExpandMoreIcon.src}
+                width={isMobile ? 8 : 11}
+                height={isMobile ? 4 : 6}
+                alt="expand"
+              />
+            </Box>
           </Button>
-          <Box
-            sx={{
-              position: "absolute",
-              width: 0,
-              height: 0,
-              overflow: "hidden",
-              opacity: 0,
-              pointerEvents: "none",
-            }}
-          >
+
+          <Box sx={{ position: "absolute", width: 0, height: 0, opacity: 0 }}>
             <CustomDatePicker
               ref={datePickerRef}
               value={customDateRange}
               onChange={handleCustomDateRangeChange}
-              hideTrigger={true}
+              hideTrigger
             />
           </Box>
         </>
       ) : (
-        <PeriodTrigger
-          onClick={handleOpen}
-          sx={[
-            { maxHeight: isMobile ? "32px" : "40px" },
-            ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
-          ]}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: isMobile ? "4px" : "6px",
-            }}
-          >
-            <Box
-              component="img"
-              src={CalendarTodayIcon.src as string}
-              alt="calendar"
-              sx={{
-                width: isMobile ? "13px" : "14px",
-                height: isMobile ? "13px" : "14px",
-                userDrag: "none",
-                WebkitUserDrag: "none",
-              }}
-              draggable={false}
-            />
-            <PeriodText
-              style={{
-                fontSize: isMobile ? "13px" : "15px",
-                fontFamily: "UrbanistMedium",
-                color: theme.palette.text.secondary,
-              }}
-            >
-              {selected.label}
-            </PeriodText>
+        <PeriodTrigger onClick={handleOpen}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <Box component="img" src={CalendarTodayIcon.src} sx={{ width: 14, height: 14 }} />
+            <Typography style={{ fontWeight: "500", fontSize: isMobile ? "13px" : "15px", fontFamily: "UrbanistMedium", whiteSpace: "nowrap" }}>{selected.label}</Typography>
           </Box>
 
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              paddingLeft: "4px",
-              gap: 0.2,
-            }}
-          >
-            <VerticalLine
-              style={{
-                height: isMobile ? "14px" : "20px",
-                minHeight: isMobile ? "14px" : "20px",
-                marginRight: isMobile ? "4px" : "9px",
-              }}
-            />
+          <Box sx={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <Box sx={{ width: 1.1, height: isMobile ? 16 : 20, backgroundColor: theme.palette.border.main }} />
             {!anchorEl ? (
-              <ExpandMoreIcon
-                style={{
-                  color: theme.palette.text.secondary,
-                  width: isMobile ? "16px" : "24px",
-                  height: isMobile ? "16px" : "24px",
-                }}
-              />
+              <Image src={ExpandMoreIcon.src} width={isMobile ? 8 : 11} height={isMobile ? 4 : 6} alt="expand" />
             ) : (
-              <ExpandLess
-                style={{
-                  color: theme.palette.text.secondary,
-                  width: isMobile ? "16px" : "24px",
-                  height: isMobile ? "16px" : "24px",
-                }}
-              />
+              <Image src={ExpandLessIcon.src} width={isMobile ? 8 : 11} height={isMobile ? 4 : 6} alt="collapse" />
             )}
           </Box>
         </PeriodTrigger>
       )}
 
-      <Popover
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        slotProps={{
-          paper: {
-            sx: {
-              borderRadius: "7px",
-              boxShadow: "0 4px 16px 0 rgba(47, 47, 101, 0.15)",
-              overflow: "hidden",
-              border: `1px solid ${theme.palette.border.main}`,
-            },
-          },
-        }}
-      >
-        <List
-          ref={listRef}
+      {/* ================= DROPDOWN (PERFECT POPOVER CLONE) ================= */}
+      {Boolean(anchorEl) && (
+        <Box
           sx={{
-            width: "100%",
-            p: "6px",
-            minWidth: isMobile ? "160px" : "190px",
+            position: "absolute",
+            top: "0",
+            left: 0,
+            minWidth: isMobile ? "210px" : "245px",
+            border: "1px solid rgba(233,236,242,1)",
+            borderRadius: "6px",
+            backgroundColor: "#fff",
+            padding: "7px 8px",
+            zIndex: 100,
+            boxShadow: "0px 8px 24px rgba(0,0,0,0.08)",
           }}
         >
-          {timePeriods.map((period, index) => (
-            <ListItemButton
-              key={period.value}
-              onClick={(event) => handleSelectWithEvent(event, period.value)}
-              onMouseEnter={() => setFocusedIndex(index)}
-              sx={{
-                borderRadius: "63px",
-                fontSize: isMobile ? "13px !important" : "15px",
-                fontFamily: "UrbanistMedium",
-                fontWeight: 500,
-                lineHeight: "100%",
-                letterSpacing: 0,
-                height: "32px",
-                mb: 0.5,
-                py: isMobile ? "6px !important" : "7px !important",
-                background:
-                  period.value === value || focusedIndex === index
-                    ? theme.palette.primary.light
-                    : "transparent",
-                "&:hover": {
-                  background: theme.palette.primary.light,
-                },
-                "&:focus": {
-                  background: theme.palette.primary.light,
-                  outline: "none",
-                },
-              }}
-            >
-              <ListItemText
+          {/* Header */}
+          <Box
+            onClick={handleClose}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "0px 6px",
+              cursor: "pointer",
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <Box component="img" src={CalendarTodayIcon.src} sx={{ width: 14, height: 14 }} />
+              <Typography style={{ fontWeight: "500", fontSize: isMobile ? "13px" : "15px", fontFamily: "UrbanistMedium", whiteSpace: "nowrap" }}>{selected.label}</Typography>
+            </Box>
+
+            <Box sx={{ display: "flex", alignItems: "center", gap: "14px" }}>
+              <Box sx={{ width: 1.1, height: isMobile ? 16 : 20, backgroundColor: theme.palette.border.main }} />
+              <Image src={ExpandLessIcon.src} width={isMobile ? 8 : 11} height={isMobile ? 4 : 6} alt="collapse" />
+            </Box>
+          </Box>
+
+          {/* Content */}
+          <Box sx={{ mt: "13px", display: "flex", flexDirection: "column", gap: "4px" }}>
+            {timePeriods.map((period, index) => (
+              <Box
+                key={period.value}
+                onMouseEnter={() => setFocusedIndex(index)}
+                onClick={(e) => handleSelectWithEvent(e, period.value)}
                 sx={{
+                  borderRadius: "63px",
+                  fontSize: isMobile ? "13px" : "15px",
                   fontFamily: "UrbanistMedium",
-                  fontWeight: 500,
-                }}
-                primaryTypographyProps={{
-                  sx: {
-                    fontSize: isMobile ? "13px !important" : "15px",
-                    lineHeight: 1.2,
+                  height: "32px",
+                  px: "12px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  cursor: "pointer",
+                  background:
+                    period.value === value || focusedIndex === index
+                      ? theme.palette.primary.light
+                      : "transparent",
+                  "&:hover": {
+                    background: theme.palette.primary.light,
                   },
                 }}
-                primary={period.label}
-              />
-
-              {period.value === value && (
-                <ListItemIcon sx={{ minWidth: "fit-content" }}>
-                  <CheckIconStyled
-                    sx={{
-                      width: "16px",
-                      height: "16px",
-                    }}
-                  />
-                </ListItemIcon>
-              )}
-            </ListItemButton>
-          ))}
-        </List>
-      </Popover>
-    </>
+              >
+                {period.label}
+                {period.value === value && <CheckIconStyled sx={{ width: 16, height: 16 }} />}
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      )}
+    </Box>
   );
 }

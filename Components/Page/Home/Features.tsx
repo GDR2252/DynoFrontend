@@ -11,12 +11,19 @@ import {
 import HomeSectionTitle from "@/Components/UI/SectionTitle";
 import HomeButton from "@/Components/Layout/HomeButton";
 
-import PaymentLinkSuccessImage from "@/assets/Images/home/payment-link-success.svg";
-import TransactionDashboardImage from "@/assets/Images/home/transaction-dashboard.svg";
-import WalletSelectorImage from "@/assets/Images/home/wallet-selector.svg";
-import APIKeyImage from "@/assets/Images/home/api-key.svg";
-import ProgressCounterImage from "@/assets/Images/home/progress-counter.svg";
-import WebhookInfoImage from "@/assets/Images/home/webhook-info.svg";
+import PaymentLinkSuccessImage_svg from "@/assets/Images/home/payment-link-success.svg";
+import TransactionDashboardImage_svg from "@/assets/Images/home/transaction-dashboard.svg";
+import WalletSelectorImage_svg from "@/assets/Images/home/wallet-selector.svg";
+import APIKeyImage_svg from "@/assets/Images/home/api-key.svg";
+import ProgressCounterImage_svg from "@/assets/Images/home/progress-counter.svg";
+import WebhookInfoImage_svg from "@/assets/Images/home/webhook-info.svg";
+
+import PaymentLinkSuccessImage_png from "@/assets/Images/home/payment-link-success.png";
+import TransactionDashboardImage_png from "@/assets/Images/home/transaction-dashboard.png";
+import WalletSelectorImage_png from "@/assets/Images/home/wallet-selector.png";
+import APIKeyImage_png from "@/assets/Images/home/api-key.png";
+import ProgressCounterImage_png from "@/assets/Images/home/progress-counter.png";
+import WebhookInfoImage_png from "@/assets/Images/home/webhook-info.png";
 
 import LinkIcon from "@/assets/Icons/home/link-icon.svg";
 import DashboardIcon from "@/assets/Icons/home/dashboard-icon.svg";
@@ -24,54 +31,57 @@ import WalletIcon from "@/assets/Icons/home/wallet-icon.svg";
 import APIKeyIcon from "@/assets/Icons/home/code-icon.svg";
 import ProgressCounterIcon from "@/assets/Icons/home/trend-down-icon.svg";
 import WebhookIcon from "@/assets/Icons/home/webhook-icon.svg";
-
-const cardData = [
-  {
-    title: "No-Code Payment Links",
-    description: "Simple way to send a payment request without any technical setup.",
-    image: PaymentLinkSuccessImage,
-    icon: LinkIcon,
-    order: { xs: 3, md: 1 },
-  },
-  {
-    title: "Full Transaction Dashboard",
-    description: "Real-time tracking of all crypto payments with detailed insights.",
-    image: TransactionDashboardImage,
-    icon: DashboardIcon,
-    order: { xs: 2, md: 2 },
-  },
-  {
-    title: "Multiple Wallets Per Company",
-    description: "Manage all your crypto assets in one unified place.",
-    image: WalletSelectorImage,
-    icon: WalletIcon,
-    order: { xs: 1, md: 3 },
-  },
-  {
-    title: "Developer-Friendly API",
-    description: "Clean keys management and comprehensive documentation.",
-    image: APIKeyImage,
-    icon: APIKeyIcon,
-    order: { xs: 6, md: 4 },
-  },
-  {
-    title: "Fee Management That Makes Sense",
-    description: "Transparent tier system and real-time fee monitoring.",
-    image: ProgressCounterImage,
-    icon: ProgressCounterIcon,
-    order: { xs: 5, md: 5 },
-  },
-  {
-    title: "Instant Callbacks & Webhooks",
-    description: "For businesses that need automation and real-time updates.",
-    image: WebhookInfoImage,
-    icon: WebhookIcon,
-    order: { xs: 4, md: 6 },
-  },
-];
+import { useDevice } from "@/hooks/useDevice";
 
 const FeaturesSection = () => {
   const isMobile = useIsMobile("md");
+
+  const { os, browser } = useDevice();
+
+  const cardData = [
+    {
+      title: "No-Code Payment Links",
+      description: "Simple way to send a payment request without any technical setup.",
+      image: os === "ios" || browser === "safari" ? PaymentLinkSuccessImage_png : PaymentLinkSuccessImage_svg,
+      icon: LinkIcon,
+      order: { xs: 3, md: 1 },
+    },
+    {
+      title: "Full Transaction Dashboard",
+      description: "Real-time tracking of all crypto payments with detailed insights.",
+      image: os === "ios" || browser === "safari" ? TransactionDashboardImage_png : TransactionDashboardImage_svg,
+      icon: DashboardIcon,
+      order: { xs: 2, md: 2 },
+    },
+    {
+      title: "Multiple Wallets Per Company",
+      description: "Manage all your crypto assets in one unified place.",
+      image: os === "ios" || browser === "safari" ? WalletSelectorImage_png : WalletSelectorImage_svg,
+      icon: WalletIcon,
+      order: { xs: 1, md: 3 },
+    },
+    {
+      title: "Developer-Friendly API",
+      description: "Clean keys management and comprehensive documentation.",
+      image: os === "ios" || browser === "safari" ? APIKeyImage_png : APIKeyImage_svg,
+      icon: APIKeyIcon,
+      order: { xs: 6, md: 4 },
+    },
+    {
+      title: "Fee Management That Makes Sense",
+      description: "Transparent tier system and real-time fee monitoring.",
+      image: os === "ios" || browser === "safari" ? ProgressCounterImage_png : ProgressCounterImage_svg,
+      icon: ProgressCounterIcon,
+      order: { xs: 5, md: 5 },
+    },
+    {
+      title: "Instant Callbacks & Webhooks",
+      description: "For businesses that need automation and real-time updates.",
+      image: os === "ios" || browser === "safari" ? WebhookInfoImage_png : WebhookInfoImage_svg,
+      icon: WebhookIcon,
+      order: { xs: 4, md: 6 },
+    },
+  ];
 
   return (
     <section

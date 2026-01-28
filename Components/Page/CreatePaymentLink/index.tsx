@@ -35,7 +35,7 @@ import { theme } from "@/styles/theme";
 import useIsMobile from "@/hooks/useIsMobile";
 
 const CreatePaymentLinkPage = () => {
-  const isMobile = useIsMobile("md");
+  const isMobile = useIsMobile("sm");
   const { t } = useTranslation("createPaymentLinkScreen");
   const tPaymentLink = useCallback(
     (key: string): string => {
@@ -319,7 +319,7 @@ const CreatePaymentLinkPage = () => {
                   >
                     <ExpireTrigger
                       ref={expireTriggerRef}
-                      onClick={handleExpireOpen}
+                      // onClick={handleExpireOpen}
                       fullWidth={true}
                       isOpen={expireOpen}
                       isMobile={isMobile}
@@ -457,9 +457,9 @@ const CreatePaymentLinkPage = () => {
                     <FormControl component="fieldset">
                       <RadioGroup
                         value={blockchainFees}
-                        onChange={(e) =>
-                          handleBlockchainFeesChange(e.target.value)
-                        }
+                        // onChange={(e) =>
+                        //   handleBlockchainFeesChange(e.target.value)
+                        // }
                         sx={{
                           "& .MuiFormControlLabel-label": {
                             fontSize: { xs: "13px", md: "15px" },

@@ -141,6 +141,10 @@ const HomeFooter = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    cursor: "pointer",
+                    '&:hover': {
+                      background: "rgba(255, 255, 255, 0.2)",
+                    }
                   }}
                 >
                   <Image src={item.icon} alt={item.label} width={20} height={20} />

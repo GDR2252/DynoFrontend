@@ -64,6 +64,7 @@ export interface CryptocurrencySelectorProps {
   name?: string;
   sx?: React.CSSProperties;
   sxIconChip?: React.CSSProperties;
+  closeDropdownTrigger?: boolean;
 }
 
 const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
@@ -77,6 +78,7 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
   name,
   sx,
   sxIconChip,
+  closeDropdownTrigger
 }) => {
   const theme = useTheme();
   const isMobile = useIsMobile("sm");
@@ -84,6 +86,10 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
   const triggerRef = useRef<HTMLDivElement>(null);
 
   const { cryptocurrencies } = useWalletData();
+
+  useEffect(() => {
+    onChange?.(cryptocurrencies[0].code)
+  }, [cryptocurrencies])
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -131,6 +137,12 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
     ? theme.palette.error.main
     : theme.palette.border.focus;
 
+  useEffect(() => {
+    if (closeDropdownTrigger) {
+      setAnchorEl(null);
+    }
+  }, [closeDropdownTrigger]);
+
   return (
     <Box
       sx={{
@@ -143,191 +155,162 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
     >
       {label && (
         <Typography
-          variant="body2"
           sx={{
             fontWeight: 500,
             fontSize: isMobile ? "13px" : "15px",
-            textAlign: "start",
             color: theme.palette.text.primary,
-            lineHeight: "1.2",
           }}
         >
           {label}
-          {required && (
-            <Typography
-              component="span"
-              sx={{ color: theme.palette.text.primary, ml: 0.5 }}
-            >
-              *
-            </Typography>
-          )}
+          {required && <span style={{ marginLeft: 4 }}>*</span>}
         </Typography>
       )}
 
+      {/* Wrapper */}
       <Box
+        // ref={wrapperRef}
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          width: fullWidth ? "100%" : "auto",
+          position: "relative",
+          width: fullWidth ? "100%" : isMobile ? "154px" : "300px",
         }}
       >
-        <CryptocurrencyTrigger
-          ref={triggerRef}
-          onClick={handleOpen}
-          error={error}
-          fullWidth={fullWidth}
-          isOpen={isOpen}
-          isMobile={isMobile}
-          sx={{
-            borderColor: borderColor,
-            borderRadius: "6px",
-            "&:hover": {
-              borderColor: focusBorderColor,
-            },
-            "&:focus": {
-              borderColor: focusBorderColor,
-            },
-            "&:focus-visible": {
-              borderColor: focusBorderColor,
-            },
-            "&:active": {
-              borderColor: focusBorderColor,
-            },
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1.5,
-              flex: 1,
-            }}
-          >
-            <IconChip sx={{ minWidth: "fit-content", height: "28px", ...sxIconChip }}>
+        {/* ===== Trigger ===== */}
+        <CryptocurrencyTrigger onClick={handleOpen}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <IconChip sx={{ minWidth: "fit-content", height: "28px" }}>
               <CryptocurrencyIcon
                 src={selectedCrypto.icon}
                 alt={selectedCrypto.name}
-                width={20}
-                height={20}
+                width={isMobile ? 14 : 20}
+                height={isMobile ? 14 : 20}
               />
               <span>{selectedCrypto.code}</span>
             </IconChip>
-            <CryptocurrencyText isMobile={isMobile}>
-              {selectedCrypto.name}
-            </CryptocurrencyText>
+            <CryptocurrencyText>{selectedCrypto.name}</CryptocurrencyText>
           </Box>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
+
+          <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <CryptocurrencyDividerLine />
-            {isOpen ? (
-              <ExpandLessIcon
-                sx={{
-                  color: theme.palette.text.secondary,
-                  fontSize: isMobile ? "18px" : "20px",
-                }}
-              />
+            {!isOpen ? (
+              <ExpandMoreIcon fontSize="small" />
             ) : (
-              <ExpandMoreIcon
-                sx={{
-                  color: theme.palette.text.secondary,
-                  fontSize: isMobile ? "18px" : "20px",
-                }}
-              />
+              <ExpandLessIcon fontSize="small" />
             )}
           </Box>
         </CryptocurrencyTrigger>
 
-        <Popover
-          anchorEl={anchorEl}
-          open={isOpen}
-          onClose={handleClose}
-          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-          transformOrigin={{ vertical: "top", horizontal: "left" }}
-          PaperProps={{
-            sx: {
-              mt: "-1px",
-              borderRadius: "6px",
-              overflow: "hidden",
-              width: triggerRef.current?.offsetWidth || "auto",
+        {/* ===== Dropdown ===== */}
+        {isOpen && (
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              width: "100%",
               border: `1px solid ${borderColor}`,
-              borderTop: "none",
-              maxHeight: "200px",
-              backgroundColor: theme.palette.common.white,
-            },
-          }}
-        >
-          <CryptocurrencyDropdown>
-            {cryptocurrencies.map((crypto) => (
-              <ListItemButton
-                key={crypto.code}
-                onClick={() => handleSelect(crypto.code)}
-                selected={crypto.code === value}
-                sx={{
-                  borderRadius: "50px",
-                  p: 1,
-                  gap: 1.5,
-                  minHeight: "40px",
-                  background:
-                    crypto.code === value
-                      ? theme.palette.primary.light
-                      : "transparent",
-                  "&:hover": {
-                    background: theme.palette.primary.light,
-                  },
-                  "&.Mui-selected": {
-                    background: theme.palette.primary.light,
+              borderRadius: "6px",
+              backgroundColor: "#fff",
+              padding: "10px 14px",
+              zIndex: 100,
+              boxShadow: "0px 8px 24px rgba(0,0,0,0.08)",
+            }}
+          >
+            {/* ===== Header (duplicate trigger) ===== */}
+            <Box
+              onClick={handleClose}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                // padding: "5px 14px",
+                cursor: "pointer",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                {/* <IconChip sx={{ minWidth: "fit-content", height: "28px" }}>
+                  <CryptocurrencyIcon
+                    src={selectedCrypto.icon}
+                    alt={selectedCrypto.name}
+                    width={20}
+                    height={20}
+                  />
+                  <span>{selectedCrypto.code}</span>
+                </IconChip> */}
+                <CryptocurrencyText>{selectedCrypto.name} ({value})</CryptocurrencyText>
+              </Box>
+
+              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <CryptocurrencyDividerLine />
+                <ExpandLessIcon fontSize="small" />
+              </Box>
+            </Box>
+
+            {/* ===== Content ===== */}
+            <Box sx={{ mt: "13px", display: "flex", flexDirection: "column", gap: "6px" }}>
+              {cryptocurrencies.map((crypto) => (
+                <ListItemButton
+                  key={crypto.code}
+                  onClick={() => {
+                    handleSelect(crypto.code);
+                    handleClose();
+                  }}
+                  selected={crypto.code === value}
+                  sx={{
+                    borderRadius: "50px",
+                    p: "3px 14px 3px 3px",
+                    gap: 1.5,
+                    minHeight: "40px",
+                    background:
+                      crypto.code === value
+                        ? theme.palette.primary.light
+                        : "transparent",
                     "&:hover": {
                       background: theme.palette.primary.light,
                     },
-                  },
-                }}
-              >
-                <IconChip sx={{ minWidth: "fit-content" }}>
-                  <CryptocurrencyIcon src={crypto.icon} alt={crypto.name} width={20} height={20} />
-                  <span>{crypto.code}</span>
-                </IconChip>
-                <ListItemText
-                  primary={crypto.name}
-                  primaryTypographyProps={{
-                    sx: {
-                      fontFamily: "UrbanistMedium",
-                      fontWeight: 500,
-                      fontSize: "15px",
-                      color: theme.palette.text.primary,
-                      lineHeight: "1",
-                    },
                   }}
-                />
-                {crypto.code === value && (
-                  <CheckIcon
-                    sx={{
-                      fontSize: "18px",
-                      color: theme.palette.text.primary,
-                      ml: "auto",
+                >
+                  <IconChip sx={{ minWidth: "fit-content" }}>
+                    <CryptocurrencyIcon
+                      src={crypto.icon}
+                      alt={crypto.name}
+                      width={20}
+                      height={20}
+                    />
+                    <span>{crypto.code}</span>
+                  </IconChip>
+
+                  <ListItemText
+                    primary={crypto.name}
+                    primaryTypographyProps={{
+                      sx: {
+                        fontWeight: 500,
+                        fontSize: isMobile ? "13px" : "15px",
+                      },
                     }}
                   />
-                )}
-              </ListItemButton>
-            ))}
-          </CryptocurrencyDropdown>
-        </Popover>
 
-        {helperText && (
-          <Typography
-            sx={{
-              margin: "4px 0 0 0",
-              fontSize: isMobile ? "10px" : "13px",
-              fontWeight: 500,
-              color: error
-                ? theme.palette.error.main
-                : theme.palette.text.secondary,
-              lineHeight: "1.5",
-              textAlign: "start",
-            }}
-          >
-            {helperText}
-          </Typography>
+                  {crypto.code === value && (
+                    <CheckIcon sx={{ fontSize: 18, ml: "auto" }} />
+                  )}
+                </ListItemButton>
+              ))}
+            </Box>
+          </Box>
         )}
       </Box>
+
+      {helperText && (
+        <Typography
+          sx={{
+            mt: "4px",
+            fontSize: isMobile ? "10px" : "13px",
+            color: error
+              ? theme.palette.error.main
+              : theme.palette.text.secondary,
+          }}
+        >
+          {helperText}
+        </Typography>
+      )}
     </Box>
   );
 };

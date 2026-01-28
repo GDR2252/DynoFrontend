@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Popover, useTheme, Box, Typography } from "@mui/material";
 import { UserTrigger, UserName, PopWrapper, MenuItemRow } from "./styled";
 
@@ -28,6 +28,8 @@ export default function UserMenu() {
   const customWindow = useWindow();
   const { t } = useTranslation("dashboardLayout");
 
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
   const closeMenu = () => setAnchorEl(null);
 
   const handleLogout = () => {
@@ -48,8 +50,33 @@ export default function UserMenu() {
     setImageError(false);
   }, [userPhoto]);
 
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        closeMenu();
+      }
+    };
+
+    if (anchorEl) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [anchorEl]);
+
   return (
-    <>
+    <Box
+      ref={wrapperRef}
+      sx={{
+        position: "relative",
+        width: "fit-content",
+        mt: Boolean(anchorEl) && isMobile ? "-8px" : "0px",
+        padding: isMobile && anchorEl ? "4px 0px" : "0",
+      }}
+    >
       {/* Trigger */}
       <UserTrigger onClick={(e) => setAnchorEl(e.currentTarget)}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
@@ -86,7 +113,6 @@ export default function UserMenu() {
                   fontSize: isMobile ? "10px" : "12px",
                   fontWeight: 600,
                   color: theme.palette.primary.main,
-                  backgroundColor: theme.palette.primary.light,
                   fontFamily: "UrbanistMedium",
                   textTransform: "uppercase",
                   lineHeight: 1,
@@ -104,85 +130,138 @@ export default function UserMenu() {
 
         <VerticalLine />
         {anchorEl ? (
-          <ExpandLessIcon
-            fontSize="small"
-            sx={{ color: theme.palette.text.secondary }}
-          />
+          <ExpandLessIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
         ) : (
-          <ExpandMoreIcon
-            fontSize="small"
-            sx={{ color: theme.palette.text.secondary }}
-          />
+          <ExpandMoreIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
         )}
       </UserTrigger>
 
-      {/* Popover */}
-      <Popover
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={closeMenu}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: isMobile ? "right" : "left",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: isMobile ? "right" : "left",
-        }}
-        PaperProps={{
-          sx: {
-            width: isMobile ? 'fit-content' : triggerWidth,
+      {/* Dropdown */}
+      {Boolean(anchorEl) && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            minWidth: isMobile ? "180px" : "220px",
             border: "1px solid #E9ECF2",
             borderRadius: "8px",
-            boxShadow: "0 4px 16px 0 rgba(47, 47, 101, 0.15)",
-            overflow: "hidden",
-          },
-        }}
-      >
-        <PopWrapper>
-          {/* Settings */}
-          <MenuItemRow
-            onClick={() => {
-              router.push("/profile");
-              closeMenu();
-            }}
+            backgroundColor: "#fff",
+            padding: "5px 14px 14px 12px",
+            zIndex: 200,
+            boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+          }}
+        >
+          {/* Header (duplicate trigger) */}
+          <Box
+            onClick={() => setAnchorEl(null)}
             sx={{
-              gap: isMobile ? "6px" : "8px",
-              paddingY: 0,
-              justifyContent: "center",
+              display: "flex",
+              justifyContent: "space-between",
               alignItems: "center",
-              "&:hover": {
-                background: "transparent",
-              },
+              cursor: "pointer",
             }}
           >
-            <SettingsIcon sx={{ fontSize: isMobile ? "16px" : "16px" }} />
-            <span style={{ fontFamily: "UrbanistMedium", lineHeight: "1.2", letterSpacing: "0", fontSize: isMobile ? "13px" : "15px" }}>
-              {t("settings")}
-            </span>
-          </MenuItemRow>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <Box
+                sx={{
+                  position: "relative",
+                  width: isMobile ? 24 : 32,
+                  height: isMobile ? 24 : 32,
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor:
+                    userPhoto && !imageError
+                      ? "transparent"
+                      : theme.palette.primary.light,
+                  flexShrink: 0,
+                }}
+              >
+                {userPhoto && !imageError ? (
+                  <Image
+                    src={userPhoto as string}
+                    alt="user"
+                    width={isMobile ? 24 : 32}
+                    height={isMobile ? 24 : 32}
+                    style={{ borderRadius: "50%", objectFit: "cover" }}
+                    draggable={false}
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <Typography
+                    sx={{
+                      fontSize: isMobile ? "10px" : "12px",
+                      fontWeight: 600,
+                      color: theme.palette.primary.main,
+                      fontFamily: "UrbanistMedium",
+                      textTransform: "uppercase",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {getInitials(firstName, lastName)}
+                  </Typography>
+                )}
+              </Box>
 
-          <Box mt={isMobile ? 1.5 : 2}>
-            <CustomButton
-              label={t("logout")}
-              onClick={handleLogout}
-              variant="secondary"
-              endIcon={
-                <Image
-                  src={LogoutIcon}
-                  alt="logout"
-                  width={10}
-                  height={10}
-                  draggable={false}
-                />
-              }
-              sx={{ padding: "8px 34px", height: isMobile ? "32px" : "40px" }}
-              fullWidth
-            // size="medium"
-            />
+              <UserName sx={{ fontSize: isMobile ? 13 : 15 }}>
+                {userName || "User"}
+              </UserName>
+            </Box>
+
+            <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <VerticalLine />
+              <ExpandLessIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+            </Box>
           </Box>
-        </PopWrapper>
-      </Popover>
-    </>
+
+          {/* Content */}
+          <Box sx={{ mt: "7px" }}>
+            <MenuItemRow
+              onClick={() => {
+                router.push("/profile");
+                setAnchorEl(null);
+              }}
+              sx={{
+                gap: "8px",
+                justifyContent: "center",
+                "&:hover": { background: "transparent" },
+              }}
+            >
+              <SettingsIcon sx={{ fontSize: "16px" }} />
+              <Typography
+                sx={{
+                  fontFamily: "UrbanistMedium",
+                  fontSize: isMobile ? "13px" : "15px",
+                }}
+              >
+                {t("settings")}
+              </Typography>
+            </MenuItemRow>
+
+            <Box mt={isMobile ? "10px" : "15px"}>
+              <CustomButton
+                label={t("logout")}
+                onClick={handleLogout}
+                variant="secondary"
+                endIcon={
+                  <Image
+                    src={LogoutIcon}
+                    alt="logout"
+                    width={10}
+                    height={10}
+                    draggable={false}
+                  />
+                }
+                fullWidth
+                sx={{ height: isMobile ? "32px" : "40px" }}
+              />
+            </Box>
+          </Box>
+        </Box>
+      )}
+    </Box>
   );
 }

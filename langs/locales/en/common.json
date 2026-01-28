@@ -17,5 +17,7 @@
   "addWallet": "Add wallet",
   "EmptyApiKeyTitle": "There is no API keys",
   "EmptyApiKeyDescription": "Let’s create the first one",
-  "createNewKey": "Create New Key"
+  "createNewKey": "Create New Key",
+  "EmptyPaymentLinkTitle": "There is no payment links",
+  "EmptyPaymentLinkDescription": "Let’s create the first one"
 }

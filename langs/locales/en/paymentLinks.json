@@ -27,5 +27,6 @@
   "expiresHeader": "Expires",
   "statusHeader": "Status",
   "timesUsedHeader": "Times Used",
-  "actionsHeader": "Actions"
+  "actionsHeader": "Actions",
+  "searchInputPlaceholder": "Search links..."
 }

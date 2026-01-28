@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Popover,
   List,
@@ -20,14 +20,13 @@ import {
 
 import portugalFlag from "@/assets/Images/Icons/flags/portugal-flag.png";
 import unitedStatesFlag from "@/assets/Images/Icons/flags/united-states-flag.png";
-import franceFlag from "@/assets/Images/Icons/flags/france-flag.png";
-import spainFlag from "@/assets/Images/Icons/flags/spain-flag.png";
+import ExpandMoreIcon from "@/assets/Icons/ExpendMore-Arrow.svg";
+import ExpandLessIcon from "@/assets/Icons/ExpendLess-Arrow.svg";
 import CheckIcon from "@/assets/Icons/true-icon.svg";
 
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { ExpandLess } from "@mui/icons-material";
 import i18n from "i18next";
 import useIsMobile from "@/hooks/useIsMobile";
+import Image from "next/image";
 
 const languages = [
   { code: "pt", label: "Português", flag: portugalFlag },
@@ -40,6 +39,10 @@ export default function LanguageSwitcher({ sx }: { sx?: SxProps<Theme> }) {
   const current = i18n.language || "en";
   const theme = useTheme();
   const isMobile = useIsMobile("md");
+
+
+
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -54,132 +57,125 @@ export default function LanguageSwitcher({ sx }: { sx?: SxProps<Theme> }) {
 
   const selected = languages.find((l) => l.code === current) ?? languages[1];
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        handleClose();
+      }
+    };
+
+    if (anchorEl) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [anchorEl]);
+
   return (
-    <>
-      <LangTrigger
-        onClick={handleOpen}
-        sx={[
-          { maxHeight: isMobile ? "28px" : "40px" },
-          ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
-        ]}
+    <Box ref={wrapperRef} sx={{ position: "relative" }} width={"fit-content"}>
+      {/* Trigger (always visible) */}
+      <Box
+        onClick={Boolean(anchorEl) ? handleClose : handleOpen}
+        height={isMobile ? "28px" : "40px"}
+        sx={{
+          padding: isMobile ? "7px 10px" : "10px 14px",
+          border: "1px solid #E8F0FF",
+          display: "flex",
+          justifyContent: "space-between",
+          gap: isMobile ? "10px" : "14px",
+          alignItems: "center",
+          borderRadius: "6px",
+          cursor: "pointer",
+          background: "#fff",
+        }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <LangFlag
-            src={selected.flag.src}
-            alt="flag"
-            style={{
-              height: isMobile ? "14px" : "20px",
-              width: isMobile ? "14px" : "20px",
-            }}
-          />
+        <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <LangFlag src={selected.flag.src} alt="flag" style={{ height: isMobile ? "14px" : "20px", width: isMobile ? "14px" : "20px" }} />
           <LangText style={{ fontSize: isMobile ? "10.5px" : "15px" }}>
             {selected.code.toUpperCase()}
           </LangText>
         </Box>
 
+        <Box sx={{ display: "flex", alignItems: "center", gap: isMobile ? "10px" : "14px" }}>
+          <Box style={{ height: isMobile ? "14px" : "20px", width: "1px", background: "#ddd" }} />
+          {Boolean(anchorEl) ? <Image src={ExpandLessIcon.src} alt="expand" width={isMobile ? 7 : 11} height={isMobile ? 4 : 6} /> : <Image src={ExpandMoreIcon.src} alt="expand" width={isMobile ? 7 : 11} height={isMobile ? 4 : 6} />}
+        </Box>
+      </Box>
+
+      {/* Floating full component */}
+      {Boolean(anchorEl) && (
         <Box
           sx={{
-            display: "flex",
-            alignItems: "center",
-            paddingLeft: "4px",
-            gap: 0.2,
+            position: "absolute",
+            top: "0",
+            right: 0,
+            width: "169px",
+            border: "1px solid #E8F0FF",
+            borderRadius: "6px",
+            background: "#fff",
+            zIndex: 2000,
+            padding: "10px 6px 6px",
+            boxShadow: "0px 8px 24px rgba(0,0,0,0.08)",
           }}
         >
-          <VerticalLine
-            style={{
-              height: isMobile ? "14px" : "20px",
-              minHeight: isMobile ? "14px" : "20px",
-              marginRight: isMobile ? "4px" : "9px",
+          {/* Header */}
+          <Box
+            onClick={handleClose}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "0px 8px 10px",
+              cursor: "pointer",
             }}
-          />
-          {!anchorEl ? (
-            <ExpandMoreIcon
-              style={{
-                color: theme.palette.text.secondary,
-                width: isMobile ? "16px" : "20px",
-                height: isMobile ? "16px" : "20px",
-              }}
-            />
-          ) : (
-            <ExpandLess
-              style={{
-                color: theme.palette.text.secondary,
-                width: isMobile ? "16px" : "20px",
-                height: isMobile ? "16px" : "20px",
-              }}
-            />
-          )}
-        </Box>
-      </LangTrigger>
+          >
+            <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <LangFlag src={selected.flag.src} alt="flag" style={{ height: "16px", width: "16px" }} />
+              <LangText>{selected.code.toUpperCase()}</LangText>
+            </Box>
 
-      <Popover
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        PaperProps={{
-          sx: {
-            border: `1px solid ${theme.palette.border.main}`,
-            borderRadius: "6px",
-            boxShadow: "0 4px 16px 0 rgba(47, 47, 101, 0.15)",
-            overflow: "hidden",
+            <Box sx={{ display: "flex", alignItems: "center", gap: "14px" }}>
+              <Box style={{ height: isMobile ? "14px" : "20px", width: "1px", background: "#ddd" }} />
+              <Image src={ExpandLessIcon.src} alt="expand" width={isMobile ? 7 : 11} height={isMobile ? 4 : 6} />
+            </Box>
+          </Box>
 
-            "& .MuiTypography-root span": {
-              fontSize: isMobile ? "13px !important" : "15px !important",
-              lineHeight: 1.2,
-            },
-          },
-        }}
-      >
-        <List sx={{ width: "100%", p: 0.75 }}>
+          {/* List */}
           {languages.map((lng) => (
-            <ListItemButton
+            <Box
               key={lng.code}
               onClick={() => changeLang(lng.code)}
               sx={{
-                // borderRadius: "50px",
-                fontSize: isMobile ? "12px !important" : "15px",
-                mb: 0.5,
-                px: isMobile ? "8px" : 1,
-                py: isMobile ? "4px" : 1,
-                borderRadius: "63px",
-                height: "32px",
-                minHeight: "32px",
                 background: lng.code === current ? "#E8F0FF" : "transparent",
-                "&:hover": {
-                  background: "#E8F0FF",
-                },
+                "&:hover": { background: "#E8F0FF" },
+                padding: "8px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                borderRadius: "63px",
+                cursor: "pointer",
+                mb: "6px",
               }}
             >
-              <ListItemIcon sx={{ minWidth: "fit-content", paddingRight: "4px" }}>
-                <LangFlag src={lng.flag.src} alt={lng.label} style={{
-                  height: isMobile ? "14px" : "16px",
-                  width: isMobile ? "14px" : "16px",
-                }} />
-              </ListItemIcon>
+              <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <LangFlag src={lng.flag.src} alt="flag" style={{ height: "16px", width: "16px" }} />
+                <LangText>
+                  {lng.code.toUpperCase()} - {lng.label}
+                </LangText>
+              </Box>
 
-              <ListItemText
-                primaryTypographyProps={{
-                  sx: {
-                    fontSize: isMobile ? "12px !important" : "15px !important",
-                    fontFamily: "UrbanistMedium !important",
-                    fontWeight: "500 !important",
-                    lineHeight: "1.2 !important",
-                    color: theme.palette.text.primary,
-                    paddingRight: "11px",
-                  },
-                }}
-                primary={`${lng.code.toUpperCase()} – ${lng.label}`}
-              />
-
-              {lng.code === current && <CheckIconStyled style={{
-                width: isMobile ? "16px" : "11px",
-                height: isMobile ? "16px" : "8px",
-              }} src={CheckIcon.src} alt="check" />}
-            </ListItemButton>
+              <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                {lng.code === current && <CheckIconStyled style={{
+                  width: isMobile ? "16px" : "11px",
+                  height: isMobile ? "16px" : "8px",
+                }} src={CheckIcon.src} alt="check" />}
+              </Box>
+            </Box>
           ))}
-        </List>
-      </Popover>
-    </>
+        </Box>
+      )}
+    </Box>
   );
 }

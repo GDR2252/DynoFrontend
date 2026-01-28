@@ -68,6 +68,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
   const [address, setAddress] = useState<Address | null>(null);
   const [otpError, setOtpError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [closeCryptoDropdown, setCloseCryptoDropdown] = useState(false);
 
   const validate = () => {
     const newErrors: typeof errors = {};
@@ -131,14 +132,12 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
       setPopupLoading(false);
       setIsSubmitting(false);
 
-      // Close the AddWalletModal and open OTP dialog
-      // Reset form but keep address for OTP verification
       setWalletName("");
       setCryptocurrency("BTC");
       setWalletAddress("");
       setErrors({});
-      onClose(); // Close the modal
-      setOtpModalOpen(true); // Open OTP dialog
+      onClose();
+      setOtpModalOpen(true);
     } catch (error: any) {
       console.error("Error adding wallet address:", error);
       dispatch({
@@ -256,9 +255,9 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
   };
 
   const handleClose = () => {
-    if (isSubmitting) {
-      return; // Prevent closing while submitting
-    }
+    if (isSubmitting) return;
+
+    setCloseCryptoDropdown(true);
     setWalletName("");
     setCryptocurrency("BTC");
     setWalletAddress("");
@@ -280,7 +279,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
       disableEscapeKeyDown={isSubmitting}
       onClose={(event, reason) => {
         if (isSubmitting) {
-          return; // Prevent closing while submitting
+          return;
         }
         if (reason === "backdropClick" || reason === "escapeKeyDown") {
           handleClose();
@@ -323,7 +322,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
       >
         <Typography
           sx={{
-            fontSize: "15px",
+            fontSize: isMobile ? "13px" : "15px",
             fontWeight: 500,
             fontFamily: "UrbanistMedium",
             lineHeight: "1.5",
@@ -361,6 +360,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
                 },
               },
             }}
+            closeDropdownTrigger={closeCryptoDropdown}
           />
           <InputField
             label={tWallet("walletAddress") + " *"}
@@ -384,7 +384,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
                 width={16}
                 height={16}
                 draggable={false}
-                style={{filter: "brightness(0)"}}
+                style={{ filter: "brightness(0)" }}
               />
             </WarningIconContainer>
             <WarningContent>

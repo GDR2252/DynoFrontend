@@ -7,12 +7,15 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import SearchSvg from "@/assets/Icons/search.svg";
 import useIsMobile from "@/hooks/useIsMobile";
+import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 interface Props {
   onSearch: (value: string) => void;
 }
 
 const PaymentLinksTopBar = ({ onSearch }: Props) => {
 
+  const { t } = useTranslation("paymentLinks");
   const isMobile = useIsMobile("md");
 
   return (
@@ -25,7 +28,7 @@ const PaymentLinksTopBar = ({ onSearch }: Props) => {
       }}
     >
       <InputBase
-        placeholder="Search links..."
+        placeholder={t("searchInputPlaceholder")}
         onChange={(e) => onSearch(e.target.value)}
         sx={{
           height: "40px",

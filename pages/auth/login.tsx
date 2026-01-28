@@ -1722,6 +1722,7 @@ export default function Login() {
           alignItems: "center",
           padding: isMobile ? "10px 18px" : "8px 27px",
           height: isMobile ? "49px" : "56px",
+          overflow: "visible",
         }}
       >
         {/* Logo */}

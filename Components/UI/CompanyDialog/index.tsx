@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { Box, Grid, IconButton, InputBase, ListItemButton, ListItemText, Popover, Typography } from "@mui/material";
+import { Box, Grid, IconButton, InputBase, ListItemButton, ListItemText, MenuItem, Popover, TextField, Typography } from "@mui/material";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "@mui/material/styles";
@@ -23,6 +23,7 @@ import { CryptocurrencyDividerLine, CryptocurrencyDropdown, CryptocurrencyTrigge
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { Country, State, City } from "country-state-city";
 import type { ICountry, IState, ICity } from "country-state-city";
@@ -168,11 +169,13 @@ export default function CompanyDialog({
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [stateAnchor, setStateAnchor] = useState<HTMLElement | null>(null);
   const [cityAnchor, setCityAnchor] = useState<HTMLElement | null>(null);
+  const [vatAnchorEl, setVatAnchorEl] = useState<HTMLElement | null>(null);
 
   // Refs for selected items in dropdowns
   const selectedItemRef = useRef<HTMLDivElement>(null);
   const selectedStateRef = useRef<HTMLDivElement>(null);
   const selectedCityRef = useRef<HTMLDivElement>(null);
+  const selectedVatRef = React.useRef<HTMLDivElement | null>(null);
 
   // Search term state (UI-only, not form data)
   const [searchTerm, setSearchTerm] = useState("");
@@ -330,6 +333,65 @@ export default function CompanyDialog({
   useEffect(() => {
     setCurrentFormValues(initialValues);
   }, [initialValues]);
+
+  const [vatValue, setVatValue] = useState({ code: "AT", taxCode: "VAT" });
+  const [vatOpen, setVatOpen] = useState(false);
+
+  const vatCountries = [
+    // 🇪🇺 EU VAT
+    { code: "AT", label: "Austria", taxCode: "VAT" },
+    { code: "BE", label: "Belgium", taxCode: "VAT" },
+    { code: "BG", label: "Bulgaria", taxCode: "VAT" },
+    { code: "CY", label: "Cyprus", taxCode: "VAT" },
+    { code: "CZ", label: "Czech Republic", taxCode: "VAT" },
+    { code: "DE", label: "Germany", taxCode: "VAT" },
+    { code: "DK", label: "Denmark", taxCode: "VAT" },
+    { code: "EE", label: "Estonia", taxCode: "VAT" },
+    { code: "ES", label: "Spain", taxCode: "VAT" },
+    { code: "FI", label: "Finland", taxCode: "VAT" },
+    { code: "FR", label: "France", taxCode: "VAT" },
+    { code: "GR", label: "Greece", taxCode: "VAT" },
+    { code: "HR", label: "Croatia", taxCode: "VAT" },
+    { code: "HU", label: "Hungary", taxCode: "VAT" },
+    { code: "IE", label: "Ireland", taxCode: "VAT" },
+    { code: "IT", label: "Italy", taxCode: "VAT" },
+    { code: "LT", label: "Lithuania", taxCode: "VAT" },
+    { code: "LU", label: "Luxembourg", taxCode: "VAT" },
+    { code: "LV", label: "Latvia", taxCode: "VAT" },
+    { code: "MT", label: "Malta", taxCode: "VAT" },
+    { code: "NL", label: "Netherlands", taxCode: "VAT" },
+    { code: "PL", label: "Poland", taxCode: "VAT" },
+    { code: "PT", label: "Portugal", taxCode: "VAT" },
+    { code: "RO", label: "Romania", taxCode: "VAT" },
+    { code: "SE", label: "Sweden", taxCode: "VAT" },
+    { code: "SI", label: "Slovenia", taxCode: "VAT" },
+    { code: "SK", label: "Slovakia", taxCode: "VAT" },
+
+    { code: "AD", label: "Andorra", taxCode: "NRT" },
+    { code: "AE", label: "United Arab Emirates", taxCode: "TRN" },
+    { code: "AF", label: "Afghanistan", taxCode: "TIN" },
+    { code: "AL", label: "Albania", taxCode: "TIN" },
+    { code: "AR", label: "Argentina", taxCode: "CUIT" },
+    { code: "AU", label: "Australia", taxCode: "ABN" },
+    { code: "BR", label: "Brazil (Business)", taxCode: "CNPJ" },
+    { code: "BR", label: "Brazil (Individual)", taxCode: "CPF" },
+    { code: "CA", label: "Canada", taxCode: "BN" },
+    { code: "CH", label: "Switzerland", taxCode: "VAT" },
+    { code: "CN", label: "China", taxCode: "TIN" },
+    { code: "GB", label: "United Kingdom", taxCode: "VAT" },
+    { code: "IN", label: "India", taxCode: "GST" },
+    { code: "JP", label: "Japan", taxCode: "CN" },
+    { code: "MX", label: "Mexico", taxCode: "RFC" },
+    { code: "NO", label: "Norway", taxCode: "VAT" },
+    { code: "NZ", label: "New Zealand", taxCode: "GST" },
+    { code: "SG", label: "Singapore", taxCode: "UEN" },
+    { code: "US", label: "United States", taxCode: "EIN" },
+    { code: "ZA", label: "South Africa", taxCode: "VAT" },
+  ];
+
+  const handleClick = (event: any) => {
+    setVatAnchorEl(vatAnchorEl ? null : event.currentTarget);
+  };
 
   return (
     <PopupModal
@@ -1004,6 +1066,169 @@ export default function CompanyDialog({
                     onChange={handleChange}
                     onBlur={handleBlur}
                   />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                    <Typography
+                      sx={{
+                        fontSize: isMobile ? "13px" : "15px",
+                        fontWeight: 500,
+                        lineHeight: "100%",
+                        color: theme.palette.text.primary,
+                        fontFamily: "UrbanistMedium",
+                      }}
+                    >
+                      {t("vatNumber")}
+                    </Typography>
+
+                    <Grid container spacing={2}>
+                      {/* Country VAT Dropdown */}
+                      <Grid item xs={5}>
+                        <Box
+                          maxWidth={"150px"}
+                          onClick={(e) => setVatAnchorEl(vatAnchorEl ? null : e.currentTarget)}
+                          sx={{
+                            cursor: "pointer",
+                            border: "1px solid #E9ECF2",
+                            borderRadius: "6px",
+                            width: "100%",
+                            height: "40px",
+                            padding: isMobile ? "8px" : "10px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between"
+                          }}
+                        >
+                          <img
+                            width={isMobile ? 14 : 20}
+                            height={isMobile ? 14 : 20}
+                            src={`https://flagcdn.com/w20/${vatValue.code.toLowerCase()}.png`}
+                            alt={vatValue.code}
+                            style={{ borderRadius: "100%" }}
+                          />
+                          <Typography
+                            sx={{
+                              fontSize: isMobile ? "10px" : "13px",
+                              fontFamily: "UrbanistMedium",
+                              lineHeight: "100%",
+                              letterSpacing: 0,
+                              fontWeight: 500,
+                            }}
+                          >
+                            {vatValue.code} {vatValue.taxCode}
+                          </Typography>
+
+                          <Box sx={{ width: "1px", height: "20px", backgroundColor: "#D9D9D9" }} />
+
+                          {vatAnchorEl ? (
+                            <ExpandLessIcon sx={{ width: "20px", color: "#676768" }} />
+                          ) : (
+                            <ExpandMoreIcon sx={{ width: "20px", color: "#676768" }} />
+                          )}
+                        </Box>
+
+                        <Popover
+                          open={Boolean(vatAnchorEl)}
+                          anchorEl={vatAnchorEl}
+                          onClose={() => setVatAnchorEl(null)}
+                          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                          transformOrigin={{ vertical: "top", horizontal: "left" }}
+                          transitionDuration={0}
+                          TransitionProps={{
+                            onEntering: () => {
+                              selectedVatRef.current?.scrollIntoView({
+                                block: "center",
+                                behavior: "auto",
+                              });
+                            },
+                          }}
+                          PaperProps={{
+                            sx: {
+                              width: "170px",
+                              height: "220px",
+                              padding: "5px",
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: "5px",
+                              borderRadius: "6px",
+                            },
+                          }}
+                        >
+                          {vatCountries.map((country) => (
+                            <Box
+                              key={country.code}
+                              ref={country.code === vatValue.code ? selectedVatRef : null}
+                              onClick={() => {
+                                setVatValue({ ...vatValue, code: country.code, taxCode: country.taxCode });
+                                setVatAnchorEl(null);
+                              }}
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                cursor: "pointer",
+                                backgroundColor: country.code === vatValue.code && country.taxCode === vatValue.taxCode ? "#E5EDFF" : "",
+                                borderRadius: "63px",
+                                height: "40px",
+                                padding: "10px 14px",
+                                alignItems: "center",
+                                "&:hover": {
+                                  backgroundColor: country.code === vatValue.code && country.taxCode === vatValue.taxCode ? "#E5EDFF" : "#F0F4FF",
+                                },
+                              }}
+                            >
+                              <Box sx={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                                <img
+                                  width={isMobile ? 16 : 20}
+                                  height={isMobile ? 16 : 20}
+                                  src={`https://flagcdn.com/w20/${country.code.toLowerCase()}.png`}
+                                  alt={country.label}
+                                  style={{ borderRadius: "100%" }}
+                                />
+                                <Typography
+                                  sx={{
+                                    fontSize: "13px",
+                                    fontFamily: "UrbanistMedium",
+                                    lineHeight: "100%",
+                                    letterSpacing: 0,
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  {country.code} {country.taxCode}
+                                </Typography>
+                              </Box>
+
+                              {country.code === vatValue.code && country.taxCode === vatValue.taxCode && (
+                                <CheckIcon sx={{ width: "20px", height: "15px" }} />
+                              )}
+                            </Box>
+                          ))}
+                        </Popover>
+                      </Grid>
+
+                      {/* VAT Number Input */}
+                      <Grid item xs={7}>
+                        <InputField
+                          fullWidth
+                          placeholder="Enter VAT number"
+                          value={values.vatNumber || ""}
+                          onChange={(e) =>
+                            handleFieldsChange({ vatNumber: e.target.value })
+                          }
+                          inputHeight={isMobile ? "32px" : "38px"}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Box>
+
+                  <Box sx={{ mt: "8px", display: "flex", justifyContent: "space-between", padding: "8px 12px", backgroundColor: "#DDF5DC", borderRadius: "7px" }}>
+                    <Box sx={{ display: "flex", gap: "5px", alignItems: "center" }}>
+                      <CheckIcon sx={{ width: "16px", height: "16px", color: "#1B902B" }} />
+
+                      <Typography sx={{ fontSize: "12px", color: "#1B902B", fontWeight: 500, fontFamily: "UrbanistMedium", lineHeight: "100%", letterSpacing: 0 }}>{t("vatVerify")}</Typography>
+                    </Box>
+                    <CloseIcon sx={{ width: "16px", height: "16px" }} />
+                  </Box>
                 </Grid>
 
                 <Grid item xs={12}>

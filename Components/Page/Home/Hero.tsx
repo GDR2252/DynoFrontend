@@ -2,17 +2,27 @@ import HomeSectionTitle from "@/Components/UI/SectionTitle";
 import { Box } from "@mui/material";
 import React from "react";
 
-import Dashboard from "@/assets/Images/home/Dashboard.png";
-import Payment from "@/assets/Images/home/Payment-Container.png";
-import Wallet from "@/assets/Images/home/Wallet.png";
-import BitcoinBg from "@/assets/Images/home/Bitcoin-bg.png";
-import EthereumBg from "@/assets/Images/home/Ethereum-bg.png";
-import LitecoinBg from "@/assets/Images/home/Litecoin-bg.png";
+import Dashboard_png from "@/assets/Images/home/Dashboard.png";
+import Payment_png from "@/assets/Images/home/Payment-Container.png";
+import Wallet_png from "@/assets/Images/home/Wallet.png";
+import BitcoinBg_png from "@/assets/Images/home/Bitcoin-bg.png";
+import EthereumBg_png from "@/assets/Images/home/Ethereum-bg.png";
+import LitecoinBg_png from "@/assets/Images/home/Litecoin-bg.png";
+
+import Dashboard_svg from "@/assets/Images/home/Dashboard.svg";
+import Payment_svg from "@/assets/Images/home/Payment-Container.svg";
+import Wallet_svg from "@/assets/Images/home/Wallet.svg";
+import BitcoinBg_svg from "@/assets/Images/home/Bitcoin-bg.svg";
+import EthereumBg_svg from "@/assets/Images/home/Ethereum-bg.svg";
+import LitecoinBg_svg from "@/assets/Images/home/Litecoin-bg.svg";
 
 import Image from "next/image";
 import HomeButton from "@/Components/Layout/HomeButton";
+import { useDevice } from "@/hooks/useDevice";
 
 const HeroSection = () => {
+  const { os, browser } = useDevice();
+
   return (
     <div>
       <Box
@@ -52,7 +62,7 @@ const HeroSection = () => {
             }}
           >
             <Image
-              src={BitcoinBg}
+              src={os === "ios" || browser === "safari" ? BitcoinBg_png : BitcoinBg_svg}
               alt="background"
               fill
               style={{ objectFit: "fill" }}
@@ -83,7 +93,7 @@ const HeroSection = () => {
             }}
           >
             <Image
-              src={EthereumBg}
+              src={os === "ios" || browser === "safari" ? EthereumBg_png : EthereumBg_svg}
               alt="background"
               fill
               style={{ objectFit: "cover" }}
@@ -189,7 +199,7 @@ const HeroSection = () => {
               }}
             >
               <Image
-                src={LitecoinBg}
+                src={os === "ios" || browser === "safari" ? LitecoinBg_png : LitecoinBg_svg}
                 alt="Bitcoin Background"
                 fill
                 style={{
@@ -201,10 +211,10 @@ const HeroSection = () => {
             </Box>
 
             <Image
-              src={Dashboard}
+              src={os === "ios" || browser === "safari" ? Dashboard_png : Dashboard_svg}
               alt="Dashboard Container"
               fill
-              style={{ objectFit: "contain" }}
+              style={{ objectFit: "contain", scale: "1.2" }}
               priority
               draggable={false}
             />
@@ -226,10 +236,10 @@ const HeroSection = () => {
           }}
         >
           <Image
-            src={Wallet}
+            src={os === "ios" || browser === "safari" ? Wallet_png : Wallet_svg}
             alt="Wallet Container"
             fill
-            style={{ objectFit: "fill" }}
+            style={{ objectFit: "fill", scale: "1.4" }}
             draggable={false}
           />
         </Box>
@@ -250,10 +260,10 @@ const HeroSection = () => {
           }}
         >
           <Image
-            src={Payment}
+            src={os === "ios" || browser === "safari" ? Payment_png : Payment_svg}
             alt="Payment Container"
             fill
-            style={{ objectFit: "fill" }}
+            style={{ objectFit: "fill", scale: "1.2" }}
             draggable={false}
           />
         </Box>
@@ -292,10 +302,10 @@ const HeroSection = () => {
           }}
         >
           <Image
-            src={Wallet}
+            src={os === "ios" ? Wallet_png : Wallet_svg}
             alt="Wallet Container"
             fill
-            style={{ objectFit: "fill" }}
+            style={{ objectFit: "fill", scale: os === "ios" ? "1" : "1.3" }}
             draggable={false}
           />
         </Box>
@@ -310,10 +320,10 @@ const HeroSection = () => {
           }}
         >
           <Image
-            src={Payment}
+            src={os === "ios" ? Payment_png : Payment_svg}
             alt="Payment Container"
             fill
-            style={{ objectFit: "fill" }}
+            style={{ objectFit: "fill", scale: os === "ios" ? "1" : "1.3" }}
             draggable={false}
           />
         </Box>
@@ -344,10 +354,10 @@ const HeroSection = () => {
           }}
         >
           <Image
-            src={LitecoinBg}
+            src={os === "ios" ? LitecoinBg_png : LitecoinBg_svg}
             alt="Dashboard Mobile"
             fill
-            style={{ objectFit: "cover" }}
+            style={{ objectFit: "cover", scale: os === "ios" ? "1" : "1.2" }}
             draggable={false}
           />
         </Box>
@@ -362,10 +372,10 @@ const HeroSection = () => {
           }}
         >
           <Image
-            src={Dashboard}
+            src={os === "ios" ? Dashboard_png : Dashboard_svg}
             alt="Dashboard Mobile"
             fill
-            style={{ objectFit: "cover", placeContent: "left" }}
+            style={{ objectFit: "cover", placeContent: "left", scale: os === "ios" ? "1.026" : "1.12" }}
             draggable={false}
           />
         </Box>

@@ -75,6 +75,9 @@ const CountryPhoneInput: React.FC<CountryPhoneInputProps> = ({
               paddingLeft: "6px !important",
             },
           },
+          "& .MuiTouchRipple-root": {
+            display: "none",
+          },
           "& .MuiInputBase-root": {
             height: height,
             borderRadius: "6px",

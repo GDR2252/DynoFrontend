@@ -4,6 +4,7 @@ import CustomButton from "../Buttons";
 import Transactions from "@/assets/Icons/Transactions.svg";
 import wallet from "@/assets/Icons/wallet.svg";
 import apiKey from "@/assets/Icons/api-key.svg";
+import paymentLinks from "@/assets/Icons/paymnt-link.svg";
 import useIsMobile from "@/hooks/useIsMobile";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
@@ -12,7 +13,7 @@ import { useRouter } from "next/router";
 import AddWalletModal from "../AddWalletModal";
 import CreateApiModel from "../ApiKeysModel/CreateApiModel";
 
-type PageName = "transactions" | "wallet" | "apiKey";
+type PageName = "transactions" | "wallet" | "apiKey" | "payment-links";
 
 interface EmptyDataModelProps {
     pageName: PageName;
@@ -56,6 +57,13 @@ const EmptyDataModel = ({ pageName }: EmptyDataModelProps) => {
             icon: apiKey,
             buttonLabel: t("createNewKey"),
             buttonClick: () => setOpenCreate(true),
+        },
+        "payment-links": {
+            title: t("EmptyPaymentLinkTitle"),
+            description: t("EmptyPaymentLinkDescription"),
+            icon: paymentLinks,
+            buttonLabel: t("createPaymentLink"),
+            buttonLink: "/create-pay-link",
         },
     };
 

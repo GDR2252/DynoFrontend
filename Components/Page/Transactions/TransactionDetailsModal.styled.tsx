@@ -40,6 +40,7 @@ export const TitleLabel = styled(Typography)({
 export const TitleValue = styled(Typography)({
   fontSize: "20px",
   fontWeight: 500,
+  // whiteSpace: "nowrap",
   fontFamily: "UrbanistMedium",
   color: theme.palette.text.primary,
   lineHeight: "1.2",
@@ -269,7 +270,7 @@ export const CopyButton = styled("button")(({ theme }) => ({
   "&:active": {
     transform: "scale(0.95)",
   },
-  [theme.breakpoints.down("md")]: {
+  [theme.breakpoints.down("sm")]: {
     width: "32px",
     height: "32px",
     padding: "6px",

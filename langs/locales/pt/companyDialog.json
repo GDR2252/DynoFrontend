@@ -77,5 +77,7 @@
     "cityRequired": "A cidade é obrigatória",
     "addressLine1Required": "A linha do endereço 1 é obrigatória",
     "zipCodeRequired": "O código postal é obrigatório"
-  }
+  },
+  "vatNumber": "Número de IVA (opcional)",
+  "vatVerify": "Número de IVA verificado"
 }

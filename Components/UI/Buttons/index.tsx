@@ -151,8 +151,8 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   const animationClass = showSuccessAnimation
     ? "success-pulse"
     : showErrorAnimation
-    ? "error-shake"
-    : "";
+      ? "error-shake"
+      : "";
 
   return (
     <MuiButton
@@ -177,11 +177,11 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         ...variantStyle,
         ...(variant === "primary" &&
           !disabled && {
-            "&:hover": {
-              backgroundColor: "#0004FF99",
-              color: "#FFFFFF",
-            },
-          }),
+          "&:hover": {
+            backgroundColor: "#0004FF99",
+            color: "#FFFFFF",
+          },
+        }),
         ...(disabled && {
           backgroundColor: variant === "primary" ? "#B0BEC5" : "#FFFFFF",
           color:
@@ -234,7 +234,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       )}
 
       {!shouldHideLabel && (
-        <span className="custom-button-label" style={{ fontSize: isMobile ? "13px" : "15px" ,fontFamily: "UrbanistMedium", fontWeight: 500 }}>{label}</span>
+        <span className="custom-button-label" style={{ fontSize: isMobile ? "13px" : "15px", fontFamily: "UrbanistMedium", fontWeight: 500, whiteSpace: "nowrap" }}>{label}</span>
       )}
 
       {endIcon && (

@@ -4,7 +4,7 @@ import CustomButton from "@/Components/UI/Buttons";
 import { theme } from "@/styles/theme";
 import { Box, IconButton, Typography, Grid, Divider } from "@mui/material";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 import BellIcon from "@/assets/Icons/bell-icon.svg";
 import MobileIcon from "@/assets/Icons/mobile-icon.svg";
@@ -12,6 +12,7 @@ import EnvelopeIcon from "@/assets/Icons/envelope-icon.svg";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import { useTranslation } from "react-i18next";
 import { useCallback } from "react";
+import Toast from "@/Components/UI/Toast";
 
 interface NotificationItemProps {
   title: string;
@@ -101,9 +102,26 @@ const NotificationPage = () => {
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [smsNotifications, setSmsNotifications] = useState(false);
 
+  const [openToast, setOpenToast] = useState(false);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const handleSaveChanges = () => {
     // TODO: Implement save functionality
     console.log("Saving notification preferences...");
+
+    setOpenToast(false);
+
+    setTimeout(() => {
+      setOpenToast(true);
+    }, 0);
+
+    if (toastTimer.current) {
+      clearTimeout(toastTimer.current);
+    }
+
+    toastTimer.current = setTimeout(() => {
+      setOpenToast(false);
+    }, 2000);
   };
 
   return (
@@ -166,6 +184,7 @@ const NotificationPage = () => {
             {/* Weekly Reports Card */}
             <PanelCard
               headerSx={{ fontSize: { xs: "15px", md: "20px" } }}
+              subTitleSx={{ fontSize: { xs: "13px", md: "15px" } }}
               title={tNotifications("weeklyReportsTitle")}
               subTitle={tNotifications("weeklyReportsSubtitle")}
               showHeaderBorder={false}
@@ -221,6 +240,7 @@ const NotificationPage = () => {
           >
             <PanelCard
               headerSx={{ fontSize: { xs: "15px", md: "20px" } }}
+              subTitleSx={{ fontSize: { xs: "13px", md: "15px" } }}
               title={tNotifications("emailNotificationsCardTitle")}
               subTitle={tNotifications("emailNotificationsCardSubtitle")}
               showHeaderBorder={false}
@@ -318,6 +338,11 @@ const NotificationPage = () => {
           </Box>
         </Grid>
       </Grid>
+      <Toast
+        open={openToast}
+        message={"Settings updated successfully!"}
+        severity="success"
+      />
     </Box>
   );
 };

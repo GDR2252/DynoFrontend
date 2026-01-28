@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { Popover, useTheme, Box, Divider } from "@mui/material";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useTheme, Box, Divider, Typography } from "@mui/material";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import EditIcon from "@/assets/Icons/edit-icon.svg";
 import {
   SelectorTrigger,
   TriggerText,
-  CompanyListWrapper,
   CompanyItem,
   ItemLeft,
   ItemRight,
@@ -33,6 +32,8 @@ export default function CompanySelector() {
     (state: rootReducer) => state.companyReducer
   );
 
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
   const companies = useMemo(
     () => companyState.companyList ?? [],
     [companyState.companyList]
@@ -49,127 +50,171 @@ export default function CompanySelector() {
   const handleOpen = (e: any) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
-  return (
-    <>
-      {/* TRIGGER */}
-      <SelectorTrigger onClick={handleOpen}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <BusinessCenterIcon
-            sx={{ color: theme.palette.primary.main, fontSize: 20 }}
-          />
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        handleClose();
+      }
+    };
 
-          <TriggerText>{selected?.company_name ?? "-"}</TriggerText>
+    if (anchorEl) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [anchorEl]);
+
+  return (
+    <Box
+      ref={wrapperRef}
+      sx={{
+        position: "relative",
+        width: isMobile ? "154px" : "300px",
+        mt: Boolean(anchorEl) && isMobile ? "-16px !important" : "0px",
+        ml: Boolean(anchorEl) && isMobile ? "-6px !important" : "0px"
+      }}
+    >
+      {/* Trigger */}
+      <SelectorTrigger onClick={handleOpen}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <BusinessCenterIcon
+            sx={{
+              color: theme.palette.primary.main,
+              fontSize: isMobile ? "16.5px" : "20px",
+            }}
+          />
+          <TriggerText sx={{ color: theme.palette.primary.main }}>{selected?.company_name ?? "-"}</TriggerText>
         </Box>
 
-        <VerticalLine />
-
-        {!anchorEl ? (
-          <ExpandMoreIcon
-            fontSize="small"
-            sx={{ color: theme.palette.text.secondary }}
-          />
-        ) : (
-          <ExpandLess
-            fontSize="small"
-            sx={{ color: theme.palette.text.secondary }}
-          />
-        )}
+        <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <VerticalLine />
+          {!anchorEl ? (
+            <ExpandMoreIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+          ) : (
+            <ExpandLess fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+          )}
+        </Box>
       </SelectorTrigger>
 
-      {/* POPOVER */}
-      <Popover
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        PaperProps={{
-          sx: {
-            border: "1px solid #E9ECF2",
-            borderRadius: "6px",
-            boxShadow: "0 4px 16px 0 rgba(47, 47, 101, 0.15)",
-            overflow: "hidden",
-            width: 330,
-            p: 2,
-          },
-        }}
-      >
+      {/* Dropdown */}
+      {Boolean(anchorEl) && (
         <Box
           sx={{
-            fontSize: 13,
-            mb: 1.5,
-            color: theme.palette.text.secondary,
-            fontWeight: 500,
-            fontFamily: "UrbanistMedium",
-            lineHeight: "1.2",
-            letterSpacing: "0",
+            position: "absolute",
+            top: "0",
+            width: isMobile ? "224px" : "100%",
+            border: "1px solid rgba(233, 236, 242, 1)",
+            borderRadius: "6px",
+            backgroundColor: "#fff",
+            padding: anchorEl ? "9px 8px" : "11px 8px",
+            zIndex: 100,
+            boxShadow: "0px 8px 24px rgba(0,0,0,0.08)",
           }}
         >
-          {t("companySelectorTitle")}:
-        </Box>
+          {/* Header */}
+          <Box
+            onClick={handleClose}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "0px 6px",
+              cursor: "pointer",
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <BusinessCenterIcon
+                sx={{ color: theme.palette.primary.main, fontSize: isMobile ? "16.5px" : "20px" }}
+              />
+              <TriggerText sx={{ color: theme.palette.primary.main }}>{selected?.company_name ?? "-"}</TriggerText>
+            </Box>
 
-        <CompanyListWrapper>
-          {companies.map((c) => (
-            <CompanyItem
-              key={c.company_id}
-              active={active === c.company_id}
-              onClick={() => setActive(c.company_id)}
+            <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <VerticalLine />
+              <ExpandLess fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+            </Box>
+          </Box>
+
+          {/* Content */}
+          <Box sx={{ mt: "13px", display: "flex", flexDirection: "column", gap: isMobile ? "0px" : "6px" }}>
+            <Typography
+              sx={{
+                display: isMobile ? "none" : "block",
+                padding: "0px 6px",
+                fontSize: "15px",
+                color: theme.palette.text.secondary,
+                fontWeight: 500,
+                fontFamily: "UrbanistMedium",
+              }}
             >
-              <ItemLeft>
-                <Box className="info">
+              {t("companySelectorTitle")}:
+            </Typography>
+
+            {companies.map((c) => (
+              <CompanyItem
+                key={c.company_id}
+                active={active === c.company_id}
+                onClick={() => {
+                  setActive(c.company_id);
+                  handleClose();
+                }}
+              >
+                <ItemLeft>
                   <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <BusinessCenterIcon
-                      sx={{
-                        color:
-                          active === c.company_id
-                            ? theme.palette.primary.main
-                            : theme.palette.text.primary,
-                        fontSize: "18px",
-                      }}
+                      sx={{ fontSize: isMobile ? "16.5px" : "20px" }}
                     />
-
-                    <Box className="name">{c.company_name}</Box>
+                    <TriggerText>{c.company_name ?? "-"}</TriggerText>
                   </Box>
-                  <Box className="email">{c.email}</Box>
-                </Box>
-              </ItemLeft>
+                  <Typography
+                    sx={{
+                      fontSize: isMobile ? "10px" : "13px",
+                      fontFamily: "UrbanistMedium",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {c.email}
+                  </Typography>
+                </ItemLeft>
 
-              <ItemRight
-                active={active === c.company_id}
-                onClick={(e: any) => {
-                  e.stopPropagation();
-                  handleClose();
-                  openEditCompany(c);
-                }}
-                role="button"
-                tabIndex={0}
-              >
-                <Image
-                  src={EditIcon}
-                  width={isMobile ? 12 : 16}
-                  height={isMobile ? 13 : 17}
-                  alt="edit"
-                  draggable={false}
-                />
-              </ItemRight>
-            </CompanyItem>
-          ))}
-        </CompanyListWrapper>
+                <ItemRight
+                  active={active === c.company_id}
+                  onClick={(e: any) => {
+                    e.stopPropagation();
+                    handleClose();
+                    openEditCompany(c);
+                  }}
+                >
+                  <Image
+                    src={EditIcon}
+                    width={isMobile ? 12 : 16}
+                    height={isMobile ? 13 : 17}
+                    alt="edit"
+                    draggable={false}
+                  />
+                </ItemRight>
+              </CompanyItem>
+            ))}
 
-        <Divider sx={{ my: 1.75, borderColor: "#D9D9D9" }} />
+            <Divider sx={{ my: "6px", borderColor: "#D9D9D9" }} />
 
-        <CustomButton
-          label={t("addCompany")}
-          variant="secondary"
-          size="medium"
-          endIcon={<Add sx={{ fontSize: isMobile ? "16px" : "18px" }} />}
-          fullWidth
-          sx={{ mt: 1 }}
-          onClick={() => {
-            handleClose();
-            openAddCompany();
-          }}
-        />
-      </Popover>
-    </>
+            <CustomButton
+              label={t("addCompany")}
+              variant="secondary"
+              size="medium"
+              endIcon={<Add sx={{ fontSize: isMobile ? "16px" : "18px" }} />}
+              fullWidth
+              sx={{ mt: 1, py: "8px !important" }}
+              onClick={() => {
+                handleClose();
+                openAddCompany();
+              }}
+            />
+          </Box>
+        </Box>
+      )}
+    </Box>
   );
 }

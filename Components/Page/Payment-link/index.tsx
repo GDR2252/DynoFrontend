@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Box } from "@mui/material";
 import PaymentLinksTable, { PaymentLink } from "./PaymentLinksTable";
 import PaymentLinksTopBar from "./PaymentLinksTopBar";
+import EmptyDataModel from "@/Components/UI/EmptyDataModel";
 
 interface Props {
   setPageName?: (v: string) => void;
@@ -64,6 +65,12 @@ const PaymentLinksPage = ({
   const handleSearch = (value: string) => {
     console.log("Search:", value);
   };
+
+  if (paymentLinks?.length === 0) {
+    return (
+      <EmptyDataModel pageName="payment-links" />
+    );
+  }
 
   return (
     <Box

@@ -174,7 +174,7 @@ const MobileNavigationBar = () => {
             <FirstRow>
               {firstRowItems.map((item) => {
                 const active = isActiveRoute(item.path);
-                const isCreate = item.id === "create";
+                const isCreate = item.icon === "add";
                 const supportedIcons = [
                   "dashboard",
                   "transactions",

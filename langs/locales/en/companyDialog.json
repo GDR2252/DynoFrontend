@@ -78,5 +78,7 @@
     "addressLine1Required": "Address line 1 is required",
     "zipCodeRequired": "Zip code is required"
   },
-  "mobilePlaceholder": "Enter your mobile number"
+  "mobilePlaceholder": "Enter your mobile number",
+  "vatNumber": "VAT Number (optional)",
+  "vatVerify": "VAT Number verified"
 }

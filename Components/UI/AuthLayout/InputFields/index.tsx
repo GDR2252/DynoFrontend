@@ -482,7 +482,7 @@ const InputField: React.FC<InputFieldProps> = ({
                 "& input, & textarea": {
                   padding: "11px 14px",
                   boxSizing: "border-box",
-                  fontSize: isMobile ? "13px" : "15px",
+                  fontSize: isMobile ? "10px" : "13px",
                   lineHeight: "1.5",
                   color: disabled ? "#B0BEC5" : "#333",
                   "&::placeholder": {

@@ -1,7 +1,8 @@
-import React, { useState, useRef, useCallback, useMemo } from "react";
+import React, { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { Box, Typography, useTheme, Menu, ListItemButton } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CheckIcon from "@mui/icons-material/Check";
 import CustomDatePicker, {
   DateRange,
@@ -31,8 +32,10 @@ import ExportIcon from "@/assets/Icons/export-icon.svg";
 import BitcoinIcon from "@/assets/cryptocurrency/Bitcoin-icon.svg";
 import EthereumIcon from "@/assets/cryptocurrency/Ethereum-icon.svg";
 import LitecoinIcon from "@/assets/cryptocurrency/Litecoin-icon.svg";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import Image from "next/image";
 import { ALLCRYPTOCURRENCIES } from "@/hooks/useWalletData";
+import { VerticalLine } from "@/Components/UI/LanguageSwitcher/styled";
 interface TransactionsTopBarProps {
   onSearch?: (searchTerm: string) => void;
   onDateRangeChange?: (dateRange: DateRange) => void;
@@ -141,6 +144,22 @@ const TransactionsTopBar: React.FC<TransactionsTopBarProps> = ({
     [tTransactions]
   );
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (walletButtonRef.current && !walletButtonRef.current.contains(event.target as Node)) {
+        handleWalletMenuClose();
+      }
+    };
+
+    if (walletMenuAnchor) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [walletMenuAnchor]);
+
   return (
     <TransactionsTopBarContainer>
       <SearchContainer>
@@ -209,133 +228,144 @@ const TransactionsTopBar: React.FC<TransactionsTopBarProps> = ({
           </Box>
         </DatePickerWrapper>
 
-        <WalletSelectorWrapper>
-          <WalletSelectorButton
-            ref={walletButtonRef}
-            onClick={handleWalletButtonClick}
-          >
+        <Box
+          ref={walletButtonRef}
+          sx={{
+            position: "relative",
+            width: isMobile ? "fit-content" : "220px",
+            zIndex: 1,
+          }}
+        >
+          {/* Trigger */}
+          <WalletSelectorButton onClick={handleWalletButtonClick}>
             <Image src={WalletIcon} alt="wallet" width={17} height={17} />
             <Typography className="wallet-text">
-              {walletOptions.find((opt) => opt.value === selectedWallet)
-                ?.label || tTransactions("allWallets")}
+              {walletOptions.find((opt) => opt.value === selectedWallet)?.label ||
+                tTransactions("allWallets")}
             </Typography>
-            <Box className="separator" />
-            <KeyboardArrowDownIcon className="arrow-icon" />
+
+            <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <Box className="separator" />
+              {!walletMenuAnchor ? (
+                <ExpandMoreIcon sx={{ color: "rgba(103, 103, 104, 1)" }} className="arrow-icon" />
+              ) : (
+                <ExpandLessIcon sx={{ color: "rgba(103, 103, 104, 1)" }} className="arrow-icon" />
+              )}
+            </Box>
           </WalletSelectorButton>
-          <Menu
-            anchorEl={walletMenuAnchor}
-            open={Boolean(walletMenuAnchor)}
-            onClose={handleWalletMenuClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "left",
-            }}
-            PaperProps={{
-              sx: {
-                mt: "8px",
-                borderRadius: "6px",
-                minWidth: isMobile ? "180px" : "240px",
-                boxShadow: "rgba(16, 24, 40, 0.12) 0px 8px 24px 0px",
-                border: `1px solid ${theme.palette.border.main}`,
-                padding: "0 8px",
-              },
-            }}
-          >
-            {/* Menu Items */}
+
+          {/* Dropdown */}
+          {walletMenuAnchor && (
             <Box
               sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: isMobile ? "4px" : "6px",
+                position: "absolute",
+                top: "0",
+                left: isMobile ? "auto" : 0,
+                right: isMobile ? 0 : "auto",
+                width: isMobile ? "250px" : "270px",
+                background: "#fff",
+                borderRadius: "6px",
+                border: `1px solid ${theme.palette.border.main}`,
+                boxShadow: "rgba(16, 24, 40, 0.12) 0px 8px 24px 0px",
+                padding: "10px 8px",
+                zIndex: 3000,
               }}
             >
-              {walletOptions.map((option) => (
-                <ListItemButton
-                  key={option.value}
-                  onClick={() => handleWalletChange(option.value)}
-                  selected={selectedWallet === option.value}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
+              {/* Header */}
+              <Box
+                onClick={handleWalletMenuClose}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "0px 6px 8px",
+                  cursor: "pointer",
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <Image src={WalletIcon} alt="wallet" width={17} height={17} />
+                  <Typography sx={{
                     fontSize: isMobile ? "13px" : "15px",
                     fontFamily: "UrbanistMedium",
                     fontWeight: 500,
-                    lineHeight: 1.2,
-                    padding: "3px 8px 3px 3px",
-                    borderRadius: "50px",
-                    backgroundColor:
-                      selectedWallet === option.value
-                        ? theme.palette.primary.light
-                        : "transparent",
-                    "&:hover": {
-                      backgroundColor: theme.palette.primary.light,
-                    },
-                    "&.Mui-selected": {
-                      backgroundColor: theme.palette.primary.light,
+                    lineHeight: "100%",
+                    letterSpacing: "0",
+                    color: theme.palette.text.primary,
+                  }}>
+                    {walletOptions.find((opt) => opt.value === selectedWallet)?.label ||
+                      tTransactions("allWallets")}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <Box className="separator" />
+                  <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <VerticalLine />
+                    <ExpandLessIcon style={{ color: "rgba(103, 103, 104, 1)" }} className="arrow-icon" />
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* Options */}
+              <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                {walletOptions.map((option) => (
+                  <ListItemButton
+                    key={option.value}
+                    onClick={() => {
+                      handleWalletChange(option.value);
+                      handleWalletMenuClose();
+                    }}
+                    selected={selectedWallet === option.value}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                      fontSize: isMobile ? "13px" : "15px",
+                      fontFamily: "UrbanistMedium",
+                      fontWeight: 500,
+                      padding: isMobile ? "3px 8px 3px 3px" : "3px 12px 3px 3px",
+                      borderRadius: "50px",
+                      backgroundColor:
+                        selectedWallet === option.value
+                          ? "theme.palette.primary.light"
+                          : "transparent",
                       "&:hover": {
                         backgroundColor: theme.palette.primary.light,
                       },
-                    },
-                  }}
-                >
-                  {/* Icon and Code Badge Combined */}
-                  <CryptoIconChip
-                    sx={{
-                      width: "fit-content",
-                      background: theme.palette.secondary.light,
-                      height: isMobile ? "24px" : "32px",
                     }}
                   >
-                    <Image
-                      src={option.icon}
-                      alt={option.label}
-                      draggable={false}
-                    />
-                    <Typography
-                      component="span"
+                    <CryptoIconChip
                       sx={{
-                        color: theme.palette.text.primary,
-                        fontWeight: 600,
+                        background: theme.palette.secondary.light,
+                        height: isMobile ? "24px" : "32px",
                       }}
                     >
-                      {option.code}
-                    </Typography>
-                  </CryptoIconChip>
+                      <Image src={option.icon} alt={option.label} draggable={false} />
+                      <Typography component="span" sx={{ fontWeight: 600 }}>
+                        {option.code}
+                      </Typography>
+                    </CryptoIconChip>
 
-                  {/* Label */}
-                  <Typography
-                    sx={{
-                      flex: 1,
-                      fontSize: isMobile ? "13px" : "14px",
+                    <Typography sx={{
+                      fontSize: isMobile ? "13px" : "15px",
                       fontFamily: "UrbanistMedium",
-                      fontWeight: 400,
+                      fontWeight: 500,
+                      lineHeight: "100%",
+                      letterSpacing: "0",
                       color: theme.palette.text.primary,
-                      lineHeight: "1.2",
-                    }}
-                  >
-                    {option.label}
-                  </Typography>
+                    }}>
+                      {option.label}
+                    </Typography>
 
-                  {/* Checkmark */}
-                  {selectedWallet === option.value && (
-                    <CheckIcon
-                      sx={{
-                        fontSize: "18px",
-                        color: theme.palette.text.primary,
-                        flexShrink: 0,
-                      }}
-                    />
-                  )}
-                </ListItemButton>
-              ))}
+                    {selectedWallet === option.value && (
+                      <CheckIcon sx={{ fontSize: "18px", ml: "auto" }} />
+                    )}
+                  </ListItemButton>
+                ))}
+              </Box>
             </Box>
-          </Menu>
-        </WalletSelectorWrapper>
+          )}
+        </Box>
 
         <ExportButtonWrapper>
           <CustomButton

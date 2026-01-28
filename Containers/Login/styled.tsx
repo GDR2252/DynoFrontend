@@ -50,7 +50,7 @@ export const CardWrapper = styled(Card)(({ theme }) => ({
   height: "fit-content",
   borderRadius: "14px",
   padding: "8px",
-  zIndex: 2,
+  // zIndex: 2,
   background: "#fff",
   textAlign: "center",
   border: "1px solid #E9ECF2",

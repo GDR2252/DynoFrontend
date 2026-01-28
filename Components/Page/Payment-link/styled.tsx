@@ -90,7 +90,7 @@ export const TableFooter = styled(Box)(({ theme }) => ({
   padding: "16px 24px 20px 24px",
   flexShrink: 0,
   minHeight: "max-content",
-  borderTop: "1px solid #E5E7EB", // Added border to keep separation if needed, or remove to fully match Trans
+  borderTop: "1px solid #E5E7EB",
   [theme.breakpoints.down("md")]: {
     padding: "12px 12px 16px 12px",
     flexWrap: "wrap",

@@ -3,36 +3,36 @@ import Image from "next/image";
 import HomeCard from "@/Components/UI/HomeCard";
 import { Box, Grid, Typography } from "@mui/material";
 import useIsMobile from "@/hooks/useIsMobile";
-import {
-  GoLiveCount,
-  GoLiveDescription,
-} from "@/Components/UI/HomeCard/styled";
-import { homeTheme } from "@/styles/homeTheme";
-import { ImageCenter } from "@/Containers/Login/styled";
-import CompanySelectorImage from "@/assets/Images/home/company-dropdown.svg";
-import AllWalletsImage from "@/assets/Images/home/all-wallets.svg";
-import PaymentLinkAddImage from "@/assets/Images/home/payment-link-create.svg";
+import { GoLiveCount } from "@/Components/UI/HomeCard/styled";
+import CompanySelectorImage_svg from "@/assets/Images/home/company-dropdown.svg";
+import AllWalletsImage_svg from "@/assets/Images/home/all-wallets.svg";
+import PaymentLinkAddImage_svg from "@/assets/Images/home/payment-link-create.svg";
+import CompanySelectorImage_png from "@/assets/Images/home/company-dropdown.png";
+import AllWalletsImage_png from "@/assets/Images/home/all-wallets.png";
+import PaymentLinkAddImage_png from "@/assets/Images/home/payment-link-create.png";
 import HomeSectionTitle from "@/Components/UI/SectionTitle";
 import { theme } from "@/styles/theme";
+import { useDevice } from "@/hooks/useDevice";
 
 const GoLiveSection = () => {
   const isMobile = useIsMobile("md");
+  const { os, browser } = useDevice();
 
   const cardData = [
     {
       title: "Create a Company Workspace",
       description: "Set up your business profile and configure your payment preferences in minutes.",
-      image: CompanySelectorImage,
+      image: os === "ios" || browser === "safari" ? CompanySelectorImage_png : CompanySelectorImage_svg,
     },
     {
       title: "Add Your Crypto Wallets",
       description: "Connect BTC, ETH, LTC, and more. All your assets managed in one secure place.",
-      image: AllWalletsImage,
+      image: os === "ios" || browser === "safari" ? AllWalletsImage_png : AllWalletsImage_svg,
     },
     {
       title: "Generate Payment Links or Integrate API",
       description: "Create instant payment links for non-dev teams or use our developer-friendly API.",
-      image: PaymentLinkAddImage,
+      image: os === "ios" || browser === "safari" ? PaymentLinkAddImage_png : PaymentLinkAddImage_svg,
     },
   ];
 

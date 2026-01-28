@@ -453,8 +453,8 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
                       <pre
                         style={{
                           margin: 0,
-                          fontFamily: "monospace",
-                          fontSize: "13px",
+                          fontFamily: "UrbanistMedium",
+                          fontSize: isMobile ? "10px" : "13px",
                         }}
                       >
                         {JSON.stringify(transaction.webhookResponse, null, 2)}

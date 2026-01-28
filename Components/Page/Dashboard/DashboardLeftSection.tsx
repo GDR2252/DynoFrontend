@@ -196,11 +196,11 @@ const TransactionVolumeChart = ({
   // Scenario 4: Large value fluctuation - tests Y-axis domain
   const rawTransactionData = useMemo(
     () => [
-      { date: "Jan 12", value: 800 },
-      { date: "Jan 13", value: 12000 },
-      { date: "Jan 14", value: 6000 },
-      { date: "Jan 15", value: 114500 },
-      { date: "Jan 16", value: 12000 },
+      { date: "Jan 24", value: 800 },
+      { date: "Jan 25", value: 12000 },
+      { date: "Jan 26", value: 6000 },
+      { date: "Jan 27", value: 114500 },
+      { date: "Jan 28", value: 12000 },
     ],
     []
   );

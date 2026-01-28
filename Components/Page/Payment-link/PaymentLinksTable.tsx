@@ -260,11 +260,13 @@ const PaymentLinksTable = ({ paymentLinks, rowsPerPage = 10 }: Props) => {
             />
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <FooterText>
-                Showing {paymentLinks.length > 0 ? start + 1 : 0}-{end} of {total}{" "}
-                links
+                {t("showingLinks", {
+                  count: end,
+                  total: total,
+                })}
               </FooterText>
               <CustomButton
-                label={"Previous"}
+                label={t("previous")}
                 variant="outlined"
                 size="medium"
                 sx={{
@@ -297,7 +299,7 @@ const PaymentLinksTable = ({ paymentLinks, rowsPerPage = 10 }: Props) => {
                 onClick={() => setPage((p) => Math.max(p - 1, 0))}
               />
               <CustomButton
-                label={"Next"}
+                label={t("next")}
                 variant="outlined"
                 size="medium"
                 sx={{

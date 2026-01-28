@@ -1,15 +1,15 @@
 import { Box, styled, Typography } from "@mui/material";
 import React from "react";
 import { homeTheme } from "@/styles/homeTheme";
-import Dashboard from "@/assets/Images/home/Dashboard.png";
+import Dashboard_png from "@/assets/Images/home/Dashboard.png";
+import Dashboard_svg from "@/assets/Images/home/Dashboard.svg";
 import Image from "next/image";
-import CustomButton from "../Buttons";
-import { RightArrowIcon } from "@/utils/customIcons";
 import BitcoinBg from "@/assets/Images/home/Bitcoin-bg.png";
 import EthereumBg from "@/assets/Images/home/Ethereum-bg.png";
 import LitecoinBg from "@/assets/Images/home/Litecoin-bg.png";
 import { theme } from "@/styles/theme";
 import HomeButton from "@/Components/Layout/HomeButton";
+import { useDevice } from "@/hooks/useDevice";
 
 const UseCaseBannerWrapper = styled(Box)(() => ({
   width: "100%",
@@ -89,6 +89,8 @@ const DecorativeImage = styled(Box)(() => ({
 }));
 
 const UseCaseBanner = () => {
+  const { os } = useDevice();
+
   return (
     <UseCaseBannerWrapper>
       <Box
@@ -159,10 +161,10 @@ const UseCaseBanner = () => {
       >
         <DashboardImageWrapper>
           <Image
-            src={Dashboard}
+            src={os === "ios" ? Dashboard_png : Dashboard_svg}
             alt="Dashboard"
             fill
-            style={{ objectFit: "contain" }}
+            style={{ objectFit: "contain", scale: os === "ios" ? "1" : "1.25", marginTop: os === "ios" ? "0px" : "8px" }}
             draggable={false}
           />
           <DecorativeImage

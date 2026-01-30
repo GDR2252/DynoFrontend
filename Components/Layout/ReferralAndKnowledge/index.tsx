@@ -7,18 +7,20 @@ import {
   ReferralCardContentValue,
   ReferralCardContentValueContainer,
   CopyButton,
-  KnowledgeBaseBtn,
+  HelpSupportBtn,
   KnowledgeBaseTitle,
 } from "@/Components/Layout/NewSidebar/styled";
 import { Box } from "@mui/material";
 import Image from "next/image";
 import BGOverlay from "@/assets/Images/bg-overlay.png";
 import CopyIcon from "@/assets/Icons/copy-icon.svg";
-import FileIcon from "@/assets/Icons/file-icon.svg";
+import Help_Support from "@/assets/Icons/Help&Support.svg";
 import { useTranslation } from "react-i18next";
 import Toast from "@/Components/UI/Toast";
+import { useRouter } from "next/router";
 
 const ReferralAndKnowledge = ({ isMobile }: { isMobile: boolean }) => {
+  const router = useRouter();
   const { t } = useTranslation("common");
   const tCommon = useCallback((key: string) => t(key, { ns: "common" }), [t]);
   const [openToast, setOpenToast] = useState(false);
@@ -82,16 +84,16 @@ const ReferralAndKnowledge = ({ isMobile }: { isMobile: boolean }) => {
         </ReferralCardContent>
       </ReferralCard>
 
-      <KnowledgeBaseBtn>
+      <HelpSupportBtn onClick={()=> router.push("/help-support")}>
         <Image
-          src={FileIcon}
+          src={Help_Support}
           alt="File Icon"
           width={isMobile ? 14 : 18}
           height={isMobile ? 14 : 18}
           draggable={false}
         />
-        <KnowledgeBaseTitle>{t("knowledgeBase")}</KnowledgeBaseTitle>
-      </KnowledgeBaseBtn>
+        <KnowledgeBaseTitle>{t("helpSupport")}</KnowledgeBaseTitle>
+      </HelpSupportBtn>
       <Toast
         open={openToast}
         message={tCommon("copiedToClipboard")}

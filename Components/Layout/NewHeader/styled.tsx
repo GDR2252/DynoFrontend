@@ -1,21 +1,26 @@
 import { styled } from "@mui/material";
 
 export const HeaderContainer = styled("div")(({ theme }) => ({
+  height: "100%",
   top: 0,
   zIndex: 999,
   width: "100%",
   boxShadow: "none",
   background: "transparent",
-  // display: "flex",
+  display: "flex",
+  gap: "24px",
   // flexDirection: "row",
   // color: theme.palette.primary.main,
-  // [theme.breakpoints.down("sm")]: {
-  //   width: "100vw",
-  // },
+  [theme.breakpoints.down("sm")]: {
+    gap: "8px",
+    // width: "100vw",
+  },
   // gap: "20px",
 }));
 
 export const LogoContainer = styled("div")(({ theme }) => ({
+  height: "100%",
+  width: "324px",
   background: theme.palette.common.white,
   display: "flex",
   alignItems: "center",
@@ -25,6 +30,10 @@ export const LogoContainer = styled("div")(({ theme }) => ({
   outline: "1px solid ",
   outlineColor: theme?.palette?.border?.main,
 
+  [theme.breakpoints.down("lg")]: {
+    display: "none"
+  },
+
   ".logo": {
     cursor: "pointer",
     userSelect: "none",
@@ -32,13 +41,14 @@ export const LogoContainer = styled("div")(({ theme }) => ({
 }));
 
 export const MainContainer = styled("div")(({ theme }) => ({
+  flex: 1,
   background: theme.palette.common.white,
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  borderRadius: "14px",
+  borderRadius: "10px",
   gap: "10px",
-  padding: "6px 8px",
+  padding: "8px",
   outline: "1px solid",
   outlineColor: theme?.palette?.border?.main,
 

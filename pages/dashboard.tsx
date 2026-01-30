@@ -67,12 +67,12 @@ export default function Home({
       <main>
         <Grid container spacing={2.5}>
           {/* Left Section - Stat Cards and Graph */}
-          <Grid item xs={12} lg={8}>
+          <Grid item xs={12} xl={8}>
             <DashboardLeftSection />
           </Grid>
 
           {/* Right Section - Fee Tier and Upgrade */}
-          <Grid item xs={12} lg={4}>
+          <Grid item xs={12} xl={4}>
             <DashboardRightSection />
           </Grid>
         </Grid>

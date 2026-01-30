@@ -40,79 +40,68 @@ const NewHeader = () => {
   const { walletWarning } = useWalletData();
   return (
     <HeaderContainer>
-      <Grid container spacing={{ xs: 0.5, md: 3 }} alignItems="center">
-        {/* Logo Section */}
-        <Grid item xs={1} md={3} lg={2.5}>
-          {/* Desktop Logo */}
-          <Box sx={{ display: { xs: "none", md: "block" } }}>
-            <LogoContainer>
-              <Image
-                onClick={() => router.push("/")}
-                src={Logo}
-                alt="logo"
-                width={114}
-                height={39}
-                draggable={false}
-                className="logo"
-              />
-            </LogoContainer>
-          </Box>
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        <LogoContainer>
+          <Image
+            onClick={() => router.push("/")}
+            src={Logo}
+            alt="logo"
+            width={114}
+            height={39}
+            draggable={false}
+            className="logo"
+          />
+        </LogoContainer>
 
-          {/* Mobile Logo */}
-          <Box
-            sx={{
-              display: { xs: "flex", md: "none" },
-              justifyContent: "center",
-            }}
-          >
-            <Image
-              onClick={() => router.push("/")}
-              src={MobileLogo}
-              alt="logo"
-              width={22}
-              height={24}
-              draggable={false}
+        <Box
+          sx={{
+            display: { xs: "flex", lg: "none" },
+            justifyContent: "center",
+          }}
+        >
+          <Image
+            onClick={() => router.push("/")}
+            src={MobileLogo}
+            alt="logo"
+            width={22}
+            height={24}
+            draggable={false}
+          />
+        </Box>
+      </Box>
+
+      <MainContainer>
+        <CompanySelector />
+
+        <RightSection>
+          <Box sx={{display: { xs: "none", lg: "flex" }, gap: "20px"}}>
+            <LanguageSwitcher />
+
+            {/* <RequiredKYC>
+            <InfoIcon
+              sx={{ fontSize: 20, color: theme.palette.error.main }}
             />
-          </Box>
-        </Grid>
+            <RequiredKYCText>{tDashboard("requiredKYC")}</RequiredKYCText>
+            <VerticalLine style={{ margin: "0 14px" }} />
+            <ArrowOutwardIcon
+              sx={{ color: theme.palette.text.secondary, fontSize: 16 }}
+            />
+          </RequiredKYC> */}
 
-        {/* Main Header Area */}
-        <Grid item xs={11} md={9} lg={9.5}>
-          <MainContainer sx={{ borderRadius: isMobile ? "10px" : "14px" }}>
-            <CompanySelector />
-
-            <RightSection>
-              {/* Hide language & KYC on mobile */}
-              <Box sx={{ display: { xs: "none", lg: "flex" }, gap: 2 }}>
-                <LanguageSwitcher />
-
-                {/* <RequiredKYC>
+            {walletWarning && (
+              <Link href='/wallet'>
+                <RequiredKYC>
                   <InfoIcon
                     sx={{ fontSize: 20, color: theme.palette.error.main }}
                   />
-                  <RequiredKYCText>{tDashboard("requiredKYC")}</RequiredKYCText>
-                  <VerticalLine style={{ margin: "0 14px" }} />
-                  <ArrowOutwardIcon
-                    sx={{ color: theme.palette.text.secondary, fontSize: 16 }}
-                  />
-                </RequiredKYC> */}
-                {walletWarning && (
-                  <Link href='/wallet'>
-                    <RequiredKYC>
-                      <InfoIcon
-                        sx={{ fontSize: 20, color: theme.palette.error.main }}
-                      />
-                      <RequiredKYCText>{tWallet("walletSetUpWarnnigTitle")}</RequiredKYCText>
-                    </RequiredKYC>
-                  </Link>
-                )}
-              </Box>
-
-              <UserMenu />
-            </RightSection>
-          </MainContainer>
-        </Grid>
-      </Grid>
+                  <RequiredKYCText>{tWallet("walletSetUpWarnnigTitle")}</RequiredKYCText>
+                </RequiredKYC>
+              </Link>
+            )}
+          </Box>
+          <UserMenu />
+        </RightSection>
+      </MainContainer>
     </HeaderContainer>
   );
 };

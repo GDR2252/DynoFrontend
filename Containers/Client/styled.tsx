@@ -46,6 +46,5 @@ export const PageHeaderDescription = styled(Typography)(({ theme }) => ({
   paddingLeft: 0,
   [theme.breakpoints.down("md")]: {
     fontSize: "13px",
-    paddingLeft: theme.spacing(0.5),
   },
 }));

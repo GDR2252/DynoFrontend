@@ -10,6 +10,7 @@ import NewSidebar from "@/Components/Layout/NewSidebar";
 import MobileNavigationBar from "@/Components/Layout/MobileNavigationBar";
 import { MainPageHeader, PageHeader, PageHeaderDescription, PageHeaderTitle } from "./styled";
 import { CompanyDialogProvider } from "@/Components/UI/CompanyDialog/context";
+import useIsMobile from "@/hooks/useIsMobile";
 
 const ClientLayout = ({
   children,
@@ -22,61 +23,73 @@ const ClientLayout = ({
   const theme = useTheme();
   const tokenData = useTokenData();
   const ToastState = useSelector((state: rootReducer) => state.toastReducer);
+  const isMobile = useIsMobile("md");
   return (
     <CompanyDialogProvider>
       <Box
         sx={{
           height: "100dvh",
           width: "100%",
-          overflow: "hidden",
-          backgroundColor: theme.palette.secondary.main,
+          p: isMobile ? "8px 16px 0px 16px" : "16px 40px 16px 40px",
           display: "flex",
+          overflow: "hidden",
           flexDirection: "column",
+          backgroundColor: theme.palette.secondary.main,
+          gap: "24px",
         }}
       >
-        <Toast
-          open={ToastState.open}
-          message={ToastState.message}
-          severity={ToastState.severity || "success"}
-          loading={ToastState.loading}
-        />
-
-        <Box sx={{ px: { xs: 2, md: 3 }, pt: 3 }}>
-          <NewHeader />
+        {/* ================= HEADER ================= */}
+        <Box
+          sx={{
+            height: isMobile ? "40px" : "56px",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <Box sx={{ width: "100%", maxWidth: "1840px" }}>
+            <NewHeader />
+          </Box>
         </Box>
 
+        {/* ================= BODY ================= */}
         <Box
           sx={{
             flex: 1,
-            overflow: "hidden", // important
-            px: { xs: 2, lg: 3 },
-            // pb: { xs: 10, lg: 2 }, // Add bottom padding on mobile for bottom nav
-            mt: 3,
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            overflow: "hidden",
           }}
         >
-          <Grid container spacing={3} sx={{ height: "100%" }}>
-            {/* Desktop Sidebar */}
-            <Grid
-              item
-              xs={0}
-              md={3}
-              lg={2.5}
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: "1840px",
+              display: "flex",
+              gap: "24px",
+              overflow: "hidden",
+            }}
+          >
+            {/* ================= SIDEBAR ================= */}
+            <Box
               sx={{
+                width: isMobile ? "auto" : "324px",
+                minWidth: isMobile ? "auto" : "324px",
+                maxWidth: isMobile ? "auto" : "324px",
                 height: "100%",
                 overflow: "hidden",
                 display: { xs: "none", lg: "block" },
               }}
             >
               <NewSidebar />
-            </Grid>
+            </Box>
 
-            {/* Main Content */}
-            <Grid
-              item
-              xs={12}
-              md={12}
-              lg={9.5}
+            {/* ================= MAIN CONTENT ================= */}
+            <Box
               sx={{
+                flex: 1,
+                minWidth: 0,
                 height: "100%",
                 overflowY: "auto",
                 overflowX: "hidden",
@@ -99,7 +112,9 @@ const ClientLayout = ({
                   >
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                       {pageName && (
-                        <PageHeaderTitle variant="h1">{pageName}</PageHeaderTitle>
+                        <PageHeaderTitle variant="h1">
+                          {pageName}
+                        </PageHeaderTitle>
                       )}
                       {pageDescription && (
                         <PageHeaderDescription variant="body1">
@@ -123,6 +138,7 @@ const ClientLayout = ({
                       </Box>
                     )}
                   </PageHeader>
+
                   {pageWarning && (
                     <Box sx={{ mb: { xs: 1, md: 2 }, mt: { xs: 1, md: 0 } }}>
                       {pageWarning}
@@ -130,17 +146,14 @@ const ClientLayout = ({
                   )}
                 </MainPageHeader>
               )}
+
               {children}
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Box>
 
-        {/* Mobile Bottom Navigation */}
-        <Box
-          sx={{
-            display: { xs: "block", lg: "none" },
-          }}
-        >
+        {/* ================= MOBILE NAV ================= */}
+        <Box sx={{ display: { xs: "block", lg: "none" } }}>
           <MobileNavigationBar />
         </Box>
       </Box>

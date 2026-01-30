@@ -1093,7 +1093,7 @@ export default function CompanyDialog({
                             border: "1px solid #E9ECF2",
                             borderRadius: "6px",
                             width: "100%",
-                            height: "40px",
+                            height: isMobile ? "32px" : "40px",
                             padding: isMobile ? "8px" : "10px",
                             display: "flex",
                             alignItems: "center",

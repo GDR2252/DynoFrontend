@@ -53,7 +53,8 @@ export default function App({ Component, pageProps }: AppProps) {
             {!isHomePath &&
               !pathname.includes("auth") &&
               !pathname.includes("payment") &&
-              !pathname.includes("admin") && (
+              !pathname.includes("admin") &&
+              !pathname.includes("reset-password") && (
                 <ClientLayout
                   pageName={pageName}
                   pageDescription={pageDescription}
@@ -72,6 +73,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 </ClientLayout>
               )}
             {(pathname.includes("auth") ||
+              pathname.includes("reset-password") ||
               pathname.includes("admin/login")) && (
                 <LoginLayout
                   pageName={pageName}

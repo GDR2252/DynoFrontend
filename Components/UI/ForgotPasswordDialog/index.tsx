@@ -246,7 +246,8 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
             <CustomButton
               variant="primary"
               size={isMobile ? "small" : "medium"}
-              label={t("getCode")}
+              // label={t("getCode")}
+              label={t("Send Reset Link")}
               onClick={handleEmailSubmit}
               disabled={loading}
               fullWidth
@@ -297,26 +298,26 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
   }
 
   // OTP Verification Step
-  return (
-    <OtpDialog
-      open={open}
-      onClose={handleClose}
-      title={t("passwordRecovery")}
-      subtitle=""
-      contactInfo={currentEmail || email}
-      contactType="email"
-      otpLength={6}
-      resendCodeLabel={t("resendCode")}
-      resendCodeCountdownLabel={(seconds) => `${t("codeIn")} ${seconds}s`}
-      primaryButtonLabel={t("confirm")}
-      onResendCode={handleResendCode}
-      onVerify={handleOtpVerify}
-      countdown={countdown}
-      loading={loading}
-      preventClose={countdown > 0}
-      error={otpError}
-    />
-  );
+  // return (
+  //   <OtpDialog
+  //     open={open}
+  //     onClose={handleClose}
+  //     title={t("passwordRecovery")}
+  //     subtitle=""
+  //     contactInfo={currentEmail || email}
+  //     contactType="email"
+  //     otpLength={6}
+  //     resendCodeLabel={t("resendCode")}
+  //     resendCodeCountdownLabel={(seconds) => `${t("codeIn")} ${seconds}s`}
+  //     primaryButtonLabel={t("confirm")}
+  //     onResendCode={handleResendCode}
+  //     onVerify={handleOtpVerify}
+  //     countdown={countdown}
+  //     loading={loading}
+  //     preventClose={countdown > 0}
+  //     error={otpError}
+  //   />
+  // );
 };
 
 export default ForgotPasswordDialog;

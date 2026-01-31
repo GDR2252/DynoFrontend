@@ -18,27 +18,27 @@ const ApiStatus = () => {
   const services = [
     {
       name: "API Gateway",
-      performance: "99.99%",
+      uptime: "99.99%",
       status: "Operational",
     },
     {
       name: "Payment Processing",
-      performance: "99.98%",
+      uptime: "99.98%",
       status: "Operational",
     },
     {
       name: "Wallet Services",
-      performance: "99.97%",
+      uptime: "99.97%",
       status: "Operational",
     },
     {
       name: "Webhook Delivery",
-      performance: "99.95%",
+      uptime: "99.95%",
       status: "Operational",
     },
     {
       name: "Dashboard",
-      performance: "99.99%",
+      uptime: "99.99%",
       status: "Operational",
     },
   ];
@@ -198,7 +198,7 @@ const ApiStatus = () => {
                 }}
               >
                 <TypographyDescription>
-                  {service.performance} uptime
+                  {service.uptime} uptime
                 </TypographyDescription>
 
                 <Typography

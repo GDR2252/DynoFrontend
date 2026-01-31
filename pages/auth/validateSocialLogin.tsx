@@ -24,7 +24,7 @@ const ValidateSocialLogin = () => {
 
   useEffect(() => {
     if (userState.name) {
-      router.replace("/");
+      router.replace("/dashboard");
     }
   }, [userState]); // eslint-disable-line
 

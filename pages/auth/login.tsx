@@ -1,793 +1,3 @@
-// import Panel from "@/Components/UI/Panel";
-// import {
-//   Box,
-//   Button,
-//   Collapse,
-//   Divider,
-//   FormControl,
-//   FormControlLabel,
-//   FormLabel,
-//   Grid,
-//   IconButton,
-//   Radio,
-//   RadioGroup,
-//   Typography,
-//   useTheme,
-// } from "@mui/material";
-// import React, { useEffect, useState } from "react";
-// import Wallet from "@/assets/Images/wallet.png";
-// import FormManager from "@/Components/Page/Common/FormManager";
-// import {
-//   Apple,
-//   Google,
-//   Password,
-//   Telegram,
-//   VisibilityOffRounded,
-//   VisibilityRounded,
-// } from "@mui/icons-material";
-
-// import * as yup from "yup";
-// import { UserAction } from "@/Redux/Actions";
-// import {
-//   USER_CONFIRM_CODE,
-//   USER_EMAIL_CHECK,
-//   USER_LOGIN,
-//   USER_SEND_OTP,
-// } from "@/Redux/Actions/UserAction";
-// import { useDispatch, useSelector } from "react-redux";
-// import { useRouter } from "next/router";
-// import { rootReducer } from "@/utils/types";
-// import TextBox from "@/Components/UI/TextBox";
-// import LoadingIcon from "@/assets/Icons/LoadingIcon";
-// import GoogleIcon from "@/assets/Images/googleIcon.svg";
-// import { signIn } from "next-auth/react";
-// import TelegramLoginButton from "@/Components/Page/Common/TelegramLogin";
-// import axios from "axios";
-// import axiosBaseApi from "@/axiosConfig";
-// import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
-
-// const initialValue = {
-//   email: "",
-//   password: "",
-//   otp: "",
-//   emailOTP: "",
-// };
-
-// const Login = () => {
-//   const theme = useTheme();
-//   const dispatch = useDispatch();
-//   const router = useRouter();
-//   const userState = useSelector((state: rootReducer) => state.userReducer);
-//   const [viewPassword, setViewPassword] = useState(false);
-//   const [sent, setSent] = useState(false);
-//   const [signInType, setSignInType] = useState("mobile");
-//   const [collapse, setCollapse] = useState(false);
-//   const [countdown, setCountdown] = useState(-1);
-//   const [email, setEmail] = useState("");
-//   const [emailError, setEmailError] = useState("");
-//   const loginSchema = yup.object().shape({
-//     email: yup
-//       .string()
-//       .email("Please enter a valid email")
-//       .required("email is required!"),
-//   });
-//   const passwordSchema = yup.object().shape({
-//     password: yup.string().test("password", "password is required", (value) => {
-//       let flag = true;
-//       if (signInType === "password") {
-//         if (value === "" || value === null) {
-//           flag = false;
-//         } else {
-//           flag = true;
-//         }
-//       }
-//       return flag;
-//     }),
-//     otp: yup.string().test("otp", "OTP is required", (value) => {
-//       let flag = true;
-//       if (signInType === "mobile") {
-//         if (value === "" || value === null) {
-//           flag = false;
-//         } else {
-//           flag = true;
-//         }
-//       }
-//       return flag;
-//     }),
-//     emailOTP: yup.string().test("emailOTP", "OTP is required", (value) => {
-//       let flag = true;
-//       if (signInType === "emailOTP") {
-//         if (value === "" || value === null) {
-//           flag = false;
-//         } else {
-//           flag = true;
-//         }
-//       }
-//       return flag;
-//     }),
-//   });
-
-//   useEffect(() => {
-//     if (userState.name) {
-//       router.replace("/");
-//     }
-//   }, [userState]); // eslint-disable-line
-
-//   useEffect(() => {
-//     if (sent) {
-//       setCountdown(30);
-//       const timeOutId = setTimeout(() => {
-//         setSent(false);
-//       }, 30000);
-//       return () => clearTimeout(timeOutId);
-//     }
-//   }, [sent]);
-
-//   useEffect(() => {
-//     if (countdown !== -1) {
-//       const timerId = setInterval(() => {
-//         setCountdown(countdown - 1);
-//       }, 1000);
-//       return () => clearInterval(timerId);
-//     }
-//   }, [countdown]);
-
-//   const handleCheck = async (values: any) => {
-//     try {
-//       const {
-//         data: { data },
-//       } = await axiosBaseApi.get("/user/checkEmail?email=" + values.email);
-
-//       if (data.validEmail) {
-//         setEmail(values.email);
-//         dispatch({ type: USER_EMAIL_CHECK, payload: data });
-//         setCollapse(!collapse);
-//       } else {
-//         setEmailError("Email not found! please try again");
-//       }
-//     } catch (e: any) {
-//       const message = e.response.data.message ?? e.message;
-//       dispatch({
-//         type: TOAST_SHOW,
-//         payload: {
-//           message: message,
-//           severity: "error",
-//         },
-//       });
-//     }
-//   };
-//   const handleSubmit2 = (values: any) => {
-//     if (signInType === "password") {
-//       dispatch(UserAction(USER_LOGIN, { email, password: values.password }));
-//     } else if (signInType === "emailOTP") {
-//       dispatch(UserAction(USER_CONFIRM_CODE, { email, otp: values.emailOTP }));
-//     } else if (signInType === "mobile") {
-//       dispatch(
-//         UserAction(USER_CONFIRM_CODE, {
-//           email,
-//           otp: values.otp,
-//           mobile: userState.mobile,
-//         })
-//       );
-//     }
-//   };
-
-//   const connectSocial = async (token: any) => {
-//     const {
-//       data: { data, message },
-//     } = await axiosBaseApi.post("user/connectSocial", {
-//       ...token,
-//     });
-//     dispatch({
-//       type: TOAST_SHOW,
-//       payload: { message },
-//     });
-//     dispatch({
-//       type: USER_LOGIN,
-//       payload: { ...data.userData, accessToken: data.accessToken },
-//     });
-//   };
-
-//   return (
-//     <Box>
-//       <Grid container sx={{ height: "100vh" }}>
-//         <Grid item md={4.5}>
-//           <Box
-//             sx={{
-//               display: "flex",
-//               height: "100%",
-//               justifyContent: "center",
-//               flexDirection: "column",
-//               mx: 5,
-//             }}
-//           >
-//             <Typography sx={{ fontSize: 32, fontWeight: 700 }}>
-//               Login
-//             </Typography>
-//             <Typography fontSize={18} mt={1}>
-//               <Typography
-//                 component={"span"}
-//                 fontSize={"inherit"}
-//                 fontWeight={700}
-//               >
-//                 Welcome back,{" "}
-//               </Typography>
-//               manage your transactions with us.
-//             </Typography>
-//             <Divider sx={{ my: 3 }} />
-//             <Collapse in={!collapse} orientation="vertical">
-//               <FormManager
-//                 initialValues={initialValue}
-//                 yupSchema={loginSchema}
-//                 onSubmit={handleCheck}
-//               >
-//                 {({
-//                   errors,
-//                   handleBlur,
-//                   handleChange,
-//                   submitDisable,
-//                   touched,
-//                   values,
-//                 }) => (
-//                   <>
-//                     <Box
-//                       sx={{
-//                         display: "flex",
-//                         alignItems: "center",
-//                         justifyContent: "center",
-//                         flexDirection: "column",
-//                         rowGap: "20px",
-//                         width: "100%",
-//                       }}
-//                     >
-//                       <Box sx={{ width: "100%" }}>
-//                         <Typography
-//                           sx={{
-//                             ml: 1,
-//                             fontSize: "14px",
-//                             textTransform: "capitalize",
-//                           }}
-//                         >
-//                           Email
-//                         </Typography>
-//                         <TextBox
-//                           mt={1}
-//                           fullWidth={true}
-//                           placeholder="Enter your email"
-//                           name="email"
-//                           value={values.email}
-//                           error={(touched.email && errors.email) || emailError}
-//                           helperText={
-//                             (touched.email && errors.email && errors.email) ||
-//                             (emailError && emailError)
-//                           }
-//                           onChange={(e) => {
-//                             handleChange(e);
-//                             setEmailError("");
-//                           }}
-//                           onBlur={(e) => {
-//                             handleBlur(e);
-//                           }}
-//                         />
-//                       </Box>
-//                     </Box>
-//                     <Typography width="100%" marginLeft={2} fontWeight={500}>
-//                       Don&apos;t have an account?{" "}
-//                       <Typography
-//                         component="span"
-//                         sx={{
-//                           fontWeight: 500,
-//                           color: "text.secondary",
-//                           cursor: "pointer",
-//                         }}
-//                         onClick={() => {
-//                           router.push("/auth/register");
-//                         }}
-//                       >
-//                         Create new account
-//                       </Typography>
-//                     </Typography>
-//                     <Box
-//                       sx={{
-//                         width: "fit-content",
-//                         mt: 2,
-//                         ml: "auto",
-//                         display: "flex",
-//                         alignItems: "center",
-//                         gap: 1,
-//                       }}
-//                     >
-//                       <Box
-//                         sx={{
-//                           lineHeight: 0,
-//                           "& svg,img": {
-//                             width: "30px",
-//                             height: "auto",
-//                             borderRadius: "100%",
-//                           },
-//                         }}
-//                       >
-//                         {userState.loading && <LoadingIcon />}
-//                       </Box>
-//                       <Button
-//                         variant="rounded"
-//                         type="submit"
-//                         disabled={
-//                           userState.loading === true
-//                             ? userState.loading
-//                             : submitDisable
-//                         }
-//                         sx={{ py: 1.5 }}
-//                       >
-//                         <Typography
-//                           sx={{
-//                             lineHeight: 1,
-//                             fontSize: "0.875rem",
-//                             px: 1,
-//                             cursor: userState.loading
-//                               ? "not-allowed"
-//                               : "pointer",
-//                           }}
-//                         >
-//                           Continue
-//                         </Typography>
-//                       </Button>
-//                     </Box>
-//                   </>
-//                 )}
-//               </FormManager>
-//               <Box
-//                 sx={{
-//                   display: "flex",
-//                   alignItems: "center",
-//                   justifyContent: "center",
-//                 }}
-//               >
-//                 <Box
-//                   sx={{
-//                     height: "1px",
-//                     background: "#0000001f",
-//                     my: 3,
-//                     width: "100%",
-//                   }}
-//                 />
-//                 <Typography
-//                   sx={{
-//                     background: "#fff",
-//                     p: 1,
-//                     fontWeight: 700,
-//                   }}
-//                 >
-//                   OR
-//                 </Typography>
-//                 <Box
-//                   sx={{
-//                     height: "1px",
-//                     background: "#0000001f",
-//                     my: 3,
-//                     width: "100%",
-//                   }}
-//                 />
-//               </Box>
-//               <Box
-//                 sx={{
-//                   mt: 3,
-//                   display: "flex",
-//                   alignItems: "center",
-//                   flexDirection: "column",
-//                   gap: 2,
-//                 }}
-//               >
-//                 <Typography sx={{ fontSize: 11, fontWeight: 600 }}>
-//                   Sign up / Log in with
-//                 </Typography>
-//                 <Button
-//                   variant="rounded"
-//                   color="white"
-//                   sx={{
-//                     display: "flex",
-//                     alignItems: "center",
-//                     gap: 2,
-//                     "& img": {
-//                       width: "30px",
-//                       height: "auto",
-//                     },
-//                   }}
-//                   onClick={() =>
-//                     signIn("google", {
-//                       callbackUrl: "/auth/validateSocialLogin",
-//                     })
-//                   }
-//                 >
-//                   <img src={GoogleIcon.src} alt="no image" />
-//                   Sign in with Google
-//                 </Button>
-//                 <TelegramLoginButton
-//                   dataOnauth={async (user) => {
-//                     await connectSocial({
-//                       name: user.first_name,
-//                       provider: "telegram",
-//                       id: user.id.toString(),
-//                       email: null,
-//                       photo: user.photo_url,
-//                     });
-//                   }}
-//                 />
-//               </Box>
-//             </Collapse>
-//             <Collapse in={collapse} orientation="vertical">
-//               <FormManager
-//                 initialValues={initialValue}
-//                 yupSchema={passwordSchema}
-//                 onSubmit={handleSubmit2}
-//               >
-//                 {({
-//                   errors,
-//                   handleBlur,
-//                   handleChange,
-//                   submitDisable,
-//                   touched,
-//                   values,
-//                 }) => (
-//                   <>
-//                     <Box
-//                       sx={{
-//                         display: "flex",
-//                         alignItems: "center",
-//                         justifyContent: "center",
-//                         flexDirection: "column",
-//                         rowGap: "20px",
-//                         width: "100%",
-//                       }}
-//                     >
-//                       <Box
-//                         sx={{
-//                           width: "100%",
-//                           display: "flex",
-//                           alignItems: "center",
-//                           gap: 1,
-//                         }}
-//                       >
-//                         <Typography
-//                           sx={{
-//                             fontSize: "14px",
-//                             textTransform: "capitalize",
-
-//                             fontWeight: 700,
-//                           }}
-//                         >
-//                           Email:
-//                         </Typography>
-//                         <Typography sx={{ fontSize: 18 }}>{email}</Typography>
-//                         <Typography
-//                           sx={{
-//                             ml: 3,
-//                             mt: 0.5,
-//                             fontSize: 14,
-//                             color: "text.secondary",
-//                             textDecoration: "underline",
-//                             cursor: "pointer",
-//                           }}
-//                           onClick={() => setCollapse(!collapse)}
-//                         >
-//                           Change
-//                         </Typography>
-//                       </Box>
-//                       <FormControl fullWidth>
-//                         <FormLabel id="demo-radio-buttons-group-label">
-//                           Choose a sign in method
-//                         </FormLabel>
-//                         <RadioGroup
-//                           aria-labelledby="demo-radio-buttons-group-label"
-//                           defaultValue="female"
-//                           name="radio-buttons-group"
-//                           value={signInType}
-//                           onChange={(e) => setSignInType(e.target.value)}
-//                         >
-//                           <Box>
-//                             <Box
-//                               sx={{
-//                                 display: "flex",
-//                                 alignItems: "center",
-//                                 justifyContent: "space-between",
-//                               }}
-//                             >
-//                               <FormControlLabel
-//                                 value="mobile"
-//                                 control={<Radio />}
-//                                 label="Text me a verification code"
-//                               />
-//                               {signInType === "mobile" && userState.mobile && (
-//                                 <Typography
-//                                   sx={{
-//                                     mr: 1,
-//                                     fontWeight: 500,
-//                                     fontSize: "14px",
-//                                     color: sent
-//                                       ? "text.disabled"
-//                                       : "text.secondary",
-//                                     cursor: sent ? "not-allowed" : "pointer",
-//                                   }}
-//                                   onClick={() => {
-//                                     if (!sent) {
-//                                       setSent(true);
-//                                       dispatch(
-//                                         UserAction(USER_SEND_OTP, {
-//                                           email,
-//                                           mobile: userState.mobile,
-//                                         })
-//                                       );
-//                                     }
-//                                   }}
-//                                 >
-//                                   Send OTP {sent ? `in ${countdown}s` : ""}
-//                                 </Typography>
-//                               )}
-//                             </Box>
-//                             <Collapse in={signInType === "mobile"}>
-//                               <Box sx={{ width: "100%" }}>
-//                                 <Typography
-//                                   sx={{
-//                                     fontSize: "12px",
-//                                     ml: 4,
-//                                     color: userState.mobile
-//                                       ? "text.primary"
-//                                       : "#d32f2f",
-//                                   }}
-//                                 >
-//                                   {userState.mobile
-//                                     ? "+ xxxxxxx" +
-//                                       userState.mobile.substring(7)
-//                                     : "Please enter a mobile number"}
-//                                 </Typography>
-//                                 <TextBox
-//                                   mt={1}
-//                                   fullWidth={true}
-//                                   type="text"
-//                                   placeholder="Enter OTP"
-//                                   name="otp"
-//                                   value={values.otp}
-//                                   disabled={userState.mobile ? false : true}
-//                                   error={touched.otp && errors.otp}
-//                                   helperText={
-//                                     touched.otp && errors.otp && errors.otp
-//                                   }
-//                                   onChange={handleChange}
-//                                   onBlur={handleBlur}
-//                                 />
-//                               </Box>
-//                             </Collapse>
-//                           </Box>
-//                           <Box sx={{ mt: 2 }}>
-//                             <Box
-//                               sx={{
-//                                 display: "flex",
-//                                 alignItems: "center",
-//                                 justifyContent: "space-between",
-//                               }}
-//                             >
-//                               <FormControlLabel
-//                                 value="emailOTP"
-//                                 control={<Radio />}
-//                                 label="Email me a verification code"
-//                               />
-//                               {signInType === "emailOTP" && (
-//                                 <Typography
-//                                   sx={{
-//                                     mr: 1,
-//                                     fontWeight: 500,
-//                                     fontSize: "14px",
-//                                     color: sent
-//                                       ? "text.disabled"
-//                                       : "text.secondary",
-//                                     cursor: sent ? "not-allowed" : "pointer",
-//                                   }}
-//                                   onClick={() => {
-//                                     if (!sent) {
-//                                       setSent(true);
-//                                       dispatch(
-//                                         UserAction(USER_SEND_OTP, {
-//                                           email,
-//                                           mobile: null,
-//                                         })
-//                                       );
-//                                     }
-//                                   }}
-//                                 >
-//                                   Send Code {sent ? `in ${countdown}s` : ""}
-//                                 </Typography>
-//                               )}
-//                             </Box>
-//                             <Collapse in={signInType === "emailOTP"}>
-//                               <Box sx={{ width: "100%" }}>
-//                                 <TextBox
-//                                   mt={1}
-//                                   fullWidth={true}
-//                                   type="text"
-//                                   placeholder="Enter OTP"
-//                                   name="emailOTP"
-//                                   value={values.emailOTP}
-//                                   error={touched.emailOTP && errors.emailOTP}
-//                                   helperText={
-//                                     touched.emailOTP &&
-//                                     errors.emailOTP &&
-//                                     errors.emailOTP
-//                                   }
-//                                   onChange={handleChange}
-//                                   onBlur={handleBlur}
-//                                 />
-//                               </Box>
-//                             </Collapse>
-//                           </Box>
-//                           <Box sx={{ mt: 2 }}>
-//                             <Box
-//                               sx={{
-//                                 display: "flex",
-//                                 alignItems: "center",
-//                                 justifyContent: "space-between",
-//                               }}
-//                             >
-//                               <FormControlLabel
-//                                 value="password"
-//                                 control={<Radio />}
-//                                 label="Password"
-//                               />
-//                               {signInType === "password" && (
-//                                 <Typography
-//                                   sx={{
-//                                     mr: 1,
-//                                     fontWeight: 500,
-//                                     fontSize: "14px",
-//                                     color: "text.secondary",
-//                                     cursor: "pointer",
-//                                   }}
-//                                   onClick={() => {
-//                                     router.push("/auth/forgot");
-//                                   }}
-//                                 >
-//                                   Forgot password?
-//                                 </Typography>
-//                               )}
-//                             </Box>
-//                             <Collapse in={signInType === "password"}>
-//                               <Box sx={{ width: "100%" }}>
-//                                 <TextBox
-//                                   mt={1}
-//                                   fullWidth={true}
-//                                   type={viewPassword ? "text" : "password"}
-//                                   placeholder="Enter your password"
-//                                   name="password"
-//                                   value={values.password}
-//                                   error={touched.password && errors.password}
-//                                   helperText={
-//                                     touched.password &&
-//                                     errors.password &&
-//                                     errors.password
-//                                   }
-//                                   InputProps={{
-//                                     endAdornment: (
-//                                       <IconButton
-//                                         onClick={() =>
-//                                           setViewPassword(!viewPassword)
-//                                         }
-//                                       >
-//                                         {viewPassword ? (
-//                                           <VisibilityOffRounded color="secondary" />
-//                                         ) : (
-//                                           <VisibilityRounded color="secondary" />
-//                                         )}
-//                                       </IconButton>
-//                                     ),
-//                                   }}
-//                                   onChange={handleChange}
-//                                   onBlur={handleBlur}
-//                                 />
-//                               </Box>
-//                             </Collapse>
-//                           </Box>
-//                         </RadioGroup>
-//                       </FormControl>
-//                     </Box>
-//                     <Box
-//                       sx={{
-//                         width: "100%",
-//                         mt: 2,
-//                         maxWidth: "250px",
-//                         display: "flex",
-//                         alignItems: "center",
-//                         gap: 1,
-//                       }}
-//                     >
-//                       <Button
-//                         variant="rounded"
-//                         type="submit"
-//                         disabled={
-//                           userState.loading === true
-//                             ? userState.loading
-//                             : submitDisable
-//                         }
-//                         sx={{ py: 1.5 }}
-//                       >
-//                         <Typography
-//                           sx={{
-//                             lineHeight: 1,
-//                             fontSize: "0.875rem",
-//                             px: 1,
-//                             cursor: userState.loading
-//                               ? "not-allowed"
-//                               : "pointer",
-//                           }}
-//                         >
-//                           Login
-//                         </Typography>
-//                       </Button>
-//                       <Box
-//                         sx={{
-//                           lineHeight: 0,
-//                           "& svg,img": {
-//                             width: "30px",
-//                             height: "auto",
-//                             borderRadius: "100%",
-//                           },
-//                         }}
-//                       >
-//                         {userState.loading && <LoadingIcon />}
-//                       </Box>
-//                     </Box>
-//                   </>
-//                 )}
-//               </FormManager>
-//             </Collapse>
-//           </Box>
-//         </Grid>
-//         <Grid
-//           item
-//           md={7.5}
-//           sx={{
-//             background: theme.palette.primary.main,
-//             "& img": {
-//               width: "400px",
-//               height: "auto",
-//               mt: 5,
-//             },
-//             color: "#fff",
-//             px: 5,
-//             display: "flex",
-//             flexDirection: "row",
-//             justifyContent: "center",
-//             alignItems: "center",
-//           }}
-//         >
-//           <img src={Wallet.src} alt="no wallet" />
-//           <Box>
-//             <Typography sx={{ fontSize: 64, fontWeight: 900 }}>
-//               BozzWallet
-//             </Typography>
-//             <Typography sx={{ fontSize: 18, fontWeight: 500, mt: 1 }}>
-//               Welcome to BozzWallet, your secure and convenient digital wallet
-//               solution. Simplifying your financial transactions has never been
-//               easier.
-//             </Typography>
-//             <Button
-//               variant="rounded"
-//               color="white"
-//               sx={{
-//                 mt: 5,
-//                 px: 5,
-//                 py: 2,
-//               }}
-//             >
-//               Learn More
-//             </Button>
-//           </Box>
-//         </Grid>
-//       </Grid>
-//     </Box>
-//   );
-// };
-
-// export default Login;
-
 import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
@@ -825,6 +35,7 @@ import {
   USER_EMAIL_CHECK,
   USER_LOGIN,
   USER_SEND_OTP,
+  USER_SEND_RESET_LINK,
   UserAction,
 } from "@/Redux/Actions/UserAction";
 import CustomButton from "@/Components/UI/Buttons";
@@ -834,7 +45,6 @@ import { signIn } from "next-auth/react";
 import LanguageSwitcher from "@/Components/UI/LanguageSwitcher";
 import OtpDialog from "@/Components/UI/OtpDialog";
 import ForgotPasswordDialog from "@/Components/UI/ForgotPasswordDialog";
-import PasswordValidation from "@/Components/UI/AuthLayout/PasswordValidation";
 
 export default function Login() {
   const { t } = useTranslation("auth");
@@ -886,94 +96,15 @@ export default function Login() {
   // Forgot password state
   const [forgotPasswordDialogOpen, setForgotPasswordDialogOpen] =
     useState(false);
-  const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
   const [forgotPasswordEmailError, setForgotPasswordEmailError] = useState("");
-  const [forgotPasswordOtpSent, setForgotPasswordOtpSent] = useState(false);
   const [forgotPasswordOtpCountdown, setForgotPasswordOtpCountdown] =
     useState(0);
   const [forgotPasswordOtpError, setForgotPasswordOtpError] = useState("");
-  const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(false);
   const [isPasswordRecoveryMode, setIsPasswordRecoveryMode] = useState(false);
-
-  const [newPassword, setNewPassword] = useState("");
-  const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
-  const [newPasswordError, setNewPasswordError] = useState("");
-  const [newPasswordConfirmError, setNewPasswordConfirmError] = useState("");
-  const [newPasswordShowPassword, setNewPasswordShowPassword] = useState(false);
-  const [newPasswordConfirmShowPassword, setNewPasswordConfirmShowPassword] =
-    useState(false);
-  const [
-    newPasswordShowPasswordValidation,
-    setNewPasswordShowPasswordValidation,
-  ] = useState(false);
-  const newPasswordFieldRef = useRef<HTMLDivElement | null>(null);
 
   // Password validation regex
   const passwordRegex =
     /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()\-=__+{}\[\]:;<>,.?/~]).{8,20}$/;
-
-  // Handle new password change
-  const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setNewPassword(value);
-    setNewPasswordError(""); // Clear error when typing
-
-    // Show validation if password doesn't match regex, hide if it does
-    if (!value) {
-      setNewPasswordShowPasswordValidation(false);
-    } else if (passwordRegex.test(value)) {
-      // Hide validation when all conditions are met
-      setNewPasswordShowPasswordValidation(false);
-    } else {
-      // Show validation when password is invalid
-      setNewPasswordShowPasswordValidation(true);
-    }
-
-    // Check if confirm password matches (if confirm password has a value)
-    if (newPasswordConfirm) {
-      if (value && newPasswordConfirm && value !== newPasswordConfirm) {
-        setNewPasswordConfirmError("passwordAndConfirmPasswordShouldBeSame");
-      } else {
-        setNewPasswordConfirmError("");
-      }
-    }
-  };
-
-  // Handle new password blur
-  const handleNewPasswordBlur = () => {
-    // Hide validation popover on blur with a small delay
-    setTimeout(() => {
-      setNewPasswordShowPasswordValidation(false);
-    }, 200);
-  };
-
-  // Handle new password focus
-  const handleNewPasswordFocus = () => {
-    // Show validation if password exists and doesn't match regex
-    if (newPassword && !passwordRegex.test(newPassword)) {
-      setNewPasswordShowPasswordValidation(true);
-    }
-  };
-
-  // Handle confirm password change
-  const handleNewPasswordConfirmChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = e.target.value;
-    setNewPasswordConfirm(value);
-    setNewPasswordConfirmError(""); // Clear error when typing
-
-    // Check if passwords match
-    if (newPassword && value && newPassword !== value) {
-      setNewPasswordConfirmError("passwordAndConfirmPasswordShouldBeSame");
-    } else {
-      setNewPasswordConfirmError("");
-    }
-  };
-
-  const handleSetNewPassword = () => {
-    console.log("set new password");
-  };
 
   // Validation schemas - use translation keys instead of translated strings
   const emailSchema = yup.object().shape({
@@ -1010,7 +141,7 @@ export default function Login() {
       !userState.error
     ) {
       // OTP verified successfully for password recovery
-      setShowForgotPasswordForm(true);
+      // setShowForgotPasswordForm(true);
       setForgotPasswordDialogOpen(false);
       setIsPasswordRecoveryMode(false);
     }
@@ -1447,23 +578,6 @@ export default function Login() {
     }
   };
 
-  // Validate email OTP
-  const validateEmailOtp = async () => {
-    if (!emailOtp) {
-      setEmailOtpError("otpRequired");
-      return false;
-    }
-    try {
-      await emailOtpSchema.validate({ emailOTP: emailOtp });
-      setEmailOtpError("");
-      return true;
-    } catch (err: any) {
-      // Store translation key instead of translated message
-      setEmailOtpError(err.message || "otpRequired");
-      return false;
-    }
-  };
-
   // Handle login submit
   const handleLoginSubmit = async () => {
     if (loginMethod === "password") {
@@ -1616,14 +730,11 @@ export default function Login() {
     }
   }, [forgotPasswordOtpCountdown]);
 
-  // Handle forgot password email submit
   const handleForgotPasswordEmailSubmit = async (email: string) => {
-    setForgotPasswordEmail(email);
     setForgotPasswordEmailError("");
-    setIsPasswordRecoveryMode(true); // Set password recovery mode
+    setForgotPasswordDialogOpen(false);
 
     try {
-      // Check if email exists
       const {
         data: { data },
       } = await axiosBaseApi.get("/user/checkEmail?email=" + email);
@@ -1631,13 +742,10 @@ export default function Login() {
       if (data.validEmail) {
         // Send OTP for password recovery
         dispatch(
-          UserAction(USER_SEND_OTP, {
+          UserAction(USER_SEND_RESET_LINK, {
             email: email,
-            mobile: null,
           })
         );
-        setForgotPasswordOtpSent(true);
-        setForgotPasswordOtpCountdown(30);
         setForgotPasswordEmailError("");
       } else {
         setForgotPasswordEmailError("emailNotFound");
@@ -1656,62 +764,7 @@ export default function Login() {
         },
       });
     }
-  };
-
-  // Handle forgot password OTP verify
-  const handleForgotPasswordOtpVerify = async (otp: string, email: string) => {
-    setForgotPasswordOtpError("");
-
-    if (!otp || otp.trim().length !== 6) {
-      setForgotPasswordOtpError("otpInvalid6Digit");
-      return;
-    }
-
-    try {
-      // Verify OTP for password recovery
-      dispatch(
-        UserAction(USER_CONFIRM_CODE, {
-          email: email,
-          otp: otp.trim(),
-        })
-      );
-    } catch (e: any) {
-      const message =
-        e.response?.data?.message ?? e.message ?? "Failed to verify OTP";
-      setForgotPasswordOtpError(message);
-      dispatch({
-        type: TOAST_SHOW,
-        payload: {
-          message: message,
-          severity: "error",
-        },
-      });
-    }
-  };
-
-  // Handle forgot password resend code
-  const handleForgotPasswordResendCode = async (email: string) => {
-    try {
-      dispatch(
-        UserAction(USER_SEND_OTP, {
-          email: email,
-          mobile: null,
-        })
-      );
-      setForgotPasswordOtpCountdown(30);
-      setForgotPasswordOtpError("");
-    } catch (e: any) {
-      const message =
-        e.response?.data?.message ?? e.message ?? "Failed to send OTP";
-      dispatch({
-        type: TOAST_SHOW,
-        payload: {
-          message: message,
-          severity: "error",
-        },
-      });
-    }
-  };
+  }
 
   return (
     <AuthContainer>
@@ -1749,717 +802,717 @@ export default function Login() {
       </CardWrapper>
 
       {/* Login Card */}
-      {!showForgotPasswordForm && (
-        <CardWrapper sx={{ padding: "30px" }}>
-          {/* Login Title & Description */}
-          <TitleDescription
-            title={t("login")}
-            description={t("loginDescription")}
-            align="left"
-            titleVariant="h2"
-            descriptionVariant="p"
-          />
+      {/* {!showForgotPasswordForm && ( */}
+      <CardWrapper sx={{ padding: "30px" }}>
+        {/* Login Title & Description */}
+        <TitleDescription
+          title={t("login")}
+          description={t("loginDescription")}
+          align="left"
+          titleVariant="h2"
+          descriptionVariant="p"
+        />
 
-          {/* Email Input field - shown initially or when changing email */}
-          {!showLoginMethods ? (
-            <>
-              <Box sx={{ marginTop: "24px" }}>
-                <InputField
-                  label={t("email")}
-                  type="email"
-                  value={emailInput}
-                  onChange={(e) => {
-                    setEmailInput(e.target.value);
-                    // Clear error when typing
-                    if (emailError) {
-                      setEmailError("");
-                      setEmailTouched(false);
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !emailCheckLoading) {
-                      e.preventDefault();
-                      handleEmailCheck();
-                    }
-                  }}
-                  placeholder={t("emailPlaceHolder")}
-                  error={emailTouched && !!emailError}
-                  helperText={
-                    emailTouched && emailError
-                      ? emailError.includes(" ")
-                        ? emailError
-                        : t(emailError)
-                      : ""
+        {/* Email Input field - shown initially or when changing email */}
+        {!showLoginMethods ? (
+          <>
+            <Box sx={{ marginTop: "24px" }}>
+              <InputField
+                label={t("email")}
+                type="email"
+                value={emailInput}
+                onChange={(e) => {
+                  setEmailInput(e.target.value);
+                  // Clear error when typing
+                  if (emailError) {
+                    setEmailError("");
+                    setEmailTouched(false);
                   }
-                />
-              </Box>
-
-              {/* Don't have acc */}
-              <Box
-                sx={{
-                  display: "flex",
-                  gap: "7px",
-                  marginTop: "16px",
-                  textAlign: "start",
                 }}
-              >
-                <Typography
-                  width="100%"
-                  sx={{
-                    fontSize: "13px",
-                    color: theme.palette.text.secondary,
-                    fontFamily: "UrbanistMedium",
-                  }}
-                  fontWeight={500}
-                >
-                  {t("dontHaveAccount")}
-                  <Typography
-                    component="span"
-                    sx={{
-                      fontSize: "13px",
-                      color: theme.palette.primary.main,
-                      fontWeight: 500,
-                      textAlign: "start",
-                      cursor: "pointer",
-                      paddingLeft: "7px",
-                      textDecoration: "underline",
-                      textUnderlineOffset: "2px",
-                      fontFamily: "UrbanistMedium",
-                    }}
-                    onClick={() => {
-                      router.push("/auth/register");
-                    }}
-                  >
-                    {t("createNewAccount")}
-                  </Typography>
-                </Typography>
-              </Box>
-
-              <Box sx={{ marginTop: "24px" }}>
-                <CustomButton
-                  label={t("continue")}
-                  variant="primary"
-                  size={isMobile ? "small" : "medium"}
-                  fullWidth
-                  disabled={emailCheckLoading}
-                  onClick={handleEmailCheck}
-                  hideLabelWhenLoading={true}
-                  showSuccessAnimation={showSuccessAnimation}
-                  showErrorAnimation={showErrorAnimation}
-                  sx={{
-                    fontWeight: 700,
-                  }}
-                  endIcon={
-                    emailCheckLoading ? <LoadingIcon size={20} /> : undefined
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !emailCheckLoading) {
+                    e.preventDefault();
+                    handleEmailCheck();
                   }
-                />
-              </Box>
-            </>
-          ) : (
-            <>
-              {/* Show verified email in InputBox with edit button */}
-              <Box sx={{ marginTop: "24px" }}>
-                <InputField
-                  label={t("email")}
-                  type="email"
-                  value={verifiedEmail}
-                  readOnly={true}
-                  sideButton={true}
-                  sideButtonType="primary"
-                  sideButtonIcon={EditIcon}
-                  sideButtonIconWidth={isMobile ? "12px" : "14px"}
-                  sideButtonIconHeight={isMobile ? "12px" : "14px"}
-                  onSideButtonClick={handleChangeEmail}
-                />
-              </Box>
+                }}
+                placeholder={t("emailPlaceHolder")}
+                error={emailTouched && !!emailError}
+                helperText={
+                  emailTouched && emailError
+                    ? emailError.includes(" ")
+                      ? emailError
+                      : t(emailError)
+                    : ""
+                }
+              />
+            </Box>
 
-              <Box sx={{ marginTop: isMobile ? "12px" : "24px" }}>
-                <Typography
-                  sx={{
-                    textAlign: "start",
-                    fontSize: isMobile ? "13px" : "15px",
-                    fontFamily: "UrbanistMedium",
-                    color: "#676768",
-                  }}
-                >
-                  {t("chooseLoginMethod")}
-                </Typography>
-
-                {/* Login Method Selection */}
-                <Box sx={{ marginTop: "16px" }}>
-                  <RadioGroup
-                    value={loginMethod}
-                    onChange={(e) => handleLoginMethodChange(e.target.value)}
-                    sx={{
-                      "& .MuiFormControlLabel-label": {
-                        fontSize: isMobile ? "13px" : "15px",
-                        fontFamily: "UrbanistMedium",
-                        color: "#242428",
-                        paddingLeft: "8px",
-                      },
-                    }}
-                  >
-                    {/* SMS Option */}
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        width: "100%",
-                      }}
-                    >
-                      <FormControlLabel
-                        value="sms"
-                        control={<CustomRadio />}
-                        label={t("sendVerificationCodeViaSms")}
-                        sx={{ margin: "0px", flex: 1, textAlign: "start" }}
-                      />
-
-                      {/* Get Code Button - Desktop */}
-                      {loginMethod === "sms" && !isMobile && !isOtpSent && (
-                        <CustomButton
-                          variant="secondary"
-                          size="medium"
-                          label={t("getCode")}
-                          onClick={handleSendSmsOtp}
-                          disabled={userState.loading}
-                          sx={{
-                            fontWeight: 500,
-                            padding: "8px 22.5px",
-                          }}
-                          endIcon={ArrowUpwardIcon}
-                        />
-                      )}
-
-                      {/* Resend Code Button - Desktop */}
-                      {loginMethod === "sms" && !isMobile && isOtpSent && (
-                        <CustomButton
-                          variant="secondary"
-                          disabled={smsOtpCountdown > 0 || userState.loading}
-                          size="medium"
-                          label={
-                            smsOtpCountdown > 0
-                              ? `${t("codeIn")} ${smsOtpCountdown}s`
-                              : t("resendCode")
-                          }
-                          onClick={handleSendSmsOtp}
-                          endIcon={
-                            smsOtpCountdown > 0 || userState.loading
-                              ? undefined
-                              : ArrowUpwardIcon
-                          }
-                          sx={{
-                            fontWeight: 500,
-                            padding: "11px 20px",
-                          }}
-                        />
-                      )}
-                    </Box>
-
-                    {/* Show mobile number if available from userState */}
-                    {loginMethod === "sms" && userState.mobile && (
-                      <Box sx={{ marginLeft: "32px" }}>
-                        <Typography
-                          sx={{
-                            textAlign: "start",
-                            fontSize: "12px",
-                            color: "#676768",
-                            fontFamily: "UrbanistMedium",
-                          }}
-                        >
-                          {t("codeWillBeSentTo")}
-                          {userState.mobile.substring(7)}
-                        </Typography>
-                      </Box>
-                    )}
-
-                    {/* Mobile Input Field - Desktop (only show if mobile not in userState) */}
-                    {loginMethod === "sms" &&
-                      !isMobile &&
-                      !isOtpSent &&
-                      !userState.mobile && (
-                        <Box sx={{ marginTop: "8px" }}>
-                          <InputField
-                            placeholder={t("enterMobilePlaceholder")}
-                            value={mobile}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/\D/g, "");
-                              setMobile(value);
-                              // Clear error when typing
-                              if (mobileError) {
-                                setMobileError("");
-                                setMobileTouched(false);
-                              }
-                            }}
-                            onKeyDown={(e) => {
-                              if (
-                                e.key === "Enter" &&
-                                !userState.loading &&
-                                mobile &&
-                                mobile.length >= 10
-                              ) {
-                                e.preventDefault();
-                                handleSendSmsOtp();
-                              }
-                            }}
-                            type="text"
-                            inputMode="numeric"
-                            error={mobileTouched && !!mobileError}
-                            helperText={
-                              mobileTouched && mobileError
-                                ? mobileError.includes(" ")
-                                  ? mobileError
-                                  : t(mobileError)
-                                : ""
-                            }
-                          />
-                        </Box>
-                      )}
-
-                    {/* Mobile Input Field - Mobile (only show if mobile not in userState) */}
-                    {loginMethod === "sms" &&
-                      isMobile &&
-                      !isOtpSent &&
-                      !userState.mobile && (
-                        <Box sx={{ marginTop: "8px" }}>
-                          <InputField
-                            placeholder={t("enterMobilePlaceholder")}
-                            value={mobile}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/\D/g, "");
-                              setMobile(value);
-                              // Clear error when typing
-                              if (mobileError) {
-                                setMobileError("");
-                                setMobileTouched(false);
-                              }
-                            }}
-                            onKeyDown={(e) => {
-                              if (
-                                e.key === "Enter" &&
-                                !userState.loading &&
-                                mobile &&
-                                mobile.length >= 10
-                              ) {
-                                e.preventDefault();
-                                handleSendSmsOtp();
-                              }
-                            }}
-                            type="text"
-                            inputMode="numeric"
-                            error={mobileTouched && !!mobileError}
-                            helperText={
-                              mobileTouched && mobileError
-                                ? mobileError.includes(" ")
-                                  ? mobileError
-                                  : t(mobileError)
-                                : ""
-                            }
-                            sideButton={true}
-                            sideButtonType="secondary"
-                            sideButtonIcon={ArrowUpwardIcon}
-                            sideButtonIconWidth={isMobile ? "10px" : "14px"}
-                            sideButtonIconHeight={isMobile ? "10px" : "14px"}
-                            onSideButtonClick={handleSendSmsOtp}
-                          />
-                        </Box>
-                      )}
-
-                    {/* Get Code Button - Mobile (when mobile is in userState) */}
-                    {loginMethod === "sms" &&
-                      isMobile &&
-                      !isOtpSent &&
-                      userState.mobile && (
-                        <Box sx={{ marginTop: "8px" }}>
-                          <CustomButton
-                            variant="secondary"
-                            size="small"
-                            label={t("getCode")}
-                            fullWidth
-                            disabled={userState.loading}
-                            onClick={handleSendSmsOtp}
-                            sx={{
-                              fontWeight: 500,
-                              padding: "8px 22.5px",
-                            }}
-                            endIcon={ArrowUpwardIcon}
-                          />
-                        </Box>
-                      )}
-
-                    {/* Resend Code Button - Mobile */}
-                    {loginMethod === "sms" && isMobile && isOtpSent && (
-                      <Box sx={{ marginTop: "8px" }}>
-                        <CustomButton
-                          variant="secondary"
-                          disabled={smsOtpCountdown > 0 || userState.loading}
-                          size="small"
-                          label={
-                            smsOtpCountdown > 0
-                              ? `${t("codeIn")} ${smsOtpCountdown}s`
-                              : t("resendCode")
-                          }
-                          fullWidth
-                          onClick={handleSendSmsOtp}
-                          endIcon={
-                            smsOtpCountdown > 0 || userState.loading
-                              ? undefined
-                              : ArrowUpwardIcon
-                          }
-                          sx={{
-                            height: "32px",
-                            fontSize: "13px",
-                            fontWeight: 500,
-                            padding: "8px 20px",
-                          }}
-                        />
-                      </Box>
-                    )}
-
-                    {/* Email Option */}
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        width: "100%",
-                        marginTop: "16px",
-                      }}
-                    >
-                      <FormControlLabel
-                        value="email"
-                        control={<CustomRadio />}
-                        label={t("sendVerificationCodeViaEmail")}
-                        sx={{
-                          margin: "0px",
-                          color: "#242428",
-                          textAlign: "start",
-                          flex: 1,
-                        }}
-                      />
-                      {/* Get Code Button */}
-                      {loginMethod === "email" &&
-                        !isMobile &&
-                        !emailOtpSent && (
-                          <CustomButton
-                            variant="secondary"
-                            size="medium"
-                            label={t("getCode")}
-                            onClick={handleSendEmailOtp}
-                            disabled={userState.loading}
-                            sx={{
-                              fontWeight: 500,
-                              padding: "8px 22.5px",
-                            }}
-                            endIcon={ArrowUpwardIcon}
-                          />
-                        )}
-
-                      {/* Resend Code Button */}
-                      {loginMethod === "email" && !isMobile && emailOtpSent && (
-                        <CustomButton
-                          variant="secondary"
-                          disabled={
-                            (emailOtpDialogOpen && emailOtpCountdown > 0) ||
-                            userState.loading
-                          }
-                          size="medium"
-                          label={
-                            emailOtpCountdown > 0
-                              ? `${t("codeIn")} ${emailOtpCountdown}s`
-                              : t("resendCode")
-                          }
-                          onClick={handleSendEmailOtp}
-                          endIcon={
-                            emailOtpCountdown > 0 && emailOtpDialogOpen
-                              ? undefined
-                              : ArrowUpwardIcon
-                          }
-                          sx={{
-                            fontWeight: 500,
-                            padding: "11px 20px",
-                          }}
-                        />
-                      )}
-                    </Box>
-
-                    {/* Get Code Button - Mobile */}
-                    {loginMethod === "email" && isMobile && !emailOtpSent && (
-                      <Box sx={{ marginTop: "16px" }}>
-                        <CustomButton
-                          variant="secondary"
-                          size="small"
-                          label={t("getCode")}
-                          fullWidth
-                          disabled={userState.loading}
-                          onClick={handleSendEmailOtp}
-                          sx={{
-                            fontWeight: 500,
-                            padding: "8px 22.5px",
-                          }}
-                          endIcon={ArrowUpwardIcon}
-                        />
-                      </Box>
-                    )}
-
-                    {/* Resend Code Button - Mobile */}
-                    {loginMethod === "email" && isMobile && emailOtpSent && (
-                      <Box sx={{ marginTop: "16px" }}>
-                        <CustomButton
-                          variant="secondary"
-                          size="small"
-                          label={
-                            emailOtpCountdown > 0
-                              ? `${t("codeIn")} ${emailOtpCountdown}s`
-                              : t("resendCode")
-                          }
-                          fullWidth
-                          disabled={emailOtpCountdown > 0}
-                          endIcon={
-                            emailOtpCountdown > 0 ? undefined : ArrowUpwardIcon
-                          }
-                          onClick={handleSendEmailOtp}
-                          sx={{
-                            fontWeight: 500,
-                            padding: "8px 20px",
-                          }}
-                        />
-                      </Box>
-                    )}
-
-                    {/* Password Option */}
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        margin: "16px 0 0 0",
-                      }}
-                    >
-                      <FormControlLabel
-                        value="password"
-                        control={<CustomRadio />}
-                        label={t("password")}
-                        sx={{ margin: "0px", color: "#242428" }}
-                      />
-                      {loginMethod === "password" && (
-                        <Typography
-                          component="span"
-                          sx={{
-                            fontSize: "13px",
-                            color: theme.palette.primary.main,
-                            fontWeight: 500,
-                            textAlign: "start",
-                            cursor: "pointer",
-                            textDecoration: "underline",
-                            textUnderlineOffset: "2px",
-                            fontFamily: "UrbanistMedium",
-                          }}
-                          onClick={() => {
-                            setForgotPasswordDialogOpen(true);
-                          }}
-                        >
-                          {t("forgotYourPassword")}
-                        </Typography>
-                      )}
-                    </Box>
-                    {/* Password Input Field */}
-                    {loginMethod === "password" && (
-                      <Box sx={{ marginTop: "10px" }}>
-                        <InputField
-                          type={showPassword ? "text" : "password"}
-                          value={password}
-                          onChange={(e) => {
-                            setPassword(e.target.value);
-                            // Clear error when typing
-                            if (passwordError) {
-                              setPasswordError("");
-                              setPasswordTouched(false);
-                            }
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" && !userState.loading) {
-                              e.preventDefault();
-                              handleLoginSubmit();
-                            }
-                          }}
-                          placeholder={t("passwordPlaceHolder")}
-                          error={
-                            loginMethod === "password" &&
-                            passwordTouched &&
-                            !!passwordError
-                          }
-                          helperText={
-                            loginMethod === "password" &&
-                              passwordTouched &&
-                              passwordError
-                              ? passwordError.includes(" ")
-                                ? passwordError
-                                : t(passwordError)
-                              : ""
-                          }
-                          sideButton={true}
-                          sideButtonType="primary"
-                          sideButtonIcon={
-                            showPassword ? (
-                              <VisibilityOffIcon
-                                sx={{
-                                  color: "#676768",
-                                  height: "18px",
-                                  width: "16px",
-                                }}
-                              />
-                            ) : (
-                              <VisibilityIcon
-                                sx={{
-                                  color: "#676768",
-                                  height: "18px",
-                                  width: "16px",
-                                }}
-                              />
-                            )
-                          }
-                          sideButtonIconWidth={isMobile ? "14px" : "18px"}
-                          sideButtonIconHeight={isMobile ? "14px" : "18px"}
-                          onSideButtonClick={() => {
-                            setShowPassword(!showPassword);
-                          }}
-                          showPasswordToggle={true}
-                        />
-                      </Box>
-                    )}
-                  </RadioGroup>
-                </Box>
-              </Box>
-
-              {/* Continue Button - shown when login methods are visible */}
-              <Box sx={{ marginTop: "24px" }}>
-                <CustomButton
-                  label={t("continue")}
-                  variant="primary"
-                  size={isMobile ? "small" : "medium"}
-                  fullWidth
-                  disabled={
-                    userState.loading &&
-                    !(
-                      (loginMethod === "email" && emailOtpDialogOpen) ||
-                      (loginMethod === "sms" && smsOtpDialogOpen)
-                    )
-                  }
-                  onClick={() => {
-                    // Ensure we can submit even after previous errors
-                    handleLoginSubmit();
-                  }}
-                  hideLabelWhenLoading={true}
-                  showSuccessAnimation={
-                    showSuccessAnimation &&
-                    !(
-                      (loginMethod === "email" && emailOtpDialogOpen) ||
-                      (loginMethod === "sms" && smsOtpDialogOpen)
-                    )
-                  }
-                  showErrorAnimation={
-                    showErrorAnimation &&
-                    !(
-                      (loginMethod === "email" && emailOtpDialogOpen) ||
-                      (loginMethod === "sms" && smsOtpDialogOpen)
-                    )
-                  }
-                  sx={{
-                    fontWeight: 700,
-                  }}
-                  endIcon={
-                    userState.loading &&
-                      !(
-                        (loginMethod === "email" && emailOtpDialogOpen) ||
-                        (loginMethod === "sms" && smsOtpDialogOpen)
-                      ) ? (
-                      <LoadingIcon size={20} />
-                    ) : undefined
-                  }
-                />
-              </Box>
-            </>
-          )}
-
-          {/* Social Login Section - shown only when login methods are visible */}
-
-          <Box sx={{ marginTop: isMobile ? "16px" : "24px" }}>
-            <Divider
+            {/* Don't have acc */}
+            <Box
               sx={{
-                borderColor: "red",
-                "&::before, &::after": {
-                  borderColor: "#E9ECF2",
-                },
+                display: "flex",
+                gap: "7px",
+                marginTop: "16px",
+                textAlign: "start",
               }}
             >
               <Typography
-                variant="body2"
+                width="100%"
                 sx={{
+                  fontSize: "13px",
+                  color: theme.palette.text.secondary,
+                  fontFamily: "UrbanistMedium",
+                }}
+                fontWeight={500}
+              >
+                {t("dontHaveAccount")}
+                <Typography
+                  component="span"
+                  sx={{
+                    fontSize: "13px",
+                    color: theme.palette.primary.main,
+                    fontWeight: 500,
+                    textAlign: "start",
+                    cursor: "pointer",
+                    paddingLeft: "7px",
+                    textDecoration: "underline",
+                    textUnderlineOffset: "2px",
+                    fontFamily: "UrbanistMedium",
+                  }}
+                  onClick={() => {
+                    router.push("/auth/register");
+                  }}
+                >
+                  {t("createNewAccount")}
+                </Typography>
+              </Typography>
+            </Box>
+
+            <Box sx={{ marginTop: "24px" }}>
+              <CustomButton
+                label={t("continue")}
+                variant="primary"
+                size={isMobile ? "small" : "medium"}
+                fullWidth
+                disabled={emailCheckLoading}
+                onClick={handleEmailCheck}
+                hideLabelWhenLoading={true}
+                showSuccessAnimation={showSuccessAnimation}
+                showErrorAnimation={showErrorAnimation}
+                sx={{
+                  fontWeight: 700,
+                }}
+                endIcon={
+                  emailCheckLoading ? <LoadingIcon size={20} /> : undefined
+                }
+              />
+            </Box>
+          </>
+        ) : (
+          <>
+            {/* Show verified email in InputBox with edit button */}
+            <Box sx={{ marginTop: "24px" }}>
+              <InputField
+                label={t("email")}
+                type="email"
+                value={verifiedEmail}
+                readOnly={true}
+                sideButton={true}
+                sideButtonType="primary"
+                sideButtonIcon={EditIcon}
+                sideButtonIconWidth={isMobile ? "12px" : "14px"}
+                sideButtonIconHeight={isMobile ? "12px" : "14px"}
+                onSideButtonClick={handleChangeEmail}
+              />
+            </Box>
+
+            <Box sx={{ marginTop: isMobile ? "12px" : "24px" }}>
+              <Typography
+                sx={{
+                  textAlign: "start",
+                  fontSize: isMobile ? "13px" : "15px",
                   fontFamily: "UrbanistMedium",
                   color: "#676768",
-                  padding: "0 24px",
-                  fontSize: isMobile ? "10px" : "15px",
                 }}
               >
-                {t("or")}
+                {t("chooseLoginMethod")}
               </Typography>
-            </Divider>
-          </Box>
 
-          <Box
+              {/* Login Method Selection */}
+              <Box sx={{ marginTop: "16px" }}>
+                <RadioGroup
+                  value={loginMethod}
+                  onChange={(e) => handleLoginMethodChange(e.target.value)}
+                  sx={{
+                    "& .MuiFormControlLabel-label": {
+                      fontSize: isMobile ? "13px" : "15px",
+                      fontFamily: "UrbanistMedium",
+                      color: "#242428",
+                      paddingLeft: "8px",
+                    },
+                  }}
+                >
+                  {/* SMS Option */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      width: "100%",
+                    }}
+                  >
+                    <FormControlLabel
+                      value="sms"
+                      control={<CustomRadio />}
+                      label={t("sendVerificationCodeViaSms")}
+                      sx={{ margin: "0px", flex: 1, textAlign: "start" }}
+                    />
+
+                    {/* Get Code Button - Desktop */}
+                    {loginMethod === "sms" && !isMobile && !isOtpSent && (
+                      <CustomButton
+                        variant="secondary"
+                        size="medium"
+                        label={t("getCode")}
+                        onClick={handleSendSmsOtp}
+                        disabled={userState.loading}
+                        sx={{
+                          fontWeight: 500,
+                          padding: "8px 22.5px",
+                        }}
+                        endIcon={ArrowUpwardIcon}
+                      />
+                    )}
+
+                    {/* Resend Code Button - Desktop */}
+                    {loginMethod === "sms" && !isMobile && isOtpSent && (
+                      <CustomButton
+                        variant="secondary"
+                        disabled={smsOtpCountdown > 0 || userState.loading}
+                        size="medium"
+                        label={
+                          smsOtpCountdown > 0
+                            ? `${t("codeIn")} ${smsOtpCountdown}s`
+                            : t("resendCode")
+                        }
+                        onClick={handleSendSmsOtp}
+                        endIcon={
+                          smsOtpCountdown > 0 || userState.loading
+                            ? undefined
+                            : ArrowUpwardIcon
+                        }
+                        sx={{
+                          fontWeight: 500,
+                          padding: "11px 20px",
+                        }}
+                      />
+                    )}
+                  </Box>
+
+                  {/* Show mobile number if available from userState */}
+                  {loginMethod === "sms" && userState.mobile && (
+                    <Box sx={{ marginLeft: "32px" }}>
+                      <Typography
+                        sx={{
+                          textAlign: "start",
+                          fontSize: "12px",
+                          color: "#676768",
+                          fontFamily: "UrbanistMedium",
+                        }}
+                      >
+                        {t("codeWillBeSentTo")}
+                        {userState.mobile.substring(7)}
+                      </Typography>
+                    </Box>
+                  )}
+
+                  {/* Mobile Input Field - Desktop (only show if mobile not in userState) */}
+                  {loginMethod === "sms" &&
+                    !isMobile &&
+                    !isOtpSent &&
+                    !userState.mobile && (
+                      <Box sx={{ marginTop: "8px" }}>
+                        <InputField
+                          placeholder={t("enterMobilePlaceholder")}
+                          value={mobile}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, "");
+                            setMobile(value);
+                            // Clear error when typing
+                            if (mobileError) {
+                              setMobileError("");
+                              setMobileTouched(false);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (
+                              e.key === "Enter" &&
+                              !userState.loading &&
+                              mobile &&
+                              mobile.length >= 10
+                            ) {
+                              e.preventDefault();
+                              handleSendSmsOtp();
+                            }
+                          }}
+                          type="text"
+                          inputMode="numeric"
+                          error={mobileTouched && !!mobileError}
+                          helperText={
+                            mobileTouched && mobileError
+                              ? mobileError.includes(" ")
+                                ? mobileError
+                                : t(mobileError)
+                              : ""
+                          }
+                        />
+                      </Box>
+                    )}
+
+                  {/* Mobile Input Field - Mobile (only show if mobile not in userState) */}
+                  {loginMethod === "sms" &&
+                    isMobile &&
+                    !isOtpSent &&
+                    !userState.mobile && (
+                      <Box sx={{ marginTop: "8px" }}>
+                        <InputField
+                          placeholder={t("enterMobilePlaceholder")}
+                          value={mobile}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, "");
+                            setMobile(value);
+                            // Clear error when typing
+                            if (mobileError) {
+                              setMobileError("");
+                              setMobileTouched(false);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (
+                              e.key === "Enter" &&
+                              !userState.loading &&
+                              mobile &&
+                              mobile.length >= 10
+                            ) {
+                              e.preventDefault();
+                              handleSendSmsOtp();
+                            }
+                          }}
+                          type="text"
+                          inputMode="numeric"
+                          error={mobileTouched && !!mobileError}
+                          helperText={
+                            mobileTouched && mobileError
+                              ? mobileError.includes(" ")
+                                ? mobileError
+                                : t(mobileError)
+                              : ""
+                          }
+                          sideButton={true}
+                          sideButtonType="secondary"
+                          sideButtonIcon={ArrowUpwardIcon}
+                          sideButtonIconWidth={isMobile ? "10px" : "14px"}
+                          sideButtonIconHeight={isMobile ? "10px" : "14px"}
+                          onSideButtonClick={handleSendSmsOtp}
+                        />
+                      </Box>
+                    )}
+
+                  {/* Get Code Button - Mobile (when mobile is in userState) */}
+                  {loginMethod === "sms" &&
+                    isMobile &&
+                    !isOtpSent &&
+                    userState.mobile && (
+                      <Box sx={{ marginTop: "8px" }}>
+                        <CustomButton
+                          variant="secondary"
+                          size="small"
+                          label={t("getCode")}
+                          fullWidth
+                          disabled={userState.loading}
+                          onClick={handleSendSmsOtp}
+                          sx={{
+                            fontWeight: 500,
+                            padding: "8px 22.5px",
+                          }}
+                          endIcon={ArrowUpwardIcon}
+                        />
+                      </Box>
+                    )}
+
+                  {/* Resend Code Button - Mobile */}
+                  {loginMethod === "sms" && isMobile && isOtpSent && (
+                    <Box sx={{ marginTop: "8px" }}>
+                      <CustomButton
+                        variant="secondary"
+                        disabled={smsOtpCountdown > 0 || userState.loading}
+                        size="small"
+                        label={
+                          smsOtpCountdown > 0
+                            ? `${t("codeIn")} ${smsOtpCountdown}s`
+                            : t("resendCode")
+                        }
+                        fullWidth
+                        onClick={handleSendSmsOtp}
+                        endIcon={
+                          smsOtpCountdown > 0 || userState.loading
+                            ? undefined
+                            : ArrowUpwardIcon
+                        }
+                        sx={{
+                          height: "32px",
+                          fontSize: "13px",
+                          fontWeight: 500,
+                          padding: "8px 20px",
+                        }}
+                      />
+                    </Box>
+                  )}
+
+                  {/* Email Option */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      marginTop: "16px",
+                    }}
+                  >
+                    <FormControlLabel
+                      value="email"
+                      control={<CustomRadio />}
+                      label={t("sendVerificationCodeViaEmail")}
+                      sx={{
+                        margin: "0px",
+                        color: "#242428",
+                        textAlign: "start",
+                        flex: 1,
+                      }}
+                    />
+                    {/* Get Code Button */}
+                    {loginMethod === "email" &&
+                      !isMobile &&
+                      !emailOtpSent && (
+                        <CustomButton
+                          variant="secondary"
+                          size="medium"
+                          label={t("getCode")}
+                          onClick={handleSendEmailOtp}
+                          disabled={userState.loading}
+                          sx={{
+                            fontWeight: 500,
+                            padding: "8px 22.5px",
+                          }}
+                          endIcon={ArrowUpwardIcon}
+                        />
+                      )}
+
+                    {/* Resend Code Button */}
+                    {loginMethod === "email" && !isMobile && emailOtpSent && (
+                      <CustomButton
+                        variant="secondary"
+                        disabled={
+                          (emailOtpDialogOpen && emailOtpCountdown > 0) ||
+                          userState.loading
+                        }
+                        size="medium"
+                        label={
+                          emailOtpCountdown > 0
+                            ? `${t("codeIn")} ${emailOtpCountdown}s`
+                            : t("resendCode")
+                        }
+                        onClick={handleSendEmailOtp}
+                        endIcon={
+                          emailOtpCountdown > 0 && emailOtpDialogOpen
+                            ? undefined
+                            : ArrowUpwardIcon
+                        }
+                        sx={{
+                          fontWeight: 500,
+                          padding: "11px 20px",
+                        }}
+                      />
+                    )}
+                  </Box>
+
+                  {/* Get Code Button - Mobile */}
+                  {loginMethod === "email" && isMobile && !emailOtpSent && (
+                    <Box sx={{ marginTop: "16px" }}>
+                      <CustomButton
+                        variant="secondary"
+                        size="small"
+                        label={t("getCode")}
+                        fullWidth
+                        disabled={userState.loading}
+                        onClick={handleSendEmailOtp}
+                        sx={{
+                          fontWeight: 500,
+                          padding: "8px 22.5px",
+                        }}
+                        endIcon={ArrowUpwardIcon}
+                      />
+                    </Box>
+                  )}
+
+                  {/* Resend Code Button - Mobile */}
+                  {loginMethod === "email" && isMobile && emailOtpSent && (
+                    <Box sx={{ marginTop: "16px" }}>
+                      <CustomButton
+                        variant="secondary"
+                        size="small"
+                        label={
+                          emailOtpCountdown > 0
+                            ? `${t("codeIn")} ${emailOtpCountdown}s`
+                            : t("resendCode")
+                        }
+                        fullWidth
+                        disabled={emailOtpCountdown > 0}
+                        endIcon={
+                          emailOtpCountdown > 0 ? undefined : ArrowUpwardIcon
+                        }
+                        onClick={handleSendEmailOtp}
+                        sx={{
+                          fontWeight: 500,
+                          padding: "8px 20px",
+                        }}
+                      />
+                    </Box>
+                  )}
+
+                  {/* Password Option */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      margin: "16px 0 0 0",
+                    }}
+                  >
+                    <FormControlLabel
+                      value="password"
+                      control={<CustomRadio />}
+                      label={t("password")}
+                      sx={{ margin: "0px", color: "#242428" }}
+                    />
+                    {loginMethod === "password" && (
+                      <Typography
+                        component="span"
+                        sx={{
+                          fontSize: "13px",
+                          color: theme.palette.primary.main,
+                          fontWeight: 500,
+                          textAlign: "start",
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                          textUnderlineOffset: "2px",
+                          fontFamily: "UrbanistMedium",
+                        }}
+                        onClick={() => {
+                          setForgotPasswordDialogOpen(true);
+                        }}
+                      >
+                        {t("forgotYourPassword")}
+                      </Typography>
+                    )}
+                  </Box>
+                  {/* Password Input Field */}
+                  {loginMethod === "password" && (
+                    <Box sx={{ marginTop: "10px" }}>
+                      <InputField
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          // Clear error when typing
+                          if (passwordError) {
+                            setPasswordError("");
+                            setPasswordTouched(false);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !userState.loading) {
+                            e.preventDefault();
+                            handleLoginSubmit();
+                          }
+                        }}
+                        placeholder={t("passwordPlaceHolder")}
+                        error={
+                          loginMethod === "password" &&
+                          passwordTouched &&
+                          !!passwordError
+                        }
+                        helperText={
+                          loginMethod === "password" &&
+                            passwordTouched &&
+                            passwordError
+                            ? passwordError.includes(" ")
+                              ? passwordError
+                              : t(passwordError)
+                            : ""
+                        }
+                        sideButton={true}
+                        sideButtonType="primary"
+                        sideButtonIcon={
+                          showPassword ? (
+                            <VisibilityOffIcon
+                              sx={{
+                                color: "#676768",
+                                height: "18px",
+                                width: "16px",
+                              }}
+                            />
+                          ) : (
+                            <VisibilityIcon
+                              sx={{
+                                color: "#676768",
+                                height: "18px",
+                                width: "16px",
+                              }}
+                            />
+                          )
+                        }
+                        sideButtonIconWidth={isMobile ? "14px" : "18px"}
+                        sideButtonIconHeight={isMobile ? "14px" : "18px"}
+                        onSideButtonClick={() => {
+                          setShowPassword(!showPassword);
+                        }}
+                        showPasswordToggle={true}
+                      />
+                    </Box>
+                  )}
+                </RadioGroup>
+              </Box>
+            </Box>
+
+            {/* Continue Button - shown when login methods are visible */}
+            <Box sx={{ marginTop: "24px" }}>
+              <CustomButton
+                label={t("continue")}
+                variant="primary"
+                size={isMobile ? "small" : "medium"}
+                fullWidth
+                disabled={
+                  userState.loading &&
+                  !(
+                    (loginMethod === "email" && emailOtpDialogOpen) ||
+                    (loginMethod === "sms" && smsOtpDialogOpen)
+                  )
+                }
+                onClick={() => {
+                  // Ensure we can submit even after previous errors
+                  handleLoginSubmit();
+                }}
+                hideLabelWhenLoading={true}
+                showSuccessAnimation={
+                  showSuccessAnimation &&
+                  !(
+                    (loginMethod === "email" && emailOtpDialogOpen) ||
+                    (loginMethod === "sms" && smsOtpDialogOpen)
+                  )
+                }
+                showErrorAnimation={
+                  showErrorAnimation &&
+                  !(
+                    (loginMethod === "email" && emailOtpDialogOpen) ||
+                    (loginMethod === "sms" && smsOtpDialogOpen)
+                  )
+                }
+                sx={{
+                  fontWeight: 700,
+                }}
+                endIcon={
+                  userState.loading &&
+                    !(
+                      (loginMethod === "email" && emailOtpDialogOpen) ||
+                      (loginMethod === "sms" && smsOtpDialogOpen)
+                    ) ? (
+                    <LoadingIcon size={20} />
+                  ) : undefined
+                }
+              />
+            </Box>
+          </>
+        )}
+
+        {/* Social Login Section - shown only when login methods are visible */}
+
+        <Box sx={{ marginTop: isMobile ? "16px" : "24px" }}>
+          <Divider
             sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "16px",
-              padding: 0,
-              marginTop: isMobile ? "16px" : "24px",
+              borderColor: "red",
+              "&::before, &::after": {
+                borderColor: "#E9ECF2",
+              },
             }}
           >
             <Typography
               variant="body2"
               sx={{
-                fontSize: isMobile ? "13px" : "15px",
                 fontFamily: "UrbanistMedium",
                 color: "#676768",
+                padding: "0 24px",
+                fontSize: isMobile ? "10px" : "15px",
               }}
             >
-              {t("registerLogin")}
+              {t("or")}
             </Typography>
+          </Divider>
+        </Box>
 
-            <Box
-              sx={{
-                height: isMobile ? "32px" : "40px",
-                width: isMobile ? "32px" : "40px",
-                borderRadius: "100%",
-                border: "1px solid #E9ECF2",
-                backgroundColor: "#F4F6FA",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "all 0.2s ease",
-                "&:hover": {
-                  backgroundColor: "#E9ECF2",
-                  borderColor: "#D0D5DD",
-                },
-              }}
-              onClick={handleGoogleLogin}
-            >
-              <ImageCenter>
-                <Image
-                  src={GoogleIcon}
-                  alt="google login"
-                  width={24}
-                  height={24}
-                  draggable={false}
-                />
-              </ImageCenter>
-            </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "16px",
+            padding: 0,
+            marginTop: isMobile ? "16px" : "24px",
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{
+              fontSize: isMobile ? "13px" : "15px",
+              fontFamily: "UrbanistMedium",
+              color: "#676768",
+            }}
+          >
+            {t("registerLogin")}
+          </Typography>
+
+          <Box
+            sx={{
+              height: isMobile ? "32px" : "40px",
+              width: isMobile ? "32px" : "40px",
+              borderRadius: "100%",
+              border: "1px solid #E9ECF2",
+              backgroundColor: "#F4F6FA",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                backgroundColor: "#E9ECF2",
+                borderColor: "#D0D5DD",
+              },
+            }}
+            onClick={handleGoogleLogin}
+          >
+            <ImageCenter>
+              <Image
+                src={GoogleIcon}
+                alt="google login"
+                width={24}
+                height={24}
+                draggable={false}
+              />
+            </ImageCenter>
           </Box>
-        </CardWrapper>
-      )}
+        </Box>
+      </CardWrapper>
+      {/* )} */}
 
       {/* Email OTP Dialog */}
       {loginMethod === "email" && (
@@ -2539,16 +1592,12 @@ export default function Login() {
         open={forgotPasswordDialogOpen}
         onClose={() => {
           setForgotPasswordDialogOpen(false);
-          setForgotPasswordEmail("");
           setForgotPasswordEmailError("");
-          setForgotPasswordOtpSent(false);
           setForgotPasswordOtpCountdown(0);
           setForgotPasswordOtpError("");
           setIsPasswordRecoveryMode(false);
         }}
         onEmailSubmit={handleForgotPasswordEmailSubmit}
-        onOtpVerify={handleForgotPasswordOtpVerify}
-        onResendCode={handleForgotPasswordResendCode}
         countdown={forgotPasswordOtpCountdown}
         loading={userState.loading}
         currentEmail={verifiedEmail}
@@ -2567,161 +1616,6 @@ export default function Login() {
             : undefined
         }
       />
-
-      {/* Reset Password Form - shown after OTP verification */}
-      {showForgotPasswordForm && (
-        <CardWrapper sx={{ padding: "30px" }}>
-          <TitleDescription
-            title={t("setNewPassword") || "Set the New Password"}
-            align="left"
-            titleVariant="h2"
-            descriptionVariant="p"
-          />
-          <Box
-            ref={newPasswordFieldRef}
-            sx={{ position: "relative", width: "100%", marginTop: "24px" }}
-          >
-            <InputField
-              label={t("newPassword")}
-              type={newPasswordShowPassword ? "text" : "password"}
-              value={newPassword}
-              autoComplete="off"
-              onChange={handleNewPasswordChange}
-              onFocus={handleNewPasswordFocus}
-              onBlur={handleNewPasswordBlur}
-              onKeyDown={(e) => {
-                if (
-                  e.key === "Enter" &&
-                  !userState.loading &&
-                  newPassword &&
-                  newPasswordConfirm
-                ) {
-                  e.preventDefault();
-                  handleSetNewPassword();
-                }
-              }}
-              placeholder={t("newPasswordPlaceholder")}
-              sideButton={true}
-              sideButtonType="primary"
-              sideButtonIcon={
-                newPasswordShowPassword ? (
-                  <VisibilityOffIcon
-                    sx={{
-                      color: "#676768",
-                      height: "18px",
-                      width: "16px",
-                    }}
-                  />
-                ) : (
-                  <VisibilityIcon
-                    sx={{
-                      color: "#676768",
-                      height: "18px",
-                      width: "16px",
-                    }}
-                  />
-                )
-              }
-              sideButtonIconWidth={isMobile ? "14px" : "18px"}
-              sideButtonIconHeight={isMobile ? "14px" : "18px"}
-              onSideButtonClick={() => {
-                setNewPasswordShowPassword(!newPasswordShowPassword);
-              }}
-              showPasswordToggle={true}
-            />
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                position: "absolute",
-                ...(isMobile &&
-                  theme.breakpoints.down("lg") && {
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  width: "100%",
-                }),
-                zIndex: 5,
-              }}
-            >
-              <PasswordValidation
-                password={newPassword}
-                anchorEl={newPasswordFieldRef.current}
-                open={newPasswordShowPasswordValidation}
-                onClose={() => setNewPasswordShowPasswordValidation(false)}
-                showOnMobile={newPasswordShowPasswordValidation}
-              />
-            </Box>
-          </Box>
-          <Box sx={{ marginTop: "16px" }}>
-            <InputField
-              label={t("newPasswordConfirm")}
-              type={newPasswordConfirmShowPassword ? "text" : "password"}
-              value={newPasswordConfirm}
-              autoComplete="off"
-              onChange={handleNewPasswordConfirmChange}
-              onKeyDown={(e) => {
-                if (
-                  e.key === "Enter" &&
-                  !userState.loading &&
-                  newPassword &&
-                  newPasswordConfirm
-                ) {
-                  e.preventDefault();
-                  handleSetNewPassword();
-                }
-              }}
-              placeholder={t("newPasswordConfirmPlaceholder")}
-              error={!!newPasswordConfirmError}
-              helperText={
-                newPasswordConfirmError
-                  ? newPasswordConfirmError.includes(" ")
-                    ? newPasswordConfirmError
-                    : t(newPasswordConfirmError)
-                  : ""
-              }
-              sideButton={true}
-              sideButtonType="primary"
-              sideButtonIcon={
-                newPasswordConfirmShowPassword ? (
-                  <VisibilityOffIcon
-                    sx={{
-                      color: "#676768",
-                      height: "18px",
-                      width: "16px",
-                    }}
-                  />
-                ) : (
-                  <VisibilityIcon
-                    sx={{
-                      color: "#676768",
-                      height: "18px",
-                      width: "16px",
-                    }}
-                  />
-                )
-              }
-              sideButtonIconWidth={isMobile ? "14px" : "18px"}
-              sideButtonIconHeight={isMobile ? "14px" : "18px"}
-              onSideButtonClick={() => {
-                setNewPasswordConfirmShowPassword(
-                  !newPasswordConfirmShowPassword
-                );
-              }}
-              showPasswordToggle={true}
-            />
-          </Box>
-          <Box sx={{ marginTop: "24px" }}>
-            <CustomButton
-              label={t("continue")}
-              variant="primary"
-              size={isMobile ? "small" : "medium"}
-              fullWidth
-              onClick={handleSetNewPassword}
-            />
-          </Box>
-        </CardWrapper>
-      )}
     </AuthContainer>
   );
 }

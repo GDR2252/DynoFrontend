@@ -4,7 +4,7 @@ import CustomButton from "@/Components/UI/Buttons";
 import { theme } from "@/styles/theme";
 import { Box, IconButton, Typography, Grid, Divider } from "@mui/material";
 import Image from "next/image";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import BellIcon from "@/assets/Icons/bell-icon.svg";
 import MobileIcon from "@/assets/Icons/mobile-icon.svg";
@@ -13,6 +13,7 @@ import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import { useTranslation } from "react-i18next";
 import { useCallback } from "react";
 import Toast from "@/Components/UI/Toast";
+import { getNotifications, NotificationPreferences, updateNotifications } from "@/services/notifications/usenNotification";
 
 interface NotificationItemProps {
   title: string;
@@ -90,6 +91,22 @@ const NotificationPage = () => {
   const { t } = useTranslation(namespaces);
   const tNotifications = useCallback((key: string) => t(key, { ns: "notifications" }), [t]);
 
+  const [notifications, setNotifications] = useState<NotificationPreferences>({} as NotificationPreferences);
+  const [notificationLoading, setNotificationLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchNotifications() {
+      setNotificationLoading(true);
+      try {
+        const data = await getNotifications();
+        setNotifications(data);
+      } finally {
+        setNotificationLoading(false);
+      }
+    }
+    fetchNotifications();
+  }, []);
+
   // Transaction Alerts state
   const [transactionUpdates, setTransactionUpdates] = useState(true);
   const [paymentReceived, setPaymentReceived] = useState(false);
@@ -105,23 +122,44 @@ const NotificationPage = () => {
   const [openToast, setOpenToast] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleSaveChanges = () => {
-    // TODO: Implement save functionality
-    console.log("Saving notification preferences...");
-
-    setOpenToast(false);
-
-    setTimeout(() => {
-      setOpenToast(true);
-    }, 0);
-
-    if (toastTimer.current) {
-      clearTimeout(toastTimer.current);
+  useEffect(() => {
+    if (!notificationLoading) {
+      setTransactionUpdates(notifications.transaction_updates);
+      setPaymentReceived(notifications.payment_received);
+      setWeeklySummary(notifications.weekly_summary);
+      setSecurityAlerts(notifications.security_alerts);
+      setEmailNotifications(notifications.email_notifications);
+      setSmsNotifications(notifications.sms_notifications);
     }
+  }, [notifications, notificationLoading]);
 
-    toastTimer.current = setTimeout(() => {
+  const handleSaveChanges = async () => {
+
+    try {
+      await updateNotifications({
+        ...notifications,
+        transaction_updates: transactionUpdates,
+        payment_received: paymentReceived,
+        weekly_summary: weeklySummary,
+        security_alerts: securityAlerts,
+        email_notifications: emailNotifications,
+        sms_notifications: smsNotifications,
+      });
+    } finally {
       setOpenToast(false);
-    }, 2000);
+
+      setTimeout(() => {
+        setOpenToast(true);
+      }, 0);
+
+      if (toastTimer.current) {
+        clearTimeout(toastTimer.current);
+      }
+
+      toastTimer.current = setTimeout(() => {
+        setOpenToast(false);
+      }, 2000);
+    }
   };
 
   return (

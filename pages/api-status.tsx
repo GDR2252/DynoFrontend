@@ -1,6 +1,6 @@
 import useIsMobile from "@/hooks/useIsMobile";
 import { Box, Skeleton, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { homeTheme } from "@/styles/homeTheme";
 import {
   SuccessChip,
@@ -11,15 +11,86 @@ import {
 import successIcon from "@/assets/Icons/home/success.svg";
 import serviceIcon from "@/assets/Icons/home/service.svg";
 import Image from "next/image";
-import { useApiIncidents, useApiServices, useUptimeData } from "@/services/api-status/getApiStatus";
+import { getApiIncidents, getApiServices, getUptimeData } from "@/services/api-status/getApiStatus";
 import { theme } from "@/styles/theme";
+
+interface ServiceApiItem {
+  id: string;
+  name: string;
+  status: string;
+  uptime: string;
+  uptime_value: number;
+  latency_ms: number;
+  total_checks: number;
+  failed_checks: number;
+  last_check: string;
+}
+
+export interface Incident {
+  id: number;
+  title: string;
+  description: string;
+  status: string;
+  date: string;
+  formatted_date: string;
+  services_affected: string[];
+}
+
+export interface UptimeData {
+  date: string;
+  status: string;
+}
 
 const ApiStatus = () => {
 
   const isMobile = useIsMobile();
-  const { services, serviceLoading } = useApiServices();
-  const { incidents, incidentLoading } = useApiIncidents();
-  const { uptime, uptimeLoading } = useUptimeData();
+  const [services, setServices] = useState<ServiceApiItem[] | null>(null);
+  const [serviceLoading, setServiceLoading] = useState<boolean>(true);
+
+  const [incidents, setIncidents] = useState<Incident[] | null>(null);
+  const [incidentLoading, setIncidentLoading] = useState<boolean>(true);
+
+  const [uptime, setUptime] = useState<UptimeData[] | null>(null);
+  const [uptimeLoading, setUptimeLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    async function fetchServices() {
+      setServiceLoading(true);
+      try {
+        const data = await getApiServices();
+        setServices(data);
+      } finally {
+        setServiceLoading(false);
+      }
+    }
+    fetchServices();
+  }, [])
+
+  useEffect(() => {
+    async function fetchIncidents() {
+      setIncidentLoading(true);
+      try {
+        const data = await getApiIncidents();
+        setIncidents(data);
+      } finally {
+        setIncidentLoading(false);
+      }
+    }
+    fetchIncidents();
+  }, [])
+
+  useEffect(() => {
+    async function fetchUptime() {
+      setUptimeLoading(true);
+      try {
+        const data = await getUptimeData();
+        setUptime(data);
+      } finally {
+        setUptimeLoading(false);
+      }
+    }
+    fetchUptime();
+  }, [])
 
   return (
     <Box
@@ -153,7 +224,7 @@ const ApiStatus = () => {
               ))}
             </>
           ) : (
-            services.map((service, index) => (
+            services?.map((service, index) => (
               <Box
                 key={index}
                 height={isMobile ? 79 : 57}
@@ -296,7 +367,7 @@ const ApiStatus = () => {
             ))}
           </>
         ) : (
-          incidents.map((incident, index) => (
+          incidents?.map((incident, index) => (
             <Box
               key={index}
               height={isMobile ? 156 : 136}

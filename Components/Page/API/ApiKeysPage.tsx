@@ -361,9 +361,9 @@ const ApiKeysPage = ({
   const { prodKey, devKey } = useMemo(() => {
     const list: ApiRow[] = apiState?.apiList || [];
 
-    const prod = list.find((x) => x?.base_currency === "USD");
+    const prod = list?.find((x) => x?.base_currency === "USD");
 
-    const dev = list.find((x) => x?.base_currency === "NGN");
+    const dev = list?.find((x) => x?.base_currency === "NGN");
 
     return {
       prodKey: prod,

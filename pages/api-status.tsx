@@ -1,5 +1,5 @@
 import useIsMobile from "@/hooks/useIsMobile";
-import { Box, Typography } from "@mui/material";
+import { Box, Skeleton, Typography } from "@mui/material";
 import React from "react";
 import { homeTheme } from "@/styles/homeTheme";
 import {
@@ -11,50 +11,15 @@ import {
 import successIcon from "@/assets/Icons/home/success.svg";
 import serviceIcon from "@/assets/Icons/home/service.svg";
 import Image from "next/image";
+import { useApiIncidents, useApiServices, useUptimeData } from "@/services/api-status/getApiStatus";
+import { theme } from "@/styles/theme";
 
 const ApiStatus = () => {
+
   const isMobile = useIsMobile();
-
-  const services = [
-    {
-      name: "API Gateway",
-      uptime: "99.99%",
-      status: "Operational",
-    },
-    {
-      name: "Payment Processing",
-      uptime: "99.98%",
-      status: "Operational",
-    },
-    {
-      name: "Wallet Services",
-      uptime: "99.97%",
-      status: "Operational",
-    },
-    {
-      name: "Webhook Delivery",
-      uptime: "99.95%",
-      status: "Operational",
-    },
-    {
-      name: "Dashboard",
-      uptime: "99.99%",
-      status: "Operational",
-    },
-  ];
-
-  const incidents = [
-    {
-      name: "Scheduled Maintenance",
-      time: "Dec 5, 2025",
-      description: "Routine database maintenance completed successfully.",
-    },
-    {
-      name: "API Latency Increase",
-      time: "Nov 28, 2025",
-      description: "Brief latency spike resolved within 15 minutes.",
-    },
-  ];
+  const { services, serviceLoading } = useApiServices();
+  const { incidents, incidentLoading } = useApiIncidents();
+  const { uptime, uptimeLoading } = useUptimeData();
 
   return (
     <Box
@@ -150,92 +115,144 @@ const ApiStatus = () => {
         </Box>
 
         <Box sx={{ display: "flex", flexDirection: "column" }}>
-          {services.map((service, index) => (
-            <Box
-              key={index}
-              height={isMobile ? 79 : 57}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                px: "24px",
-                borderTop: "1px solid #E7E8EF",
-              }}
-            >
+          {serviceLoading ? (
+            <>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Box
+                  key={i}
+                  height={isMobile ? 79 : 57}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    px: "24px",
+                    borderTop: "1px solid #E7E8EF",
+                  }}
+                >
+                  <Box
+                    width={isMobile ? 120 : "auto"}
+                    sx={{ display: "flex", alignItems: "center", gap: "12px" }}
+                  >
+                    <Skeleton variant="circular" width={20} height={20} />
+                    <Skeleton variant="text" width={90} height={24} />
+                  </Box>
+
+                  <Box
+                    width={isMobile ? 141 : 182}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: "12px",
+                      ml: "auto",
+                    }}
+                  >
+                    <Skeleton variant="text" width={80} height={20} />
+                    <Skeleton variant="text" width={60} height={20} />
+                  </Box>
+                </Box>
+              ))}
+            </>
+          ) : (
+            services.map((service, index) => (
               <Box
-                width={isMobile ? 120 : "auto"}
+                key={index}
+                height={isMobile ? 79 : 57}
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "12px",
-                }}
-              >
-                <Image
-                  src={successIcon}
-                  alt={service.name}
-                  width={isMobile ? 19.02 : 20}
-                  height={20}
-                />
-                <Typography
-                  sx={{
-                    fontFamily: "OutfitRegular",
-                    lineHeight: "24px",
-                    letterSpacing: 0,
-                    color: "#131520",
-                  }}
-                >
-                  {service.name}
-                </Typography>
-              </Box>
-
-              <Box
-                width={isMobile ? 141 : 182}
-                sx={{
-                  display: "flex",
                   justifyContent: "space-between",
-                  gap: "12px",
-                  ml: "auto",
+                  px: "24px",
+                  borderTop: "1px solid #E7E8EF",
                 }}
               >
-                <TypographyDescription>
-                  {service.uptime} uptime
-                </TypographyDescription>
-
-                <Typography
+                <Box
+                  width={isMobile ? 120 : "auto"}
                   sx={{
-                    fontSize: "14px",
-                    lineHeight: "20px",
-                    letterSpacing: 0,
-                    fontFamily: "OutfitRegular",
-                    color: homeTheme.palette.success.main,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
                   }}
                 >
-                  {service.status}
-                </Typography>
+                  <Image
+                    src={successIcon}
+                    alt={service.name}
+                    width={isMobile ? 19.02 : 20}
+                    height={20}
+                  />
+                  <Typography
+                    sx={{
+                      fontFamily: "OutfitRegular",
+                      lineHeight: "24px",
+                      letterSpacing: 0,
+                      color: "#131520",
+                    }}
+                  >
+                    {service.name}
+                  </Typography>
+                </Box>
+
+                <Box
+                  width={isMobile ? 141 : 182}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: "12px",
+                    ml: "auto",
+                  }}
+                >
+                  <TypographyDescription>
+                    {service.uptime} uptime
+                  </TypographyDescription>
+
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                      lineHeight: "20px",
+                      letterSpacing: 0,
+                      fontFamily: "OutfitRegular",
+                      color: homeTheme.palette.success.main,
+                    }}
+                  >
+                    {service.status}
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
-          ))}
+            ))
+          )}
         </Box>
       </Box>
 
       <Box
         height={146}
         width={"100%"}
-        sx={{ border: "1px solid #E7E8EF", borderRadius: "16px", p: "24px" }}
+        sx={{ border: "1px solid", borderColor: homeTheme.palette.border.main, borderRadius: "16px", p: "24px" }}
       >
         <TypographyTitle>90-Day Uptime</TypographyTitle>
         <Box sx={{ display: "flex", gap: "2px", mt: "16px" }}>
-          {Array.from({ length: 90 }).map((_, index) => (
-            <Box
-              key={index}
-              sx={{
-                width: "5.47px",
-                height: "32px",
-                background: "#22C55E",
-                borderRadius: "20px",
-              }}
-            />
-          ))}
+          {uptimeLoading
+            ? Array.from({ length: 90 }).map((_, i) => (
+              <Skeleton
+                key={i}
+                variant="rectangular"
+                width={5.47}
+                height={32}
+                sx={{
+                  borderRadius: "20px",
+                  backgroundColor: theme.palette.grey[300],
+                }}
+              />
+            ))
+            : uptime?.map((item) => (
+              <Box
+                key={item.date}
+                sx={{
+                  width: "5.47px",
+                  height: "32px",
+                  background: item.status === "operational" ? homeTheme.palette.success.light : item.status === "degraded" ? theme.palette.error.main : theme.palette.border.main,
+                  borderRadius: "20px",
+                }}
+              />
+            ))}
         </Box>
         <Box
           sx={{ mt: "8px", display: "flex", justifyContent: "space-between" }}
@@ -251,62 +268,91 @@ const ApiStatus = () => {
         sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
       >
         <TypographyTitle>Recent Incidents</TypographyTitle>
-        {incidents.map((incident, index) => (
-          <Box
-            key={index}
-            height={isMobile ? 156 : 136}
-            sx={{
-              border: "1px solid #E7E8EF",
-              borderRadius: "16px",
-              p: "24px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-            }}
-          >
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography
+
+        {incidentLoading ? (
+          <>
+            {Array.from({ length: 2 }).map((_, i) => (
+              <Box
+                key={i}
+                height={isMobile ? 156 : 136}
                 sx={{
-                  fontFamily: "OutfitMedium",
-                  fontWeight: 500,
-                  lineHeight: "24px",
-                  letterSpacing: 0,
-                  color: "#131520",
+                  border: "1px solid #E7E8EF",
+                  borderRadius: "16px",
+                  p: "24px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
                 }}
               >
-                {incident.name}
-              </Typography>
-              <TypographyTime>{incident.time}</TypographyTime>
-            </Box>
-            <TypographyDescription>
-              {incident.description}
-            </TypographyDescription>
+                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <Skeleton variant="text" width="60%" height={24} />
+                  <Skeleton variant="text" width={80} height={20} />
+                </Box>
+
+                <Skeleton variant="text" width="100%" height={20} />
+
+                <Skeleton variant="text" width={80} height={20} />
+              </Box>
+            ))}
+          </>
+        ) : (
+          incidents.map((incident, index) => (
             <Box
-              height={26}
-              width={64}
+              key={index}
+              height={isMobile ? 156 : 136}
               sx={{
-                px: "8px",
-                pt: "6px",
-                pb: "4px",
-                backgroundColor: "#22C55E1A",
-                borderRadius: "4px",
+                border: "1px solid #E7E8EF",
+                borderRadius: "16px",
+                p: "24px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px",
               }}
             >
-              <Typography
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography
+                  sx={{
+                    fontFamily: "OutfitMedium",
+                    fontWeight: 500,
+                    lineHeight: "24px",
+                    letterSpacing: 0,
+                    color: "#131520",
+                  }}
+                >
+                  {incident.title}
+                </Typography>
+                <TypographyTime>{incident.formatted_date}</TypographyTime>
+              </Box>
+              <TypographyDescription>
+                {incident.description}
+              </TypographyDescription>
+              <Box
+                height={26}
+                width={64}
                 sx={{
-                  fontSize: "12px",
-                  fontFamily: "OutfitRegular",
-                  fontWeight: 400,
-                  lineHeight: "16px",
-                  letterSpacing: 0,
-                  color: homeTheme.palette.success.main,
+                  px: "8px",
+                  pt: "6px",
+                  pb: "4px",
+                  backgroundColor: "#22C55E1A",
+                  borderRadius: "4px",
                 }}
               >
-                Resolved
-              </Typography>
+                <Typography
+                  sx={{
+                    fontSize: "12px",
+                    fontFamily: "OutfitRegular",
+                    fontWeight: 400,
+                    lineHeight: "16px",
+                    letterSpacing: 0,
+                    color: homeTheme.palette.success.main,
+                  }}
+                >
+                  Resolved
+                </Typography>
+              </Box>
             </Box>
-          </Box>
-        ))}
+          ))
+        )}
       </Box>
     </Box>
   );

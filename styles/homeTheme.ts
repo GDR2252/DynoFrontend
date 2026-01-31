@@ -8,6 +8,7 @@ export const homeTheme = createTheme({
     },
     success: {
       main: "#16A34A",
+      light: "#22C55E",
     },
     text: {
       primary: "#131520",

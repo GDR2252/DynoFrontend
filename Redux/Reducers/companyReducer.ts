@@ -12,6 +12,7 @@ import {
 const companyInitialState: ICompanyReducer = {
   companyList: [],
   loading: false,
+  initialized: false,
 };
 
 const companyReducer = (state = companyInitialState, action: ReducerAction) => {
@@ -65,6 +66,7 @@ const companyReducer = (state = companyInitialState, action: ReducerAction) => {
       return {
         ...state,
         loading: false,
+        initialized: true,
         companyList: payload,
       };
 
@@ -82,6 +84,7 @@ const companyReducer = (state = companyInitialState, action: ReducerAction) => {
       return {
         ...state,
         loading: false,
+        initialized: true,
       };
     default:
       return {

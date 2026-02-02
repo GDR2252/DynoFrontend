@@ -10,7 +10,6 @@ import CustomButton from "@/Components/UI/Buttons";
 
 import { ApiAction, CompanyAction } from "@/Redux/Actions";
 import { API_DELETE, API_FETCH, API_INSERT } from "@/Redux/Actions/ApiAction";
-import { COMPANY_FETCH } from "@/Redux/Actions/CompanyAction";
 import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
 import { rootReducer } from "@/utils/types";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
@@ -317,10 +316,6 @@ const ApiKeysPage = ({
 }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation("apiScreen");
-
-  const companyList = useSelector(
-    (state: rootReducer) => state.companyReducer.companyList
-  );
   const apiState = useSelector((state: rootReducer) => state.apiReducer);
 
   const [initialValue, setInitialValue] = useState(
@@ -344,7 +339,6 @@ const ApiKeysPage = ({
   });
 
   useEffect(() => {
-    dispatch(CompanyAction(COMPANY_FETCH));
     dispatch(ApiAction(API_FETCH));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

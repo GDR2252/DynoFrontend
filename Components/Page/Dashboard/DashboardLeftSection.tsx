@@ -457,6 +457,35 @@ const DashboardLeftSection = () => {
 
   const { activeWalletsData } = useWalletData();
 
+  const dashboardCards = [
+    {
+      key: "transactions",
+      title: tDashboard("totalTransactions"),
+      icon: TransactionIcon,
+      value: "4",
+      percentage: "12%",
+      percentageColor: theme.palette.border.success,
+      showCurrency: false,
+    },
+    {
+      key: "volume",
+      title: t("totalVolume"),
+      icon: RoundedStackIcon,
+      value: getCurrencySymbol("USD", formatNumberWithComma(6479.25)),
+      percentage: "8.5%",
+      percentageColor: theme.palette.border.success,
+      showCurrency: true,
+    },
+    {
+      key: "wallets",
+      title: tDashboard("activeWallets"),
+      icon: WalletIcon,
+      value: activeWalletsData.length,
+      isWallets: true,
+    },
+  ];
+
+
   const maxWalletsToShow = isMobile ? 2 : 3;
   const walletsToDisplay = showAllWallets
     ? activeWalletsData
@@ -618,387 +647,216 @@ const DashboardLeftSection = () => {
         }}
       >
         {/* Total Transactions */}
-        <PanelCard
-          title={tDashboard("totalTransactions")}
-          showHeaderBorder={false}
-          headerPadding={
-            isMobile
-              ? theme.spacing(2, 2, 0, 2)
-              : theme.spacing(2.5, 2.5, 0, 2.5)
-          }
-          bodyPadding={
-            isMobile
-              ? theme.spacing(1.5, 2, 2, 2)
-              : theme.spacing(2, 2, 2.5, 2.5)
-          }
-          sx={{
-            width: { xs: "200px", sm: "240px", md: "315px" },
-            height: { xs: "128px", sm: "140px", md: "176px" },
-            flexShrink: 0,
-          }}
-          headerAction={
-            <IconButton
-              sx={{
-                padding: "8px",
-                width: isMobile ? "32px" : "40px",
-                height: isMobile ? "32px" : "40px",
-                "&:hover": { backgroundColor: "transparent" },
-              }}
-            >
-              <Image
-                src={TransactionIcon}
-                alt="Transaction Icon"
-                width={17}
-                height={14}
-                style={{
-                  width: "clamp(14px, 2vw, 17px)",
-                  height: "auto",
-                }}
-                draggable={false}
-              />
-            </IconButton>
-          }
-        >
-          <Typography
+        {dashboardCards.map((card) => (
+          <PanelCard
+            key={card.key}
+            title={card.title}
+            showHeaderBorder={false}
+            headerPadding={
+              isMobile
+                ? theme.spacing(2, 2, 0, 2)
+                : theme.spacing(2.5, 2.5, 0, 2.5)
+            }
+            bodyPadding={
+              isMobile
+                ? theme.spacing(1.5, 2, 2, 2)
+                : theme.spacing(2, 2, 2.5, 2.5)
+            }
             sx={{
-              fontSize: isMobile ? "20px" : "40px",
-              color: theme.palette.text.primary,
-              fontFamily: "UrbanistMedium",
-              lineHeight: 1.2,
-              fontWeight: 500,
-              letterSpacing: 0,
+              width: { xs: "200px", sm: "240px", md: "315px" },
+              height: { xs: "128px", sm: "140px", md: "176px" },
+              flexShrink: 0,
             }}
-          >
-            4
-          </Typography>
-
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              mt: { xs: "18px", sm: 3, md: 2.5 },
-            }}
-          >
-            <PercentageChip
-              sx={{ padding: isMobile ? "7px 3px" : "5px 7px", lineHeight: 0 }}
-            >
-              <Image
-                src={ArrowUpSuccessIcon}
-                alt="Arrow Up Success Icon"
-                width={11}
-                height={11}
-                style={{
-                  width: "clamp(8px, 2vw, 11px)",
-                  height: "auto",
-                }}
-              />
-              <Typography
-                component="span"
+            headerAction={
+              <IconButton
                 sx={{
-                  fontSize: isMobile ? "10px" : "13px",
-                  color: theme.palette.border.success,
-                  fontFamily: "UrbanistMedium",
-                  lineHeight: 0,
-                  padding: isMobile ? "0px 2px" : "8px 0px",
-                  fontWeight: 500,
-                  letterSpacing: 0,
+                  padding: "8px",
+                  width: isMobile ? "32px" : "40px",
+                  height: isMobile ? "32px" : "40px",
+                  "&:hover": { backgroundColor: "transparent" },
                 }}
               >
-                12%
-              </Typography>
-            </PercentageChip>
+                <Image
+                  src={card.icon}
+                  alt="Icon"
+                  width={17}
+                  height={14}
+                  style={{
+                    width: card.key === "wallets" ? "clamp(12px, 2vw, 17px)" : "clamp(14px, 2vw, 17px)",
+                    height: "auto",
+                  }}
+                  draggable={false}
+                />
+              </IconButton>
+            }
+          >
+            {/* Value */}
             <Typography
               sx={{
-                fontSize: isMobile ? "10px" : "13px",
-                color: theme.palette.text.secondary,
+                fontSize: isMobile ? "20px" : "40px",
+                color: theme.palette.text.primary,
                 fontFamily: "UrbanistMedium",
-                lineHeight: "100%",
+                lineHeight: card.key === "wallets" ? "100%" : 1.2,
                 fontWeight: 500,
                 letterSpacing: 0,
               }}
             >
-              {t("comparedToLastMonth")}
+              {card.value}
             </Typography>
-          </Box>
-        </PanelCard>
 
-        {/* Total Volume */}
-        <PanelCard
-          title={t("totalVolume")}
-          showHeaderBorder={false}
-          headerPadding={
-            isMobile
-              ? theme.spacing(2, 2, 0, 2)
-              : theme.spacing(2.5, 2.5, 0, 2.5)
-          }
-          bodyPadding={
-            isMobile ? theme.spacing(1.5, 2, 2, 2) : theme.spacing(2, 2, 2.5, 2)
-          }
-          sx={{
-            width: { xs: "200px", sm: "240px", md: "315px" },
-            height: { xs: "128px", sm: "140px", md: "176px" },
-            flexShrink: 0,
-          }}
-          headerAction={
-            <IconButton
-              sx={{
-                padding: "8px",
-                width: isMobile ? "32px" : "40px",
-                height: isMobile ? "32px" : "40px",
-                "&:hover": { backgroundColor: "transparent" },
-              }}
-            >
-              <Image
-                src={RoundedStackIcon}
-                alt="Rounded Stack Icon"
-                width={17}
-                height={14}
-                style={{
-                  width: "clamp(14px, 2vw, 17px)",
-                  height: "auto",
-                }}
-                draggable={false}
-              />
-            </IconButton>
-          }
-        >
-          <Typography
-            sx={{
-              fontSize: isMobile ? "20px" : "40px",
-              color: theme.palette.text.primary,
-              fontFamily: "UrbanistMedium",
-              lineHeight: 1.2,
-              fontWeight: 500,
-              letterSpacing: 0,
-            }}
-          >
-            {getCurrencySymbol("USD", formatNumberWithComma(6479.25))}
-          </Typography>
-
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "start",
-              alignItems: "center",
-              gap: 1,
-              mt: { xs: "18px", sm: 3, md: 2.5 },
-            }}
-          >
-            <PercentageChip
-              sx={{ padding: isMobile ? "7px 3px" : "5px 7px", lineHeight: 0 }}
-            >
-              <Image
-                src={ArrowUpSuccessIcon}
-                alt="Arrow Up Success Icon"
-                width={11}
-                height={11}
-                style={{
-                  width: "clamp(8px, 2vw, 11px)",
-                  height: "auto",
-                }}
-              />
-              <Typography
-                component="span"
+            {/* Normal cards with percentage */}
+            {!card.isWallets && (
+              <Box
                 sx={{
-                  fontSize: isMobile ? "10px" : "13px",
-                  color: theme.palette.border.success,
-                  fontFamily: "UrbanistMedium",
-                  lineHeight: 0,
-                  padding: isMobile ? "0px 2px" : "8px 0px",
-                  fontWeight: 500,
-                  letterSpacing: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  mt: { xs: "18px", sm: 3, md: 2.5 },
                 }}
               >
-                8.5%
-              </Typography>
-            </PercentageChip>
-            <Typography
-              sx={{
-                fontSize: isMobile ? "10px" : "13px",
-                color: theme.palette.text.secondary,
-                fontFamily: "UrbanistMedium",
-                lineHeight: "100%",
-                fontWeight: 500,
-                letterSpacing: 0,
-                paddingRight: "0px !important",
-              }}
-            >
-              {t("comparedToLastMonth")}
-            </Typography>
-          </Box>
-        </PanelCard>
+                <PercentageChip
+                  sx={{ padding: isMobile ? "7px 3px" : "5px 7px", lineHeight: 0 }}
+                >
+                  <Image
+                    src={ArrowUpSuccessIcon}
+                    alt="Arrow Up Success Icon"
+                    width={11}
+                    height={11}
+                    style={{ width: "clamp(8px, 2vw, 11px)", height: "auto" }}
+                  />
+                  <Typography
+                    component="span"
+                    sx={{
+                      fontSize: isMobile ? "10px" : "13px",
+                      color: card.percentageColor,
+                      fontFamily: "UrbanistMedium",
+                      lineHeight: 0,
+                      padding: isMobile ? "0px 2px" : "8px 0px",
+                      fontWeight: 500,
+                      letterSpacing: 0,
+                    }}
+                  >
+                    {card.percentage}
+                  </Typography>
+                </PercentageChip>
 
-        {/* Active Wallets */}
-        <PanelCard
-          title={tDashboard("activeWallets")}
-          showHeaderBorder={false}
-          headerPadding={
-            isMobile
-              ? theme.spacing(2, 2, 0, 2)
-              : theme.spacing(2.5, 2.5, 0, 2.5)
-          }
-          bodyPadding={
-            isMobile
-              ? theme.spacing(1.5, 2, 2, 2)
-              : theme.spacing(2, 2, 2.5, 2.5)
-          }
-          sx={{
-            width: { xs: "200px", sm: "240px", md: "315px" },
-            height: { xs: "128px", sm: "140px", md: "176px" },
-            flexShrink: 0,
-          }}
-          headerAction={
-            <IconButton
-              sx={{
-                padding: "8px",
-                width: isMobile ? "32px" : "40px",
-                height: isMobile ? "32px" : "40px",
-                "&:hover": { backgroundColor: "transparent" },
-              }}
-            >
-              <Image
-                src={WalletIcon}
-                alt="Wallet Icon"
-                width={17}
-                height={14}
-                style={{
-                  width: "clamp(12px, 2vw, 17px)",
-                  height: "auto",
-                }}
-                draggable={false}
-              />
-            </IconButton>
-          }
-        >
-          <Typography
-            sx={{
-              fontSize: isMobile ? "20px" : "40px",
-              color: theme.palette.text.primary,
-              fontFamily: "UrbanistMedium",
-              lineHeight: "100%",
-              fontWeight: 500,
-              letterSpacing: 0,
-            }}
-          >
-            {activeWalletsData.length}
-          </Typography>
-
-          <Box
-            ref={scrollContainerRef}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseLeave}
-            sx={{
-              display: "flex",
-              justifyContent: "start",
-              alignItems: "center",
-              gap: isMobile ? "6px" : "8px",
-              mt: { xs: "18px", sm: 3, md: 2.5 },
-              overflowX: "auto",
-              overflowY: "hidden",
-              flexWrap: "nowrap",
-              cursor: showAllWallets
-                ? isDragging
-                  ? "grabbing"
-                  : "grab"
-                : "default",
-              userSelect: "none",
-              WebkitUserSelect: "none",
-              MozUserSelect: "none",
-              msUserSelect: "none",
-              willChange: isDragging ? "scroll-position" : "auto",
-              "& img": {
-                userSelect: "none",
-                WebkitUserDrag: "none",
-                pointerEvents: "none",
-                WebkitTouchCallout: "none",
-                WebkitUserSelect: "none",
-                KhtmlUserSelect: "none",
-                MozUserSelect: "none",
-                msUserSelect: "none",
-                backfaceVisibility: "hidden",
-                transform: "translateZ(0)",
-              },
-              "& *": {
-                userSelect: "none",
-                WebkitUserDrag: "none",
-              },
-              "& button": {
-                pointerEvents: "auto",
-              },
-              "&::-webkit-scrollbar": {
-                height: "0px",
-              },
-              "&::-webkit-scrollbar-track": {
-                background: "transparent",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                background: "transparent",
-              },
-            }}
-          >
-            {walletsToDisplay.map((wallet) => (
-              <ActiveWalletsCard
-                key={wallet.code}
-                title={wallet.code}
-                icon={wallet.icon}
-                isMobile={isMobile}
-              />
-            ))}
-            {hasMoreWallets && !showAllWallets && (
-              <IconButton
-                onClick={() => setShowAllWallets(true)}
-                sx={{
-                  width: "30px",
-                  height: "30px",
-                  borderRadius: "999px",
-                  background: theme.palette.secondary.light,
-                  border: `1px solid ${theme.palette.border.main}`,
-                  padding: 0,
-                  minWidth: "30px",
-                  flexShrink: 0,
-                  "&:hover": {
-                    background: theme.palette.secondary.dark,
-                  },
-                }}
-              >
-                <Add
+                <Typography
                   sx={{
-                    fontSize: "20px",
+                    fontSize: isMobile ? "10px" : "13px",
                     color: theme.palette.text.secondary,
+                    fontFamily: "UrbanistMedium",
+                    lineHeight: "100%",
+                    fontWeight: 500,
+                    letterSpacing: 0,
+                    paddingRight: card.key === "volume" ? "0px !important" : undefined,
                   }}
-                />
-              </IconButton>
+                >
+                  {t("comparedToLastMonth")}
+                </Typography>
+              </Box>
             )}
-            {showAllWallets && (
-              <IconButton
-                onClick={() => setShowAllWallets(false)}
+
+            {/* Wallets card */}
+            {card.isWallets && (
+              <Box
+                ref={scrollContainerRef}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseLeave}
                 sx={{
-                  width: "30px",
-                  height: "30px",
-                  borderRadius: "999px",
-                  background: theme.palette.secondary.light,
-                  border: `1px solid ${theme.palette.border.main}`,
-                  padding: 0,
-                  minWidth: "30px",
-                  flexShrink: 0,
-                  "&:hover": {
-                    background: theme.palette.secondary.dark,
+                  display: "flex",
+                  justifyContent: "start",
+                  alignItems: "center",
+                  gap: isMobile ? "6px" : "8px",
+                  mt: { xs: "18px", sm: 3, md: 2.5 },
+                  overflowX: "auto",
+                  overflowY: "hidden",
+                  flexWrap: "nowrap",
+                  cursor: showAllWallets ? (isDragging ? "grabbing" : "grab") : "default",
+                  userSelect: "none",
+                  WebkitUserSelect: "none",
+                  MozUserSelect: "none",
+                  msUserSelect: "none",
+                  willChange: isDragging ? "scroll-position" : "auto",
+                  "& img": {
+                    userSelect: "none",
+                    WebkitUserDrag: "none",
+                    pointerEvents: "none",
+                    WebkitTouchCallout: "none",
+                    WebkitUserSelect: "none",
+                    KhtmlUserSelect: "none",
+                    MozUserSelect: "none",
+                    msUserSelect: "none",
+                    backfaceVisibility: "hidden",
+                    transform: "translateZ(0)",
                   },
+                  "& *": {
+                    userSelect: "none",
+                    WebkitUserDrag: "none",
+                  },
+                  "& button": {
+                    pointerEvents: "auto",
+                  },
+                  "&::-webkit-scrollbar": { height: "0px" },
+                  "&::-webkit-scrollbar-track": { background: "transparent" },
+                  "&::-webkit-scrollbar-thumb": { background: "transparent" },
                 }}
               >
-                <Remove
-                  sx={{
-                    fontSize: "20px",
-                    color: theme.palette.text.secondary,
-                  }}
-                />
-              </IconButton>
+                {walletsToDisplay.map((wallet) => (
+                  <ActiveWalletsCard
+                    key={wallet.code}
+                    title={wallet.code}
+                    icon={wallet.icon}
+                    isMobile={isMobile}
+                  />
+                ))}
+
+                {hasMoreWallets && !showAllWallets && (
+                  <IconButton
+                    onClick={() => setShowAllWallets(true)}
+                    sx={{
+                      width: "30px",
+                      height: "30px",
+                      borderRadius: "999px",
+                      background: theme.palette.secondary.light,
+                      border: `1px solid ${theme.palette.border.main}`,
+                      padding: 0,
+                      minWidth: "30px",
+                      flexShrink: 0,
+                      "&:hover": { background: theme.palette.secondary.dark },
+                    }}
+                  >
+                    <Add
+                      sx={{ fontSize: "20px", color: theme.palette.text.secondary }}
+                    />
+                  </IconButton>
+                )}
+
+                {showAllWallets && (
+                  <IconButton
+                    onClick={() => setShowAllWallets(false)}
+                    sx={{
+                      width: "30px",
+                      height: "30px",
+                      borderRadius: "999px",
+                      background: theme.palette.secondary.light,
+                      border: `1px solid ${theme.palette.border.main}`,
+                      padding: 0,
+                      minWidth: "30px",
+                      flexShrink: 0,
+                      "&:hover": { background: theme.palette.secondary.dark },
+                    }}
+                  >
+                    <Remove
+                      sx={{ fontSize: "20px", color: theme.palette.text.secondary }}
+                    />
+                  </IconButton>
+                )}
+              </Box>
             )}
-          </Box>
-        </PanelCard>
+          </PanelCard>
+        ))}
       </Box>
 
       {/* Transaction Volume Graph */}

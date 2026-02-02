@@ -30,6 +30,7 @@ export interface userReducer {
 export interface companyReducer {
   companyList: ICompany[];
   loading: boolean;
+  initialized: boolean;
 }
 
 export interface apiReducer {

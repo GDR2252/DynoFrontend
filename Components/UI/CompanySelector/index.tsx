@@ -17,10 +17,9 @@ import { VerticalLine } from "../LanguageSwitcher/styled";
 import { useTranslation } from "react-i18next";
 import { Add } from "@mui/icons-material";
 import CustomButton from "../Buttons";
-import { useSelector } from "react-redux";
-import { rootReducer } from "@/utils/types";
 import { useCompanyDialog } from "@/Components/UI/CompanyDialog/context";
 import useIsMobile from "@/hooks/useIsMobile";
+import { useCompany } from "@/context/CompanyContext";
 
 export default function CompanySelector() {
   const { t } = useTranslation("dashboardLayout");
@@ -28,24 +27,17 @@ export default function CompanySelector() {
   const isMobile = useIsMobile("md");
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { openAddCompany, openEditCompany } = useCompanyDialog();
-  const companyState = useSelector(
-    (state: rootReducer) => state.companyReducer
-  );
+
+  const { companies, companyLoading, activeCompanyId, setActiveCompanyId } = useCompany();
 
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const companies = useMemo(
-    () => companyState.companyList ?? [],
-    [companyState.companyList]
-  );
-  const [active, setActive] = useState<number | null>(null);
-
   useEffect(() => {
-    if (active == null && companies.length > 0)
-      setActive(companies[0].company_id);
-  }, [active, companies]);
+    if (companyLoading) return;
+    if (companies.length === 0) openAddCompany(true);
+  }, [companies.length, companyLoading, openAddCompany]);
 
-  const selected = companies.find((c) => c.company_id === active);
+  const selected = companies.find((c) => c.company_id === activeCompanyId);
 
   const handleOpen = (e: any) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -155,9 +147,9 @@ export default function CompanySelector() {
             {companies.map((c) => (
               <CompanyItem
                 key={c.company_id}
-                active={active === c.company_id}
+                active={activeCompanyId === c.company_id}
                 onClick={() => {
-                  setActive(c.company_id);
+                  setActiveCompanyId(c.company_id);
                   handleClose();
                 }}
               >
@@ -180,7 +172,7 @@ export default function CompanySelector() {
                 </ItemLeft>
 
                 <ItemRight
-                  active={active === c.company_id}
+                  active={activeCompanyId === c.company_id}
                   onClick={(e: any) => {
                     e.stopPropagation();
                     handleClose();
@@ -209,7 +201,7 @@ export default function CompanySelector() {
               sx={{ mt: 1, py: "8px !important" }}
               onClick={() => {
                 handleClose();
-                openAddCompany();
+                openAddCompany(false);
               }}
             />
           </Box>

@@ -138,11 +138,13 @@ export default function CompanyDialog({
   open,
   mode,
   company,
+  firstCompany,
   onClose,
 }: {
   open: boolean;
   mode: CompanyDialogMode;
   company?: ICompany | null;
+  firstCompany?: boolean;
   onClose: () => void;
 }) {
   const dispatch = useDispatch();
@@ -290,6 +292,8 @@ export default function CompanyDialog({
   };
 
   const handleClose = () => {
+    if (firstCompany) return;
+
     resetLocal();
     setFormKey((prev) => prev + 1);
     onClose();
@@ -1082,11 +1086,11 @@ export default function CompanyDialog({
                       {t("vatNumber")}
                     </Typography>
 
-                    <Grid container spacing={2}>
+                    <Grid container spacing={1}>
                       {/* Country VAT Dropdown */}
                       <Grid item xs={5}>
                         <Box
-                          maxWidth={"150px"}
+                          maxWidth={"100%"}
                           onClick={(e) => setVatAnchorEl(vatAnchorEl ? null : e.currentTarget)}
                           sx={{
                             cursor: "pointer",
@@ -1169,8 +1173,8 @@ export default function CompanyDialog({
                                 cursor: "pointer",
                                 backgroundColor: country.code === vatValue.code && country.taxCode === vatValue.taxCode ? "#E5EDFF" : "",
                                 borderRadius: "63px",
-                                height: "40px",
-                                padding: "10px 14px",
+                                height: "38px",
+                                padding: "9px 14px",
                                 alignItems: "center",
                                 "&:hover": {
                                   backgroundColor: country.code === vatValue.code && country.taxCode === vatValue.taxCode ? "#E5EDFF" : "#F0F4FF",
@@ -1358,7 +1362,7 @@ export default function CompanyDialog({
                   variant="outlined"
                   size="medium"
                   onClick={handleClose}
-                  disabled={companyState.loading}
+                  disabled={companyState.loading || firstCompany}
                   sx={{
                     flex: 1,
                     fontSize: "15px",

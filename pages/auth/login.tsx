@@ -802,7 +802,6 @@ export default function Login() {
       </CardWrapper>
 
       {/* Login Card */}
-      {/* {!showForgotPasswordForm && ( */}
       <CardWrapper sx={{ padding: "30px" }}>
         {/* Login Title & Description */}
         <TitleDescription
@@ -1512,7 +1511,6 @@ export default function Login() {
           </Box>
         </Box>
       </CardWrapper>
-      {/* )} */}
 
       {/* Email OTP Dialog */}
       {loginMethod === "email" && (

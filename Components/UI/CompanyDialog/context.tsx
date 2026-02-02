@@ -1,13 +1,9 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
-
-import { CompanyAction } from "@/Redux/Actions";
-import { COMPANY_FETCH } from "@/Redux/Actions/CompanyAction";
 import { ICompany } from "@/utils/types";
 import CompanyDialog, { CompanyDialogMode } from "./index";
 
 type CompanyDialogContextValue = {
-  openAddCompany: () => void;
+  openAddCompany: (firstCompany?: boolean) => void;
   openEditCompany: (company: ICompany) => void;
   closeCompanyDialog: () => void;
 };
@@ -23,14 +19,10 @@ export function useCompanyDialog() {
 }
 
 export function CompanyDialogProvider({ children }: { children: React.ReactNode }) {
-  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<CompanyDialogMode>("add");
   const [company, setCompany] = useState<ICompany | null>(null);
-
-  useEffect(() => {
-    dispatch(CompanyAction(COMPANY_FETCH));
-  }, [dispatch]);
+  const [firstCompany, setFirstCompany] = useState(false);
 
   const closeCompanyDialog = useCallback(() => {
     setOpen(false);
@@ -38,9 +30,10 @@ export function CompanyDialogProvider({ children }: { children: React.ReactNode 
     setMode("add");
   }, []);
 
-  const openAddCompany = useCallback(() => {
+  const openAddCompany = useCallback((firstCompany?: boolean) => {
     setMode("add");
     setCompany(null);
+    setFirstCompany(firstCompany ?? false);
     setOpen(true);
   }, []);
 
@@ -58,7 +51,7 @@ export function CompanyDialogProvider({ children }: { children: React.ReactNode 
   return (
     <CompanyDialogContext.Provider value={value}>
       {children}
-      <CompanyDialog open={open} mode={mode} company={company} onClose={closeCompanyDialog} />
+      <CompanyDialog open={open} mode={mode} company={company} firstCompany={firstCompany} onClose={closeCompanyDialog} />
     </CompanyDialogContext.Provider>
   );
 }

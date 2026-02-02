@@ -19,6 +19,7 @@ import type { ReactNode } from "react";
 import { SxProps, Theme } from "@mui/material";
 import HomeLayout from "@/Containers/Home";
 import { homeTheme } from "@/styles/homeTheme";
+import { CompanyProvider } from "@/context/CompanyContext";
 
 export default function App({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();
@@ -55,22 +56,24 @@ export default function App({ Component, pageProps }: AppProps) {
               !pathname.includes("payment") &&
               !pathname.includes("admin") &&
               !pathname.includes("reset-password") && (
-                <ClientLayout
-                  pageName={pageName}
-                  pageDescription={pageDescription}
-                  pageAction={pageAction}
-                  pageWarning={pageWarning}
-                  pageHeaderSx={pageHeaderSx || undefined}
-                >
-                  <Component
-                    {...pageProps}
-                    setPageName={setPageName}
-                    setPageDescription={setPageDescription}
-                    setPageAction={setPageAction}
-                    setPageWarning={setPageWarning}
-                    setPageHeaderSx={setPageHeaderSx}
-                  />
-                </ClientLayout>
+                <CompanyProvider>
+                  <ClientLayout
+                    pageName={pageName}
+                    pageDescription={pageDescription}
+                    pageAction={pageAction}
+                    pageWarning={pageWarning}
+                    pageHeaderSx={pageHeaderSx || undefined}
+                  >
+                    <Component
+                      {...pageProps}
+                      setPageName={setPageName}
+                      setPageDescription={setPageDescription}
+                      setPageAction={setPageAction}
+                      setPageWarning={setPageWarning}
+                      setPageHeaderSx={setPageHeaderSx}
+                    />
+                  </ClientLayout>
+                </CompanyProvider>
               )}
             {(pathname.includes("auth") ||
               pathname.includes("reset-password") ||

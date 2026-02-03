@@ -113,6 +113,7 @@ const Wallet = ({ setPageName }: pageProps) => {
               handleBlur,
               handleChange,
               submitDisable,
+              submitAttempted,
               touched,
               values,
             }) => (

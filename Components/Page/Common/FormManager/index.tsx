@@ -21,6 +21,7 @@ const FormManager = ({
   const [errors, setErrors] = useState({ ...initialValues });
   const [submitDisable, setSubmitDisable] = useState(false);
   const [touched, setTouched] = useState(initialTouchValue);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const handleBlur = async (e: React.FocusEvent<any>) => {
     if (yupSchema) {
@@ -85,6 +86,7 @@ const FormManager = ({
   const handleSubmit = (e: any) => {
     if (yupSchema) {
       e.preventDefault();
+      setSubmitAttempted(true);
       const tempErrors = checkValidation(yupSchema, values);
       const touchedTrue: any = {};
       Object.keys(initialValues).map((x) => {
@@ -132,6 +134,7 @@ const FormManager = ({
         touched,
         values,
         submitDisable,
+        submitAttempted,
         revalidate,
         handleFieldsChange,
       })}

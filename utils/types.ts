@@ -1,5 +1,6 @@
 import { AlertColor, SxProps, Theme } from "@mui/material";
 import type { ReactNode } from "react";
+import { Interface } from "readline";
 
 export interface ReducerAction {
   payload: any;
@@ -14,6 +15,7 @@ export interface rootReducer {
   walletReducer: walletReducer;
   apiReducer: apiReducer;
   transactionReducer: transactionReducer;
+  dashboardReducer: dashboardReducer;
 }
 
 export interface userReducer {
@@ -44,6 +46,13 @@ export interface transactionReducer {
   loading: boolean;
 }
 
+export interface dashboardReducer {
+  dashboardData: IDashboardData | null;
+  chartData: IDashboardChartData | null;
+  initialized: boolean;
+  loading: boolean;
+}
+
 export interface walletReducer {
   walletList: IWallet[];
   loading: boolean;
@@ -57,6 +66,13 @@ export interface walletReducer {
   };
 }
 
+export interface IDashboardData {
+  total_transactions: ITotalTransactions;
+  total_volume: ITotalVolume;
+  pending_transactions: IPendingTransactions;
+  active_wallets: IActiveWallets;
+  fee_tier: IFeeTier;
+}
 export interface ICompany {
   company_id: number;
   user_id: number;
@@ -208,3 +224,54 @@ export interface ITransaction {
 export type ITransactions = ITransaction[];
 
 // success types
+
+interface ITotalTransactions {
+  count: number;
+  current_month: number;
+  change_percent: number;
+  comparison_period: string;
+}
+
+interface ITotalVolume {
+  amount: number;
+  current_month: number;
+  currency: string;
+  change_percent: number;
+  comparison_period: string;
+}
+
+interface IPendingTransactions {
+  count: number;
+}
+
+interface IActiveWallets {
+  count: number;
+  wallets: [];
+  details: [];
+}
+
+export interface IFeeTier {
+  current_tier: string;
+  tier_description: string;
+  monthly_volume: number;
+  tier_threshold: number;
+  percent_complete: number;
+  amount_to_next_tier: number;
+  next_tier: string;
+}
+
+export interface IDashboardChartData {
+  period: string;
+  group_by: string;
+  start_date: string;
+  end_date: string;
+  chart_data: IChartData[];
+  currency_breakdown: [];
+  status_breakdown: [];
+}
+
+export interface IChartData {
+  date: string;
+  volume: number;
+  transaction_count: number;
+}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useTheme, Box, Divider, Typography } from "@mui/material";
+import { useTheme, Box, Divider, Typography, Skeleton } from "@mui/material";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import EditIcon from "@/assets/Icons/edit-icon.svg";
 import {
@@ -71,13 +71,31 @@ export default function CompanySelector() {
       {/* Trigger */}
       <SelectorTrigger onClick={handleOpen}>
         <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <BusinessCenterIcon
-            sx={{
-              color: theme.palette.primary.main,
-              fontSize: isMobile ? "16.5px" : "20px",
-            }}
-          />
-          <TriggerText sx={{ color: theme.palette.primary.main }}>{selected?.company_name ?? "-"}</TriggerText>
+
+          {companyLoading ? (
+            <>
+              <Skeleton variant="circular" width={20} height={20} />
+              <Skeleton
+                variant="text"
+                width={140}
+                height={28}
+                sx={{
+                  borderRadius: "6px",
+                  // bgcolor: theme.palette.action.hover,
+                }}
+              />
+            </>
+          ) : (
+            <>
+              <BusinessCenterIcon
+                sx={{
+                  color: theme.palette.primary.main,
+                  fontSize: isMobile ? "16.5px" : "20px",
+                }}
+              />
+              <TriggerText sx={{ color: theme.palette.primary.main }}>{selected?.company_name ?? "-"}</TriggerText>
+            </>
+          )}
         </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>

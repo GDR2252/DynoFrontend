@@ -428,6 +428,7 @@ const WalletAddress = ({ setPageName }: pageProps) => {
               handleBlur,
               handleChange,
               submitDisable,
+              submitAttempted,
               touched,
               values,
             }) => (
@@ -552,6 +553,7 @@ const WalletAddress = ({ setPageName }: pageProps) => {
                 handleBlur,
                 handleChange,
                 submitDisable,
+                submitAttempted,
                 touched,
                 values,
               }) => (

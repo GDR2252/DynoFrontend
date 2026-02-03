@@ -11,6 +11,8 @@ import { API_INIT } from "../Actions/ApiAction";
 import { ApiSaga } from "./ApiSaga";
 import { TRANSACTION_INIT } from "../Actions/TransactionAction";
 import { TransactionSaga } from "./TransactionSaga";
+import { DASHBOARD_INIT } from "../Actions/DashboardAction";
+import { DashboardSaga } from "./DashboardSaga";
 
 function* RootSaga() {
   yield takeEvery(USER_INIT, UserSaga);
@@ -19,6 +21,7 @@ function* RootSaga() {
   yield takeEvery(API_INIT, ApiSaga);
   yield takeEvery(WALLET_INIT, WalletSaga);
   yield takeEvery(TRANSACTION_INIT, TransactionSaga);
+  yield takeEvery(DASHBOARD_INIT, DashboardSaga);
 }
 
 export default RootSaga;

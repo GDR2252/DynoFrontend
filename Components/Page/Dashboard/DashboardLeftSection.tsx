@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef, useMemo, memo } from "react";
+import React, { useCallback, useState, useRef, useMemo, memo, useEffect } from "react";
 import { Box, Typography, useTheme, IconButton } from "@mui/material";
 import PanelCard from "@/Components/UI/PanelCard";
 import CustomButton from "@/Components/UI/Buttons";
@@ -29,7 +29,12 @@ import {
   isValid,
   startOfDay,
 } from "date-fns";
-import { useWalletData } from "@/hooks/useWalletData";
+import { ALLCRYPTOCURRENCIES, useWalletData } from "@/hooks/useWalletData";
+import { useDispatch, useSelector } from "react-redux";
+import { DashboardAction } from "@/Redux/Actions";
+import { DASHBOARD_CHART, DASHBOARD_FETCH } from "@/Redux/Actions/DashboardAction";
+import { useCompany } from "@/context/CompanyContext";
+import { rootReducer } from "@/utils/types";
 
 // Active wallets data array
 interface ActiveWallet {
@@ -41,7 +46,7 @@ interface ActiveWallet {
 //   { code: "BTC", icon: BitcoinIcon },
 //   { code: "ETH", icon: EthereumIcon },
 //   { code: "LTC", icon: LitecoinIcon },
-//   // { code: "BNB", icon: BNBIcon },
+//   { code: "BNB", icon: BNBIcon },
 //   { code: "DOGE", icon: DogecoinIcon },
 //   { code: "BCH", icon: BitcoinCashIcon },
 //   { code: "TRX", icon: TronIcon },
@@ -138,12 +143,12 @@ const processTransactionData = (
   const dateMap = new Map<string, number>();
 
   // Create a map of existing data by date string
-  rawData.forEach((item) => {
+  rawData?.forEach((item) => {
     dateMap.set(item.date, item.value);
   });
 
   // Fill in all dates in the range
-  const result = safeDateRange.map((date) => {
+  const result = safeDateRange?.map((date) => {
     const dateStr = formatDate(date);
     return {
       date: dateStr,
@@ -157,8 +162,10 @@ const processTransactionData = (
 // Transaction Volume Chart Component
 const TransactionVolumeChart = ({
   selectedPeriod,
+  rawTransactionData,
 }: {
   selectedPeriod: SelectedPeriod;
+  rawTransactionData: Array<{ date: string; value: number }>;
 }) => {
   const isMobile = useIsMobile("md");
   const isSmall = useIsMobile("sm");
@@ -194,16 +201,16 @@ const TransactionVolumeChart = ({
   // );
 
   // Scenario 4: Large value fluctuation - tests Y-axis domain
-  const rawTransactionData = useMemo(
-    () => [
-      { date: "Jan 24", value: 800 },
-      { date: "Jan 25", value: 12000 },
-      { date: "Jan 26", value: 6000 },
-      { date: "Jan 27", value: 114500 },
-      { date: "Jan 28", value: 12000 },
-    ],
-    []
-  );
+  // const rawTransactionData = useMemo(
+  //   () => [
+  //     { date: "Jan 24", value: 800 },
+  //     { date: "Jan 25", value: 12000 },
+  //     { date: "Jan 26", value: 6000 },
+  //     { date: "Jan 27", value: 114500 },
+  //     { date: "Jan 28", value: 12000 },
+  //   ],
+  //   []
+  // );
 
   // Scenario 5: Full 7 days of data
   // const rawTransactionData = useMemo(
@@ -380,8 +387,8 @@ const ActiveWalletsCard = memo(
     icon,
     isMobile,
   }: {
-    title: string;
-    icon: any;
+    title?: string;
+    icon?: any;
     isMobile: boolean;
   }) => {
     const theme = useTheme();
@@ -403,7 +410,7 @@ const ActiveWalletsCard = memo(
       >
         <CryptocurrencyIcon
           src={icon}
-          alt={title}
+          alt={title || ""}
           width={18}
           height={18}
           draggable={false}
@@ -427,7 +434,7 @@ const ActiveWalletsCard = memo(
 
 ActiveWalletsCard.displayName = "ActiveWalletsCard";
 
-const DashboardLeftSection = () => {
+const DashboardLeftSection = ({ dashboardCards, changePeriod, selectedPeriod, rawTransactionData }: { dashboardCards: any; changePeriod: (period: TimePeriod) => void; selectedPeriod: TimePeriod; rawTransactionData: any }) => {
   const theme = useTheme();
   const namespaces = ["dashboardLayout", "common"];
   const isMobile = useIsMobile("md");
@@ -443,7 +450,6 @@ const DashboardLeftSection = () => {
   const statCardsScrollLeftRef = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isStatCardsDragging, setIsStatCardsDragging] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>("7days");
   const [customDateRange, setCustomDateRange] = useState<DateRange>({
     startDate: null,
     endDate: null,
@@ -455,42 +461,11 @@ const DashboardLeftSection = () => {
     [t]
   );
 
-  const { activeWalletsData } = useWalletData();
-
-  const dashboardCards = [
-    {
-      key: "transactions",
-      title: tDashboard("totalTransactions"),
-      icon: TransactionIcon,
-      value: "4",
-      percentage: "12%",
-      percentageColor: theme.palette.border.success,
-      showCurrency: false,
-    },
-    {
-      key: "volume",
-      title: t("totalVolume"),
-      icon: RoundedStackIcon,
-      value: getCurrencySymbol("USD", formatNumberWithComma(6479.25)),
-      percentage: "8.5%",
-      percentageColor: theme.palette.border.success,
-      showCurrency: true,
-    },
-    {
-      key: "wallets",
-      title: tDashboard("activeWallets"),
-      icon: WalletIcon,
-      value: activeWalletsData.length,
-      isWallets: true,
-    },
-  ];
-
-
   const maxWalletsToShow = isMobile ? 2 : 3;
   const walletsToDisplay = showAllWallets
-    ? activeWalletsData
-    : activeWalletsData.slice(0, maxWalletsToShow);
-  const hasMoreWallets = activeWalletsData.length > maxWalletsToShow;
+    ? dashboardCards?.find((card: { key: string; wallets?: any[] }) => card.key === "wallets")?.wallets || []
+    : dashboardCards?.find((card: { key: string; wallets?: any[] }) => card.key === "wallets")?.wallets?.slice(0, maxWalletsToShow) || [];
+  const hasMoreWallets = dashboardCards?.find((card: { key: string; wallets?: any[] }) => card.key === "wallets")?.wallets?.length || 0 > maxWalletsToShow;
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -647,7 +622,7 @@ const DashboardLeftSection = () => {
         }}
       >
         {/* Total Transactions */}
-        {dashboardCards.map((card) => (
+        {dashboardCards?.map((card: any, index: number) => (
           <PanelCard
             key={card.key}
             title={card.title}
@@ -666,6 +641,21 @@ const DashboardLeftSection = () => {
               width: { xs: "200px", sm: "240px", md: "315px" },
               height: { xs: "128px", sm: "140px", md: "176px" },
               flexShrink: 0,
+              opacity: 0,
+              transform: "translateY(20px)",
+              animation: "cardFadeUp 0.5s ease forwards",
+              animationDelay: `${index * 0.05}s`,
+
+              "@keyframes cardFadeUp": {
+                "0%": {
+                  opacity: 0,
+                  transform: "translateY(20px)",
+                },
+                "100%": {
+                  opacity: 1,
+                  transform: "translateY(0)",
+                },
+              },
             }}
             headerAction={
               <IconButton
@@ -803,14 +793,15 @@ const DashboardLeftSection = () => {
                   "&::-webkit-scrollbar-thumb": { background: "transparent" },
                 }}
               >
-                {walletsToDisplay.map((wallet) => (
-                  <ActiveWalletsCard
-                    key={wallet.code}
-                    title={wallet.code}
-                    icon={wallet.icon}
-                    isMobile={isMobile}
-                  />
-                ))}
+                {!showAllWallets &&
+                  (walletsToDisplay.map((wallet: any) => (
+                    <ActiveWalletsCard
+                      key={wallet?.code}
+                      title={wallet?.code}
+                      icon={wallet?.icon}
+                      isMobile={isMobile}
+                    />
+                  )))}
 
                 {hasMoreWallets && !showAllWallets && (
                   <IconButton
@@ -865,7 +856,25 @@ const DashboardLeftSection = () => {
         headerPadding={theme.spacing(2.5)}
         bodyPadding={theme.spacing(2.5, 2, 2.5, 2)}
         headerActionLayout="inline"
-        sx={{ mb: 2.5, boxShadow: "none !important" }}
+        sx={{
+          mb: 2.5,
+          boxShadow: "none !important",
+          opacity: 0,
+          transform: "translateY(20px)",
+          animation: "cardFadeUp 0.5s ease forwards",
+          animationDelay: `${3 * 0.05}s`,
+
+          "@keyframes cardFadeUp": {
+            "0%": {
+              opacity: 0,
+              transform: "translateY(20px)",
+            },
+            "100%": {
+              opacity: 1,
+              transform: "translateY(0)",
+            },
+          },
+        }}
       >
         <Box
           sx={{
@@ -910,7 +919,7 @@ const DashboardLeftSection = () => {
           >
             <TimePeriodSelector
               value={selectedPeriod}
-              onChange={(period) => setSelectedPeriod(period)}
+              onChange={(period) => changePeriod(period)}
               dateRange={customDateRange}
               onDateRangeChange={setCustomDateRange}
               sx={{ flexShrink: 0 }}
@@ -931,6 +940,7 @@ const DashboardLeftSection = () => {
           selectedPeriod={
             selectedPeriod === "custom" ? customDateRange : selectedPeriod
           }
+          rawTransactionData={rawTransactionData}
         />
       </PanelCard>
     </Box>

@@ -286,6 +286,7 @@ const APIs = ({ setPageName }: pageProps) => {
               handleBlur,
               handleChange,
               submitDisable,
+              submitAttempted,
               touched,
               values,
             }) => (
@@ -303,9 +304,9 @@ const APIs = ({ setPageName }: pageProps) => {
                     label={"Company Name"}
                     menuItems={menuItem}
                     value={values.company_id}
-                    error={touched.company_id && errors.company_id}
+                    error={submitAttempted && errors.company_id}
                     helperText={
-                      touched.company_id &&
+                      submitAttempted &&
                       errors.company_id &&
                       errors.company_id
                     }

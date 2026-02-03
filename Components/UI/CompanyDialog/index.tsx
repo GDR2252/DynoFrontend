@@ -257,12 +257,12 @@ export default function CompanyDialog({
           .min(10, t("validation.mobileMin"))
           .max(14, t("validation.mobileMax")),
         website: yup.string().nullable(),
-        country: yup.string().nullable(),
-        state: yup.string().nullable(),
-        city: yup.string().nullable(),
-        address_line_1: yup.string().nullable(),
+        country: yup.string().required(t("validation.countryRequired")),
+        state: yup.string().required(t("validation.stateRequired")),
+        city: yup.string().required(t("validation.cityRequired")),
+        address_line_1: yup.string().required(t("validation.addressLine1Required")),
         address_line_2: yup.string().nullable(),
-        zip_code: yup.string().nullable(),
+        zip_code: yup.string().required(t("validation.zipCodeRequired")),
         VAT_number: yup.string().nullable(),
       }),
     [t]
@@ -286,8 +286,6 @@ export default function CompanyDialog({
   const handleRequestClose = () => {
     if (!isDataChanged(currentFormValues)) {
       handleClose();
-    } else {
-      console.log("Form has changes, preventing auto-close");
     }
   };
 
@@ -307,20 +305,21 @@ export default function CompanyDialog({
   };
 
   const handleSubmit = (values: Values) => {
-    const formData = new FormData();
-    formData.append("data", JSON.stringify(values));
-    if (mediaFile) formData.append("image", mediaFile);
+    console.log(values);
+    // const formData = new FormData();
+    // formData.append("data", JSON.stringify(values));
+    // if (mediaFile) formData.append("image", mediaFile);
 
-    // Uncomment when ready to dispatch
-    if (mode === "add") {
-      dispatch(CompanyAction(COMPANY_INSERT, formData));
-    } else if (company?.company_id) {
-      dispatch(
-        CompanyAction(COMPANY_UPDATE, { id: company.company_id, formData })
-      );
-    }
+    // // Uncomment when ready to dispatch
+    // if (mode === "add") {
+    //   dispatch(CompanyAction(COMPANY_INSERT, formData));
+    // } else if (company?.company_id) {
+    //   dispatch(
+    //     CompanyAction(COMPANY_UPDATE, { id: company.company_id, formData })
+    //   );
+    // }
 
-    handleClose();
+    // handleClose();
   };
 
   const modeKey = mode === "add" ? "add" : "edit";
@@ -485,6 +484,7 @@ export default function CompanyDialog({
             handleChange,
             handleFieldsChange,
             submitDisable,
+            submitAttempted,
             touched,
             values,
           }) => (
@@ -499,9 +499,9 @@ export default function CompanyDialog({
                     placeholder={t("fields.companyName.placeholder")}
                     name="company_name"
                     value={String(values.company_name || "")}
-                    error={Boolean(touched.company_name && errors.company_name)}
+                    error={Boolean(submitAttempted && errors.company_name)}
                     helperText={
-                      touched.company_name && errors.company_name
+                      submitAttempted && errors.company_name
                         ? String(errors.company_name)
                         : undefined
                     }
@@ -531,9 +531,9 @@ export default function CompanyDialog({
                     placeholder={t("fields.email.placeholder")}
                     name="email"
                     value={String(values.email || "")}
-                    error={Boolean(touched.email && errors.email)}
+                    error={Boolean(submitAttempted && errors.email)}
                     helperText={
-                      touched.email && errors.email ? String(errors.email) : undefined
+                      submitAttempted && errors.email ? String(errors.email) : undefined
                     }
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -1023,9 +1023,9 @@ export default function CompanyDialog({
                     placeholder={t("fields.addressLine1.placeholder")}
                     name="address_line_1"
                     value={String(values.address_line_1 || "")}
-                    error={Boolean(touched.address_line_1 && errors.address_line_1)}
+                    error={Boolean(submitAttempted && errors.address_line_1)}
                     helperText={
-                      touched.address_line_1 && errors.address_line_1
+                      submitAttempted && errors.address_line_1
                         ? String(errors.address_line_1)
                         : undefined
                     }
@@ -1042,9 +1042,9 @@ export default function CompanyDialog({
                     placeholder={t("fields.addressLine2.placeholder")}
                     name="address_line_2"
                     value={String(values.address_line_2 || "")}
-                    error={Boolean(touched.address_line_2 && errors.address_line_2)}
+                    error={Boolean(submitAttempted && errors.address_line_2)}
                     helperText={
-                      touched.address_line_2 && errors.address_line_2
+                      submitAttempted && errors.address_line_2
                         ? String(errors.address_line_2)
                         : undefined
                     }
@@ -1061,9 +1061,9 @@ export default function CompanyDialog({
                     placeholder={t("fields.zipCode.placeholder")}
                     name="zip_code"
                     value={String(values.zip_code || "")}
-                    error={Boolean(touched.zip_code && errors.zip_code)}
+                    error={Boolean(submitAttempted && errors.zip_code)}
                     helperText={
-                      touched.zip_code && errors.zip_code
+                      submitAttempted && errors.zip_code
                         ? String(errors.zip_code)
                         : undefined
                     }
@@ -1215,9 +1215,9 @@ export default function CompanyDialog({
                         <InputField
                           fullWidth
                           placeholder="Enter VAT number"
-                          value={values.vatNumber || ""}
+                          value={values.VAT_number || ""}
                           onChange={(e) =>
-                            handleFieldsChange({ vatNumber: e.target.value })
+                            handleFieldsChange({ VAT_number: e.target.value })
                           }
                           inputHeight={isMobile ? "32px" : "38px"}
                         />

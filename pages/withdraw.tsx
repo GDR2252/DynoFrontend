@@ -448,6 +448,7 @@ const Withdraw = ({ setPageName }: pageProps) => {
               handleBlur,
               handleChange,
               submitDisable,
+              submitAttempted,
               touched,
               values,
               revalidate,
@@ -784,6 +785,7 @@ const Withdraw = ({ setPageName }: pageProps) => {
                 handleBlur,
                 handleChange,
                 submitDisable,
+                submitAttempted,
                 touched,
                 values,
               }) => (

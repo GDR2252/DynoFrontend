@@ -5,6 +5,7 @@ import companyReducer from "./companyReducer";
 import walletReducer from "./walletReducer";
 import apiReducer from "./apiReducer";
 import transactionReducer from "./transactionReducer";
+import dashboardReducer from "./dashboardReducer";
 
 export default combineReducers({
   userReducer,
@@ -13,4 +14,5 @@ export default combineReducers({
   apiReducer,
   walletReducer,
   transactionReducer,
+  dashboardReducer,
 });

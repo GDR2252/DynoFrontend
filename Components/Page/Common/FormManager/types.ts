@@ -24,6 +24,7 @@ interface childrenProps {
   errors: Values;
   touched: Values;
   submitDisable: boolean;
+  submitAttempted: boolean;
   revalidate: () => void;
 }
 export interface Values {

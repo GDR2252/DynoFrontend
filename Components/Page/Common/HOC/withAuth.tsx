@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import jwt from "jsonwebtoken";
 
 import { TokenData } from "@/utils/types";
-import Loading from "@/Components/UI/Loading";
 const withAuth = (WrappedComponent: any) => {
   const AuthChecker = (props: any) => {
     const Router = useRouter();
@@ -21,7 +20,7 @@ const withAuth = (WrappedComponent: any) => {
       // Router.replace("/maintenance");
     }, [Router.pathname]);
 
-    return accessToken ? <WrappedComponent {...props} /> : <Loading />;
+    return accessToken && <WrappedComponent {...props} /> ;
   };
   return AuthChecker;
 };

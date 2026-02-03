@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { ArrowOutward } from "@mui/icons-material";
 import Image from "next/image";
@@ -12,47 +12,70 @@ import ReferralAndKnowledge from "@/Components/Layout/ReferralAndKnowledge";
 import useIsMobile from "@/hooks/useIsMobile";
 import { theme } from "@/styles/theme";
 import { formatNumberWithComma, getCurrencySymbol } from "@/helpers";
+import { IFeeTier } from "@/utils/types";
 
 import CurrencyIcon from "@/assets/Icons/dollar-sign-icon.svg";
 import CheckCircleIcon from "@/assets/Icons/correct-icon.png";
 import CrownIcon from "@/assets/Icons/premium-icon.svg";
 import BgMobileImage from "@/assets/Images/premium-card-bg.png";
-import BgDesktopImage from "@/assets/Images/bg-white.png"
-
+import BgDesktopImage from "@/assets/Images/bg-white.png";
 import { PremiumTierCard } from "./styled";
 
-const DEFAULT_MONTHLY_LIMIT = 50000;
-const DEFAULT_USED_AMOUNT = 6479.25;
-const CURRENT_TIER = "Standard";
-
-const DashboardRightSection = () => {
+const DashboardRightSection = ({ tierData }: { tierData?: IFeeTier }) => {
   const muiTheme = useTheme();
   const isMobile = useIsMobile("md");
 
+  /* Translations */
   const { t } = useTranslation(["dashboardLayout", "common"]);
   const tDashboard = useCallback(
     (key: string) => t(key, { ns: "dashboardLayout" }),
     [t]
   );
 
-  const [monthlyLimit] = useState(DEFAULT_MONTHLY_LIMIT);
-  const [usedAmount, setUsedAmount] = useState(DEFAULT_USED_AMOUNT);
+  /* Derived state */
+  const monthlyLimit = tierData?.tier_threshold ?? 0;
+  const usedAmount = tierData?.monthly_volume ?? 0;
+  const percentage = tierData?.percent_complete ?? 0;
+  const currentTier = tierData?.current_tier ?? "";
 
-  // Prevent overflow beyond limit
-  useEffect(() => {
-    if (usedAmount > monthlyLimit) {
-      setUsedAmount(monthlyLimit);
-    }
-  }, [usedAmount, monthlyLimit]);
+  const formattedUsed = useMemo(
+    () => formatNumberWithComma(usedAmount),
+    [usedAmount]
+  );
+
+  const formattedLimit = useMemo(
+    () => monthlyLimit.toLocaleString(),
+    [monthlyLimit]
+  );
 
   return (
-    <Box>
+    <Box sx={{
+      opacity: 0,
+      transform: "translateY(20px)",
+      animation: "cardFadeUp 0.5s ease forwards",
+      animationDelay: `${3 * 0.05}s`,
+
+      "@keyframes cardFadeUp": {
+        "0%": {
+          opacity: 0,
+          transform: "translateY(20px)",
+        },
+        "100%": {
+          opacity: 1,
+          transform: "translateY(0)",
+        },
+      },
+    }}>
       <PanelCard
         title={tDashboard("feeTierProgress")}
-        subTitle={tDashboard("yourProgressTowardsTheNextFeeTier")}
+        subTitle={tierData?.tier_description}
         showHeaderBorder={false}
         headerPadding={theme.spacing(2.5, 1.5, 0, 2.5)}
-        bodyPadding={isMobile ? theme.spacing("12px", 2, 2, 2) : theme.spacing("26px", 2.5, 2.5, 2.5)}
+        bodyPadding={
+          isMobile
+            ? theme.spacing("12px", 2, 2, 2)
+            : theme.spacing("26px", 2.5, 2.5, 2.5)
+        }
         headerActionLayout="inline"
         headerSx={{ alignItems: "start" }}
         headerAction={
@@ -106,10 +129,7 @@ const DashboardRightSection = () => {
                   fontWeight: 500,
                 }}
               >
-                {getCurrencySymbol(
-                  "USD",
-                  formatNumberWithComma(usedAmount)
-                )}
+                {getCurrencySymbol("USD", formattedUsed)}
               </Box>
               <Box
                 component="span"
@@ -128,10 +148,7 @@ const DashboardRightSection = () => {
                   color: muiTheme.palette.text.secondary,
                 }}
               >
-                {getCurrencySymbol(
-                  "USD",
-                  monthlyLimit.toLocaleString()
-                )}
+                {getCurrencySymbol("USD", formattedLimit)}
               </Box>
             </Typography>
           </Box>
@@ -140,10 +157,10 @@ const DashboardRightSection = () => {
           <FeeTierProgress
             monthlyLimit={monthlyLimit}
             usedAmount={usedAmount}
-            currentTier={CURRENT_TIER}
+            percentage={percentage}
           />
 
-          {/* Current Tier Badge */}
+          {/* Current Tier */}
           <Box
             sx={{
               mt: 2,
@@ -179,12 +196,12 @@ const DashboardRightSection = () => {
                   height={16}
                   draggable={false}
                 />
-                {CURRENT_TIER}
+                {currentTier}
               </Box>
             </Typography>
           </Box>
 
-          {/* Premium Upgrade Card */}
+          {/* Premium Upgrade */}
           <PremiumTierCard sx={{ mt: isMobile ? 1.5 : 2, position: "relative" }}>
             <Box
               sx={{
@@ -214,7 +231,7 @@ const DashboardRightSection = () => {
                     fontFamily: "UrbanistMedium",
                     lineHeight: "1.2",
                     letterSpacing: "0",
-                    wordBreak: "break-all"
+                    wordBreak: "break-all",
                   }}
                 >
                   {tDashboard("upgradeToPremiumTier")}
@@ -229,7 +246,7 @@ const DashboardRightSection = () => {
                     mt: isMobile ? 0.75 : 1.5,
                     lineHeight: "1.2",
                     letterSpacing: "0",
-                    wordBreak: "break-all"
+                    wordBreak: "break-all",
                   }}
                 >
                   {tDashboard("lowerFeesAndPrioritySupport")}
@@ -249,7 +266,6 @@ const DashboardRightSection = () => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  flexShrink: 0,
                 }}
               >
                 <Image

@@ -1,5 +1,5 @@
 import { theme } from "@/styles/theme";
-import { Box, Button, IconButton, Typography } from "@mui/material";
+import { Box, Button, IconButton, ListItemButton, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
 export const TransactionsTableContainer = styled(Box)({
@@ -15,35 +15,6 @@ export const TransactionsTableContainer = styled(Box)({
     height: "auto",
   },
 });
-
-export const TransactionsTableScrollWrapper = styled(Box)(({ theme }) => ({
-  width: "100%",
-  display: "flex",
-  flexDirection: "column",
-  flex: 1,
-  minHeight: 0,
-  overflowX: "auto",
-  overflowY: "hidden",
-  scrollbarWidth: "none",
-  "-ms-overflow-style": "none",
-  "&::-webkit-scrollbar": {
-    display: "none",
-    width: 0,
-    height: 0,
-  },
-  [theme.breakpoints.down("md")]: {
-    overflowX: "auto",
-    WebkitOverflowScrolling: "touch",
-  },
-  [theme.breakpoints.down("sm")]: {
-    overflowX: "auto",
-    WebkitOverflowScrolling: "touch",
-  },
-  [theme.breakpoints.down("xs")]: {
-    overflowX: "auto",
-    WebkitOverflowScrolling: "touch",
-  },
-}));
 
 export const TransactionsTableHeader = styled(Box)(({ theme }) => ({
   width: "100%",
@@ -423,21 +394,6 @@ export const MobileNavigationButtons = styled(Button)(({ theme }) => ({
   },
 }));
 
-export const TransactionsTopBarContainer = styled(Box)(({ theme }) => ({
-  width: "100%",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "stretch",
-  gap: "12px",
-  [theme.breakpoints.up("md")]: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  [theme.breakpoints.down("md")]: {
-    gap: "8px",
-  },
-}));
-
 export const SearchContainer = styled(Box)(({ theme }) => ({
   width: "100%",
   display: "flex",
@@ -445,10 +401,12 @@ export const SearchContainer = styled(Box)(({ theme }) => ({
   gap: "10px",
   [theme.breakpoints.up("md")]: {
     flex: 1,
-    minWidth: "250px",
+    minWidth: "350px",
   },
   [theme.breakpoints.down("md")]: {
     gap: "8px",
+    flex: 1,
+    minWidth: "350px",
   },
 }));
 
@@ -460,8 +418,9 @@ export const FiltersContainer = styled(Box)(({ theme }) => ({
   gap: "10px",
   flex: 1,
   [theme.breakpoints.down("md")]: {
-    flexWrap: "wrap",
     gap: "8px",
+    flex: 1,
+    flexWrap: "nowrap",
   },
 }));
 
@@ -469,7 +428,7 @@ export const DatePickerWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   position: "relative",
-  flex: 1,
+  // flex: 1,
   minWidth: "fit-content",
   [theme.breakpoints.up("md")]: {
     // maxWidth: "200px",
@@ -490,73 +449,6 @@ export const WalletSelectorWrapper = styled(Box)(({ theme }) => ({
 export const ExportButtonWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
   flexShrink: 0,
-}));
-
-export const DatePickerTriggerButton = styled(Button)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: "12px",
-  padding: "9px 16px",
-  borderRadius: "6px",
-  textTransform: "none",
-  fontSize: "14px",
-  fontWeight: 500,
-  fontFamily: "UrbanistMedium",
-  color: theme.palette.text.primary,
-  backgroundColor: "#FFFFFF",
-  border: `1px solid ${theme.palette.border.main}`,
-  justifyContent: "space-between",
-  whiteSpace: "nowrap",
-  width: "100%",
-  height: "40px",
-  "&:hover": {
-    backgroundColor: "#FFFFFF",
-    borderColor: theme.palette.border.focus,
-  },
-  "&:focus": {
-    borderColor: theme.palette.border.focus,
-  },
-  "& .calendar-icon": {
-    fontSize: "18px",
-    color: theme.palette.text.secondary,
-    flexShrink: 0,
-  },
-  "& .date-text": {
-    flex: 1,
-    textAlign: "left",
-    fontSize: "14px",
-    fontFamily: "UrbanistMedium",
-    color: theme.palette.text.secondary,
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-  },
-  "& .separator": {
-    width: "1px",
-    height: "20px",
-    backgroundColor: theme.palette.border.main,
-    flexShrink: 0,
-  },
-  "& .arrow-icon": {
-    fontSize: "16px",
-    color: theme.palette.text.secondary,
-    flexShrink: 0,
-  },
-  [theme.breakpoints.up("md")]: {
-    minWidth: "200px",
-  },
-  [theme.breakpoints.down("md")]: {
-    padding: "8px 10px",
-    height: "32px",
-    gap: "6px",
-    minWidth: "fit-content",
-    "& .separator": {
-      height: "16px",
-    },
-    "& .arrow-icon": {
-      fontSize: "14px",
-    },
-  },
 }));
 
 export const WalletSelectorButton = styled(Button)(({ theme }) => ({
@@ -647,7 +539,7 @@ export const SearchIconButton = styled(IconButton)(({ theme }) => ({
     objectFit: "contain",
     objectPosition: "center",
     flexShrink: 0,
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       width: "12px",
       height: "12px",
     },
@@ -655,5 +547,125 @@ export const SearchIconButton = styled(IconButton)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     width: "32px",
     height: "32px",
+  },
+}));
+
+// Standardize theme access: Always use the callback form (({ theme }) => ...)
+export const TransactionsTopBarContainer = styled(Box)(({ theme }) => ({
+  width: "100%",
+  display: "flex",
+  gap: "12px",
+  flexDirection: "row",
+  alignItems: "center",
+  flexWrap: "wrap",
+  [theme.breakpoints.down("md")]: {
+    gap: "8px",
+  },
+}));
+
+// Combined redundant media queries
+export const TransactionsTableScrollWrapper = styled(Box)(({ theme }) => ({
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  flex: 1,
+  minHeight: 0,
+  overflowX: "auto",
+  overflowY: "hidden",
+  scrollbarWidth: "none",
+  msOverflowStyle: "none",
+  "&::-webkit-scrollbar": { display: "none" },
+  [theme.breakpoints.down("md")]: {
+    WebkitOverflowScrolling: "touch",
+  },
+}));
+
+// Added missing Dropdown styling for cleaner JSX
+export const WalletDropdownContainer = styled(Box)<{ isMobile: boolean }>(({ theme, isMobile }) => ({
+  position: "absolute",
+  top: "0",
+  left: isMobile ? "auto" : 0,
+  right: isMobile ? 0 : "auto",
+  width: isMobile ? "250px" : "270px",
+  background: theme.palette.common.white,
+  borderRadius: "6px",
+  border: `1px solid ${theme.palette.border.main}`,
+  boxShadow: "0px 8px 24px 0px rgba(16, 24, 40, 0.12)",
+  padding: "10px 8px",
+  zIndex: 3000,
+  "& .dropdown-header": {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "0px 6px 8px",
+    cursor: "pointer",
+  },
+  "& .header-text": {
+    fontSize: isMobile ? "13px" : "15px",
+    fontFamily: "UrbanistMedium",
+    fontWeight: 500,
+    color: theme.palette.text.primary,
+  }
+}));
+
+export const WalletListItem = styled(ListItemButton)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: "12px",
+  borderRadius: "50px",
+  padding: "3px 12px 3px 3px",
+  transition: "background-color 0.2s",
+  "&.Mui-selected": {
+    backgroundColor: theme.palette.primary.light, // Fixed: was a string literal "theme.palette..."
+  },
+  "&:hover": {
+    backgroundColor: theme.palette.primary.light,
+  },
+  "& .option-label": {
+    fontSize: "15px",
+    fontFamily: "UrbanistMedium",
+    fontWeight: 500,
+    color: theme.palette.text.primary,
+    [theme.breakpoints.down("md")]: { fontSize: "13px" },
+  }
+}));
+
+// Cleaned up DatePickerTriggerButton internal classes
+export const DatePickerTriggerButton = styled(Button)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: "12px",
+  padding: "9px 16px",
+  borderRadius: "6px",
+  textTransform: "none",
+  backgroundColor: theme.palette.common.white,
+  border: `1px solid ${theme.palette.border.main}`,
+  height: "40px",
+  minWidth: "200px",
+  "& .date-text": {
+    flex: 1,
+    textAlign: "left",
+    fontSize: "15px",
+    fontWeight: 500,
+    fontFamily: "UrbanistMedium",
+    color: theme.palette.text.primary,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  },
+  "& .separator": {
+    width: "1px",
+    height: "20px",
+    backgroundColor: theme.palette.border.main,
+  },
+  "& .arrow-icon": {
+    fontSize: "16px",
+    color: "rgba(103, 103, 104, 1)",
+  },
+  [theme.breakpoints.down("md")]: {
+    padding: "8px 10px",
+    height: "32px",
+    minWidth: "fit-content",
+    "& .date-text": { fontSize: "13px" },
   },
 }));

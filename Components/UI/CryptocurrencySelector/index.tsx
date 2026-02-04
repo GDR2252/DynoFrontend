@@ -159,6 +159,9 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
             fontWeight: 500,
             fontSize: isMobile ? "13px" : "15px",
             color: theme.palette.text.primary,
+            fontFamily: "UrbanistMedium",
+            lineHeight: "1.2",
+            letterSpacing: "0",
           }}
         >
           {label}
@@ -245,7 +248,7 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
             </Box>
 
             {/* ===== Content ===== */}
-            <Box sx={{ mt: "13px", display: "flex", flexDirection: "column", gap: "6px" }}>
+            <Box sx={{ mt: "13px", display: "flex", flexDirection: "column", gap: "6px", height: "128px", overflow: "auto" }}>
               {cryptocurrencies.map((crypto) => (
                 <ListItemButton
                   key={crypto.code}
@@ -253,12 +256,14 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
                     handleSelect(crypto.code);
                     handleClose();
                   }}
-                  selected={crypto.code === value}
                   sx={{
                     borderRadius: "50px",
                     p: "3px 14px 3px 3px",
                     gap: 1.5,
                     minHeight: "40px",
+                    fontFamily: "UrbanistMedium",
+                    lineHeight: "1.2",
+                    letterSpacing: "0",
                     background:
                       crypto.code === value
                         ? theme.palette.primary.light

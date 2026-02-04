@@ -135,6 +135,7 @@ export const TransactionsTableScrollWrapper = styled(Box)(({ theme }) => ({
   minHeight: 0,
   overflowX: "auto",
   overflowY: "auto",
+  scrollbarWidth: "none",
   [theme.breakpoints.down("md")]: {
     overflowX: "auto",
     WebkitOverflowScrolling: "touch",

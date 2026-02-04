@@ -22,6 +22,8 @@ import {
   WalletSelectorWrapper,
   ExportButtonWrapper,
   CryptoIconChip,
+  WalletDropdownContainer,
+  WalletListItem,
 } from "./styled";
 import InputField from "@/Components/UI/AuthLayout/InputFields";
 import { format } from "date-fns";
@@ -51,6 +53,7 @@ const TransactionsTopBar: React.FC<TransactionsTopBarProps> = ({
 }) => {
   const theme = useTheme();
   const isMobile = useIsMobile("md");
+  const isLgMobile = useIsMobile("lg");
   const { t } = useTranslation("transactions");
   const tTransactions = useCallback(
     (key: string) => t(key, { ns: "transactions" }),
@@ -160,6 +163,11 @@ const TransactionsTopBar: React.FC<TransactionsTopBarProps> = ({
     };
   }, [walletMenuAnchor]);
 
+  const selectedWalletData = useMemo(() =>
+    walletOptions.find((opt) => opt.value === selectedWallet) || { label: tTransactions("allWallets") },
+    [selectedWallet, walletOptions, tTransactions]
+  );
+
   return (
     <TransactionsTopBarContainer>
       <SearchContainer>
@@ -177,48 +185,22 @@ const TransactionsTopBar: React.FC<TransactionsTopBarProps> = ({
 
       <FiltersContainer>
         <DatePickerWrapper>
-          <DatePickerTriggerButton
-            ref={buttonRef}
-            onClick={handleCalendarButtonClick}
-          >
+          <DatePickerTriggerButton ref={buttonRef} onClick={handleCalendarButtonClick}>
             <Image
               src={CalendarIcon}
               alt="calendar"
               width={14}
               height={14}
-              style={{
-                filter: "brightness(0) saturate(100%) invert(0%)",
-              }}
+              style={{ filter: "brightness(0) saturate(100%) invert(0%)" }}
             />
-            <Typography
-              sx={{
-                color: theme.palette.text.primary,
-                fontSize: isMobile ? "13px" : "15px",
-                fontFamily: "UrbanistMedium",
-                fontWeight: 500,
-                lineHeight: 1.2,
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textAlign: "left",
-                flex: 1,
-              }}
-            >
+            <Typography className="date-text">
               {formatDateRange()}
             </Typography>
             <Box className="separator" />
             <KeyboardArrowDownIcon className="arrow-icon" />
           </DatePickerTriggerButton>
-          <Box
-            sx={{
-              position: "absolute",
-              width: 0,
-              height: 0,
-              overflow: "hidden",
-              opacity: 0,
-              pointerEvents: "none",
-            }}
-          >
+
+          <Box sx={{ position: "absolute", width: 0, height: 0, overflow: "hidden", opacity: 0, pointerEvents: "none" }}>
             <CustomDatePicker
               ref={datePickerRef}
               value={dateRange}
@@ -228,142 +210,61 @@ const TransactionsTopBar: React.FC<TransactionsTopBarProps> = ({
           </Box>
         </DatePickerWrapper>
 
-        <Box
-          ref={walletButtonRef}
-          sx={{
-            position: "relative",
-            width: isMobile ? "fit-content" : "220px",
-            zIndex: 1,
-          }}
-        >
-          {/* Trigger */}
+        <Box ref={walletButtonRef} sx={{ position: "relative", width: isMobile ? "fit-content" : "220px", zIndex: 1 }}>
           <WalletSelectorButton onClick={handleWalletButtonClick}>
             <Image src={WalletIcon} alt="wallet" width={17} height={17} />
             <Typography className="wallet-text">
-              {walletOptions.find((opt) => opt.value === selectedWallet)?.label ||
-                tTransactions("allWallets")}
+              {selectedWalletData.label}
             </Typography>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <Box className="separator" />
-              {!walletMenuAnchor ? (
-                <ExpandMoreIcon sx={{ color: "rgba(103, 103, 104, 1)" }} className="arrow-icon" />
+              {walletMenuAnchor ? (
+                <ExpandLessIcon className="arrow-icon" />
               ) : (
-                <ExpandLessIcon sx={{ color: "rgba(103, 103, 104, 1)" }} className="arrow-icon" />
+                <ExpandMoreIcon className="arrow-icon" />
               )}
             </Box>
           </WalletSelectorButton>
 
-          {/* Dropdown */}
+          {/* Dropdown Menu */}
           {walletMenuAnchor && (
-            <Box
-              sx={{
-                position: "absolute",
-                top: "0",
-                left: isMobile ? "auto" : 0,
-                right: isMobile ? 0 : "auto",
-                width: isMobile ? "250px" : "270px",
-                background: "#fff",
-                borderRadius: "6px",
-                border: `1px solid ${theme.palette.border.main}`,
-                boxShadow: "rgba(16, 24, 40, 0.12) 0px 8px 24px 0px",
-                padding: "10px 8px",
-                zIndex: 3000,
-              }}
-            >
-              {/* Header */}
-              <Box
-                onClick={handleWalletMenuClose}
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: "0px 6px 8px",
-                  cursor: "pointer",
-                }}
-              >
+            <WalletDropdownContainer isMobile={isMobile}>
+              <Box className="dropdown-header" onClick={handleWalletMenuClose}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <Image src={WalletIcon} alt="wallet" width={17} height={17} />
-                  <Typography sx={{
-                    fontSize: isMobile ? "13px" : "15px",
-                    fontFamily: "UrbanistMedium",
-                    fontWeight: 500,
-                    lineHeight: "100%",
-                    letterSpacing: "0",
-                    color: theme.palette.text.primary,
-                  }}>
-                    {walletOptions.find((opt) => opt.value === selectedWallet)?.label ||
-                      tTransactions("allWallets")}
-                  </Typography>
+                  <Typography className="header-text">{selectedWalletData.label}</Typography>
                 </Box>
-
                 <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <Box className="separator" />
-                  <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <VerticalLine />
-                    <ExpandLessIcon style={{ color: "rgba(103, 103, 104, 1)" }} className="arrow-icon" />
-                  </Box>
+                  <ExpandLessIcon className="arrow-icon" />
                 </Box>
               </Box>
 
-              {/* Options */}
-              <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: "6px", overflowY: "auto", height: "auto", "@media (max-height: 640px)": { height: "260px", }, }}>
                 {walletOptions.map((option) => (
-                  <ListItemButton
+                  <WalletListItem
                     key={option.value}
+                    selected={selectedWallet === option.value}
                     onClick={() => {
                       handleWalletChange(option.value);
                       handleWalletMenuClose();
                     }}
-                    selected={selectedWallet === option.value}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "12px",
-                      fontSize: isMobile ? "13px" : "15px",
-                      fontFamily: "UrbanistMedium",
-                      fontWeight: 500,
-                      padding: isMobile ? "3px 8px 3px 3px" : "3px 12px 3px 3px",
-                      borderRadius: "50px",
-                      backgroundColor:
-                        selectedWallet === option.value
-                          ? "theme.palette.primary.light"
-                          : "transparent",
-                      "&:hover": {
-                        backgroundColor: theme.palette.primary.light,
-                      },
-                    }}
                   >
-                    <CryptoIconChip
-                      sx={{
-                        background: theme.palette.secondary.light,
-                        height: isMobile ? "24px" : "32px",
-                      }}
-                    >
+                    <CryptoIconChip sx={{ background: theme.palette.secondary.light, height: isMobile ? "24px" : "32px" }}>
                       <Image src={option.icon} alt={option.label} draggable={false} />
-                      <Typography component="span" sx={{ fontWeight: 600 }}>
-                        {option.code}
-                      </Typography>
+                      <Typography component="span" sx={{ fontWeight: 600 }}>{option.code}</Typography>
                     </CryptoIconChip>
 
-                    <Typography sx={{
-                      fontSize: isMobile ? "13px" : "15px",
-                      fontFamily: "UrbanistMedium",
-                      fontWeight: 500,
-                      lineHeight: "100%",
-                      letterSpacing: "0",
-                      color: theme.palette.text.primary,
-                    }}>
-                      {option.label}
-                    </Typography>
+                    <Typography className="option-label">{option.label}</Typography>
 
                     {selectedWallet === option.value && (
                       <CheckIcon sx={{ fontSize: "18px", ml: "auto" }} />
                     )}
-                  </ListItemButton>
+                  </WalletListItem>
                 ))}
               </Box>
-            </Box>
+            </WalletDropdownContainer>
           )}
         </Box>
 
@@ -378,13 +279,14 @@ const TransactionsTopBar: React.FC<TransactionsTopBarProps> = ({
                 height={isMobile ? 13 : 17}
               />
             }
+            hideLabel={isLgMobile}
             variant="secondary"
             onClick={onExport}
             sx={{
-              padding: isMobile ? "8px 16px" : "10px 60px",
+              padding: isMobile ? "15px 10px" : isLgMobile ? "18px 16px" : "10px 60px",
               minWidth: "auto",
-              height: isMobile ? "32px" : "40px",
-              fontSize: isMobile ? "13px" : "15px",
+              height: isLgMobile ? "32px" : "40px",
+              fontSize: isLgMobile ? "13px" : "15px",
               fontFamily: "UrbanistMedium",
               fontWeight: 500,
             }}

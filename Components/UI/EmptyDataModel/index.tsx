@@ -122,7 +122,7 @@ const EmptyDataModel = ({ pageName }: EmptyDataModelProps) => {
                     </Typography>
 
                     <Typography
-                        component="p"
+                        component="div"
                         sx={{
                             fontFamily: "UrbanistMedium",
                             fontWeight: 500,

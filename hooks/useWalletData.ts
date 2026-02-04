@@ -110,7 +110,7 @@ export const useWalletData = () => {
     ) {
       dispatch(WalletAction(WALLET_FETCH));
     }
-  }, [dispatch]);
+  }, []);
 
   /* ---------------------------- Wallet Data ---------------------------- */
 

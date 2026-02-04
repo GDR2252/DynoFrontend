@@ -4,7 +4,13 @@ import { Box } from "@mui/material";
 import { styled as muiStyled } from "@mui/material/styles";
 import Image from "next/image";
 
-export const CurrencyTrigger = muiStyled(Box)<{
+export const CurrencyTrigger = muiStyled(Box, {
+  shouldForwardProp: (prop) =>
+    prop !== "error" &&
+    prop !== "fullWidth" &&
+    prop !== "isOpen" &&
+    prop !== "isMobile",
+})<{
   error?: boolean;
   fullWidth?: boolean;
   isOpen?: boolean;
@@ -52,15 +58,15 @@ export const CurrencyFlag = styled(Image)({
   },
 });
 
-export const CurrencyText = styled.span<{ isMobile?: boolean }>(
-  ({ isMobile }) => ({
-    fontSize: isMobile ? "10px" : "13px",
-    fontWeight: 500,
-    fontFamily: "UrbanistMedium",
-    color: theme.palette.text.primary,
-    lineHeight: 1.2,
-  })
-);
+export const CurrencyText = styled("span", {
+  shouldForwardProp: (prop) => prop !== "isMobile",
+})<{ isMobile?: boolean }>(({ isMobile }) => ({
+  fontSize: isMobile ? "10px" : "13px",
+  fontWeight: 500,
+  fontFamily: "UrbanistMedium",
+  color: theme.palette.text.primary,
+  lineHeight: 1.2,
+}));
 
 export const CurrencyDropdown = styled(Box)({
   padding: "8px",

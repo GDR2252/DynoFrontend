@@ -14,7 +14,9 @@ export const NavigationBarContainer = styled(Box)(({ theme }) => ({
 
 }));
 
-export const NavigationBar = styled(Box)<{ expanded?: boolean }>(
+export const NavigationBar = styled(Box, {
+  shouldForwardProp: (prop) => prop !== "expanded",
+})<{ expanded?: boolean }>(
   ({ expanded, theme }) => ({
     display: "flex",
     flexDirection: "column",
@@ -35,7 +37,9 @@ export const NavigationBar = styled(Box)<{ expanded?: boolean }>(
   })
 );
 
-export const NavItem = styled(Box)<{ active?: boolean; isSecondRow?: boolean }>(
+export const NavItem = styled(Box, {
+  shouldForwardProp: (prop) => prop !== "active" && prop !== "isSecondRow",
+})<{ active?: boolean; isSecondRow?: boolean }>(
   ({ active, theme, isSecondRow }) => ({
     display: "flex",
     flexDirection: "column",
@@ -60,7 +64,9 @@ export const NavItem = styled(Box)<{ active?: boolean; isSecondRow?: boolean }>(
   })
 );
 
-export const IconButton = styled(Box)<{ active?: boolean }>(
+export const IconButton = styled(Box, {
+  shouldForwardProp: (prop) => prop !== "active",
+})<{ active?: boolean }>(
   ({ active, theme }) => ({
     width: "40px",
     height: "40px",
@@ -83,7 +89,9 @@ export const IconButton = styled(Box)<{ active?: boolean }>(
   })
 );
 
-export const NavLabel = styled(Box)<{ active?: boolean }>(
+export const NavLabel = styled(Box, {
+  shouldForwardProp: (prop) => prop !== "active",
+})<{ active?: boolean }>(
   ({ active, theme }) => ({
     fontSize: "13px",
     fontFamily: "UrbanistMedium",
@@ -94,7 +102,9 @@ export const NavLabel = styled(Box)<{ active?: boolean }>(
   })
 );
 
-export const MainNavRow = styled(Box)<{ expanded?: boolean }>(
+export const MainNavRow = styled(Box, {
+  shouldForwardProp: (prop) => prop !== "expanded",
+})<{ expanded?: boolean }>(
   ({ expanded }) => ({
     display: "flex",
     flexDirection: "column",
@@ -131,7 +141,9 @@ export const MenuRow = styled(Box)({
   width: "100%",
 });
 
-export const ExpandedContent = styled(Box)<{ isExpanding?: boolean }>(
+export const ExpandedContent = styled(Box, {
+  shouldForwardProp: (prop) => prop !== "isExpanding",
+})<{ isExpanding?: boolean }>(
   ({ isExpanding }) => ({
     display: "flex",
     flexDirection: "column",

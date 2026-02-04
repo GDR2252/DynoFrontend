@@ -177,6 +177,7 @@ const DashboardRightSection = ({ tierData }: { tierData?: IFeeTier }) => {
             }}
           >
             <Typography
+              component="div"
               sx={{
                 fontSize: isMobile ? 13 : 15,
                 fontWeight: 500,

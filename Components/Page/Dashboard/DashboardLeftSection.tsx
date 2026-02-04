@@ -9,7 +9,6 @@ import WalletIcon from "@/assets/Icons/wallet-grey.svg";
 import { useTranslation } from "react-i18next";
 import { PercentageChip } from "./styled";
 import ArrowUpSuccessIcon from "@/assets/Icons/up-success.svg";
-import RoundedStackIcon from "@/assets/Icons/roundedStck-icon.svg";
 import { formatNumberWithComma, getCurrencySymbol } from "@/helpers";
 import {
   CryptocurrencyIcon,

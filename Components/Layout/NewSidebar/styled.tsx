@@ -22,7 +22,9 @@ export const Menu = styled("div")(({ theme }) => ({
   borderRadius: "12px",
 }));
 
-export const MenuItem = styled("div")<{ active?: boolean }>(
+export const MenuItem = styled("div", {
+  shouldForwardProp: (prop) => prop !== "active",
+})<{ active?: boolean }>(
   ({ active, theme }) => ({
     display: "flex",
     alignItems: "center",
@@ -44,7 +46,9 @@ export const MenuItem = styled("div")<{ active?: boolean }>(
   })
 );
 
-export const ActiveIndicator = styled("div")<{ active?: boolean }>(
+export const ActiveIndicator = styled("div", {
+  shouldForwardProp: (prop) => prop !== "active",
+})<{ active?: boolean }>(
   ({ active, theme }) => ({
     position: "absolute",
     left: "-16px",
@@ -57,7 +61,9 @@ export const ActiveIndicator = styled("div")<{ active?: boolean }>(
   })
 );
 
-export const IconBox = styled("div")<{ active?: boolean }>(
+export const IconBox = styled("div", {
+  shouldForwardProp: (prop) => prop !== "active",
+})<{ active?: boolean }>(
   ({ active, theme }) => ({
     display: "flex",
     justifyContent: "center",

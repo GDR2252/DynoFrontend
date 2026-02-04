@@ -98,7 +98,13 @@ export const PaymentSettingsLabel = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const ExpireTrigger = styled(Box)<{
+export const ExpireTrigger = styled(Box, {
+  shouldForwardProp: (prop) =>
+    prop !== "error" &&
+    prop !== "fullWidth" &&
+    prop !== "isOpen" &&
+    prop !== "isMobile",
+})<{
   error?: boolean;
   fullWidth?: boolean;
   isOpen?: boolean;
@@ -144,7 +150,9 @@ export const ExpireTrigger = styled(Box)<{
   },
 }));
 
-export const ExpireText = styledEmotion.span<{ isMobile?: boolean }>(
+export const ExpireText = styled("span", {
+  shouldForwardProp: (prop) => prop !== "isMobile",
+})<{ isMobile?: boolean }>(
   ({ isMobile }) => ({
     fontSize: isMobile ? "13px" : "15px",
     fontWeight: 500,

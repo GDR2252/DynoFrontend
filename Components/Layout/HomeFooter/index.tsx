@@ -13,10 +13,10 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 
 const socials = [
-  { label: "X", icon: X, link: "#" },
-  { label: "Instagram", icon: Instagram, link: "#" },
-  { label: "LinkedIn", icon: LinkedIn, link: "#" },
-  { label: "Facebook", icon: Facebook, link: "#" },
+  { label: "X", icon: X, link: "/" },
+  { label: "Instagram", icon: Instagram, link: "/" },
+  { label: "LinkedIn", icon: LinkedIn, link: "/" },
+  { label: "Facebook", icon: Facebook, link: "/" },
 ];
 
 const HomeFooter = () => {
@@ -24,12 +24,12 @@ const HomeFooter = () => {
   const isMobile = useIsMobile("md");
 
   const routes = [
-    { label: "Documentation", link: "#" },
-    { label: "Sandbox", link: "#" },
+    { label: "Documentation", link: "/" },
+    { label: "Sandbox", link: "/" },
     { label: "Term & Conditions", link: "/terms-conditions" },
     { label: "Privacy Policy", link: "/privacy-policy" },
     { label: "API Status", link: "/api-status" },
-    { label: "Support", link: "#" },
+    { label: "Support", link: "/" },
   ];
 
   return (

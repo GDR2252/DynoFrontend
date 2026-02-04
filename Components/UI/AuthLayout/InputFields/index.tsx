@@ -335,8 +335,7 @@ const InputField: React.FC<InputFieldProps> = ({
         }}
       >
         <Box
-          component="form"
-          autoComplete="off"
+          component="div"
           sx={{
             display: "flex",
             alignItems: multiline ? "flex-start" : "center",

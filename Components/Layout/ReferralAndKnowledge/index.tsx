@@ -62,6 +62,7 @@ const ReferralAndKnowledge = ({ isMobile }: { isMobile: boolean }) => {
             width={82}
             height={100}
             draggable={false}
+            priority={true}
           />
         </Box>
         <ReferralCardContent>

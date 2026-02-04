@@ -1,5 +1,5 @@
 import useIsMobile from "@/hooks/useIsMobile";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import CallIcon from "@/assets/Icons/CallIcon.svg";
 import MessageIcon from "@/assets/Icons/MessageIcon.svg";
@@ -13,7 +13,7 @@ import {
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import { theme } from "@/styles/theme";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import HelpAndSupportData from "@/hooks/useHelpAndSupportData";
 import SearchIcon from "@/assets/Icons/search-icon.svg";
 
@@ -61,6 +61,20 @@ const HelpAndSupport = () => {
         },
     ];
 
+    useEffect(() => {
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                handleSearch();
+            }
+        });
+    }, [handleSearch]);
+
+    useEffect(() => {
+        if (searchTerm === "") {
+            setFilteredData(HelpAndSupportData);
+        }
+    }, [searchTerm])
+
     return (
         <Box
             sx={{
@@ -84,6 +98,7 @@ const HelpAndSupport = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder={t("searchPlaceholder")}
                             style={{
+                                height: isMobile ? "32px" : "40px",
                                 width: isMobile ? "300px" : "639px",
                                 fontSize: isMobile ? "10px" : "13px",
                                 fontFamily: "UrbanistMedium",
@@ -108,19 +123,19 @@ const HelpAndSupport = () => {
             <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: "20px", }}>
                 <Box
                     sx={{
-                        display: "grid",
+                        display: "flex",
+                        flexWrap: "wrap",
                         width: "100%",
-                        gridTemplateColumns: "repeat(auto-fit, minmax(355px, 1fr))",
-                        columnGap: "20px",
-                        rowGap: "24px",
+                        gap: "24px",
+                        justifyContent: "flex-start",
                     }}
                 >
                     {filteredData.map((item, index) => (
                         <Box
                             key={index}
                             sx={{
-                                width: "355px",
-                                height: "202px",
+                                width: isMobile ? "330px" : "355px",
+                                height: isMobile ? "160px" : "202px",
                                 backgroundColor: "#FFFFFF",
                                 border: "1px solid #E9ECF2",
                                 borderRadius: "14px",
@@ -128,13 +143,12 @@ const HelpAndSupport = () => {
                                 flexDirection: "column",
                                 justifyContent: "space-between",
                                 padding: "20px",
-                                mx: { xs: "auto", md: "0px" },
                             }}
                         >
-                            <TextDecoration style={{ fontSize: "20px", color: "#242428" }}>
+                            <TextDecoration style={{ fontSize: isMobile ? "15px" : "20px", color: "#242428" }}>
                                 {item.title}
                             </TextDecoration>
-                            <TextDecoration style={{ fontSize: "15px", color: "#676768" }}>
+                            <TextDecoration style={{ fontSize: isMobile ? "13px" : "15px", color: "#676768" }}>
                                 {item.description}
                             </TextDecoration>
 
@@ -180,11 +194,11 @@ const HelpAndSupport = () => {
                                     <Image src={item.icon} alt="search" width={24} height={24} />
                                 </FooterIconButton>
                             </Box>
-                            <TextDecoration style={{ fontSize: "13px" }}>
+                            <TextDecoration style={{ fontSize: isMobile ? "10px" :"13px" }}>
                                 {item.contectType}
                             </TextDecoration>
                             {item.buttonContent ? (
-                                <Box
+                                <Button
                                     sx={{
                                         border: "1px solid #0004FF",
                                         borderRadius: "6px",
@@ -192,21 +206,21 @@ const HelpAndSupport = () => {
                                         justifyContent: "center",
                                         alignItems: "center",
                                         gap: "6px",
-                                        padding: "10px 25px",
+                                        padding: isMobile ? "8px 16px" : "10px 25px",
                                         color: "#0004FF",
                                     }}
                                 >
-                                    <TextDecoration style={{ fontSize: "13px" }}>
+                                    <TextDecoration style={{ fontSize: isMobile ? "10px" :"13px" }}>
                                         {item.buttonContent}
                                     </TextDecoration>
                                     <ArrowOutwardIcon sx={{ color: "#0004FF", fontSize: 15 }} />
-                                </Box>
+                                </Button>
                             ) : (
-                                <TextDecoration style={{ fontSize: "18px", color: "#191339" }}>
+                                <TextDecoration style={{ fontSize: isMobile ? "14px" :"18px", color: "#191339" }}>
                                     {item.contectDetail}
                                 </TextDecoration>
                             )}
-                            <TextDecoration style={{ fontSize: "12px" }}>
+                            <TextDecoration style={{ fontSize: isMobile ? "10px" :"12px" }}>
                                 {item.responseTime}
                             </TextDecoration>
                         </FooterCard>

@@ -12,6 +12,7 @@ export const SidebarWrapper = styled("aside")(({ theme }) => ({
   border: `1px solid ${theme.palette.border.main}`,
   padding: "16px",
   overflow: "auto",
+  scrollbarWidth: "none",
 }));
 
 export const Menu = styled("div")(({ theme }) => ({

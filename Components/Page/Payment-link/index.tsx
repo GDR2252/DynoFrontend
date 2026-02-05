@@ -68,7 +68,7 @@ const PaymentLinksPage = ({
 
   if (paymentLinks?.length === 0) {
     return (
-      <EmptyDataModel pageName="payment-links" />
+      <EmptyDataModel pageName="payment-links" cryptocurrencies={[]} />
     );
   }
 

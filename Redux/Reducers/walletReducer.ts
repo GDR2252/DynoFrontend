@@ -42,7 +42,7 @@ const walletReducer = (state = walletInitialState, action: ReducerAction) => {
       };
 
     case WALLET_UPDATE:
-      const index = state.walletList.findIndex((x) => x.id === payload.id);
+      const index = state.walletList.findIndex((x) => x.company_id === payload.company_id);
       const tempArray = [...state.walletList];
       tempArray[index] = payload.data;
       return {
@@ -59,7 +59,7 @@ const walletReducer = (state = walletInitialState, action: ReducerAction) => {
       };
 
     case WALLET_DELETE:
-      const tempList = state.walletList.filter((x) => x.id !== payload);
+      const tempList = state.walletList.filter((x) => x.company_id !== payload);
       return {
         ...state,
         loading: false,

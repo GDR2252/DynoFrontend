@@ -2,7 +2,12 @@ import { call, put } from "redux-saga/effects";
 
 import axios from "@/axiosConfig";
 import { TOAST_SHOW } from "../Actions/ToastAction";
-import { WALLET_API_ERROR, WALLET_FETCH, WALLET_ADD_ADDRESS, VERIFY_OTP } from "../Actions/WalletAction";
+import {
+  WALLET_API_ERROR,
+  WALLET_FETCH,
+  WALLET_ADD_ADDRESS,
+  VERIFY_OTP,
+} from "../Actions/WalletAction";
 interface IWalletAction {
   crudType: string;
   payload: any;
@@ -11,7 +16,7 @@ interface IWalletAction {
 export function* WalletSaga(action: IWalletAction): unknown {
   switch (action.crudType) {
     case WALLET_FETCH:
-      yield getWallet();
+      yield getWallet(action.payload);
       break;
 
     case WALLET_ADD_ADDRESS:
@@ -24,18 +29,20 @@ export function* WalletSaga(action: IWalletAction): unknown {
   }
 }
 
-export function* getWallet(): unknown {
+export function* getWallet(payload: any): unknown {
   try {
+    const { id } = payload;
     const {
       data: { data, message },
-    } = yield call(axios.get, "wallet/getWallet");
+    } = yield call(axios.get, `wallet/getWallet?company_id=${id}`);
 
     yield put({
       type: WALLET_FETCH,
       payload: data,
     });
   } catch (e: any) {
-    const message = e?.response?.data?.message ?? e?.message ?? "Failed to fetch wallets";
+    const message =
+      e?.response?.data?.message ?? e?.message ?? "Failed to fetch wallets";
     yield put({
       type: TOAST_SHOW,
       payload: {
@@ -54,16 +61,11 @@ export function* validateWalletAddress(payload: any): unknown {
     console.log("Sending payload:", payload);
     const {
       data: { data, message },
-    } = yield call(
-      axios.post,
-      "wallet/validateWalletAddress",
-      payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    } = yield call(axios.post, "wallet/validateWalletAddress", payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     yield put({
       type: TOAST_SHOW,
       payload: { message },
@@ -73,7 +75,10 @@ export function* validateWalletAddress(payload: any): unknown {
       payload: data,
     });
   } catch (e: any) {
-    const message = e?.response?.data?.message ?? e?.message ?? "Failed to validate wallet address";
+    const message =
+      e?.response?.data?.message ??
+      e?.message ??
+      "Failed to validate wallet address";
     yield put({
       type: TOAST_SHOW,
       payload: {
@@ -87,29 +92,26 @@ export function* validateWalletAddress(payload: any): unknown {
   }
 }
 
-export async function verifyOtp(payload: any): Promise<{ status: boolean; message: string }> {
+export async function verifyOtp(
+  payload: any,
+): Promise<{ status: boolean; message: string }> {
   try {
-
     console.log("Verifying OTP with payload:", payload);
 
-    const response = await axios.post(
-      "/wallet/verifyCode",
-      payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const httpStatus = response.status; 
+    const response = await axios.post("/wallet/verifyCode", payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const httpStatus = response.status;
     const { data, message, success } = response.data;
 
     // Dispatch VERIFY_OTP action
-    return { status:httpStatus === 200,message };
+    return { status: httpStatus === 200, message };
   } catch (e: any) {
     const message =
       e.response?.data?.message ?? e.message ?? "OTP verification failed";
 
-    return {status:false,message};
+    return { status: false, message };
   }
 }

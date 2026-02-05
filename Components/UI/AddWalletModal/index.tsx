@@ -22,6 +22,8 @@ import {
   WarningContent,
 } from "./styled";
 import PanelCard from "../PanelCard";
+import { useCompany } from "@/context/CompanyContext";
+import { Cryptocurrency } from "@/pages/wallet";
 
 export interface AddWalletModalProps {
   open: boolean;
@@ -36,9 +38,10 @@ type Address = {
   currency: string;
 };
 
-const AddWalletModal: React.FC<AddWalletModalProps> = ({
+const AddWalletModal: React.FC<AddWalletModalProps & { cryptocurrencies: Cryptocurrency[] }> = ({
   open,
   onClose,
+  cryptocurrencies = [],
   fiatData = [],
   cryptoData = [],
   onWalletAdded,
@@ -54,6 +57,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
     },
     [t]
   );
+  const { activeCompanyId } = useCompany();
   const [walletName, setWalletName] = useState("");
   const [cryptocurrency, setCryptocurrency] = useState("BTC");
   const [walletAddress, setWalletAddress] = useState("");
@@ -108,6 +112,8 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
       const values = {
         wallet_address: walletAddress.trim(),
         currency: cryptocurrency,
+        company_id: activeCompanyId,
+        wallet_name: walletName.trim(),
       };
 
       const response: any = await axiosBaseApi.post(
@@ -343,6 +349,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
             helperText={errors.walletName}
           />
           <CryptocurrencySelector
+            cryptocurrencies={cryptocurrencies}
             label={tWallet("cryptocurrency") + " *"}
             value={cryptocurrency}
             onChange={(value) => {

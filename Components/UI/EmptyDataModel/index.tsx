@@ -12,6 +12,7 @@ import { AddRounded } from "@mui/icons-material";
 import { useRouter } from "next/router";
 import AddWalletModal from "../AddWalletModal";
 import CreateApiModel from "../ApiKeysModel/CreateApiModel";
+import { Cryptocurrency } from "../CryptocurrencySelector";
 
 type PageName = "transactions" | "wallet" | "apiKey" | "payment-links";
 
@@ -19,7 +20,7 @@ interface EmptyDataModelProps {
     pageName: PageName;
 }
 
-const EmptyDataModel = ({ pageName }: EmptyDataModelProps) => {
+const EmptyDataModel = ({ pageName, cryptocurrencies }: EmptyDataModelProps & { cryptocurrencies: Cryptocurrency[] }) => {
     const isMobile = useIsMobile("md");
     const router = useRouter();
     const { t } = useTranslation("common");
@@ -153,6 +154,7 @@ const EmptyDataModel = ({ pageName }: EmptyDataModelProps) => {
 
             {pageName === "wallet" && openCreate && (
                 <AddWalletModal
+                    cryptocurrencies={cryptocurrencies as any}
                     open
                     onClose={() => setOpenCreate(false)}
                 />

@@ -437,7 +437,7 @@ const ApiKeysPage = ({
   if (apiState?.apiList?.length === 0 && !apiState?.loading) {
     return (
       <>
-        <EmptyDataModel pageName="apiKey" />
+        <EmptyDataModel cryptocurrencies={[]} pageName="apiKey" />
         <CreateApiModel open={openCreate} onClose={handleCreateClose} />
       </>
     );

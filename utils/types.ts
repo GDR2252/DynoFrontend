@@ -54,7 +54,7 @@ export interface dashboardReducer {
 }
 
 export interface walletReducer {
-  walletList: IWallet[];
+  walletList: IWalletList[];
   loading: boolean;
   amount: number;
   currency: string;
@@ -64,6 +64,12 @@ export interface walletReducer {
     fields: string[];
     uniqueRef: string;
   };
+}
+
+export interface IWalletList {
+  company_id: number;
+  company_name: string;
+  wallets: IWallet[];
 }
 
 export interface IDashboardData {

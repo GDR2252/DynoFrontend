@@ -36,8 +36,8 @@ import EthereumIcon from "@/assets/cryptocurrency/Ethereum-icon.svg";
 import LitecoinIcon from "@/assets/cryptocurrency/Litecoin-icon.svg";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import Image from "next/image";
-import { ALLCRYPTOCURRENCIES } from "@/hooks/useWalletData";
 import { VerticalLine } from "@/Components/UI/LanguageSwitcher/styled";
+import { ALLCRYPTOCURRENCIES } from "@/pages/wallet";
 interface TransactionsTopBarProps {
   onSearch?: (searchTerm: string) => void;
   onDateRangeChange?: (dateRange: DateRange) => void;

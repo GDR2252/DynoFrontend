@@ -150,7 +150,7 @@ const TransactionPage = () => {
 
   if (transactionState?.customers_transactions?.length === 0 && !transactionState.loading) {
     return (
-      <EmptyDataModel pageName="transactions" />
+      <EmptyDataModel pageName="transactions" cryptocurrencies={[]} />
     );
   }
 

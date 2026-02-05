@@ -2,9 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   Typography,
-  Popover,
   ListItemButton,
-  ListItemIcon,
   ListItemText,
   useTheme,
 } from "@mui/material";
@@ -12,26 +10,14 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CheckIcon from "@mui/icons-material/Check";
 import useIsMobile from "@/hooks/useIsMobile";
-import Image from "next/image";
 import {
   CryptocurrencyTrigger,
   CryptocurrencyIcon,
   CryptocurrencyText,
-  CryptocurrencyDropdown,
   CryptocurrencyDividerLine,
   IconChip,
 } from "./styled";
 
-// Import cryptocurrency icons
-import BitcoinIcon from "@/assets/cryptocurrency/Bitcoin-icon.svg";
-import EthereumIcon from "@/assets/cryptocurrency/Ethereum-icon.svg";
-import LitecoinIcon from "@/assets/cryptocurrency/Litecoin-icon.svg";
-import BNBIcon from "@/assets/cryptocurrency/BNB-icon.svg";
-import DogecoinIcon from "@/assets/cryptocurrency/Dogecoin-icon.svg";
-import BitcoinCashIcon from "@/assets/cryptocurrency/BitcoinCash-icon.svg";
-import TronIcon from "@/assets/cryptocurrency/Tron-icon.svg";
-import USDTIcon from "@/assets/cryptocurrency/USDT-icon.svg";
-import { useWalletData } from "@/hooks/useWalletData";
 
 // Cryptocurrency data
 export interface Cryptocurrency {
@@ -39,19 +25,6 @@ export interface Cryptocurrency {
   name: string;
   icon: any;
 }
-
-// export const cryptocurrencies: Cryptocurrency[] = [
-//   { code: "BTC", name: "Bitcoin", icon: BitcoinIcon },
-//   { code: "ETH", name: "Ethereum", icon: EthereumIcon },
-//   { code: "LTC", name: "Litecoin", icon: LitecoinIcon },
-//   { code: "BNB", name: "BNB", icon: BNBIcon },
-//   { code: "DOGE", name: "Dogecoin", icon: DogecoinIcon },
-//   { code: "BCH", name: "Bitcoin Cash", icon: BitcoinCashIcon },
-//   { code: "TRX", name: "Tron", icon: TronIcon },
-//   { code: "USDT", name: "USDT", icon: USDTIcon },
-// ];
-
-
 
 export interface CryptocurrencySelectorProps {
   label?: string;
@@ -67,7 +40,7 @@ export interface CryptocurrencySelectorProps {
   closeDropdownTrigger?: boolean;
 }
 
-const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
+const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps & { cryptocurrencies: Cryptocurrency[] }> = ({
   label,
   value = "BTC",
   onChange,
@@ -78,14 +51,13 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
   name,
   sx,
   sxIconChip,
-  closeDropdownTrigger
+  closeDropdownTrigger,
+  cryptocurrencies = [],
 }) => {
   const theme = useTheme();
   const isMobile = useIsMobile("sm");
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
-
-  const { cryptocurrencies } = useWalletData();
 
   useEffect(() => {
     onChange?.(cryptocurrencies[0].code)

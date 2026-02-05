@@ -1,10 +1,9 @@
 import React, { useState, useCallback } from "react";
 import CopyIcon from "@/assets/Icons/copy-icon.svg";
 import EditIcon from "@/assets/Icons/edit-icon.svg";
-import WalletIcon from "@/assets/Icons/home/wallet.svg";
 import LinkIcon from "@/assets/Icons/link-icon.svg";
 import RoundedStackIcon from "@/assets/Icons/roundedStck-icon.svg";
-import { Box, Typography, Grid, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, CircularProgress } from "@mui/material";
+import { Box, Typography, Grid, CircularProgress } from "@mui/material";
 import Image from "next/image";
 import { ArrowOutward } from "@mui/icons-material";
 import { theme } from "@/styles/theme";
@@ -13,13 +12,10 @@ import { useDispatch } from "react-redux";
 import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
 import { useTranslation } from "react-i18next";
 import PanelCard from "@/Components/UI/PanelCard";
-import InfoIcon from "@/assets/Icons/info-icon.svg";
 import {
   HeaderIcon,
-  SetupWarnnigContainer,
   WalletCardBody,
   WalletCardBodyRow,
-  WalletCopyButton,
   WalletEditButton,
   WalletHeaderAction,
   WalletLabel,
@@ -27,12 +23,10 @@ import {
 import InputField from "@/Components/UI/AuthLayout/InputFields";
 import CustomButton from "@/Components/UI/Buttons";
 import AddWalletModal from "@/Components/UI/AddWalletModal";
-import { WarningIconContainer } from "@/Components/UI/AddWalletModal/styled";
 import useIsMobile from "@/hooks/useIsMobile";
-import { useWalletData } from "@/hooks/useWalletData";
-import EmptyDataModel from "@/Components/UI/EmptyDataModel";
 import { CopyButton } from "../Transactions/TransactionDetailsModal.styled";
 import { useRouter } from "next/router";
+import { Cryptocurrency } from "@/pages/wallet";
 
 interface WalletData {
   icon: any;
@@ -42,7 +36,7 @@ interface WalletData {
   totalProcessed: number;
 }
 
-const Wallet = () => {
+const Wallet = ({ cryptocurrencies, walletLoading, walletData }: { cryptocurrencies: Cryptocurrency[]; walletLoading: boolean; walletData: WalletData[] }) => {
   const isMobile = useIsMobile("md");
   const dispatch = useDispatch();
   const { t } = useTranslation("walletScreen");
@@ -57,69 +51,6 @@ const Wallet = () => {
   const router = useRouter();
   const [openEditModal, setOpenEditModal] = useState(false);
 
-  const { walletLoading, walletData } = useWalletData();
-  // const walletData = useMemo<WalletData[]>(
-  //   () => [
-  //     {
-  //       icon: BitcoinIcon,
-  //       walletTitle: tWallet("mainBitcoinWallet"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "BTC",
-  //       totalProcessed: 125430.5,
-  //     },
-  //     {
-  //       icon: EthereumIcon,
-  //       walletTitle: tWallet("ethereumPayments"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "ETH",
-  //       totalProcessed: 89234.2,
-  //     },
-  //     {
-  //       icon: LitecoinIcon,
-  //       walletTitle: tWallet("litecoinWallet"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "LTC",
-  //       totalProcessed: 45678.9,
-  //     },
-  //     {
-  //       icon: BNBIcon,
-  //       walletTitle: tWallet("bnbWallet"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "BNB",
-  //       totalProcessed: 125430.5,
-  //     },
-  //     {
-  //       icon: DogecoinIcon,
-  //       walletTitle: tWallet("dogecoinWallet"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "DOGE",
-  //       totalProcessed: 89234.2,
-  //     },
-  //     {
-  //       icon: BitcoinCashIcon,
-  //       walletTitle: tWallet("bitcoinCashWallet"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "BCH",
-  //       totalProcessed: 45678.9,
-  //     },
-  //     {
-  //       icon: TronIcon,
-  //       walletTitle: tWallet("tronWallet"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "TRX",
-  //       totalProcessed: 125430.5,
-  //     },
-  //     {
-  //       icon: USDTIcon,
-  //       walletTitle: tWallet("usdtWallet"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "USDT",
-  //       totalProcessed: 89234.2,
-  //     },
-  //   ],
-  //   [tWallet]
-  // );
-
   const copyAddressToClipboard = (address: string) => {
     navigator.clipboard.writeText(address);
     dispatch({
@@ -129,10 +60,6 @@ const Wallet = () => {
         severity: "success",
       },
     });
-  };
-
-  const handleViewTransactions = (wallet: WalletData) => {
-    console.log("View transactions for:", wallet.walletTitle);
   };
 
   const handleEdit = (wallet: WalletData) => {
@@ -155,12 +82,6 @@ const Wallet = () => {
         }}
       />
     </Box>;
-  }
-
-  if (walletData.length === 0 && !walletLoading) {
-    return (
-      <EmptyDataModel pageName="wallet" />
-    );
   }
 
   return (
@@ -405,6 +326,7 @@ const Wallet = () => {
       </Dialog> */}
 
       <AddWalletModal
+        cryptocurrencies={cryptocurrencies}
         open={openEditModal}
         onClose={() => setOpenEditModal(false)}
       />

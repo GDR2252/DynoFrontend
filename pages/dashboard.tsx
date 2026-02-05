@@ -6,7 +6,7 @@ import Head from "next/head";
 import router from "next/router";
 import { useEffect, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import DashboardLeftSection from "@/Components/Page/Dashboard/DashboardLeftSection";
 import DashboardRightSection from "@/Components/Page/Dashboard/DashboardRightSection";
 import TransactionIcon from "@/assets/Icons/transaction.svg";
@@ -15,13 +15,13 @@ import RoundedStackIcon from "@/assets/Icons/roundedStck-icon.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { theme } from "@/styles/theme";
 import { formatNumberWithComma, getCurrencySymbol } from "@/helpers";
-import { ALLCRYPTOCURRENCIES } from "@/hooks/useWalletData";
 import { useCompany } from "@/context/CompanyContext";
 import { DashboardAction } from "@/Redux/Actions";
-import { DASHBOARD_CHART, DASHBOARD_FETCH } from "@/Redux/Actions/DashboardAction";
+import { DASHBOARD_CHART } from "@/Redux/Actions/DashboardAction";
 import { TimePeriod } from "@/Components/UI/TimePeriodSelector";
 import { useRouteLoader } from "@/context/RouteLoaderContext";
 import ApiLoader from "@/styles/ApiLoader";
+import { ALLCRYPTOCURRENCIES } from "./wallet";
 
 export default function Home({
   setPageName,
@@ -38,7 +38,6 @@ export default function Home({
   );
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>("7days");
   const [rawTransactionData, setRawTransactionData] = useState<Array<{ date: string; value: number }>>([]);
-  const tCommon = useCallback((key: string) => t(key, { ns: "common" }), [t]);
   const dispatch = useDispatch();
 
   const { activeCompanyId } = useCompany();
@@ -49,12 +48,6 @@ export default function Home({
     if (period === "90days") return "90d";
     if (period === "custom") return "custom";
   };
-
-  useEffect(() => {
-    if (activeCompanyId !== null) {
-      dispatch(DashboardAction(DASHBOARD_FETCH, { id: activeCompanyId }));
-    }
-  }, [activeCompanyId, dispatch]);
 
   useEffect(() => {
     if (activeCompanyId !== null) {
@@ -86,7 +79,6 @@ export default function Home({
 
   useEffect(() => {
     if (setPageName && setPageDescription) {
-      // Using dashboardLayout namespace
       setPageName(tDashboard("dashboard"));
       setPageDescription(tDashboard("dashboardDescription"));
     }

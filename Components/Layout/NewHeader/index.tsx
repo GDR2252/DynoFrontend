@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { Box, Grid } from "@mui/material";
+import React, { useCallback, useEffect, useState } from "react";
+import { Box } from "@mui/material";
 import {
   HeaderContainer,
   LogoContainer,
@@ -15,29 +15,41 @@ import LanguageSwitcher from "@/Components/UI/LanguageSwitcher";
 import CompanySelector from "@/Components/UI/CompanySelector";
 import UserMenu from "@/Components/UI/UserMenu";
 import { useRouter } from "next/router";
-import { VerticalLine } from "@/Components/UI/LanguageSwitcher/styled";
 import InfoIcon from "@mui/icons-material/Info";
-import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import { theme } from "@/styles/theme";
 import { useTranslation } from "react-i18next";
-import useIsMobile from "@/hooks/useIsMobile";
-import { useWalletData } from "@/hooks/useWalletData";
 import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
+import { rootReducer } from "@/utils/types";
+import { DASHBOARD_FETCH, DashboardAction } from "@/Redux/Actions/DashboardAction";
+import { useCompany } from "@/context/CompanyContext";
 
 const NewHeader = () => {
   const router = useRouter();
   const namespaces = ["dashboardLayout", "walletScreen"];
   const { t } = useTranslation(namespaces);
-  const tDashboard = useCallback(
-    (key: string) => t(key, { ns: "dashboardLayout" }),
-    [t]
-  );
   const tWallet = useCallback(
     (key: string) => t(key, { ns: "walletScreen" }),
     [t]
   );
-  const isMobile = useIsMobile("md");
-  const { walletWarning } = useWalletData();
+  const dashboardState = useSelector((state: rootReducer) => state.dashboardReducer);
+  const [walletWarning, setWalletWarning] = useState(false);
+  const dispatch = useDispatch();
+
+  const { activeCompanyId } = useCompany();
+
+  useEffect(() => {
+    if (activeCompanyId !== null) {
+      dispatch(DashboardAction(DASHBOARD_FETCH, { id: activeCompanyId }));
+    }
+  }, [activeCompanyId]);
+
+  useEffect(() => {
+    if (dashboardState?.initialized) {
+      setWalletWarning(dashboardState?.dashboardData?.active_wallets?.count === 0);
+    }
+  }, [dashboardState?.dashboardData?.active_wallets?.count, dashboardState?.initialized]);
+
   return (
     <HeaderContainer>
       <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -74,7 +86,7 @@ const NewHeader = () => {
         <CompanySelector />
 
         <RightSection>
-          <Box sx={{display: { xs: "none", lg: "flex" }, gap: "20px"}}>
+          <Box sx={{ display: { xs: "none", lg: "flex" }, gap: "20px" }}>
             <LanguageSwitcher />
 
             {/* <RequiredKYC>

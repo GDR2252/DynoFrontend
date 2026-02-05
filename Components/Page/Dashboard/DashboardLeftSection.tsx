@@ -1,11 +1,9 @@
-import React, { useCallback, useState, useRef, useMemo, memo, useEffect } from "react";
+import React, { useCallback, useState, useRef, useMemo, memo } from "react";
 import { Box, Typography, useTheme, IconButton } from "@mui/material";
 import PanelCard from "@/Components/UI/PanelCard";
 import CustomButton from "@/Components/UI/Buttons";
 import { ArrowOutward, TrendingUp, Add, Remove } from "@mui/icons-material";
 import Image from "next/image";
-import TransactionIcon from "@/assets/Icons/transaction.svg";
-import WalletIcon from "@/assets/Icons/wallet-grey.svg";
 import { useTranslation } from "react-i18next";
 import { PercentageChip } from "./styled";
 import ArrowUpSuccessIcon from "@/assets/Icons/up-success.svg";
@@ -28,29 +26,11 @@ import {
   isValid,
   startOfDay,
 } from "date-fns";
-import { ALLCRYPTOCURRENCIES, useWalletData } from "@/hooks/useWalletData";
-import { useDispatch, useSelector } from "react-redux";
-import { DashboardAction } from "@/Redux/Actions";
-import { DASHBOARD_CHART, DASHBOARD_FETCH } from "@/Redux/Actions/DashboardAction";
-import { useCompany } from "@/context/CompanyContext";
-import { rootReducer } from "@/utils/types";
 
-// Active wallets data array
 interface ActiveWallet {
   code: string;
   icon: any;
 }
-
-// const activeWalletsData: ActiveWallet[] = [
-//   { code: "BTC", icon: BitcoinIcon },
-//   { code: "ETH", icon: EthereumIcon },
-//   { code: "LTC", icon: LitecoinIcon },
-//   { code: "BNB", icon: BNBIcon },
-//   { code: "DOGE", icon: DogecoinIcon },
-//   { code: "BCH", icon: BitcoinCashIcon },
-//   { code: "TRX", icon: TronIcon },
-//   { code: "USDT", icon: USDTIcon },
-// ];
 
 // Helper function to format date as "MMM D" (e.g., "Nov 30")
 const formatDate = (date: Date): string => {

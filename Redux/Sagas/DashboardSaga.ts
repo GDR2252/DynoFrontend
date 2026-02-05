@@ -34,7 +34,7 @@ function* getDashboard(payload: any): unknown {
 
     const {
       data: { data, message },
-    } = yield call(axios.get, `dashboard/?company_id=${id}`);
+    } = yield call(axios.get, `dashboard?company_id=${id}`);
 
     yield put({
       type: DASHBOARD_FETCH,

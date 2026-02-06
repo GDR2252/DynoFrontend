@@ -312,6 +312,7 @@ const InputField: React.FC<InputFieldProps> = ({
       {label && (
         <Typography
           variant="body2"
+          component="div"
           sx={{
             fontWeight: 500,
             fontFamily: "UrbanistMedium",

@@ -12,7 +12,7 @@ export interface rootReducer {
   userReducer: userReducer;
   toastReducer: toastReducer;
   companyReducer: companyReducer;
-  walletReducer: walletReducer;
+  walletReducer: IWalletReducer;
   apiReducer: apiReducer;
   transactionReducer: transactionReducer;
   dashboardReducer: dashboardReducer;
@@ -53,17 +53,17 @@ export interface dashboardReducer {
   loading: boolean;
 }
 
-export interface walletReducer {
+export interface IWalletReducer {
   walletList: IWalletList[];
+  validationResult: any;
+  otpValidateResult: any;
   loading: boolean;
+  validationLoading?: boolean;
+  otpValidationLoading?: boolean;
+  error: any;
+
   amount: number;
   currency: string;
-  otpVerified?: boolean;
-  paymentData: {
-    mode: "avs_noauth" | "pin" | "otp" | "";
-    fields: string[];
-    uniqueRef: string;
-  };
 }
 
 export interface IWalletList {

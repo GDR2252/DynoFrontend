@@ -220,7 +220,7 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps & { cryptocur
             </Box>
 
             {/* ===== Content ===== */}
-            <Box sx={{ mt: "13px", display: "flex", flexDirection: "column", gap: "6px", height: "128px", overflow: "auto" }}>
+            <Box sx={{ mt: "13px", display: "flex", flexDirection: "column", gap: "6px", maxHeight: "132px", overflow: "auto" }}>
               {cryptocurrencies.map((crypto) => (
                 <ListItemButton
                   key={crypto.code}

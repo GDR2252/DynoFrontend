@@ -20,8 +20,7 @@ import Image from "next/image";
 import InfoIcon from "@/assets/Icons/info-icon.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { useCompany } from "@/context/CompanyContext";
-import { WalletAction } from "@/Redux/Actions";
-import { WALLET_FETCH } from "@/Redux/Actions/WalletAction";
+import { fetchWalletRequest } from "@/Redux/Actions/WalletAction";
 
 import BitcoinIcon from "@/assets/cryptocurrency/Bitcoin-icon.svg";
 import EthereumIcon from "@/assets/cryptocurrency/Ethereum-icon.svg";
@@ -113,7 +112,7 @@ const WalletPage = ({
 
   useEffect(() => {
     if (activeCompanyId) {
-      dispatch(WalletAction(WALLET_FETCH, { id: activeCompanyId }));
+      dispatch(fetchWalletRequest(activeCompanyId));
     }
   }, [activeCompanyId]);
 
@@ -139,7 +138,7 @@ const WalletPage = ({
           icon: WALLET_ICONS[type],
           walletTitle: type,
           walletAddress: w.wallet_address,
-          name: WALLET_NAMES[type],
+          name: (w as any).wallet_name || WALLET_NAMES[type],
           totalProcessed: Number(w.amount_in_usd) || 0,
         };
       });
@@ -293,7 +292,14 @@ const WalletPage = ({
 
   if (walletData.length === 0 && !walletLoading) {
     return (
-      <EmptyDataModel cryptocurrencies={cryptocurrencies} pageName="wallet" />
+      <>
+        <EmptyDataModel cryptocurrencies={cryptocurrencies} pageName="wallet" />
+        <AddWalletModal
+          cryptocurrencies={cryptocurrencies}
+          open={openCreate}
+          onClose={() => setOpenCreate(false)}
+        />
+      </>
     );
   }
 

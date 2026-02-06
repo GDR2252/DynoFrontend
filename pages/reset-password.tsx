@@ -106,7 +106,7 @@ const ResetPasswordPage = () => {
 
   const handleSetNewPassword = () => {
     try {
-      if (newPassword && newPasswordConfirm && token && email) {
+      if (newPassword && newPasswordConfirm && token && email && (newPassword === newPasswordConfirm)) {
         dispatch(
           UserAction(USER_RESET_PASSWORD, {
             token: token,

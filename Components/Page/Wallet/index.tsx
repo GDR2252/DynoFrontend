@@ -135,7 +135,7 @@ const Wallet = ({ cryptocurrencies, walletLoading, walletData }: { cryptocurrenc
                 <WalletHeaderAction>
                   <Image src={wallet.icon} alt={wallet.name} draggable={false} />
                   <span>
-                    {wallet.name === "USDT-TRC20" || wallet.name === "USDT-ERC20" ? "USDT" : wallet.walletTitle}
+                    {wallet.walletTitle === "USDT-TRC20" || wallet.walletTitle === "USDT-ERC20" ? "USDT" : wallet.walletTitle}
                   </span>
                 </WalletHeaderAction>
               }

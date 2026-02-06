@@ -1,103 +1,98 @@
-import { ReducerAction } from "@/utils/types";
-import { walletReducer as IWalletReducer } from "@/utils/types";
+import { IWalletReducer } from "@/utils/types";
 import {
-  WALLET_API_ERROR,
-  WALLET_DELETE,
-  WALLET_FETCH,
-  WALLET_FUND_CREATE,
-  WALLET_ADD_ADDRESS,
-  WALLET_INIT,
-  WALLET_INSERT,
-  WALLET_UPDATE,
-  VERIFY_OTP,
+  WALLET_FETCH_REQUEST,
+  WALLET_FETCH_SUCCESS,
+  WALLET_FETCH_FAILURE,
+  ADD_WALLET_VALIDATE_REQUEST,
+  ADD_WALLET_VALIDATE_SUCCESS,
+  ADD_WALLET_VALIDATE_FAILURE,
+  ADD_WALLET_VALIDATE_OTP_REQUEST,
+  ADD_WALLET_VALIDATE_OTP_SUCCESS,
+  ADD_WALLET_VALIDATE_OTP_FAILURE,
 } from "../Actions/WalletAction";
 
 const walletInitialState: IWalletReducer = {
   walletList: [],
+  validationResult: null,
+  otpValidateResult: null,
   loading: false,
+  validationLoading: false,
+  otpValidationLoading: false,
+  error: null,
+
   amount: 0,
   currency: "USD",
-  otpVerified: false,
-  paymentData: {
-    mode: "",
-    fields: [],
-    uniqueRef: "",
-  },
 };
 
-const walletReducer = (state = walletInitialState, action: ReducerAction) => {
-  const { payload } = action;
-
+const walletReducer = (state = walletInitialState, action: any) => {
   switch (action.type) {
-    case WALLET_INIT:
+    case WALLET_FETCH_REQUEST:
       return {
         ...state,
         loading: true,
-      };
-    case WALLET_INSERT:
-      return {
-        ...state,
-        loading: false,
-        walletList: [...state.walletList, payload],
+        error: null,
       };
 
-    case WALLET_UPDATE:
-      const index = state.walletList.findIndex((x) => x.company_id === payload.company_id);
-      const tempArray = [...state.walletList];
-      tempArray[index] = payload.data;
+    case WALLET_FETCH_SUCCESS:
       return {
         ...state,
         loading: false,
-        walletList: tempArray,
+        walletList: action.payload,
       };
 
-    case WALLET_FETCH:
+    case WALLET_FETCH_FAILURE:
       return {
         ...state,
         loading: false,
-        walletList: Array.isArray(payload) ? payload : [],
+        error: action.payload,
       };
 
-    case WALLET_DELETE:
-      const tempList = state.walletList.filter((x) => x.company_id !== payload);
+    case ADD_WALLET_VALIDATE_REQUEST:
       return {
         ...state,
-        loading: false,
-        walletList: [...tempList],
+        validationLoading: true,
+        error: null,
+        validationResult: null,
       };
 
-    case WALLET_FUND_CREATE:
+    case ADD_WALLET_VALIDATE_SUCCESS:
       return {
         ...state,
-        loading: false,
-        amount: payload.amount,
-        currency: payload.currency,
-      };
-    case WALLET_ADD_ADDRESS:
-      return {
-        ...state,
-        loading: false,
-        wallet_address: payload.wallet_address,
-        currency: payload.currency,
-        otpVerified: false, // Reset OTP verification flag
+        validationLoading: false,
+        validationResult: action.payload,
       };
 
-    case VERIFY_OTP:
+    case ADD_WALLET_VALIDATE_FAILURE:
       return {
         ...state,
-        loading: false,
-        otpVerified: payload.success || false,
+        validationLoading: false,
+        error: action.payload,
       };
 
-    case WALLET_API_ERROR:
+    case ADD_WALLET_VALIDATE_OTP_REQUEST:
       return {
         ...state,
-        loading: false,
+        otpValidationLoading: true,
+        error: null,
+        otpValidateResult: null,
       };
+
+    case ADD_WALLET_VALIDATE_OTP_SUCCESS:
+      return {
+        ...state,
+        otpValidationLoading: false,
+        otpValidateResult: action.payload,
+      };
+
+    case ADD_WALLET_VALIDATE_OTP_FAILURE:
+      return {
+        ...state,
+        otpValidationLoading: false,
+        error: action.payload,
+      };
+
     default:
-      return {
-        ...state,
-      };
+      return state;
   }
 };
 

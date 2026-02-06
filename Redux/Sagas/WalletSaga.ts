@@ -1,117 +1,106 @@
 import { call, put } from "redux-saga/effects";
-
 import axios from "@/axiosConfig";
-import { TOAST_SHOW } from "../Actions/ToastAction";
 import {
-  WALLET_API_ERROR,
-  WALLET_FETCH,
-  WALLET_ADD_ADDRESS,
-  VERIFY_OTP,
+  fetchWalletSuccess,
+  fetchWalletFailure,
+  validateWalletSuccess,
+  validateWalletFailure,
+  validateWalletOtpSuccess,
+  validateWalletOtpFailure,
 } from "../Actions/WalletAction";
-interface IWalletAction {
-  crudType: string;
-  payload: any;
-}
+import { TOAST_SHOW } from "../Actions/ToastAction";
 
-export function* WalletSaga(action: IWalletAction): unknown {
-  switch (action.crudType) {
-    case WALLET_FETCH:
-      yield getWallet(action.payload);
-      break;
+export function* fetchWalletSaga(action: any): any {
+  try {
+    const { companyId } = action.payload;
 
-    case WALLET_ADD_ADDRESS:
-      yield validateWalletAddress(action.payload);
-      break;
+    const response = yield call(
+      axios.get,
+      `wallet/getWallet?company_id=${companyId}`,
+    );
 
-    default:
-      yield put({ type: WALLET_API_ERROR });
-      break;
+    yield put(fetchWalletSuccess(response.data.data));
+  } catch (e: any) {
+    const message =
+      e?.response?.data?.message || e.message || "Wallet fetch failed";
+
+    yield put(fetchWalletFailure(message));
+
+    yield put({
+      type: TOAST_SHOW,
+      payload: { message, severity: "error" },
+    });
   }
 }
 
-export function* getWallet(payload: any): unknown {
+export function* validateWalletSaga(action: any): any {
   try {
-    const { id } = payload;
-    const {
-      data: { data, message },
-    } = yield call(axios.get, `wallet/getWallet?company_id=${id}`);
+    const payload = action.payload;
+    console.log(payload);
+
+    const data = {
+      wallet_address: payload.wallet_address,
+      currency: payload.currency,
+      company_id: payload.company_id,
+      wallet_name: payload.wallet_name,
+    };
+
+    const response = yield call(
+      axios.post,
+      "wallet/validateWalletAddress",
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    yield put(validateWalletSuccess(response.data.data));
 
     yield put({
-      type: WALLET_FETCH,
-      payload: data,
+      type: TOAST_SHOW,
+      payload: { message: payload.isResend ? "OTP Resend to your Email" : response.data.message, severity: "success" },
     });
   } catch (e: any) {
     const message =
-      e?.response?.data?.message ?? e?.message ?? "Failed to fetch wallets";
+      e?.response?.data?.message || e.message || "Wallet validation failed";
+
+    yield put(validateWalletFailure(message));
+
     yield put({
       type: TOAST_SHOW,
-      payload: {
-        message: message,
-        severity: "error",
-      },
-    });
-    yield put({
-      type: WALLET_API_ERROR,
+      payload: { message, severity: "error" },
     });
   }
 }
 
-export function* validateWalletAddress(payload: any): unknown {
+export function* validateWalletOtpSaga(action: any): any {
   try {
-    console.log("Sending payload:", payload);
-    const {
-      data: { data, message },
-    } = yield call(axios.post, "wallet/validateWalletAddress", payload, {
+    const payload = action.payload;
+    console.log(payload);
+
+    const response = yield call(axios.post, "wallet/verifyOtp", payload, {
       headers: {
         "Content-Type": "application/json",
       },
     });
+
+    yield put(validateWalletOtpSuccess(response.data.data));
+
     yield put({
       type: TOAST_SHOW,
-      payload: { message },
-    });
-    yield put({
-      type: WALLET_ADD_ADDRESS,
-      payload: data,
+      payload: { message: response.data.message, severity: "success" },
     });
   } catch (e: any) {
     const message =
-      e?.response?.data?.message ??
-      e?.message ??
-      "Failed to validate wallet address";
+      e?.response?.data?.message || e.message || "Wallet OTP validation failed";
+
+    yield put(validateWalletOtpFailure(message));
+
     yield put({
       type: TOAST_SHOW,
-      payload: {
-        message: message,
-        severity: "error",
-      },
+      payload: { message, severity: "error" },
     });
-    yield put({
-      type: WALLET_API_ERROR,
-    });
-  }
-}
-
-export async function verifyOtp(
-  payload: any,
-): Promise<{ status: boolean; message: string }> {
-  try {
-    console.log("Verifying OTP with payload:", payload);
-
-    const response = await axios.post("/wallet/verifyCode", payload, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const httpStatus = response.status;
-    const { data, message, success } = response.data;
-
-    // Dispatch VERIFY_OTP action
-    return { status: httpStatus === 200, message };
-  } catch (e: any) {
-    const message =
-      e.response?.data?.message ?? e.message ?? "OTP verification failed";
-
-    return { status: false, message };
   }
 }

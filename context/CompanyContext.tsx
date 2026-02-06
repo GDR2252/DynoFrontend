@@ -25,6 +25,21 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
     const [companyLoading, setCompanyLoading] = useState<boolean>(false);
     const [activeCompanyId, setActiveCompanyId] = useState<number | null>(null);
 
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const saved = localStorage.getItem("activeCompanyId");
+            if (saved) {
+                setActiveCompanyId(Number(saved));
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        if (typeof window !== "undefined" && activeCompanyId !== null) {
+            localStorage.setItem("activeCompanyId", activeCompanyId.toString());
+        }
+    }, [activeCompanyId]);
+
     const companyState = useSelector((state: rootReducer) => state.companyReducer);
 
     useEffect(() => {

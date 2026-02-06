@@ -517,12 +517,12 @@ const OtpDialog: React.FC<OtpDialogProps> = ({
   return (
     <PopupModal
       open={open}
-      handleClose={handleClose}
+      handleClose={handleClose} 
       showHeader={false}
       transparent
       disableEscapeKeyDown={preventClose}
       onClose={(event, reason) => {
-        if (preventClose) {
+        if (preventClose || countdown > 0) {
           return;
         }
         if (reason === "backdropClick" || reason === "escapeKeyDown") {

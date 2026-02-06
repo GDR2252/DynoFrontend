@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import BitcoinIcon from "@/assets/cryptocurrency/Bitcoin-icon.svg";
 import EthereumIcon from "@/assets/cryptocurrency/Ethereum-icon.svg";
 import LitecoinIcon from "@/assets/cryptocurrency/Litecoin-icon.svg";
+import BNBIcon from "@/assets/cryptocurrency/BNB-icon.svg";
 import DogecoinIcon from "@/assets/cryptocurrency/Dogecoin-icon.svg";
 import BitcoinCashIcon from "@/assets/cryptocurrency/BitcoinCash-icon.svg";
 import TronIcon from "@/assets/cryptocurrency/Tron-icon.svg";
@@ -12,6 +13,7 @@ import USDTIcon from "@/assets/cryptocurrency/USDT-icon.svg";
 
 import CorrectIcon from "@/assets/Icons/correct-icon.png";
 import WrongIcon from "@/assets/Icons/wrong-icon.png";
+import HourglassIcon from "@/assets/Icons/hourglass-icon.svg";
 
 import TransactionIcon from "@/assets/Icons/transaction-icon.svg";
 import CryptoIcon from "@/assets/Icons/crypto-icon.svg";
@@ -26,11 +28,13 @@ import KeyboardArrowRightRoundedIcon from "@mui/icons-material/KeyboardArrowRigh
 import {
   TransactionsTableBody,
   TransactionsTableCell,
+  TransactionsTableContainer,
   TransactionsTableFooter,
   TransactionsTableFooterText,
   TransactionsTableHeader,
   TransactionsTableHeaderItem,
   TransactionsTableRow,
+  TransactionsTableScrollWrapper,
   StatusBadge,
   StatusIconWrapper,
   StatusText,
@@ -45,6 +49,7 @@ import TransactionDetailsModal, {
 } from "./TransactionDetailsModal";
 import { HourGlassIcon } from "@/utils/customIcons";
 
+// Transaction data interface - extends ExtendedTransaction which already includes all fields
 export type Transaction = ExtendedTransaction;
 
 interface TransactionsTableProps {
@@ -164,111 +169,85 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
     },
   ];
 
-  const navButtonStyle = {
-    width: "fit-content",
-    height: "36px",
-    padding: "0px 12px",
-    "&:disabled": {
-      backgroundColor: theme.palette.common.white,
-      color: theme.palette.text.primary,
-      border: `1px solid ${theme.palette.border.main}`,
-      cursor: "not-allowed",
-      opacity: 0.5,
-    },
-    ".custom-button-label": {
-      fontSize: "13px !important",
-      fontFamily: "UrbanistMedium",
-      lineHeight: "16px",
-      fontWeight: 500,
-    },
-    [theme.breakpoints.down("md")]: {
-      display: "none",
-    },
-  };
-
-  const formatAmount = (amount: any) => {
-    const [value, unit] = amount.split(" ");
-    return `${Number(value).toFixed(4)} ${unit}`;
-  };
-
-  const formatUsd = (usdValue: any) => {
-    const value = usdValue.replace("$", "");
-    return `$${Number(value).toFixed(3)}`;
-  };
-
-  const isDataEmpty = currentTransactions.length === 0;
-
   return (
     <Box sx={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, maxHeight: "fit-content" }}>
-      <Box
-        sx={{
-          flex: 1,
-          minHeight: 0,
-          overflowX: "auto",
-          overflowY: "hidden",
-          scrollbarWidth: "none",
-        }}
-      >
-        <Box sx={{ display: "flex", flexDirection: "column", minWidth: "max-content", height: "100%" }}>
-          {/* Header Section */}
-          <Box sx={{ display: "flex", height: isMobile ? 44 : 56 }}>
-            <TransactionsTableHeader>
-              {HeaderData.map((item) => (
-                <TransactionsTableHeaderItem key={item.key}>
-                  <Image
-                    src={item.icon}
-                    alt={item.label}
-                    style={{ filter: `brightness(0) saturate(100%) invert(15%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(100%)` }}
-                    draggable={false}
-                  />
-                  <span>{item.label}</span>
-                </TransactionsTableHeaderItem>
-              ))}
-            </TransactionsTableHeader>
-          </Box>
-
-          {/* Body Section */}
-          <Box
-            sx={{
-              flex: 1,
-              minHeight: 0,
-              overflowY: "auto",
-              overflowX: "hidden",
-              backgroundColor: theme.palette.common.white,
-            }}
-          >
-            <TransactionsTableBody>
-              {isDataEmpty ? (
-                <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", mt: 3 }}>
-                  {t("transactionsNotAvailable", { ns: "common" })}
-                </Box>
-              ) : (
-                currentTransactions.map((transaction) => (
+      <TransactionsTableContainer>
+        <TransactionsTableScrollWrapper>
+          <TransactionsTableHeader>
+            {HeaderData.map((item) => (
+              <TransactionsTableHeaderItem key={item.key}>
+                <Image
+                  src={item.icon}
+                  alt={item.label}
+                  style={{
+                    filter: `brightness(0) saturate(100%) invert(15%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(100%)`,
+                  }}
+                  draggable={false}
+                />
+                <span>{item.label}</span>
+              </TransactionsTableHeaderItem>
+            ))}
+          </TransactionsTableHeader>
+          <TransactionsTableBody>
+            {currentTransactions.length > 0 ? (
+              <>
+                {currentTransactions.map((transaction, index) => (
                   <TransactionsTableRow
                     key={transaction.id}
                     onClick={() => handleRowClick(transaction)}
                     sx={{
-                      paddingY: isMobile ? "9px !important" : "10px !important",
+                      paddingY: "10px !important",
                       cursor: "pointer",
+                      opacity: 0,
+                      transform: "translateY(20px)",
+                      animation: "cardFadeUp 0.5s ease forwards",
+                      animationDelay: `${index * 0.05}s`,
+
+                      "@keyframes cardFadeUp": {
+                        "0%": {
+                          opacity: 0,
+                          transform: "translateY(20px)",
+                        },
+                        "100%": {
+                          opacity: 1,
+                          transform: "translateY(0)",
+                        },
+                      },
                     }}
                   >
                     <TransactionsTableCell>{transaction.id}</TransactionsTableCell>
-
                     <TransactionsTableCell>
                       <CryptoIconChip sx={{ width: "fit-content" }}>
-                        <Image src={getCryptoIcon(transaction.crypto)} alt={transaction.crypto} draggable={false} />
-                        <Typography component="span" sx={{ color: theme.palette.text.secondary }}>
+                        <Image
+                          src={getCryptoIcon(transaction.crypto)}
+                          alt={transaction.crypto}
+                          draggable={false}
+                        />
+                        <Typography
+                          component={"span"}
+                          sx={{
+                            color: theme.palette.text.secondary,
+                          }}
+                        >
                           {transaction.crypto}
                         </Typography>
                       </CryptoIconChip>
                     </TransactionsTableCell>
-
-                    <TransactionsTableCell>{formatAmount(transaction.amount)}</TransactionsTableCell>
-
-                    <TransactionsTableCell>{formatUsd(transaction.usdValue)}</TransactionsTableCell>
-
-                    <TransactionsTableCell>{transaction.dateTime}</TransactionsTableCell>
-
+                    <TransactionsTableCell>
+                      {(() => {
+                        const [value, unit] = transaction.amount.split(" ");
+                        return `${Number(value).toFixed(4)} ${unit}`;
+                      })()}
+                    </TransactionsTableCell>
+                    <TransactionsTableCell>
+                      {(() => {
+                        const value = transaction.usdValue.replace("$", "");
+                        return `$${Number(value).toFixed(3)}`;
+                      })()}
+                    </TransactionsTableCell>
+                    <TransactionsTableCell>
+                      {transaction.dateTime}
+                    </TransactionsTableCell>
                     <TransactionsTableCell>
                       <StatusBadge status={transaction.status}>
                         <StatusIconWrapper status={transaction.status}>
@@ -280,22 +259,25 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
                       </StatusBadge>
                     </TransactionsTableCell>
                   </TransactionsTableRow>
-                ))
-              )}
-            </TransactionsTableBody>
-          </Box>
-        </Box>
-      </Box>
+                ))}
+              </>
+            ) : (
+              <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", mt: 3 }}>{t("transactionsNotAvailable", { ns: "common" })}</Box>
+            )}
 
-      {/* Footer Section */}
-      <Box sx={{ backgroundColor: theme.palette.common.white, borderEndStartRadius: "14px", borderEndEndRadius: "14px" }}>
+          </TransactionsTableBody>
+        </TransactionsTableScrollWrapper>
         <TransactionsTableFooter>
           <RowsPerPageSelector
             value={rowsPerPage}
             onChange={handleRowsPerPageChange}
-            menuItems={[5, 10, 15, 20].map(v => ({ value: v, label: v }))}
+            menuItems={[
+              { value: 5, label: 5 },
+              { value: 10, label: 10 },
+              { value: 15, label: 15 },
+              { value: 20, label: 20 },
+            ]}
           />
-
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <TransactionsTableFooterText>
               {tTransactions("showingTransactions", {
@@ -303,44 +285,97 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
                 total: transactions.length,
               })}
             </TransactionsTableFooterText>
-
             <CustomButton
               label={tTransactions("previous")}
               variant="outlined"
-              sx={navButtonStyle}
-              startIcon={<KeyboardArrowLeftRoundedIcon sx={{ height: "20px", width: "20px" }} />}
-              disabled={currentPage === 1 || isDataEmpty}
-              onClick={() => setCurrentPage(prev => prev - 1)}
+              size="medium"
+              sx={{
+                width: "fit-content",
+                height: "36px",
+                padding: "0px 12px",
+                "&:disabled": {
+                  backgroundColor: theme.palette.common.white,
+                  color: theme.palette.text.primary,
+                  border: `1px solid ${theme.palette.border.main}`,
+                  cursor: "not-allowed",
+                  opacity: 0.5,
+                },
+                ".custom-button-label": {
+                  fontSize: "13px !important",
+                  fontFamily: "UrbanistMedium",
+                  lineHeight: "16px",
+                  fontWeight: 500,
+                },
+                [theme.breakpoints.down("md")]: {
+                  display: "none",
+                },
+              }}
+              startIcon={
+                <KeyboardArrowLeftRoundedIcon
+                  sx={{ height: "20px", width: "20px" }}
+                />
+              }
+              disabled={currentPage === 1 || currentTransactions.length === 0}
+              onClick={() => setCurrentPage(currentPage - 1)}
             />
-
             <CustomButton
               label={tTransactions("next")}
               variant="outlined"
-              sx={navButtonStyle}
-              endIcon={<KeyboardArrowRightRoundedIcon sx={{ height: "20px", width: "20px" }} />}
-              disabled={currentPage === totalPages || isDataEmpty}
-              onClick={() => setCurrentPage(prev => prev + 1)}
+              size="medium"
+              sx={{
+                width: "fit-content",
+                height: "36px",
+                padding: "0px 12px",
+                "&:disabled": {
+                  backgroundColor: theme.palette.common.white,
+                  color: theme.palette.text.primary,
+                  border: `1px solid ${theme.palette.border.main}`,
+                  cursor: "not-allowed",
+                  opacity: 0.5,
+                },
+                ".custom-button-label": {
+                  fontSize: "13px !important",
+                  fontFamily: "UrbanistMedium",
+                  lineHeight: "16px",
+                  fontWeight: 500,
+                },
+                [theme.breakpoints.down("md")]: {
+                  display: "none",
+                },
+              }}
+              endIcon={
+                <KeyboardArrowRightRoundedIcon
+                  sx={{ height: "20px", width: "20px" }}
+                />
+              }
+              disabled={currentPage === totalPages || currentTransactions.length === 0}
+              onClick={() => setCurrentPage(currentPage + 1)}
             />
 
-            {/* Mobile Nav */}
             <MobileNavigationButtons
-              onClick={() => setCurrentPage(prev => prev - 1)}
-              disabled={currentPage === 1 || isDataEmpty}
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1 || currentTransactions.length === 0}
             >
-              <KeyboardArrowLeftRoundedIcon sx={{ height: "16px", width: "16px", color: "inherit" }} />
+              <KeyboardArrowLeftRoundedIcon
+                sx={{ height: "16px", width: "16px", color: "inherit" }}
+              />
             </MobileNavigationButtons>
-
             <MobileNavigationButtons
-              onClick={() => setCurrentPage(prev => prev + 1)}
-              disabled={currentPage === totalPages || isDataEmpty}
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages || currentTransactions.length === 0}
             >
-              <KeyboardArrowRightRoundedIcon sx={{ height: "16px", width: "16px", color: "inherit" }} />
+              <KeyboardArrowRightRoundedIcon
+                sx={{ height: "16px", width: "16px", color: "inherit" }}
+              />
             </MobileNavigationButtons>
           </Box>
         </TransactionsTableFooter>
-      </Box>
-
-      <TransactionDetailsModal open={modalOpen} onClose={handleCloseModal} transaction={selectedTransaction} />
+      </TransactionsTableContainer>
+      <TransactionDetailsModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        transaction={selectedTransaction}
+      />
     </Box>
   );
 };

@@ -9,13 +9,9 @@ export const HeaderContainer = styled("div")(({ theme }) => ({
   background: "transparent",
   display: "flex",
   gap: "24px",
-  // flexDirection: "row",
-  // color: theme.palette.primary.main,
   [theme.breakpoints.down("sm")]: {
     gap: "8px",
-    // width: "100vw",
   },
-  // gap: "20px",
 }));
 
 export const LogoContainer = styled("div")(({ theme }) => ({

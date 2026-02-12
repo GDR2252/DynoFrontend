@@ -58,11 +58,14 @@ const DashboardRightSection = () => {
         headerAction={
           <IconButton
             sx={{
+              position: "absolute",
+              right: "12px",
+              top: "12px",
               backgroundColor: "#E9ECF2",
               p: "8px",
               width: isMobile ? 32 : 40,
               height: isMobile ? 32 : 40,
-              "&:hover": { backgroundColor: "transparent" },
+              "&:hover": { backgroundColor: "#E9ECF2" },
             }}
           >
             <Image
@@ -71,7 +74,7 @@ const DashboardRightSection = () => {
               width={18}
               height={18}
               draggable={false}
-              style={{ width: "clamp(14px, 2vw, 18px)", height: "auto" }}
+              style={{ width: "clamp(14px, 2vw, 18px)", height: "auto " }}
             />
           </IconButton>
         }

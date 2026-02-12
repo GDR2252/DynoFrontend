@@ -192,6 +192,27 @@ const Chart = ({ data }: { data: ChartData[] }) => {
     const finalGradientEndColor = gradientEndColor || theme.palette.primary.main;
     const gradientStartOpacity = 1;
     const gradientEndOpacity = 0;
+    const xGridPointsRef = useRef<number[]>([]);
+    const [, forceRender] = useState(0);
+    const [containerWidth, setContainerWidth] = useState(0);
+
+    useEffect(() => {
+        xGridPointsRef.current = [];
+        forceRender(n => n + 1);
+    }, [data, containerWidth]); 
+
+    useEffect(() => {
+        if (!chartContainerRef.current) return;
+
+        const observer = new ResizeObserver(entries => {
+            const width = entries[0].contentRect.width;
+            setContainerWidth(width);
+        });
+
+        observer.observe(chartContainerRef.current);
+
+        return () => observer.disconnect();
+    }, []);
 
     const hasRealValues = data.some(
         (d) => typeof d.value === "number" && d.value > 0
@@ -287,8 +308,8 @@ const Chart = ({ data }: { data: ChartData[] }) => {
                 sx={{
                     height: 320,
                     width: {
-                        xs: data.length < 8 ? "500px": data.length < 31 ? "800px": "1000px",
-                        sm: data.length < 31 ? "800px": "1000px",
+                        xs: data.length < 8 ? "500px" : data.length < 31 ? "800px" : "1000px",
+                        sm: data.length < 31 ? "800px" : "1000px",
                         md: "100%",
                     },
                     minWidth: "100%",
@@ -323,8 +344,17 @@ const Chart = ({ data }: { data: ChartData[] }) => {
                             interval={0}
                             minTickGap={0}
                             tickLine={false}
+                            onChange={() => {
+                                forceRender(n => n + 1);
+                            }}
                             tick={({ x, y, payload, index }) => {
                                 if (!shouldShowLabel(index, data.length)) return null;
+
+                                const xPos = Number(x);
+
+                                if (!xGridPointsRef.current.includes(xPos)) {
+                                    xGridPointsRef.current.push(xPos);
+                                }
 
                                 return (
                                     <g>
@@ -351,19 +381,6 @@ const Chart = ({ data }: { data: ChartData[] }) => {
                             }}
                         />
 
-                        {data.map((d, index) => {
-                            if (!shouldShowLabel(index, data.length)) return null;
-                            return (
-                                <ReferenceLine
-                                    key={`x-grid-${index}`}
-                                    x={d.date}
-                                    zIndex={1}
-                                    stroke="#E5E7EB"
-                                    strokeDasharray="4 4"
-                                />
-                            );
-                        })}
-
                         <YAxis
                             tickFormatter={formatK}
                             domain={yDomain}
@@ -388,7 +405,8 @@ const Chart = ({ data }: { data: ChartData[] }) => {
                                 <CartesianGrid
                                     stroke="#E5E7EB"
                                     horizontal
-                                    vertical={false}
+                                    vertical
+                                    verticalPoints={xGridPointsRef.current}
                                     strokeDasharray="4 4"
                                 />
 
@@ -421,7 +439,14 @@ const Chart = ({ data }: { data: ChartData[] }) => {
                                             >
                                                 <circle cx={cx} cy={cy} r={6} fill="transparent" />
 
-                                                {isActive && (
+                                                {data.length <= 30 && (
+                                                    <>
+                                                        <circle cx={cx} cy={cy} r={7} fill="#1E40FF" filter={`blur(12px)`} opacity={0.6} />
+                                                        <circle cx={cx} cy={cy} fill="#1E40FF" r={6} strokeWidth={2} />
+                                                    </>
+                                                )}
+
+                                                {(isActive && data.length > 30) && (
                                                     <>
                                                         <circle cx={cx} cy={cy} r={7} fill="#1E40FF" filter={`blur(12px)`} opacity={0.6} />
                                                         <circle cx={cx} cy={cy} fill="#1E40FF" r={6} strokeWidth={2} />

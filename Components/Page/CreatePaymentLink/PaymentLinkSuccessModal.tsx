@@ -242,42 +242,6 @@ const PaymentLinkSuccessModal: React.FC<PaymentLinkSuccessModalProps> = ({
                 />
               </Box>
             </PaymentDetailsContainer>
-
-            {/* Action Buttons */}
-            <Box
-              sx={{
-                display: "flex",
-                gap: 1.5,
-                marginTop: 1,
-              }}
-            >
-              <CustomButton
-                label={tPaymentLink("toClose")}
-                variant="outlined"
-                size="medium"
-                onClick={onClose}
-                fullWidth
-                sx={{
-                  [theme.breakpoints.down("md")]: {
-                    height: "32px",
-                    fontSize: "13px",
-                  },
-                }}
-              />
-              <CustomButton
-                label={tPaymentLink("copyLink")}
-                variant="primary"
-                size="medium"
-                onClick={onCopyLink}
-                fullWidth
-                sx={{
-                  [theme.breakpoints.down("md")]: {
-                    height: "32px",
-                    fontSize: "13px",
-                  },
-                }}
-              />
-            </Box>
           </Box>
         </PanelCard>
       </PopupModal>

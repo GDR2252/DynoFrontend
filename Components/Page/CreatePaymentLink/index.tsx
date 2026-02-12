@@ -526,7 +526,7 @@ const CreatePaymentLinkPage = () => {
             </Box>
             <Box>
               <CustomButton
-                label={tPaymentLink("createPayment")}
+                label={tPaymentLink("continue")}
                 variant="primary"
                 size="medium"
                 fullWidth={true}

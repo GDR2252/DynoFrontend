@@ -460,7 +460,7 @@ const InputField: React.FC<InputFieldProps> = ({
                   boxSizing: "border-box",
                   fontSize: isMobile ? "10px" : "13px",
                   lineHeight: "1.5",
-                  color: disabled ? "#B0BEC5" : "#333",
+                  color: disabled ? "#B0BEC5" : theme.palette.text.primary,
                   "&::placeholder": {
                     color: theme.palette.secondary.contrastText,
                     fontFamily: "UrbanistMedium",

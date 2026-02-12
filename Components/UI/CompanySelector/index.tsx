@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { use, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme, Box, Divider, Typography } from "@mui/material";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import EditIcon from "@/assets/Icons/edit-icon.svg";
@@ -21,6 +21,7 @@ import { useSelector } from "react-redux";
 import { ICompany, rootReducer } from "@/utils/types";
 import { useCompanyDialog } from "@/Components/UI/CompanyDialog/context";
 import useIsMobile from "@/hooks/useIsMobile";
+import { set } from "date-fns";
 
 export default function CompanySelector() {
   const { t } = useTranslation("dashboardLayout");
@@ -33,6 +34,30 @@ export default function CompanySelector() {
   );
 
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const MIN_WIDTH = 390;
+  const MAX_WIDTH = 500;
+  const BASE_COUNT = 15;
+  const STEP = 10;
+
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [count, setCount] = useState(BASE_COUNT);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const clampedWidth = Math.min(Math.max(windowWidth, MIN_WIDTH), MAX_WIDTH);
+
+    const extra = Math.floor((clampedWidth - MIN_WIDTH) / STEP);
+    setCount(BASE_COUNT + extra);
+  }, [windowWidth]);
+
 
   // const companies = useMemo(
   //   () => companyState.companyList ?? [],
@@ -119,12 +144,20 @@ export default function CompanySelector() {
     };
   }, [anchorEl]);
 
+  function truncateByWords(text: string, maxLength: number) {
+    if (text.length <= maxLength) return text;
+
+    const trimmed = text.slice(0, maxLength);
+    const words = `${trimmed}...`;
+    return words;
+  }
+
   return (
     <Box
       ref={wrapperRef}
       sx={{
         position: "relative",
-        width: isMobile ? "154px" : "clamp(265px, 18vw, 324px)",
+        width: isMobile ? "fit-content" : "clamp(265px, 18vw, 300px)",
         mt: Boolean(anchorEl) && isMobile ? "-16px !important" : "0px",
         ml: Boolean(anchorEl) && isMobile ? "-6px !important" : "0px"
       }}
@@ -138,7 +171,7 @@ export default function CompanySelector() {
               fontSize: isMobile ? "16.5px" : "20px",
             }}
           />
-          <TriggerText sx={{ color: theme.palette.primary.main }}>{selected?.company_name ?? "-"}</TriggerText>
+          <TriggerText sx={{ color: theme.palette.primary.main }}>{windowWidth < 600 ? truncateByWords(selected?.company_name ?? "-", count) : selected?.company_name ?? "-"}</TriggerText>
         </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -219,7 +252,7 @@ export default function CompanySelector() {
                     <BusinessCenterIcon
                       sx={{ fontSize: isMobile ? "16.5px" : "20px" }}
                     />
-                    <TriggerText>{c.company_name ?? "-"}</TriggerText>
+                    <TriggerText>{isMobile ? truncateByWords(c?.company_name ?? "-", 18) : c?.company_name ?? "-"}</TriggerText>
                   </Box>
                   <Typography
                     sx={{

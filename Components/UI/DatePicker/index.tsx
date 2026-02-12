@@ -250,9 +250,13 @@ const CalendarMonth: React.FC<CalendarMonthProps> = ({
 };
 
 export interface DatePickerRef {
-  open: (event: React.MouseEvent<HTMLElement>) => void;
+  open: (event: DatePickerOpenEvent) => void;
   close: () => void;
   isOpen: () => boolean;
+}
+
+export interface DatePickerOpenEvent {
+  currentTarget: HTMLElement;
 }
 
 // Main Component
@@ -269,7 +273,7 @@ const CustomDatePicker = forwardRef<DatePickerRef, DatePickerProps>(({
   hideTrigger = false,
   trigger,
   disableFutureDates = true,
-  blockedDateMessage = "You can’t select a future date.",
+  blockedDateMessage = "You can't select a future date.",
   noscriptStartDateName,
   noscriptEndDateName,
 }, ref) => {
@@ -301,7 +305,7 @@ const CustomDatePicker = forwardRef<DatePickerRef, DatePickerProps>(({
 
   const isOpen = Boolean(anchorEl);
 
-  const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const handleOpen = (event: DatePickerOpenEvent) => {
     // Reset months on open so desktop shows [lastMonth, currentMonth]
     // and mobile shows [currentMonth]. This also ensures responsive
     // behavior when user resizes the viewport while the popover is open.
@@ -319,7 +323,7 @@ const CustomDatePicker = forwardRef<DatePickerRef, DatePickerProps>(({
 
   // Expose methods via ref
   useImperativeHandle(ref, () => ({
-    open: (event: React.MouseEvent<HTMLElement>) => {
+    open: (event: DatePickerOpenEvent) => {
       handleOpen(event);
     },
     close: () => {
@@ -523,16 +527,14 @@ const CustomDatePicker = forwardRef<DatePickerRef, DatePickerProps>(({
         return trigger(handleOpen);
       }
       // If it's a React element, clone it and add onClick handler
-      if (React.isValidElement(trigger)) {
-        const existingOnClick = (trigger.props as any)?.onClick;
+      if (React.isValidElement<{ onClick?: (event: React.MouseEvent<HTMLElement>) => void }>(trigger)) {
+        const existingOnClick = trigger.props.onClick;
         return React.cloneElement(trigger, {
           onClick: (e: React.MouseEvent<HTMLElement>) => {
             handleOpen(e);
-            if (existingOnClick) {
-              existingOnClick(e);
-            }
+            existingOnClick?.(e);
           },
-        } as any);
+        });
       }
       return trigger;
     }

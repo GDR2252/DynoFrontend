@@ -44,7 +44,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
               fontSize: { xs: "13px", md: "15px" },
               fontWeight: 700,
               fontFamily: "UrbanistBold",
-              color: "#242428",
+              color: theme.palette.text.primary,
               mb: 0.5,
               lineHeight: "100%",
               letterSpacing: 0
@@ -56,7 +56,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
             sx={{
               fontSize: { xs: "13px", md: "15px" },
               fontFamily: "UrbanistMedium",
-              color: theme.palette.text.secondary,
+              color: theme.palette.text.primary,
               lineHeight: 1.5,
             }}
           >
@@ -133,7 +133,7 @@ const NotificationPage = () => {
             {/* Transaction Alerts Card */}
             <PanelCard
               headerSx={{ fontSize: { xs: "15px", md: "20px" } }}
-              subTitleSx={{ fontSize: { xs: "13px", md: "15px" } }}
+              subTitleSx={{ fontSize: { xs: "13px", md: "15px" }, color: theme.palette.text.primary }}
               title={tNotifications("transactionAlertsTitle")}
               subTitle={tNotifications("transactionAlertsSubtitle")}
               showHeaderBorder={false}
@@ -184,7 +184,7 @@ const NotificationPage = () => {
             {/* Weekly Reports Card */}
             <PanelCard
               headerSx={{ fontSize: { xs: "15px", md: "20px" } }}
-              subTitleSx={{ fontSize: { xs: "13px", md: "15px" } }}
+              subTitleSx={{ fontSize: { xs: "13px", md: "15px" }, color: theme.palette.text.primary }}
               title={tNotifications("weeklyReportsTitle")}
               subTitle={tNotifications("weeklyReportsSubtitle")}
               showHeaderBorder={false}
@@ -240,7 +240,7 @@ const NotificationPage = () => {
           >
             <PanelCard
               headerSx={{ fontSize: { xs: "15px", md: "20px" } }}
-              subTitleSx={{ fontSize: { xs: "13px", md: "15px" } }}
+              subTitleSx={{ fontSize: { xs: "13px", md: "15px" }, color: theme.palette.text.primary }}
               title={tNotifications("emailNotificationsCardTitle")}
               subTitle={tNotifications("emailNotificationsCardSubtitle")}
               showHeaderBorder={false}
@@ -291,7 +291,7 @@ const NotificationPage = () => {
                         fontSize: { xs: "13px", md: "15px" },
                         fontWeight: 700,
                         fontFamily: "UrbanistMedium",
-                        color: "#242428",
+                        color: theme.palette.text.primary,
                         mb: 0.5,
                         lineHeight: "100%",
                         letterSpacing: 0
@@ -303,7 +303,7 @@ const NotificationPage = () => {
                       sx={{
                         fontSize: { xs: "13px", md: "15px" },
                         fontFamily: "UrbanistRegular",
-                        color: theme.palette.text.secondary,
+                        color: theme.palette.text.primary,
                         lineHeight: 1.5,
                       }}
                     >

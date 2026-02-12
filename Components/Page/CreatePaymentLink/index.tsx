@@ -319,7 +319,7 @@ const CreatePaymentLinkPage = () => {
                   >
                     <ExpireTrigger
                       ref={expireTriggerRef}
-                      // onClick={handleExpireOpen}
+                      onClick={handleExpireOpen}
                       fullWidth={true}
                       isOpen={expireOpen}
                       isMobile={isMobile}
@@ -457,9 +457,9 @@ const CreatePaymentLinkPage = () => {
                     <FormControl component="fieldset">
                       <RadioGroup
                         value={blockchainFees}
-                        // onChange={(e) =>
-                        //   handleBlockchainFeesChange(e.target.value)
-                        // }
+                        onChange={(e) =>
+                          handleBlockchainFeesChange(e.target.value)
+                        }
                         sx={{
                           "& .MuiFormControlLabel-label": {
                             fontSize: { xs: "13px", md: "15px" },
@@ -526,7 +526,7 @@ const CreatePaymentLinkPage = () => {
             </Box>
             <Box>
               <CustomButton
-                label={tPaymentLink("createPayment")}
+                label={tPaymentLink("continue")}
                 variant="primary"
                 size="medium"
                 fullWidth={true}

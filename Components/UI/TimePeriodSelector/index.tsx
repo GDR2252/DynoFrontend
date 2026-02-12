@@ -1,20 +1,14 @@
-import { useCallback, useState, useEffect, useRef, useMemo } from "react";
-import {
-  useTheme,
-  SxProps,
-  Theme,
-  Box,
-  Button,
-  Typography,
-} from "@mui/material";
-import {
-  PeriodTrigger,
-  CheckIconStyled,
-} from "./styled";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTheme, SxProps, Theme, Box, Button, Typography } from "@mui/material";
+import { PeriodTrigger, CheckIconStyled } from "./styled";
 import CalendarTodayIcon from "@/assets/Icons/calendar-icon.svg";
 import useIsMobile from "@/hooks/useIsMobile";
 import { useTranslation } from "react-i18next";
-import CustomDatePicker, { DateRange, DatePickerRef } from "@/Components/UI/DatePicker";
+import CustomDatePicker, {
+  DateRange,
+  DatePickerRef,
+  DatePickerOpenEvent,
+} from "@/Components/UI/DatePicker";
 import { endOfDay, format, isAfter, isValid, startOfDay } from "date-fns";
 
 import ExpandLessIcon from "@/assets/Icons/ExpendLess-Arrow.svg";
@@ -36,6 +30,11 @@ interface TimePeriodSelectorProps {
   sx?: SxProps<Theme>;
 }
 
+const getSafeFocusedIndex = (options: TimePeriodOption[], selectedValue: TimePeriod): number => {
+  const foundIndex = options.findIndex((option) => option.value === selectedValue);
+  return foundIndex >= 0 ? foundIndex : 0;
+};
+
 export default function TimePeriodSelector({
   value = "7days",
   onChange,
@@ -47,10 +46,7 @@ export default function TimePeriodSelector({
   const isMobile = useIsMobile("md");
   const namespaces = ["dashboardLayout", "common"];
   const { t } = useTranslation(namespaces);
-  const tDashboard = useCallback(
-    (key: string) => t(key, { ns: "dashboardLayout" }),
-    [t]
-  );
+  const tDashboard = useCallback((key: string) => t(key, { ns: "dashboardLayout" }), [t]);
 
   const timePeriods: TimePeriodOption[] = useMemo(
     () => [
@@ -64,38 +60,47 @@ export default function TimePeriodSelector({
 
   const datePickerRef = useRef<DatePickerRef>(null);
   const calendarButtonRef = useRef<HTMLButtonElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
   const [uncontrolledCustomDateRange, setUncontrolledCustomDateRange] = useState<DateRange>({
     startDate: null,
     endDate: null,
   });
   const customDateRange = dateRange ?? uncontrolledCustomDateRange;
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
   const [focusedIndex, setFocusedIndex] = useState<number>(0);
-  const listRef = useRef<HTMLUListElement>(null);
 
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const openDatePicker = useCallback((anchorTarget: HTMLElement) => {
+    const openEvent: DatePickerOpenEvent = { currentTarget: anchorTarget };
+    datePickerRef.current?.open(openEvent);
+  }, []);
 
-  const handleCalendarButtonClick = (e: React.MouseEvent<HTMLElement>) => {
-    datePickerRef.current?.open(e);
-  };
+  const handleCalendarButtonClick = useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      openDatePicker(event.currentTarget);
+    },
+    [openDatePicker]
+  );
 
-  const handleOpen = (event: any) => {
-    setAnchorEl(event.currentTarget);
-    setFocusedIndex(timePeriods.findIndex((p) => p.value === value) || 0);
-  };
+  const handleOpen = useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      setAnchorElement(event.currentTarget);
+      setFocusedIndex(getSafeFocusedIndex(timePeriods, value));
+    },
+    [timePeriods, value]
+  );
 
   const handleClose = useCallback(() => {
-    setAnchorEl(null);
+    setAnchorElement(null);
     setFocusedIndex(0);
   }, []);
 
   const handleSelect = useCallback(
     (period: TimePeriod) => {
       onChange?.(period);
-      setAnchorEl(null);
-      setFocusedIndex(0);
+      handleClose();
     },
-    [onChange]
+    [handleClose, onChange]
   );
 
   const handleSelectWithEvent = useCallback(
@@ -105,84 +110,78 @@ export default function TimePeriodSelector({
         return;
       }
 
-      // Set the value to custom and close the list first. The date picker
-      // is only rendered when `value === 'custom'`, so we wait a tick to
-      // ensure it mounts and then open it anchored to the calendar button.
       onChange?.("custom");
-      setAnchorEl(null);
-      setFocusedIndex(0);
+      handleClose();
 
-      setTimeout(() => {
-        const target = (calendarButtonRef.current ?? (event.currentTarget as HTMLElement)) as HTMLElement;
-        // Cast to any to match the expected React.MouseEvent signature
-        datePickerRef.current?.open(({
-          currentTarget: target,
-        } as unknown) as React.MouseEvent<HTMLElement>);
-      }, 0);
+      window.requestAnimationFrame(() => {
+        const fallbackTarget = event.currentTarget as HTMLElement;
+        const anchorTarget = calendarButtonRef.current ?? fallbackTarget;
+        openDatePicker(anchorTarget);
+      });
     },
-    [handleSelect, onChange]
+    [handleClose, handleSelect, onChange, openDatePicker]
   );
 
-  const handleCustomDateRangeChange = (range: DateRange) => {
-    const normalizedStart =
-      range.startDate && isValid(range.startDate) ? startOfDay(range.startDate) : null;
-    const normalizedEnd =
-      range.endDate && isValid(range.endDate) ? endOfDay(range.endDate) : null;
+  const handleCustomDateRangeChange = useCallback(
+    (range: DateRange) => {
+      const normalizedStart = range.startDate && isValid(range.startDate) ? startOfDay(range.startDate) : null;
+      const normalizedEnd = range.endDate && isValid(range.endDate) ? endOfDay(range.endDate) : null;
 
-    const normalizedRange: DateRange = {
-      startDate: normalizedStart,
-      endDate:
-        normalizedStart && normalizedEnd && isAfter(normalizedStart, normalizedEnd)
-          ? null
-          : normalizedEnd,
-    };
+      const normalizedRange: DateRange = {
+        startDate: normalizedStart,
+        endDate:
+          normalizedStart && normalizedEnd && isAfter(normalizedStart, normalizedEnd)
+            ? null
+            : normalizedEnd,
+      };
 
-    if (dateRange === undefined) {
-      setUncontrolledCustomDateRange(normalizedRange);
-    }
-    onDateRangeChange?.(normalizedRange);
-  };
+      if (dateRange === undefined) {
+        setUncontrolledCustomDateRange(normalizedRange);
+      }
 
-  const formatCustomDateRange = (): string => {
+      onDateRangeChange?.(normalizedRange);
+    },
+    [dateRange, onDateRangeChange]
+  );
+
+  const formattedCustomDateRange = useMemo(() => {
     if (customDateRange.startDate && customDateRange.endDate) {
       if (isMobile) {
-        return `${format(customDateRange.startDate, "dd.MM.yy")}-${format(
-          customDateRange.endDate,
-          "dd.MM.yy"
-        )}`;
+        return `${format(customDateRange.startDate, "dd.MM.yy")}-${format(customDateRange.endDate, "dd.MM.yy")}`;
       }
+
       return `${format(customDateRange.startDate, "MMM dd, yyyy")} - ${format(
         customDateRange.endDate,
         "MMM dd, yyyy"
       )}`;
     }
-    if (customDateRange.startDate) {
-      if (isMobile) {
-        return format(customDateRange.startDate, "dd.MM.yy");
-      }
-      return format(customDateRange.startDate, "MMM dd, yyyy");
-    }
-    return tDashboard("customPeriod");
-  };
 
-  // Keyboard navigation
+    if (customDateRange.startDate) {
+      return isMobile
+        ? format(customDateRange.startDate, "dd.MM.yy")
+        : format(customDateRange.startDate, "MMM dd, yyyy");
+    }
+
+    return tDashboard("customPeriod");
+  }, [customDateRange.endDate, customDateRange.startDate, isMobile, tDashboard]);
+
   useEffect(() => {
-    if (!anchorEl) return;
+    if (!anchorElement) {
+      return;
+    }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!anchorEl) return;
-
       switch (event.key) {
         case "ArrowDown":
           event.preventDefault();
-          setFocusedIndex((prev) =>
-            prev < timePeriods.length - 1 ? prev + 1 : 0
+          setFocusedIndex((currentIndex) =>
+            currentIndex < timePeriods.length - 1 ? currentIndex + 1 : 0
           );
           break;
         case "ArrowUp":
           event.preventDefault();
-          setFocusedIndex((prev) =>
-            prev > 0 ? prev - 1 : timePeriods.length - 1
+          setFocusedIndex((currentIndex) =>
+            currentIndex > 0 ? currentIndex - 1 : timePeriods.length - 1
           );
           break;
         case "Enter":
@@ -202,38 +201,39 @@ export default function TimePeriodSelector({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [anchorEl, focusedIndex, timePeriods, handleSelect, handleClose]);
+  }, [anchorElement, focusedIndex, handleClose, handleSelect, timePeriods]);
 
-  // Scroll focused item into view
   useEffect(() => {
-    if (anchorEl && listRef.current) {
-      const focusedItem = listRef.current.children[focusedIndex] as HTMLElement;
-      if (focusedItem) {
-        focusedItem.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-        });
-      }
+    if (!anchorElement) {
+      return;
     }
-  }, [focusedIndex, anchorEl]);
 
-  const selected = timePeriods.find((p) => p.value === value) ?? timePeriods[0];
-
-  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
         handleClose();
       }
     };
 
-    if (anchorEl) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [anchorEl]);
+  }, [anchorElement, handleClose]);
+
+  const selectedOption = timePeriods.find((option) => option.value === value) ?? timePeriods[0];
+
+  const handleCustomToggleClick = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      event.stopPropagation();
+      const nearestButton = event.currentTarget.closest("button");
+      if (nearestButton) {
+        setAnchorElement(nearestButton);
+        setFocusedIndex(getSafeFocusedIndex(timePeriods, value));
+      }
+    },
+    [timePeriods, value]
+  );
 
   return (
     <Box
@@ -241,7 +241,7 @@ export default function TimePeriodSelector({
       sx={{
         position: "relative",
         width: "fit-content",
-        mt: Boolean(anchorEl) && isMobile ? "-16px !important" : "0px",
+        mt: Boolean(anchorElement) && isMobile ? "-16px !important" : "0px",
       }}
     >
       {value === "custom" ? (
@@ -291,17 +291,10 @@ export default function TimePeriodSelector({
                 textAlign: "left",
               }}
             >
-              {formatCustomDateRange()}
+              {formattedCustomDateRange}
             </Typography>
 
-            <Box
-              sx={{ display: "flex", alignItems: "center", gap: "14px" }}
-              onClick={(e) => {
-                e.stopPropagation();
-                setAnchorEl(e.currentTarget.closest("button"));
-                setFocusedIndex(timePeriods.findIndex((p) => p.value === value) || 0);
-              }}
-            >
+            <Box sx={{ display: "flex", alignItems: "center", gap: "14px" }} onClick={handleCustomToggleClick}>
               <Box className="separator" />
               <Image
                 src={ExpandMoreIcon.src}
@@ -325,12 +318,21 @@ export default function TimePeriodSelector({
         <PeriodTrigger onClick={handleOpen}>
           <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <Box component="img" src={CalendarTodayIcon.src} sx={{ width: 14, height: 14 }} />
-            <Typography style={{ fontWeight: "500", fontSize: isMobile ? "13px" : "15px", fontFamily: "UrbanistMedium", whiteSpace: "nowrap" }}>{selected.label}</Typography>
+            <Typography
+              style={{
+                fontWeight: "500",
+                fontSize: isMobile ? "13px" : "15px",
+                fontFamily: "UrbanistMedium",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {selectedOption.label}
+            </Typography>
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: "14px" }}>
             <Box sx={{ width: 1.1, height: isMobile ? 16 : 20, backgroundColor: theme.palette.border.main }} />
-            {!anchorEl ? (
+            {!anchorElement ? (
               <Image src={ExpandMoreIcon.src} width={isMobile ? 8 : 11} height={isMobile ? 4 : 6} alt="expand" />
             ) : (
               <Image src={ExpandLessIcon.src} width={isMobile ? 8 : 11} height={isMobile ? 4 : 6} alt="collapse" />
@@ -339,14 +341,13 @@ export default function TimePeriodSelector({
         </PeriodTrigger>
       )}
 
-      {/* ================= DROPDOWN (PERFECT POPOVER CLONE) ================= */}
-      {Boolean(anchorEl) && (
+      {Boolean(anchorElement) && (
         <Box
           sx={{
             position: "absolute",
             top: "0",
             left: 0,
-            minWidth: isMobile ? "210px" : value === "custom" ? "256px" : "175px",
+            minWidth: isMobile ? "210px" : value === "custom" ? "260px" : "175px",
             border: "1px solid rgba(233,236,242,1)",
             borderRadius: "6px",
             backgroundColor: "#fff",
@@ -355,7 +356,6 @@ export default function TimePeriodSelector({
             boxShadow: "0px 8px 24px rgba(0,0,0,0.08)",
           }}
         >
-          {/* Header */}
           <Box
             onClick={handleClose}
             sx={{
@@ -368,7 +368,16 @@ export default function TimePeriodSelector({
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <Box component="img" src={CalendarTodayIcon.src} sx={{ width: 14, height: 14 }} />
-              <Typography style={{ fontWeight: "500", fontSize: isMobile ? "13px" : "15px", fontFamily: "UrbanistMedium", whiteSpace: "nowrap" }}>{selected.label}</Typography>
+              <Typography
+                style={{
+                  fontWeight: "500",
+                  fontSize: isMobile ? "13px" : "15px",
+                  fontFamily: "UrbanistMedium",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {selectedOption.label}
+              </Typography>
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: "14px" }}>
@@ -377,13 +386,12 @@ export default function TimePeriodSelector({
             </Box>
           </Box>
 
-          {/* Content */}
           <Box sx={{ mt: "13px", display: "flex", flexDirection: "column", gap: "4px" }}>
             {timePeriods.map((period, index) => (
               <Box
                 key={period.value}
                 onMouseEnter={() => setFocusedIndex(index)}
-                onClick={(e) => handleSelectWithEvent(e, period.value)}
+                onClick={(event) => handleSelectWithEvent(event, period.value)}
                 sx={{
                   borderRadius: "63px",
                   fontSize: isMobile ? "13px" : "15px",
@@ -394,6 +402,7 @@ export default function TimePeriodSelector({
                   alignItems: "center",
                   justifyContent: "space-between",
                   cursor: "pointer",
+                  whiteSpace: "nowrap",
                   background:
                     period.value === value || focusedIndex === index
                       ? theme.palette.primary.light

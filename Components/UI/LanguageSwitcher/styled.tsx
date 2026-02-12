@@ -44,7 +44,7 @@ export const VerticalLine = styled.div`
   width: 1px;
   height: 20px;
   background: #ddd;
-  ${theme.breakpoints.down("md")}: {
+  ${theme.breakpoints.down("md")} {
     height: 16px;
   }
 `;

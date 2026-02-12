@@ -289,7 +289,16 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                     label={t("firstName")}
                     placeholder={t("firstNamePlaceholder")}
                     value={values.firstName}
-                    onChange={handleChange}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const event = {
+                        target: {
+                          name: "firstName",
+                          value: e.target.value,
+                        },
+                      } as React.ChangeEvent<HTMLInputElement>;
+
+                      handleChange(event);
+                    }}
                     onBlur={handleBlur}
                     name="firstName"
                     error={touched.firstName && errors.firstName}
@@ -307,7 +316,16 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                     placeholder={t("lastNamePlaceholder")}
                     name="lastName"
                     value={values.lastName}
-                    onChange={handleChange}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const event = {
+                        target: {
+                          name: "lastName",
+                          value: e.target.value,
+                        },
+                      } as React.ChangeEvent<HTMLInputElement>;
+
+                      handleChange(event);
+                    }}
                     onBlur={handleBlur}
                     error={touched.lastName && errors.lastName}
                     helperText={
@@ -332,7 +350,16 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                     value={values.email}
                     error={touched.email && errors.email}
                     helperText={touched.email && errors.email && errors.email}
-                    onChange={handleChange}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const event = {
+                        target: {
+                          name: "email",
+                          value: e.target.value,
+                        },
+                      } as React.ChangeEvent<HTMLInputElement>;
+
+                      handleChange(event);
+                    }}
                     onBlur={handleBlur}
                     sx={{ gap: "8px" }}
                   />
@@ -354,8 +381,9 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                         fontSize: isMobile ? "13px" : "15px",
                         fontFamily: "UrbanistMedium",
                         textAlign: "start",
-                        color: "#242428",
-                        lineHeight: "1.2",
+                        color: theme.palette.text.primary,
+                        letterSpacing: 0,
+                        lineHeight: "100%",
                       }}
                     >
                       {t("mobile")}
@@ -366,7 +394,7 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                       name="mobile"
                       defaultCountry="US"
                       value={values.mobile}
-                      inputHeight={isMobile ? "32px" : "40px"}
+                      inputHeight={isMobile ? "32px" : "38px"}
                       onChange={(newValue, info) => {
                         const e: any = {
                           target: {

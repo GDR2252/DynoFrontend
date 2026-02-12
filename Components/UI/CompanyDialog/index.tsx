@@ -414,7 +414,7 @@ export default function CompanyDialog({
         subTitle={subtitle}
         showHeaderBorder={false}
         headerPadding={theme.spacing("30px", "30px", 0, "30px")}
-        bodyPadding={theme.spacing("30px", "30px", "30px", "30px")}
+        bodyPadding={isMobile ? theme.spacing("16px", "16px", "16px", "16px") : theme.spacing("30px", "30px", "30px", "30px")}
         sx={{
           width: "100%",
           borderRadius: "14px",
@@ -487,7 +487,7 @@ export default function CompanyDialog({
             <>
               <ValueSyncer values={values} onValuesChange={setCurrentFormValues} />
               <Grid container spacing={"14px"}>
-                <Grid item xs={6}>
+                <Grid item xs={isMobile ? 12 : 6}>
                   <InputField
                     fullWidth
                     inputHeight={isMobile ? "32px" : "38px"}
@@ -506,7 +506,7 @@ export default function CompanyDialog({
                   />
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={isMobile ? 12 : 6}>
                   <InputField
                     fullWidth
                     inputHeight={isMobile ? "32px" : "38px"}
@@ -519,7 +519,7 @@ export default function CompanyDialog({
                   />
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={isMobile ? 12 : 6}>
                   <InputField
                     fullWidth
                     inputHeight={isMobile ? "32px" : "38px"}
@@ -536,7 +536,7 @@ export default function CompanyDialog({
                   />
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={isMobile ? 12 : 6}>
                   <Typography
                     variant="body2"
                     sx={{
@@ -619,7 +619,7 @@ export default function CompanyDialog({
 
                       <Box component="label" htmlFor="country" sx={{ display: "flex", alignItems: "center", cursor: "pointer", color: "rgba(103, 103, 104, 1)" }}>
                         <CryptocurrencyDividerLine />
-                        {isOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        {isOpen ? <ExpandLessIcon sx={{ width: isMobile ? "20px" : "24px" }} /> : <ExpandMoreIcon sx={{ width: isMobile ? "20px" : "24px" }} />}
                       </Box>
                     </CryptocurrencyTrigger>
 
@@ -716,7 +716,7 @@ export default function CompanyDialog({
                   </Box>
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={isMobile ? 12 : 6}>
                   <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     <Typography
                       sx={{
@@ -773,7 +773,7 @@ export default function CompanyDialog({
 
                       <Box component="label" htmlFor="state" sx={{ display: "flex", alignItems: "center", cursor: "pointer", color: "rgba(103, 103, 104, 1)" }}>
                         <CryptocurrencyDividerLine />
-                        {stateAnchor ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        {isOpen ? <ExpandLessIcon sx={{ width: isMobile ? "20px" : "24px" }} /> : <ExpandMoreIcon sx={{ width: isMobile ? "20px" : "24px" }} />}
                       </Box>
                     </CryptocurrencyTrigger>
 
@@ -865,7 +865,7 @@ export default function CompanyDialog({
                   </Box>
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={isMobile ? 12 : 6}>
                   <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     <Typography
                       sx={{
@@ -923,7 +923,7 @@ export default function CompanyDialog({
 
                       <Box component="label" htmlFor="city" sx={{ display: "flex", alignItems: "center", cursor: "pointer", color: "rgba(103, 103, 104, 1)" }}>
                         <CryptocurrencyDividerLine />
-                        {cityAnchor ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        {isOpen ? <ExpandLessIcon sx={{ width: isMobile ? "20px" : "24px" }} /> : <ExpandMoreIcon sx={{ width: isMobile ? "20px" : "24px" }} />}
                       </Box>
                     </CryptocurrencyTrigger>
 

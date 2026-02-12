@@ -66,12 +66,12 @@ const CountryPhoneInput: React.FC<CountryPhoneInputProps> = ({
           fontFamily: "UrbanistMedium",
           "& .MuiInputBase-root .MuiTypography-root": {
             border: "none !important",
-            fontSize: "15px",
+            fontSize: "13px",
             color: theme.palette.text.secondary,
             fontFamily: "UrbanistMedium",
             paddingLeft: "8px !important",
             [theme.breakpoints.down("md")]: {
-              fontSize: "13px",
+              fontSize: "10px",
               paddingLeft: "6px !important",
             },
           },
@@ -88,7 +88,7 @@ const CountryPhoneInput: React.FC<CountryPhoneInputProps> = ({
               padding: "12px 0 !important",
               fontFamily: "UrbanistMedium",
               boxSizing: "border-box",
-              fontSize: isMobile ? "13px" : "15px",
+              fontSize: isMobile ? "10px" : "13px",
               lineHeight: 1.2,
               "&::placeholder": {
                 color: theme.palette.secondary.contrastText,

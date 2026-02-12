@@ -58,67 +58,6 @@ const Wallet = () => {
   const [openEditModal, setOpenEditModal] = useState(false);
 
   const { walletLoading, walletData } = useWalletData();
-  // const walletData = useMemo<WalletData[]>(
-  //   () => [
-  //     {
-  //       icon: BitcoinIcon,
-  //       walletTitle: tWallet("mainBitcoinWallet"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "BTC",
-  //       totalProcessed: 125430.5,
-  //     },
-  //     {
-  //       icon: EthereumIcon,
-  //       walletTitle: tWallet("ethereumPayments"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "ETH",
-  //       totalProcessed: 89234.2,
-  //     },
-  //     {
-  //       icon: LitecoinIcon,
-  //       walletTitle: tWallet("litecoinWallet"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "LTC",
-  //       totalProcessed: 45678.9,
-  //     },
-  //     {
-  //       icon: BNBIcon,
-  //       walletTitle: tWallet("bnbWallet"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "BNB",
-  //       totalProcessed: 125430.5,
-  //     },
-  //     {
-  //       icon: DogecoinIcon,
-  //       walletTitle: tWallet("dogecoinWallet"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "DOGE",
-  //       totalProcessed: 89234.2,
-  //     },
-  //     {
-  //       icon: BitcoinCashIcon,
-  //       walletTitle: tWallet("bitcoinCashWallet"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "BCH",
-  //       totalProcessed: 45678.9,
-  //     },
-  //     {
-  //       icon: TronIcon,
-  //       walletTitle: tWallet("tronWallet"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "TRX",
-  //       totalProcessed: 125430.5,
-  //     },
-  //     {
-  //       icon: USDTIcon,
-  //       walletTitle: tWallet("usdtWallet"),
-  //       walletAddress: "1A1zP1ePSQGeF2DMPTTTLSSLmv7DvfNo",
-  //       name: "USDT",
-  //       totalProcessed: 89234.2,
-  //     },
-  //   ],
-  //   [tWallet]
-  // );
 
   const copyAddressToClipboard = (address: string) => {
     navigator.clipboard.writeText(address);

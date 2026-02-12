@@ -3,7 +3,8 @@
   "addCompany": "Adicionar nova empresa",
   "settings": "Configurações",
   "logout": "Sair",
-  "requiredKYC": "KYC Obrigatório - $1.000 atingidos",
+  "requiredKYC1": "KYC",
+  "requiredKYC2": "KYC Obrigatório - $1.000 atingidos",
   "dashboard": "Painel",
   "dash": "Painel",
   "transactions": "Transações",
@@ -40,5 +41,6 @@
   "last30Days": "Últimos 30 dias",
   "last90Days": "Últimos 90 dias",
   "customPeriod": "Período personalizado",
+  "walletWarnnigTitle": "configuração da carteira",
   "walletSetUpWarnnigTitle": "Configuração completa da carteira"
 }

@@ -12,6 +12,7 @@ import {
   addMonths,
   subMonths,
   startOfDay,
+  isBefore,
 } from "date-fns";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -85,6 +86,7 @@ const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
 interface CalendarMonthProps {
   month: Date;
   maxDate: Date;
+  minDate: Date;
   disableFutureDates: boolean;
   selectedRange: DateRange;
   onDateClick: (date: Date) => void;
@@ -99,6 +101,7 @@ interface CalendarMonthProps {
 const CalendarMonth: React.FC<CalendarMonthProps> = ({
   month,
   maxDate,
+  minDate,
   disableFutureDates,
   selectedRange,
   onDateClick,
@@ -199,7 +202,8 @@ const CalendarMonth: React.FC<CalendarMonthProps> = ({
           const isStart = isRangeStart(day);
           const isEnd = isRangeEnd(day);
           const selected = isSelected(day);
-          const isDisabled = disableFutureDates && isAfter(startOfDay(day), startOfDay(maxDate));
+          const isDisabled = disableFutureDates && isAfter(startOfDay(day), startOfDay(maxDate)) ||
+            isBefore(startOfDay(day), startOfDay(minDate));
 
           // Check if this is the start or end of the week
           const dayOfWeek = day.getDay();
@@ -275,6 +279,7 @@ const CustomDatePicker = forwardRef<DatePickerRef, DatePickerProps>(({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const today = React.useMemo(() => startOfDay(new Date()), []);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const minSelectableDate = React.useMemo(() => subMonths(today, 6), [today]);
 
   const [selectedRange, setSelectedRange] = useState<DateRange>(() => {
     if (value && value.startDate && value.endDate) {
@@ -471,8 +476,9 @@ const CustomDatePicker = forwardRef<DatePickerRef, DatePickerProps>(({
   };
 
   const navigateLeft = () => {
-    // Move both months back by 1
-    setLeftMonth(subMonths(leftMonth, 1));
+    const newLeft = subMonths(leftMonth, 1);
+    if (isBefore(newLeft, startOfMonth(minSelectableDate))) return;
+    setLeftMonth(newLeft);
     setRightMonth(subMonths(rightMonth, 1));
   };
 
@@ -612,6 +618,7 @@ const CustomDatePicker = forwardRef<DatePickerRef, DatePickerProps>(({
             <CalendarMonth
               month={leftMonth}
               maxDate={today}
+              minDate={minSelectableDate}
               disableFutureDates={disableFutureDates}
               selectedRange={selectedRange}
               onDateClick={handleDateClick}
@@ -631,6 +638,7 @@ const CustomDatePicker = forwardRef<DatePickerRef, DatePickerProps>(({
               <CalendarMonth
                 month={rightMonth}
                 maxDate={today}
+                minDate={minSelectableDate}
                 disableFutureDates={disableFutureDates}
                 selectedRange={selectedRange}
                 onDateClick={handleDateClick}

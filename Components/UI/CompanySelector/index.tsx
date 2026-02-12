@@ -71,7 +71,7 @@ export default function CompanySelector() {
       ref={wrapperRef}
       sx={{
         position: "relative",
-        width: isMobile ? "154px" : "300px",
+        width: isMobile ? "154px" : "clamp(265px, 18vw, 324px)",
         mt: Boolean(anchorEl) && isMobile ? "-16px !important" : "0px",
         ml: Boolean(anchorEl) && isMobile ? "-6px !important" : "0px"
       }}
@@ -104,7 +104,7 @@ export default function CompanySelector() {
           sx={{
             position: "absolute",
             top: "0",
-            width: isMobile ? "224px" : "100%",
+            width: isMobile ? "224px" : "300px",
             border: "1px solid rgba(233, 236, 242, 1)",
             borderRadius: "6px",
             backgroundColor: "#fff",

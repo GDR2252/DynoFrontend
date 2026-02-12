@@ -3,7 +3,8 @@
   "addCompany": "Add New Company",
   "settings": "Settings",
   "logout": "Logout",
-  "requiredKYC": "KYC Required - $1,000 reached",
+  "requiredKYC1": "KYC",
+  "requiredKYC2": "KYC Required - $1,000 reached",
   "dashboard": "Dashboard",
   "dash": "Dash",
   "transactions": "Transactions",
@@ -41,5 +42,6 @@
   "last90Days": "Last 90 Days",
   "customPeriod": "Custom Period",
   "pay-links": "Payment Links",
+  "walletWarnnigTitle": "wallet setup",
   "walletSetUpWarnnigTitle": "Complete wallet setup"
 }

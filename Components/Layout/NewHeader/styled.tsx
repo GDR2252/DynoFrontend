@@ -16,7 +16,7 @@ export const HeaderContainer = styled("div")(({ theme }) => ({
 
 export const LogoContainer = styled("div")(({ theme }) => ({
   height: "100%",
-  width: "324px",
+  width: "clamp(265px, 18vw, 324px)",
   background: theme.palette.common.white,
   display: "flex",
   alignItems: "center",

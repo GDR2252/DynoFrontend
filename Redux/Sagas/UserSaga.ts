@@ -6,7 +6,9 @@ import {
   USER_CONFIRM_CODE,
   USER_LOGIN,
   USER_REGISTER,
+  USER_RESET_PASSWORD,
   USER_SEND_OTP,
+  USER_SEND_RESET_LINK,
   USER_UPDATE,
   USER_UPDATE_PASSWORD,
 } from "../Actions/UserAction";
@@ -39,6 +41,12 @@ export function* UserSaga(action: IUserAction): unknown {
     case USER_UPDATE_PASSWORD:
       yield changePassword(action.payload);
       break;
+    case USER_SEND_RESET_LINK:
+      yield generateResetLink(action.payload);
+      break;
+    case USER_RESET_PASSWORD:
+      yield resetPassword(action.payload);
+      break;
     default:
       yield put({ type: USER_API_ERROR });
       break;
@@ -49,7 +57,7 @@ export function* userLogin(payload: any): unknown {
   try {
     const response = yield call(axios.post, "user/login", payload);
     const responseData = response?.data;
-    
+
     // Check if response has the expected structure
     if (!responseData) {
       throw new Error("Invalid response from server");
@@ -69,7 +77,9 @@ export function* userLogin(payload: any): unknown {
     }
 
     if (!data.userData || !data.accessToken) {
-      throw new Error("Invalid response structure: missing userData or accessToken");
+      throw new Error(
+        "Invalid response structure: missing userData or accessToken",
+      );
     }
 
     yield put({
@@ -103,7 +113,7 @@ export function* registerUser(payload: any): unknown {
   try {
     const response = yield call(axios.post, "user/registerUser", payload);
     const responseData = response?.data;
-    
+
     // Check if response has the expected structure
     if (!responseData) {
       throw new Error("Invalid response from server");
@@ -123,7 +133,9 @@ export function* registerUser(payload: any): unknown {
     }
 
     if (!data.userData || !data.accessToken) {
-      throw new Error("Invalid response structure: missing userData or accessToken");
+      throw new Error(
+        "Invalid response structure: missing userData or accessToken",
+      );
     }
 
     yield put({
@@ -135,7 +147,8 @@ export function* registerUser(payload: any): unknown {
       payload: { ...data.userData, accessToken: data.accessToken },
     });
   } catch (e: any) {
-    const message = e.response?.data?.message ?? e.message ?? "Registration failed";
+    const message =
+      e.response?.data?.message ?? e.message ?? "Registration failed";
     yield put({
       type: TOAST_SHOW,
       payload: {
@@ -153,11 +166,53 @@ export function* registerUser(payload: any): unknown {
   }
 }
 
+export function* generateResetLink(payload: any): unknown {
+  try {
+    const response = yield call(axios.post, "user/forgot-password", payload);
+    const responseData = response?.data;
+
+    // Check if response has the expected structure
+    if (!responseData) {
+      throw new Error("Invalid response from server");
+    }
+
+    // Check if API returned an error response (success: false)
+    if (responseData.success === false) {
+      const errorMessage = responseData.message || "Failed to send Reset Link";
+      throw new Error(errorMessage);
+    }
+
+    const { data, message } = responseData;
+
+    yield put({
+      type: TOAST_SHOW,
+      payload: { message: message || "Reset Link sent successfully" },
+    });
+  } catch (e: any) {
+    const message =
+      e.response?.data?.message ?? e.message ?? "Failed to send Reset Link";
+    yield put({
+      type: TOAST_SHOW,
+      payload: {
+        message: message,
+        severity: "error",
+      },
+    });
+    yield put({
+      type: USER_API_ERROR,
+      payload: {
+        message: message,
+        actionType: USER_SEND_RESET_LINK,
+      },
+    });
+  }
+}
+
 export function* generateOTP(payload: any): unknown {
   try {
     const response = yield call(axios.post, "user/generateOTP", payload);
     const responseData = response?.data;
-    
+
     // Check if response has the expected structure
     if (!responseData) {
       throw new Error("Invalid response from server");
@@ -170,13 +225,14 @@ export function* generateOTP(payload: any): unknown {
     }
 
     const { data, message } = responseData;
-    
+
     yield put({
       type: TOAST_SHOW,
       payload: { message: message || "OTP sent successfully" },
     });
   } catch (e: any) {
-    const message = e.response?.data?.message ?? e.message ?? "Failed to send OTP";
+    const message =
+      e.response?.data?.message ?? e.message ?? "Failed to send OTP";
     yield put({
       type: TOAST_SHOW,
       payload: {
@@ -198,7 +254,7 @@ export function* confirmOTP(payload: any): unknown {
   try {
     const response = yield call(axios.post, "user/confirmOTP", payload);
     const responseData = response?.data;
-    
+
     // Check if response has the expected structure
     if (!responseData) {
       throw new Error("Invalid response from server");
@@ -218,7 +274,9 @@ export function* confirmOTP(payload: any): unknown {
     }
 
     if (!data.userData || !data.accessToken) {
-      throw new Error("Invalid response structure: missing userData or accessToken");
+      throw new Error(
+        "Invalid response structure: missing userData or accessToken",
+      );
     }
 
     yield put({
@@ -230,7 +288,8 @@ export function* confirmOTP(payload: any): unknown {
       payload: { ...data.userData, accessToken: data.accessToken },
     });
   } catch (e: any) {
-    const message = e.response?.data?.message ?? e.message ?? "OTP verification failed";
+    const message =
+      e.response?.data?.message ?? e.message ?? "OTP verification failed";
     yield put({
       type: TOAST_SHOW,
       payload: {
@@ -298,6 +357,53 @@ function* updateUser(payload: any): unknown {
   }
 }
 
+function* resetPassword(payload: any): unknown {
+  try {
+    const response = yield call(axios.post, "/user/reset-password", payload);
+    const responseData = response?.data;
+
+    // Check if response has the expected structure
+    if (!responseData) {
+      throw new Error("Invalid response from server");
+    }
+
+    // Check if API returned an error response (success: false)
+    if (responseData.success === false) {
+      const errorMessage = responseData.message || "Password reset failed";
+      throw new Error(errorMessage);
+    }
+
+    const { message, data } = responseData;
+
+    yield put({
+      type: TOAST_SHOW,
+      payload: { message: "Now you can login with the new password" },
+    });
+
+    if (payload.onSuccess) {
+      payload.onSuccess();
+    }
+  } catch (e: any) {
+    unAuthorizedHelper(e);
+    const message =
+      e.response?.data?.message ?? e.message ?? "Password reset failed";
+    yield put({
+      type: TOAST_SHOW,
+      payload: {
+        message: message,
+        severity: "error",
+      },
+    });
+    yield put({
+      type: USER_API_ERROR,
+      payload: {
+        message: message,
+        actionType: USER_RESET_PASSWORD,
+      },
+    });
+  }
+}
+
 function* changePassword(payload: any): unknown {
   try {
     const response = yield call(axios.put, "/user/changePassword", payload);
@@ -322,7 +428,8 @@ function* changePassword(payload: any): unknown {
     });
   } catch (e: any) {
     unAuthorizedHelper(e);
-    const message = e.response?.data?.message ?? e.message ?? "Password change failed";
+    const message =
+      e.response?.data?.message ?? e.message ?? "Password change failed";
     yield put({
       type: TOAST_SHOW,
       payload: {

@@ -111,9 +111,10 @@ const FeeTierProgress: React.FC<FeeTierProgressProps> = ({
           onMouseLeave={handleMouseLeave}
           sx={{
             display: "flex",
+            justifyContent: "space-between",
             gap: isMobile ? "3.78px" : "6.19px",
             mb: isMobile ? "8px" : "14px",
-            width: "max-content",
+            // width: "max-content",
             maxWidth: "100%",
             overflowX: "auto",
             overflowY: "hidden",

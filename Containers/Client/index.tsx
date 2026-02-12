@@ -1,10 +1,7 @@
 import withAuth from "@/Components/Page/Common/HOC/withAuth";
-import { LayoutProps, rootReducer } from "@/utils/types";
-import { Box, Grid, useTheme, SxProps, Theme } from "@mui/material";
+import { LayoutProps } from "@/utils/types";
+import { Box, useTheme, SxProps, Theme } from "@mui/material";
 import React from "react";
-import useTokenData from "@/hooks/useTokenData";
-import Toast from "@/Components/UI/Toast";
-import { useSelector } from "react-redux";
 import NewHeader from "@/Components/Layout/NewHeader";
 import NewSidebar from "@/Components/Layout/NewSidebar";
 import MobileNavigationBar from "@/Components/Layout/MobileNavigationBar";
@@ -21,8 +18,6 @@ const ClientLayout = ({
   pageHeaderSx,
 }: LayoutProps) => {
   const theme = useTheme();
-  const tokenData = useTokenData();
-  const ToastState = useSelector((state: rootReducer) => state.toastReducer);
   const isMobile = useIsMobile("md");
   return (
     <CompanyDialogProvider>
@@ -30,7 +25,7 @@ const ClientLayout = ({
         sx={{
           height: "100dvh",
           width: "100%",
-          p: isMobile ? "8px 16px 0px 16px" : "16px 40px 16px 40px",
+          p: { xs: "8px 16px 0px 16px", lg: "16px 23px 16px 23px", xl: "16px 40px 16px 40px" },
           display: "flex",
           overflow: "hidden",
           flexDirection: "column",
@@ -74,9 +69,7 @@ const ClientLayout = ({
             {/* ================= SIDEBAR ================= */}
             <Box
               sx={{
-                width: isMobile ? "auto" : "324px",
-                minWidth: isMobile ? "auto" : "324px",
-                maxWidth: isMobile ? "auto" : "324px",
+                width: "clamp(265px, 18vw, 324px)",
                 height: "100%",
                 overflow: "hidden",
                 display: { xs: "none", lg: "block" },

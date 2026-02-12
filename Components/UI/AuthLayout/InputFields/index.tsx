@@ -187,18 +187,13 @@ const InputField: React.FC<InputFieldProps> = ({
     }
   };
 
-  const inputType =
-    type === "password"
-      ? "text"
-      : showPasswordToggle && type === "password" && showPassword
-        ? "text"
-        : type;
+  const inputType = type === "password" ? "text" : type;
 
   const inputValue =
     type === "password"
       ? showPassword
         ? passwordArray.join("")
-        : passwordArray.map(() => "*").join("")
+        : "*".repeat(passwordArray.length)
       : value;
 
   const handleNumberKeyDown = (
@@ -340,6 +335,8 @@ const InputField: React.FC<InputFieldProps> = ({
         }}
       >
         <Box
+          component="form"
+          autoComplete="off"
           sx={{
             display: "flex",
             alignItems: multiline ? "flex-start" : "center",
@@ -352,34 +349,9 @@ const InputField: React.FC<InputFieldProps> = ({
             value={inputValue}
             name={name}
             onChange={
-              type === "password" && !showPassword
+              type === "password"
                 ? handlePasswordInput
-                : type === "password" && showPassword
-                  ? (
-                    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-                  ) => {
-                    const newValue = e.target.value;
-                    const valueWithoutSpaces = newValue.replace(/\s/g, "");
-                    const newArray = valueWithoutSpaces.split("");
-                    setPasswordArray(newArray);
-                    if (onChange) {
-                      const inputEvent = {
-                        ...e,
-                        target: {
-                          ...(e.target as HTMLInputElement),
-                          value: newArray.join(""),
-                        },
-                      } as React.ChangeEvent<HTMLInputElement>;
-                      onChange(inputEvent);
-                    }
-                    if (
-                      inputRefInternal.current &&
-                      newValue !== valueWithoutSpaces
-                    ) {
-                      inputRefInternal.current.value = valueWithoutSpaces;
-                    }
-                  }
-                  : onChange
+                : onChange
             }
             onBlur={onBlur}
             onFocus={onFocus}
@@ -435,11 +407,15 @@ const InputField: React.FC<InputFieldProps> = ({
               readOnly: readOnly,
               maxLength: maxLength,
               inputMode: inputMode,
-              autoComplete:
-                type === "password" ? "new-password" : autoComplete || "off",
-              "data-form-type": type === "password" ? "other" : undefined,
-              "data-lpignore": type === "password" ? "true" : undefined,
-              "data-1p-ignore": type === "password" ? "true" : undefined,
+              autoComplete: "new-password",
+              name: "new-password",
+              form: "no-autofill",
+              "data-lpignore": "true",
+              "data-form-type": "other",
+              "data-1p-ignore": "true",
+              autoCorrect: "off",
+              autoCapitalize: "off",
+              spellCheck: false,
               style: {
                 cursor: readOnly ? "not-allowed" : "auto",
               },

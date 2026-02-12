@@ -1,7 +1,6 @@
 import { styled } from "@mui/material";
 
 export const SidebarWrapper = styled("aside")(({ theme }) => ({
-  width: "324px",
   height: "100%",
   background: theme.palette.common.white,
   display: "flex",

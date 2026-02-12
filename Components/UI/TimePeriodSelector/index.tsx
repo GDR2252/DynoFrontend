@@ -1,10 +1,5 @@
 import { useCallback, useState, useEffect, useRef, useMemo } from "react";
 import {
-  Popover,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   useTheme,
   SxProps,
   Theme,
@@ -14,15 +9,12 @@ import {
 } from "@mui/material";
 import {
   PeriodTrigger,
-  PeriodText,
   CheckIconStyled,
-  VerticalLine,
 } from "./styled";
 import CalendarTodayIcon from "@/assets/Icons/calendar-icon.svg";
 import useIsMobile from "@/hooks/useIsMobile";
 import { useTranslation } from "react-i18next";
 import CustomDatePicker, { DateRange, DatePickerRef } from "@/Components/UI/DatePicker";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { endOfDay, format, isAfter, isValid, startOfDay } from "date-fns";
 
 import ExpandLessIcon from "@/assets/Icons/ExpendLess-Arrow.svg";
@@ -354,7 +346,7 @@ export default function TimePeriodSelector({
             position: "absolute",
             top: "0",
             left: 0,
-            minWidth: isMobile ? "210px" : "245px",
+            minWidth: isMobile ? "210px" : value === "custom" ? "256px" : "175px",
             border: "1px solid rgba(233,236,242,1)",
             borderRadius: "6px",
             backgroundColor: "#fff",

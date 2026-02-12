@@ -5,7 +5,9 @@ import {
   USER_INIT,
   USER_LOGIN,
   USER_REGISTER,
+  USER_RESET_PASSWORD,
   USER_SEND_OTP,
+  USER_SEND_RESET_LINK,
   USER_UPDATE,
 } from "../Actions/UserAction";
 
@@ -62,6 +64,22 @@ const userReducer = (state = userInitialState, action: ReducerAction) => {
         ...state,
         loading: false,
         error: action.payload || null,
+      };
+    case USER_SEND_RESET_LINK:
+      return {
+        ...state,
+        email: payload.email,
+        loading: false,
+        error: null,
+      };
+    case USER_RESET_PASSWORD:
+      return {
+        ...state,
+        token: payload.token,
+        email: payload.email,
+        newPassword: payload.newPassword,
+        loading: false,
+        error: null,
       };
     default:
       return {

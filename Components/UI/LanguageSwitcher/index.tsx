@@ -80,6 +80,7 @@ export default function LanguageSwitcher({ sx }: { sx?: SxProps<Theme> }) {
         onClick={Boolean(anchorEl) ? handleClose : handleOpen}
         height={isMobile ? "28px" : "40px"}
         sx={{
+          width: "111px",
           padding: isMobile ? "7px 10px" : "10px 14px",
           border: "1px solid #E8F0FF",
           display: "flex",

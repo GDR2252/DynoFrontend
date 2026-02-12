@@ -102,15 +102,15 @@ export const useWalletData = () => {
   const walletLoading = Boolean(walletState?.loading);
   const [walletWarning, setWalletWarning] = useState(false);
 
-  useEffect(() => {
-    if (
-      !walletState?.loading &&
-      (!Array.isArray(walletState?.walletList) ||
-        walletState.walletList.length === 0)
-    ) {
-      dispatch(WalletAction(WALLET_FETCH));
-    }
-  }, [dispatch]);
+  // useEffect(() => {
+  //   if (
+  //     !walletState?.loading &&
+  //     (!Array.isArray(walletState?.walletList) ||
+  //       walletState.walletList.length === 0)
+  //   ) {
+  //     dispatch(WalletAction(WALLET_FETCH));
+  //   }
+  // }, [dispatch]);
 
   /* ---------------------------- Wallet Data ---------------------------- */
 

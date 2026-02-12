@@ -28,7 +28,7 @@ import {
   isValid,
   startOfDay,
 } from "date-fns";
-import { useWalletData } from "@/hooks/useWalletData";
+import { ALLCRYPTOCURRENCIES, useWalletData } from "@/hooks/useWalletData";
 import Chart from "@/Components/UI/AreaChart";
 
 const formatDate = (date: Date): string => {
@@ -328,7 +328,8 @@ const DashboardLeftSection = () => {
     [t]
   );
 
-  const { activeWalletsData } = useWalletData();
+  // const { activeWalletsData } = useWalletData();
+  const activeWalletsData = ALLCRYPTOCURRENCIES;
 
   const maxWalletsToShow = isMobile ? 2 : 3;
   const walletsToDisplay = showAllWallets

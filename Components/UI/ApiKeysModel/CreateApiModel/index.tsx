@@ -86,7 +86,7 @@ const CreateApiModel: React.FC<CreateApiModelProps> = ({ open, onClose }) => {
             </Typography>
           </Box>
           <FormManager
-            initialValues={{ base_currency: "USD" }}
+            initialValues={{ key_name: "", base_currency: "USD" }}
             yupSchema={yup.object().shape({
               key_name: yup.string().required(t("validation.required")),
               base_currency: yup.string().required(t("validation.required")),
@@ -110,7 +110,16 @@ const CreateApiModel: React.FC<CreateApiModelProps> = ({ open, onClose }) => {
                   placeholder={t("generate.keyNamePlaceholder")}
                   name="key_name"
                   value={values.key_name}
-                  onChange={handleChange}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const event = {
+                      target: {
+                        name: "key_name",
+                        value: e.target.value,
+                      },
+                    } as React.ChangeEvent<HTMLInputElement>;
+
+                    handleChange(event);
+                  }}
                   sx={{ minHeight: "40px" }}
                 />
 

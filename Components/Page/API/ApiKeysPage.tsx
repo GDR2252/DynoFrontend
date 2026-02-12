@@ -44,6 +44,7 @@ import UnitedStatesFlag from "@/assets/Images/Icons/flags/united-states-flag.png
 import useIsMobile from "@/hooks/useIsMobile";
 import { stringShorten } from "@/helpers";
 import EmptyDataModel from "@/Components/UI/EmptyDataModel";
+import Toast from "@/Components/UI/Toast";
 
 const companyInitial = {
   company_id: 0,
@@ -322,6 +323,7 @@ const ApiKeysPage = ({
     (state: rootReducer) => state.companyReducer.companyList
   );
   const apiState = useSelector((state: rootReducer) => state.apiReducer);
+  const ToastState = useSelector((state: rootReducer) => state.toastReducer);
 
   const [initialValue, setInitialValue] = useState(
     structuredClone(companyInitial)
@@ -343,11 +345,11 @@ const ApiKeysPage = ({
       ),
   });
 
-  useEffect(() => {
-    dispatch(CompanyAction(COMPANY_FETCH));
-    dispatch(ApiAction(API_FETCH));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   dispatch(CompanyAction(COMPANY_FETCH));
+  //   dispatch(ApiAction(API_FETCH));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   // const { prodKey, devKey } = useMemo(() => {
   //   const list: ApiRow[] = apiState?.apiList || [];
@@ -358,18 +360,18 @@ const ApiKeysPage = ({
   //     devKey: dev || list.find((x) => x !== prod) || list[1],
   //   };
   // }, [apiState?.apiList]);
-  const { prodKey, devKey } = useMemo(() => {
-    const list: ApiRow[] = apiState?.apiList || [];
+  // const { prodKey, devKey } = useMemo(() => {
+  //   const list: ApiRow[] = apiState?.apiList || [];
 
-    const prod = list.find((x) => x?.base_currency === "USD");
+  //   const prod = list.find((x) => x?.base_currency === "USD");
 
-    const dev = list.find((x) => x?.base_currency === "NGN");
+  //   const dev = list.find((x) => x?.base_currency === "NGN");
 
-    return {
-      prodKey: prod,
-      devKey: dev,
-    };
-  }, [apiState?.apiList]);
+  //   return {
+  //     prodKey: prod,
+  //     devKey: dev,
+  //   };
+  // }, [apiState?.apiList]);
 
   const handleCopy = (value: string) => {
     if (!value) return;
@@ -423,34 +425,57 @@ const ApiKeysPage = ({
     },
   };
 
-  if (apiState.loading) {
-    return <Box
-      sx={{
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <CircularProgress
-        sx={{
-          color: "#0004ff",
-        }}
-      />
-    </Box>;
-  }
+  // if (apiState.loading) {
+  //   return <Box
+  //     sx={{
+  //       height: "100%",
+  //       display: "flex",
+  //       justifyContent: "center",
+  //       alignItems: "center",
+  //     }}
+  //   >
+  //     <CircularProgress
+  //       sx={{
+  //         color: "#0004ff",
+  //       }}
+  //     />
+  //   </Box>;
+  // }
 
-  if (apiState?.apiList?.length === 0 && !apiState?.loading) {
-    return (
-      <>
-        <EmptyDataModel pageName="apiKey" />
-        <CreateApiModel open={openCreate} onClose={handleCreateClose} />
-      </>
-    );
-  }
+  // if (apiState?.apiList?.length === 0 && !apiState?.loading) {
+  //   return (
+  //     <>
+  //       <EmptyDataModel pageName="apiKey" />
+  //       <CreateApiModel open={openCreate} onClose={handleCreateClose} />
+  //     </>
+  //   );
+  // }
+
+  const apiList = [
+    {
+      api_id: 21,
+      base_currency: "USD",
+      apiKey: "U2FsdGVkX18bf7YlBPC8zzDdVjFdH5XhG+ew7W/Iy5MSF7OqVaq8WkNSKUytqiMjSOvX/RlXRS3zdhK5EtpF0N+uHMadYC3d0nHs9gjWRxZgwUut6H3C6nZigHkg6ZtO",
+      adminToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMzOTBmZDcwLTZhNTgtNGI3MC1hOWJjLTk0NDFiMzMxOTk2NiIsImNvbXBhbnlfaWQiOjksImN1c3RvbWVyX25hbWUiOiJDb3J0ZXogYW5kIFRhdGUgTExDICBhZG1pbiIsImVtYWlsIjoiZGhhcm1pa2dvZGhhbmkxNzA1QGdtYWlsLmNvbSIsIm1vYmlsZSI6ImRoYXJtaWtnb2RoYW5pMTcwNUBnbWFpbC5jb20iLCJjcmVhdGVkQXQiOiIyMDI2LTAxLTIwVDA5OjI1OjUyLjQ5OFoiLCJ1cGRhdGVkQXQiOiIyMDI2LTAxLTIwVDA5OjI1OjUyLjQ5OFoiLCJpYXQiOjE3Njg5MDExNTJ9.0UjR7Pyky5fmKuM7CMBnE1WhTBnDJjyhjza_6ez6u8k",
+      createdAt: "2026-01-20T09:25:52.602Z",
+    },
+    {
+      api_id: 22,
+      base_currency: "USD",
+      apiKey: "U2FsdGVkX18bf7YlBPC8zzDdVjFdH5XhG+ew7W/Iy5MSF7OqVaq8WkNSKUytqiMjSOvX/RlXRS3zdhK5EtpF0N+uHMadYC3d0nHs9gjWRxZgwUut6H3C6nZigHkg6ZtO",
+      adminToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMzOTBmZDcwLTZhNTgtNGI3MC1hOWJjLTk0NDFiMzMxOTk2NiIsImNvbXBhbnlfaWQiOjksImN1c3RvbWVyX25hbWUiOiJDb3J0ZXogYW5kIFRhdGUgTExDICBhZG1pbiIsImVtYWlsIjoiZGhhcm1pa2dvZGhhbmkxNzA1QGdtYWlsLmNvbSIsIm1vYmlsZSI6ImRoYXJtaWtnb2RoYW5pMTcwNUBnbWFpbC5jb20iLCJjcmVhdGVkQXQiOiIyMDI2LTAxLTIwVDA5OjI1OjUyLjQ5OFoiLCJ1cGRhdGVkQXQiOiIyMDI2LTAxLTIwVDA5OjI1OjUyLjQ5OFoiLCJpYXQiOjE3Njg5MDExNTJ9.0UjR7Pyky5fmKuM7CMBnE1WhTBnDJjyhjza_6ez6u8k",
+      createdAt: "2026-01-20T09:25:52.602Z",
+    }
+  ]
 
   return (
     <>
+      <Toast
+        open={ToastState.open}
+        message={ToastState.message}
+        severity={ToastState.severity || "success"}
+        loading={ToastState.loading}
+      />
       <DeleteModel
         open={confirmDeleteOpen}
         onClose={() => {
@@ -499,7 +524,8 @@ const ApiKeysPage = ({
         sx={{ mb: 2.5, ...itemAnimation }}
         alignItems="flex-start"
       >
-        {apiState?.apiList?.map((api: any, index: number) => (
+        {/* {apiState?.apiList?.map((api: any, index: number) => ( */}
+        {apiList?.map((api: any, index: number) => (
           <Grid
             key={api.api_id}
             item
@@ -532,7 +558,8 @@ const ApiKeysPage = ({
           sx={{
             opacity: 0,
             animation: 'fadeSlideIn 0.5s ease forwards',
-            animationDelay: `${(apiState?.apiList?.length || 0) * 0.1}s`,
+            // animationDelay: `${(apiState?.apiList?.length || 0) * 0.1}s`,
+            animationDelay: `${(apiList?.length || 0) * 0.1}s`,
           }}
         >
           <ApiDocumentationCard docsUrl={docsUrl} />
@@ -553,7 +580,8 @@ const ApiKeysPage = ({
           flexWrap: { xs: "wrap", sm: "nowrap" },
           opacity: 0,
           animation: 'fadeSlideIn 0.5s ease forwards',
-          animationDelay: `${(apiState?.apiList?.length || 0) * 0.2}s`,
+          // animationDelay: `${(apiState?.apiList?.length || 0) * 0.2}s`,
+          animationDelay: `${(apiList?.length || 0) * 0.2}s`,
         }}
       >
         <Box

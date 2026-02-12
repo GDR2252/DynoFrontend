@@ -28,9 +28,9 @@ export function CompanyDialogProvider({ children }: { children: React.ReactNode 
   const [mode, setMode] = useState<CompanyDialogMode>("add");
   const [company, setCompany] = useState<ICompany | null>(null);
 
-  useEffect(() => {
-    dispatch(CompanyAction(COMPANY_FETCH));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(CompanyAction(COMPANY_FETCH));
+  // }, [dispatch]);
 
   const closeCompanyDialog = useCallback(() => {
     setOpen(false);

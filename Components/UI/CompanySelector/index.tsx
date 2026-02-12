@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import { Add } from "@mui/icons-material";
 import CustomButton from "../Buttons";
 import { useSelector } from "react-redux";
-import { rootReducer } from "@/utils/types";
+import { ICompany, rootReducer } from "@/utils/types";
 import { useCompanyDialog } from "@/Components/UI/CompanyDialog/context";
 import useIsMobile from "@/hooks/useIsMobile";
 
@@ -34,10 +34,63 @@ export default function CompanySelector() {
 
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const companies = useMemo(
-    () => companyState.companyList ?? [],
-    [companyState.companyList]
-  );
+  // const companies = useMemo(
+  //   () => companyState.companyList ?? [],
+  //   [companyState.companyList]
+  // );
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const companies: ICompany[] = [
+    {
+      address_line_1: "",
+      address_line_2: "",
+      city: "",
+      company_id: 9,
+      company_name: "Cortez and Tate LLC",
+      country: "",
+      email: "dharmikgodhani1705@gmail.com",
+      mobile: "+911100221100",
+      photo: "https://api.dynopay.com/images/media_ks1tp17puh.png",
+      state: "",
+      user_id: 16,
+      VAT_number: "",
+      website: "https://www.tigepa.tv",
+      zip_code: "",
+    },
+    {
+      address_line_1: "",
+      address_line_2: "",
+      city: "",
+      company_id: 12,
+      company_name: "Weiss Steele Associates",
+      country: "",
+      email: "bobo@mailinator.com",
+      mobile: "+1122112255",
+      photo: "",
+      state: "",
+      user_id: 16,
+      VAT_number: "",
+      website: "https://www.gazogycag.info",
+      zip_code: "",
+    },
+    {
+      address_line_1: "",
+      address_line_2: "",
+      city: "",
+      company_id: 10,
+      company_name: "Petty Duncan LLC00",
+      country: "",
+      email: "xiveb@mailinator.com",
+      mobile: "+9145454545454",
+      photo: "https://api.dynopay.com/images/media_bzjlaf1nup.png",
+      state: "",
+      user_id: 16,
+      VAT_number: "",
+      website: "https://www.qara.me.uk",
+      zip_code: "",
+    },
+  ];
+
   const [active, setActive] = useState<number | null>(null);
 
   useEffect(() => {

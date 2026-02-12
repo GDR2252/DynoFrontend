@@ -1358,7 +1358,7 @@ export default function CompanyDialog({
                   variant="outlined"
                   size="medium"
                   onClick={handleClose}
-                  disabled={companyState.loading}
+                  // disabled={companyState.loading}
                   sx={{
                     flex: 1,
                     fontSize: "15px",
@@ -1372,7 +1372,7 @@ export default function CompanyDialog({
                   variant="primary"
                   size="medium"
                   onClick={() => handleSubmit(values)}
-                  disabled={submitDisable || companyState.loading}
+                  // disabled={submitDisable || companyState.loading}
                   sx={{
                     flex: 1,
                     fontSize: "15px",

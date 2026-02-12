@@ -20,6 +20,8 @@ import { theme } from "@/styles/theme";
 import { useTranslation } from "react-i18next";
 import { useWalletData } from "@/hooks/useWalletData";
 import Link from "next/link";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
+import { VerticalLine } from "@/Components/UI/LanguageSwitcher/styled";
 
 const NewHeader = () => {
   const router = useRouter();
@@ -71,36 +73,40 @@ const NewHeader = () => {
               <LanguageSwitcher />
             </Box>
 
-            {/* <Box sx={{ order: { lg: 1, xl: 2 } }}>
-              <RequiredKYC>
-                <InfoIcon
-                  sx={{ fontSize: 20, color: theme.palette.error.main }}
-                />
-                <RequiredKYCText sx={{ display: { lg: "none", xl: "block" } }}>{tDashboard("requiredKYC2")}</RequiredKYCText>
-                <RequiredKYCText sx={{ display: { lg: "block", xl: "none" } }}>{tDashboard("requiredKYC1")}</RequiredKYCText>
-                <VerticalLine style={{ margin: "0 14px" }} />
-                <ArrowOutwardIcon
-                  sx={{ color: theme.palette.text.secondary, fontSize: 16 }}
-                />
-              </RequiredKYC>
-            </Box> */}
-
-            {walletWarning && (
+            {router.pathname === "/transactions" ? (
               <Box sx={{ order: { lg: 1, xl: 2 } }}>
-                <Link href='/wallet'>
-                  <RequiredKYC>
-                    <InfoIcon
-                      sx={{ fontSize: 20, color: theme.palette.error.main }}
-                    />
-                    <RequiredKYCText sx={{ display: { lg: "none", xl: "block" } }}>
-                      {tWallet("walletSetUpWarnnigTitle")}
-                    </RequiredKYCText>
-                    <RequiredKYCText sx={{ display: { lg: "block", xl: "none" } }}>
-                      {tWallet("walletWarnnigTitle")}
-                    </RequiredKYCText>
-                  </RequiredKYC>
-                </Link>
+                <RequiredKYC>
+                  <InfoIcon
+                    sx={{ fontSize: 20, color: theme.palette.error.main }}
+                  />
+                  <RequiredKYCText sx={{ display: { lg: "none", xl: "block" } }}>{t("requiredKYC2")}</RequiredKYCText>
+                  <RequiredKYCText sx={{ display: { lg: "block", xl: "none" } }}>{t("requiredKYC1")}</RequiredKYCText>
+                  <VerticalLine style={{ margin: "0 14px" }} />
+                  <ArrowOutwardIcon
+                    sx={{ color: theme.palette.text.secondary, fontSize: 16 }}
+                  />
+                </RequiredKYC>
               </Box>
+            ) : (
+              <>
+                {walletWarning && (
+                  <Box sx={{ order: { lg: 1, xl: 2 } }}>
+                    <Link href='/wallet'>
+                      <RequiredKYC>
+                        <InfoIcon
+                          sx={{ fontSize: 20, color: theme.palette.error.main }}
+                        />
+                        <RequiredKYCText sx={{ display: { lg: "none", xl: "block" } }}>
+                          {tWallet("walletSetUpWarnnigTitle")}
+                        </RequiredKYCText>
+                        <RequiredKYCText sx={{ display: { lg: "block", xl: "none" } }}>
+                          {tWallet("walletWarnnigTitle")}
+                        </RequiredKYCText>
+                      </RequiredKYC>
+                    </Link>
+                  </Box>
+                )}
+              </>
             )}
           </Box>
           <UserMenu />

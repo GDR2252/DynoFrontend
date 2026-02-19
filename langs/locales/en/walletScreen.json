@@ -33,5 +33,8 @@
   "walletWarnnigTitle": "wallet setup",
   "walletSetUpWarnnigTitle": "Complete wallet setup",
   "walletSetUpWarnnigSubtitle": "Please add all eight crypto wallet addresses. Some features will remain unavailable until all wallets are added.",
-  "walletSetUpWarnnigSubtitleBold": "all eight crypto wallet addresses"
+  "walletSetUpWarnnigSubtitleBold": "all eight crypto wallet addresses",
+  "XRPTag": "XRP Tag (optional)",
+  "XRPTagPlaceholder": "Enter the XRP Tag",
+  "XRPTagWarning": "Memo tag is required if your exchange or wallet has one or you will lose your funds"
 }

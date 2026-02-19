@@ -1,9 +1,8 @@
 import React, { useCallback, useRef, useState } from "react";
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import Image from "next/image";
 import PopupModal from "@/Components/UI/PopupModal";
 import InputField from "@/Components/UI/AuthLayout/InputFields";
-import CustomButton from "@/Components/UI/Buttons";
 import { theme } from "@/styles/theme";
 import useIsMobile from "@/hooks/useIsMobile";
 import { useTranslation } from "react-i18next";
@@ -27,29 +26,7 @@ import ShareIcon from "@/assets/Icons/ShareIcon.svg";
 import PanelCard from "@/Components/UI/PanelCard";
 import { ApiKeyCopyButton } from "../API/styled";
 import Toast from "@/Components/UI/Toast";
-
-interface PaymentLinkSuccessModalProps {
-  open: boolean;
-  onClose: () => void;
-  paymentLink: string;
-  paymentSettings: {
-    value: string;
-    expire: string;
-    description: string;
-    blockchainFees: string;
-    linkId: string;
-  };
-  onCopyLink: () => void;
-}
-
-interface PaymentDetailRowProps {
-  icon: string;
-  alt: string;
-  label: string;
-  value: React.ReactNode;
-  iconStyle?: React.CSSProperties;
-  alignTop?: boolean;
-}
+import { PaymentDetailRowProps, PaymentLinkSuccessModalProps } from "@/utils/types/paymentLink";
 
 const PaymentDetailRow: React.FC<PaymentDetailRowProps> = ({
   icon,
@@ -68,7 +45,8 @@ const PaymentDetailRow: React.FC<PaymentDetailRowProps> = ({
         height={isMobile ? 12 : 16}
         draggable={false}
         style={{
-          filter: "brightness(0) saturate(100%) invert(40%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%)",
+          filter:
+            "brightness(0) saturate(100%) invert(40%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%)",
         }}
       />
 
@@ -93,7 +71,7 @@ const PaymentLinkSuccessModal: React.FC<PaymentLinkSuccessModalProps> = ({
       const result = t(key, { ns: "createPaymentLinkScreen" });
       return typeof result === "string" ? result : String(result);
     },
-    [t]
+    [t],
   );
   const tCommon = useCallback((key: string) => t(key, { ns: "common" }), [t]);
   const [openToast, setOpenToast] = useState(false);
@@ -101,7 +79,7 @@ const PaymentLinkSuccessModal: React.FC<PaymentLinkSuccessModalProps> = ({
 
   const getExpireText = () => {
     if (paymentSettings.expire === "no") return tPaymentLink("noExpiration");
-    return tPaymentLink("expires24h");
+    return tPaymentLink(paymentSettings.expire);
   };
 
   const getBlockchainFeesText = () => {
@@ -204,13 +182,22 @@ const PaymentLinkSuccessModal: React.FC<PaymentLinkSuccessModalProps> = ({
             </Box>
 
             <PaymentDetailsContainer>
-              <PaymentDetailsTitle>{tPaymentLink("paymentDetails")}</PaymentDetailsTitle>
+              <PaymentDetailsTitle>
+                {tPaymentLink("paymentDetails")}
+              </PaymentDetailsTitle>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                 <PaymentDetailRow
                   icon={RoundedStackIcon.src}
                   alt="value"
                   label={tPaymentLink("value").replace(" ($)", "")}
                   value={`$${paymentSettings.value || "0.00"}`}
+                />
+
+                <PaymentDetailRow
+                  icon={RoundedStackIcon.src}
+                  alt="crypto value"
+                  label={tPaymentLink("cryptoValue")}
+                  value={`${paymentSettings.cryptoValue || "0.00"}`}
                 />
 
                 <PaymentDetailRow

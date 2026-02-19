@@ -21,6 +21,7 @@ export interface CustomButtonProps {
   hideLabelWhenLoading?: boolean;
   showSuccessAnimation?: boolean;
   showErrorAnimation?: boolean;
+  hideLabel?: boolean;
 }
 
 /**
@@ -45,6 +46,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   hideLabelWhenLoading = false,
   showSuccessAnimation = false,
   showErrorAnimation = false,
+  hideLabel = false,
 }) => {
   const isMobile = useIsMobile("sm");
   // Size configuration
@@ -233,7 +235,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         </Box>
       )}
 
-      {!shouldHideLabel && (
+      {((!shouldHideLabel) && !hideLabel) && (
         <span className="custom-button-label" style={{ fontSize: isMobile ? "13px" : "15px", fontFamily: "UrbanistMedium", fontWeight: 500, whiteSpace: "nowrap" }}>{label}</span>
       )}
 

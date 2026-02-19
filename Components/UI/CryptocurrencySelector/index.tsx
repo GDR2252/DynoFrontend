@@ -69,7 +69,7 @@ export interface CryptocurrencySelectorProps {
 
 const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
   label,
-  value = "BTC",
+  value = "",
   onChange,
   error = false,
   helperText,
@@ -87,9 +87,9 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
 
   const { cryptocurrencies } = useWalletData();
 
-  useEffect(() => {
-    onChange?.(cryptocurrencies[0].code)
-  }, [cryptocurrencies])
+  // useEffect(() => {
+  //   onChange?.(cryptocurrencies[0].code)
+  // }, [cryptocurrencies])
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -105,7 +105,7 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
   };
 
   const selectedCrypto =
-    cryptocurrencies.find((c) => c.code === value) || cryptocurrencies[0];
+    cryptocurrencies.find((c) => c.code === value) || { value: "", name: "", icon: null, code: "" };
   const isOpen = Boolean(anchorEl);
 
   // Handle click outside
@@ -179,18 +179,24 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
       >
         {/* ===== Trigger ===== */}
         <CryptocurrencyTrigger onClick={handleOpen}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <IconChip sx={{ minWidth: "fit-content", height: "28px" }}>
-              <CryptocurrencyIcon
-                src={selectedCrypto.icon}
-                alt={selectedCrypto.name}
-                width={isMobile ? 14 : 20}
-                height={isMobile ? 14 : 20}
-              />
-              <span>{selectedCrypto.code}</span>
-            </IconChip>
-            <CryptocurrencyText>{selectedCrypto.name}</CryptocurrencyText>
-          </Box>
+          {value === "" ? (
+            <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <CryptocurrencyText style={{ color: theme.palette.text.disabled }}>Bitcoin (BTC)</CryptocurrencyText>
+            </Box>
+          ) : (
+            <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <IconChip sx={{ minWidth: "fit-content", height: "28px" }}>
+                <CryptocurrencyIcon
+                  src={selectedCrypto.icon}
+                  alt={selectedCrypto.name}
+                  width={isMobile ? 14 : 20}
+                  height={isMobile ? 14 : 20}
+                />
+                <span>{selectedCrypto.code}</span>
+              </IconChip>
+              <CryptocurrencyText>{selectedCrypto.name}</CryptocurrencyText>
+            </Box>
+          )}
 
           <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <CryptocurrencyDividerLine />
@@ -238,7 +244,7 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
                   />
                   <span>{selectedCrypto.code}</span>
                 </IconChip> */}
-                <CryptocurrencyText>{selectedCrypto.name} ({value})</CryptocurrencyText>
+                <CryptocurrencyText>{value === "" ? "Bitcoin (BTC)" : `${selectedCrypto.name} (${value})`}</CryptocurrencyText>
               </Box>
 
               <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -289,6 +295,9 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
                       sx: {
                         fontWeight: 500,
                         fontSize: isMobile ? "13px" : "15px",
+                        fontFamily: "UrbanistMedium",
+                        lineHeight: "1.2",
+                        letterSpacing: "0",
                       },
                     }}
                   />

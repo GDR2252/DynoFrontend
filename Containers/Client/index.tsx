@@ -5,11 +5,17 @@ import React from "react";
 import NewHeader from "@/Components/Layout/NewHeader";
 import NewSidebar from "@/Components/Layout/NewSidebar";
 import MobileNavigationBar from "@/Components/Layout/MobileNavigationBar";
-import { MainPageHeader, PageHeader, PageHeaderDescription, PageHeaderTitle } from "./styled";
+import {
+  MainPageHeader,
+  PageHeader,
+  PageHeaderDescription,
+  PageHeaderTitle,
+} from "./styled";
 import { CompanyDialogProvider } from "@/Components/UI/CompanyDialog/context";
 import useIsMobile from "@/hooks/useIsMobile";
 
 const ClientLayout = ({
+  pageBackBtn = false,
   children,
   pageName,
   pageDescription,
@@ -25,7 +31,11 @@ const ClientLayout = ({
         sx={{
           height: "100dvh",
           width: "100%",
-          p: { xs: "8px 16px 0px 16px", lg: "16px 23px 16px 23px", xl: "16px 40px 16px 40px" },
+          p: {
+            xs: "8px 16px 0px 16px",
+            lg: "16px 23px 16px 23px",
+            xl: "16px 40px 16px 40px",
+          },
           display: "flex",
           overflow: "hidden",
           flexDirection: "column",
@@ -97,9 +107,9 @@ const ClientLayout = ({
                     sx={
                       pageHeaderSx
                         ? ([
-                          { pt: 0, pb: { lg: 2.5, md: 1.5, xs: 1 }, mb: 0 },
-                          pageHeaderSx,
-                        ] as SxProps<Theme>)
+                            { pt: 0, pb: { lg: 2.5, md: 1.5, xs: 1 }, mb: 0 },
+                            pageHeaderSx,
+                          ] as SxProps<Theme>)
                         : { pt: 0, pb: { lg: 2.5, md: 1.5, xs: 1 }, mb: 0 }
                     }
                   >

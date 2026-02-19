@@ -1,83 +1,172 @@
 import PanelCard from "@/Components/UI/PanelCard";
 import {
   Box,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
-  Popover,
-  ListItemButton,
-  ListItemText,
+  useMediaQuery,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
 import { useTranslation } from "react-i18next";
 import {
-  PaymentSettingsLabel,
-  TabContainer,
   TabContentContainer,
-  TabItem,
-  ExpireTrigger,
-  ExpireText,
-  ExpireDropdown,
 } from "./styled";
-import InputField from "@/Components/UI/AuthLayout/InputFields";
-import Image from "next/image";
-import CustomRadio from "@/Components/UI/RadioGroup";
 import PaymentLinkSuccessModal from "./PaymentLinkSuccessModal";
 
-import RoundedStackIcon from "@/assets/Icons/roundedStck-icon.svg";
-import HourglassIcon from "@/assets/Icons/hourglass-icon.svg";
-import PaymentIcon from "@/assets/Icons/payment-icon.svg";
-import NoteIcon from "@/assets/Icons/note-icon.svg";
-import CustomButton from "@/Components/UI/Buttons";
+import BitcoinIcon from "@/assets/cryptocurrency/Bitcoin-icon.svg";
+import EthereumIcon from "@/assets/cryptocurrency/Ethereum-icon.svg";
+import LitecoinIcon from "@/assets/cryptocurrency/Litecoin-icon.svg";
+import DogecoinIcon from "@/assets/cryptocurrency/Dogecoin-icon.svg";
+import BitcoinCashIcon from "@/assets/cryptocurrency/BitcoinCash-icon.svg";
+import TronIcon from "@/assets/cryptocurrency/Tron-icon.svg";
+import USDTIcon from "@/assets/cryptocurrency/USDT-icon.svg";
+import USDT2Icon from "@/assets/cryptocurrency/USDT2-icon.svg";
+import SolanaIcon from "@/assets/cryptocurrency/Solana-icon.svg";
+import XRPIcon from "@/assets/cryptocurrency/XRP-icon.svg";
+import PolygonIcon from "@/assets/cryptocurrency/Polygon-icon.svg";
+import RLUSDIcon from "@/assets/cryptocurrency/RLUSD-icon.svg";
+
+import i18n from "@/i18n";
+import { ICryptoItem, PaymentLink } from "@/utils/types/paymentLink";
 import { theme } from "@/styles/theme";
 import useIsMobile from "@/hooks/useIsMobile";
 
-const CreatePaymentLinkPage = () => {
-  const isMobile = useIsMobile("sm");
+import {
+  TabNavigation,
+  PaymentLinkHeader,
+  PaymentSettingsBasic,
+  DescriptionSection,
+  CryptoSelection,
+  TaxSection,
+  ActionButtons,
+  PostPaymentSettings,
+} from "@/Components/UI/pay-link";
+import SaveChangeModel from "@/Components/UI/pay-link/SaveChangeModel";
+
+function truncateByWords(text: string, maxLength: number) {
+  if (text.length <= maxLength) return text;
+
+  const trimmed = text.slice(0, maxLength);
+  const words = `${trimmed}...`;
+  return words;
+}
+
+const CreatePaymentLinkPage = ({
+  paymentLinkData,
+  disabled,
+}: {
+  paymentLinkData: PaymentLink | {};
+  disabled: boolean;
+}) => {
+  const isMobile = useIsMobile("md");
   const { t } = useTranslation("createPaymentLinkScreen");
   const tPaymentLink = useCallback(
     (key: string): string => {
       const result = t(key, { ns: "createPaymentLinkScreen" });
       return typeof result === "string" ? result : String(result);
     },
-    [t]
+    [t],
   );
+  const currentLng = i18n.language;
+  const hasPaymentLinkData = Object.keys(paymentLinkData).length > 0;
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [cryptoItems, setCryptoItems] = useState<ICryptoItem[]>([]);
+  const [filteredCryptoItems, setFilteredCryptoItems] = useState<ICryptoItem[]>([]);
+  const [showFilteredCryptoItems, setShowFilteredCryptoItems] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState(0);
   const [blockchainFees, setBlockchainFees] = useState("company");
   const expireAnchorEl = useRef<HTMLElement | null>(null);
   const expireTriggerRef = useRef<HTMLDivElement>(null);
-  const [expireOpen, setExpireOpen] = useState(false);
-  const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [expireOpen, setExpireOpen] = useState<boolean>(false);
+  const [successModalOpen, setSuccessModalOpen] = useState<boolean>(false);
+  const [saveChangeModalOpen, setSaveChangeModalOpen] = useState<boolean>(false);
   const [paymentLink, setPaymentLink] = useState("");
+  const currencyTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const currencyAnchorEl = useRef<HTMLButtonElement | null>(null);
+  const [includeTax, setIncludeTax] = useState<boolean>(
+    disabled ? true : false,
+  );
+  const [showAllCoins, setShowAllCoins] = useState(false);
+  const MIN_WIDTH = 390;
+  const MAX_WIDTH = 900;
+  const BASE_COUNT = 15;
+  const STEP = 10;
+
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [count, setCount] = useState(BASE_COUNT);
+
+  const [currencyOpen, setCurrencyOpen] = useState(false);
+
+  const currencies = ["USD", "EUR", "GBP", "INR", "AED"];
+
+  const handleCurrencyOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
+    currencyAnchorEl.current = e.currentTarget;
+    setCurrencyOpen(true);
+  };
+
+  const handleCurrencyClose = () => {
+    setCurrencyOpen(false);
+  };
+
+  const handleCurrencySelect = (currency: string) => {
+    setPaymentSettings((prev) => ({ ...prev, currency }));
+    setPaymentSettingsTouched((p) => ({ ...p, currency: true }));
+    setPaymentSettingsErrors((p) => ({ ...p, currency: "" }));
+    setCurrencyOpen(false);
+  };
 
   // Payment Settings (Tab 0) form data
   const [paymentSettings, setPaymentSettings] = useState({
-    value: "",
-    expire: "no",
-    description: "",
-    blockchainFees: "company",
-    linkId: "",
+    value: hasPaymentLinkData
+      ? (paymentLinkData as PaymentLink).amount.toString()
+      : "",
+    cryptoValue: "",
+    currency: hasPaymentLinkData
+      ? (paymentLinkData as PaymentLink).currency
+      : "",
+    clientName: hasPaymentLinkData
+      ? (paymentLinkData as PaymentLink).clientName
+      : "",
+    expire: hasPaymentLinkData ? (paymentLinkData as PaymentLink).expire : "no",
+    description: hasPaymentLinkData
+      ? (paymentLinkData as PaymentLink).description
+      : "",
+    blockchainFees: hasPaymentLinkData
+      ? (paymentLinkData as PaymentLink).blockchainFees
+      : "company",
+    linkId: hasPaymentLinkData ? (paymentLinkData as PaymentLink).link_id : "",
+    acceptedCryptoCurrency: hasPaymentLinkData
+      ? (paymentLinkData as PaymentLink).acceptedCryptoCurrency
+      : [],
   });
 
   // Validation errors for Payment Settings tab
   const [paymentSettingsErrors, setPaymentSettingsErrors] = useState({
     value: "",
+    currency: "",
     description: "",
   });
 
   // Touched fields for Payment Settings tab
   const [paymentSettingsTouched, setPaymentSettingsTouched] = useState({
     value: false,
+    currency: false,
     description: false,
   });
 
   // Post-Payment Settings (Tab 1) form data
   const [postPaymentSettings, setPostPaymentSettings] = useState({
-    callbackUrl: "",
-    redirectUrl: "",
-    webhookUrl: "",
+    callbackUrl: hasPaymentLinkData
+      ? (paymentLinkData as PaymentLink).payment_url
+      : "",
+    redirectUrl: hasPaymentLinkData
+      ? (paymentLinkData as PaymentLink).redirect_url
+      : "",
+    webhookUrl: hasPaymentLinkData
+      ? (paymentLinkData as PaymentLink).webhook_url
+      : "",
   });
 
   const handleTabChange = (tab: number) => {
@@ -90,8 +179,9 @@ const CreatePaymentLinkPage = () => {
   };
 
   const validatePaymentSettings = () => {
-    const errors: { value: string; description: string } = {
+    const errors: { value: string; description: string; currency: string } = {
       value: "",
+      currency: "",
       description: "",
     };
 
@@ -110,12 +200,15 @@ const CreatePaymentLinkPage = () => {
     }
 
     // Validate description (optional but check max length if provided)
-    if (paymentSettings.description && paymentSettings.description.length > 500) {
+    if (
+      paymentSettings.description &&
+      paymentSettings.description.length > 500
+    ) {
       errors.description = tPaymentLink("descriptionMaxLength");
     }
 
     setPaymentSettingsErrors(errors);
-    return !errors.value && !errors.description;
+    return !errors.value && !errors.currency && !errors.description;
   };
 
   const handlePaymentSettingsChange = (field: string, value: string) => {
@@ -151,6 +244,18 @@ const CreatePaymentLinkPage = () => {
     handleExpireClose();
   };
 
+  const validateCurrency = useCallback((value: string) => {
+    if (!value) return tPaymentLink("currencyRequired");
+    return "";
+  }, [tPaymentLink]);
+
+  const handleCurrencyBlur = () => {
+    setPaymentSettingsTouched((p) => ({ ...p, currency: true }));
+
+    const error = validateCurrency(paymentSettings.currency);
+    setPaymentSettingsErrors((p) => ({ ...p, currency: error }));
+  };
+
   // Handle click outside for expire dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -173,11 +278,16 @@ const CreatePaymentLinkPage = () => {
     };
   }, [expireOpen]);
 
+  const handleSaveChanges = () => {
+    setSaveChangeModalOpen(true);
+  };
+
   const handleCreatePaymentLink = () => {
     if (activeTab === 0) {
       // Mark all fields as touched
       setPaymentSettingsTouched({
         value: true,
+        currency: true,
         description: true,
       });
 
@@ -213,6 +323,193 @@ const CreatePaymentLinkPage = () => {
       navigator.clipboard.writeText(paymentLink);
     }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const trigger = currencyTriggerRef.current;
+      const popover = currencyAnchorEl.current;
+
+      if (
+        trigger &&
+        !trigger.contains(event.target as Node) &&
+        popover &&
+        !popover.contains(event.target as Node)
+      ) {
+        setCurrencyOpen(false);
+
+        // 👇 Mark as touched only when user leaves without selecting
+        setPaymentSettingsTouched((p) => ({ ...p, currency: true }));
+
+        const error = validateCurrency(paymentSettings.currency);
+        setPaymentSettingsErrors((p) => ({ ...p, currency: error }));
+      }
+    };
+
+    if (currencyOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [currencyOpen, paymentSettings.currency, validateCurrency]);
+
+  const disable = {
+    pointerEvents: disabled ? "none" : "auto",
+    opacity: disabled ? 0.5 : 1,
+    cursor: disabled ? "not-allowed" : "inherit",
+    filter: disabled ? "grayscale(1)" : "none",
+  };
+
+  const ALL_CRYPTO_ITEMS: ICryptoItem[] = React.useMemo(() => [
+    {
+      name: "Bitcoin",
+      label: "BTC",
+      icon: BitcoinIcon,
+      fullOrder: 15,
+      shortOrder: 1,
+    },
+    {
+      name: "Ethereum",
+      label: "ETH",
+      icon: EthereumIcon,
+      fullOrder: 5,
+      shortOrder: 2,
+    },
+    { name: "Tron", label: "TRX", icon: TronIcon, fullOrder: 4, shortOrder: 3 },
+    {
+      name: "Litecoin",
+      label: "LTC",
+      icon: LitecoinIcon,
+      fullOrder: 3,
+      shortOrder: 4,
+    },
+    {
+      name: "Dogecoin",
+      label: "DOGE",
+      icon: DogecoinIcon,
+      fullOrder: 8,
+      shortOrder: 5,
+    },
+    {
+      name: "Bitcoin Cash",
+      label: "BCH",
+      icon: BitcoinCashIcon,
+      fullOrder: 1,
+      shortOrder: 6,
+    },
+    {
+      name: "USDT",
+      label: "TRC-20",
+      icon: USDTIcon,
+      fullOrder: 2,
+      shortOrder: 7,
+    },
+    {
+      name: "USDT",
+      label: "ERC-20",
+      icon: USDTIcon,
+      fullOrder: 6,
+      shortOrder: 8,
+    },
+    {
+      name: "USDT",
+      label: "FRC-20",
+      icon: USDT2Icon,
+      fullOrder: 7,
+      shortOrder: 9,
+    },
+    {
+      name: "Solana",
+      label: "SOL",
+      icon: SolanaIcon,
+      fullOrder: 9,
+      shortOrder: 10,
+    },
+    { name: "XRP", label: "XRP", icon: XRPIcon, fullOrder: 10, shortOrder: 11 },
+    {
+      name: "POLYGON",
+      label: "POLYGON",
+      icon: PolygonIcon,
+      fullOrder: 11,
+      shortOrder: 12,
+    },
+    {
+      name: "POLYGON USDT",
+      label: "ERC-20",
+      icon: PolygonIcon,
+      fullOrder: 12,
+      shortOrder: 13,
+    },
+    {
+      name: "RLUSD",
+      label: "XRP",
+      icon: RLUSDIcon,
+      fullOrder: 13,
+      shortOrder: 14,
+    },
+    {
+      name: "RLUSD",
+      label: "ERC-20",
+      icon: RLUSDIcon,
+      fullOrder: 14,
+      shortOrder: 15,
+    },
+  ], []);
+
+  const handleSearch = () => {
+    if (searchTerm.trim() !== "") {
+      const filterdData = cryptoItems.filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.label.toLowerCase().includes(searchTerm.toLowerCase()));
+      setFilteredCryptoItems(filterdData);
+    } else {
+      setFilteredCryptoItems([]);
+    }
+    setShowFilteredCryptoItems(true);
+  };
+
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setShowFilteredCryptoItems(false);
+    }
+  }, [searchTerm])
+
+  useEffect(() => {
+    const fullSorted = [...ALL_CRYPTO_ITEMS].sort(
+      (a, b) => a.fullOrder - b.fullOrder,
+    );
+
+    if (!hasPaymentLinkData) {
+      setCryptoItems(
+        fullSorted
+          .filter((item) => item.shortOrder <= 9)
+          .sort((a, b) => a.shortOrder - b.shortOrder),
+      );
+    } else {
+      setCryptoItems(fullSorted);
+    }
+  }, [ALL_CRYPTO_ITEMS, hasPaymentLinkData, showAllCoins]);
+
+  const isLarge = useMediaQuery("(min-width:1000px)");
+  const isSmall = useMediaQuery("(min-width:650px)");
+
+  const walletNotSetUp = ["BCH"];
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const clampedWidth = Math.min(Math.max(windowWidth, MIN_WIDTH), MAX_WIDTH);
+
+    const extra = Math.floor((clampedWidth - MIN_WIDTH) / STEP);
+    setCount(BASE_COUNT + extra);
+  }, [windowWidth]);
+
   return (
     <div>
       <PaymentLinkSuccessModal
@@ -222,387 +519,185 @@ const CreatePaymentLinkPage = () => {
         paymentSettings={paymentSettings}
         onCopyLink={handleCopyLink}
       />
+      <SaveChangeModel
+        open={saveChangeModalOpen}
+        onClose={() => setSaveChangeModalOpen(false)}
+        onSave={handleCreatePaymentLink}
+      />
 
       <PanelCard
-        bodyPadding={isMobile ? 2 : 2.5}
+        bodyPadding={
+          isMobile
+            ? 2
+            : hasPaymentLinkData
+              ? theme.spacing("30px", 2.4, "30px", 2.5)
+              : 2.5
+        }
         sx={{
+          mb: hasPaymentLinkData ? 10 : 0,
           maxWidth: { xs: "100%", md: "959px" },
           width: "100%",
           borderRadius: { xs: "8px", md: "14px" },
         }}
       >
-        <Box>
-          <TabContainer>
-            <TabItem
-              onClick={() => handleTabChange(0)}
-              active={activeTab === 0}
-            >
-              <p>{tPaymentLink("paymentSettings")}</p>
-            </TabItem>
-            <TabItem
-              onClick={() => handleTabChange(1)}
-              active={activeTab === 1}
-            >
-              <p>{tPaymentLink("postPaymentSettings")}</p>
-            </TabItem>
-          </TabContainer>
-        </Box>
+        <TabNavigation
+          activeTab={activeTab}
+          onChange={handleTabChange}
+          tPaymentLink={tPaymentLink}
+          hasPaymentLinkData={hasPaymentLinkData}
+        />
+
         {activeTab === 0 && (
-          <TabContentContainer>
+          <TabContentContainer
+            sx={{ padding: hasPaymentLinkData ? "0 !important" : "" }}
+          >
+            {hasPaymentLinkData && (
+              <PaymentLinkHeader
+                tPaymentLink={tPaymentLink}
+                paymentLinkData={paymentLinkData as PaymentLink}
+                disabled={disabled}
+                isMobile={isMobile}
+                count={count}
+                truncateByWords={truncateByWords}
+              />
+            )}
+
+            <TabContentContainer sx={{ ...disable }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                  gap: { xs: 2, md: 3 },
+                }}
+              >
+                <PaymentSettingsBasic
+                  isMobile={isMobile}
+                  tPaymentLink={tPaymentLink}
+                  paymentSettings={paymentSettings}
+                  paymentSettingsTouched={paymentSettingsTouched}
+                  paymentSettingsErrors={paymentSettingsErrors}
+                  currencyOpen={currencyOpen}
+                  currencies={currencies}
+                  expireOpen={expireOpen}
+                  blockchainFees={blockchainFees}
+                  disable={disable}
+                  handlePaymentSettingsChange={handlePaymentSettingsChange}
+                  handlePaymentSettingsBlur={handlePaymentSettingsBlur}
+                  handleCurrencyOpen={handleCurrencyOpen}
+                  handleCurrencyClose={handleCurrencyClose}
+                  handleCurrencySelect={handleCurrencySelect}
+                  handleExpireOpen={handleExpireOpen}
+                  handleExpireClose={handleExpireClose}
+                  handleExpireSelect={handleExpireSelect}
+                  handleBlockchainFeesChange={handleBlockchainFeesChange}
+                  currencyAnchorEl={currencyAnchorEl}
+                  currencyTriggerRef={currencyTriggerRef}
+                  expireAnchorEl={expireAnchorEl}
+                  expireTriggerRef={expireTriggerRef}
+                />
+                <Box sx={{ flex: 1 }}>
+                  <DescriptionSection
+                    isMobile={isMobile}
+                    tPaymentLink={tPaymentLink}
+                    paymentSettings={paymentSettings}
+                    paymentSettingsTouched={paymentSettingsTouched}
+                    paymentSettingsErrors={paymentSettingsErrors}
+                    handlePaymentSettingsChange={handlePaymentSettingsChange}
+                    handlePaymentSettingsBlur={handlePaymentSettingsBlur}
+                  />
+                </Box>
+              </Box>
+
+              <Box
+                sx={{
+                  height: "1px",
+                  backgroundColor: theme.palette.border.main,
+                }}
+              />
+
+              <CryptoSelection
+                isMobile={isMobile}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                handleSearch={handleSearch}
+                cryptoItems={cryptoItems}
+                filteredCryptoItems={filteredCryptoItems}
+                showFilteredCryptoItems={showFilteredCryptoItems}
+                showAllCoins={showAllCoins}
+                setShowAllCoins={setShowAllCoins}
+                hasPaymentLinkData={hasPaymentLinkData}
+                isLarge={isLarge}
+                isSmall={isSmall}
+                walletNotSetUp={walletNotSetUp}
+                paymentSettings={paymentSettings}
+                setPaymentSettings={setPaymentSettings}
+              />
+
+              <Box
+                sx={{
+                  height: "1px",
+                  backgroundColor: theme.palette.border.main,
+                }}
+              />
+
+              <TaxSection
+                isMobile={isMobile}
+                tPaymentLink={tPaymentLink}
+                includeTax={includeTax}
+                setIncludeTax={setIncludeTax}
+                currentLng={currentLng}
+              />
+
+              <Box
+                sx={{
+                  height: "1px",
+                  backgroundColor: theme.palette.border.main,
+                }}
+              />
+
+              {hasPaymentLinkData && (
+                <PostPaymentSettings
+                  hasPaymentLinkData={hasPaymentLinkData}
+                  isMobile={isMobile}
+                  tPaymentLink={tPaymentLink}
+                  postPaymentSettings={postPaymentSettings}
+                  handleChange={handlePostPaymentSettingsChange}
+                />
+              )}
+            </TabContentContainer>
+
             <Box
               sx={{
                 display: "flex",
-                flexDirection: { xs: "column", md: "row" },
-                gap: { xs: 2, md: 3 },
+                flexDirection: isMobile ? "column" : "row",
+                gap: isMobile ? "14px" : "24px",
               }}
             >
-              <Box
-                sx={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: { xs: 1.5, md: 2 },
-                }}
-              >
-                <InputField
-                  label={
-                    <PaymentSettingsLabel>
-                      <Image
-                        src={RoundedStackIcon}
-                        alt="value"
-                        draggable={false}
-                        style={{
-                          filter: `brightness(0) saturate(100%) invert(15%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(100%)`,
-                        }}
-                      />
-                      <span>{tPaymentLink("value")}</span>
-                    </PaymentSettingsLabel>
-                  }
-                  value={paymentSettings.value}
-                  onChange={(e) =>
-                    handlePaymentSettingsChange("value", e.target.value)
-                  }
-                  onBlur={() => handlePaymentSettingsBlur("value")}
-                  type="number"
-                  inputMode="decimal"
-                  error={
-                    paymentSettingsTouched.value &&
-                    Boolean(paymentSettingsErrors.value)
-                  }
-                  helperText={
-                    paymentSettingsTouched.value && paymentSettingsErrors.value
-                      ? paymentSettingsErrors.value
-                      : undefined
-                  }
-                  sx={{
-                    width: "100%",
-                  }}
-                />
-                <Box
-                  sx={{
-                    width: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "6px",
-                  }}
-                >
-                  <PaymentSettingsLabel>
-                    <Image src={HourglassIcon} alt="expire" draggable={false} />
-                    <span>{tPaymentLink("expire")}</span>
-                  </PaymentSettingsLabel>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      width: "100%",
-                    }}
-                  >
-                    <ExpireTrigger
-                      ref={expireTriggerRef}
-                      onClick={handleExpireOpen}
-                      fullWidth={true}
-                      isOpen={expireOpen}
-                      isMobile={isMobile}
-                      sx={{
-                        borderColor: theme.palette.border.main,
-                        "&:hover": {
-                          borderColor: theme.palette.border.focus,
-                        },
-                        "&:focus": {
-                          borderColor: theme.palette.border.focus,
-                        },
-                        "&:focus-visible": {
-                          borderColor: theme.palette.border.focus,
-                        },
-                        "&:active": {
-                          borderColor: theme.palette.border.focus,
-                        },
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          flex: 1,
-                        }}
-                      >
-                        <ExpireText isMobile={isMobile}>
-                          {paymentSettings.expire === "no"
-                            ? tPaymentLink("no")
-                            : paymentSettings.expire === "yes"
-                              ? tPaymentLink("yes")
-                              : tPaymentLink("no")}
-                        </ExpireText>
-                      </Box>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        {expireOpen ? (
-                          <ExpandLessIcon
-                            sx={{
-                              color: theme.palette.text.secondary,
-                              fontSize: isMobile ? "18px" : "20px",
-                            }}
-                          />
-                        ) : (
-                          <ExpandMoreIcon
-                            sx={{
-                              color: theme.palette.text.secondary,
-                              fontSize: isMobile ? "18px" : "20px",
-                            }}
-                          />
-                        )}
-                      </Box>
-                    </ExpireTrigger>
-
-                    <Popover
-                      anchorEl={expireAnchorEl.current}
-                      open={expireOpen}
-                      onClose={handleExpireClose}
-                      anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-                      transformOrigin={{ vertical: "top", horizontal: "left" }}
-                      PaperProps={{
-                        sx: {
-                          mt: "-1px",
-                          borderRadius: "6px",
-                          overflow: "hidden",
-                          width:
-                            expireTriggerRef.current?.offsetWidth || "auto",
-                          border: `1px solid ${theme.palette.border.main}`,
-                          borderTop: "none",
-                          maxHeight: "200px",
-                          backgroundColor: theme.palette.common.white,
-                        },
-                      }}
-                    >
-                      <ExpireDropdown>
-                        {["no", "yes"].map((option) => (
-                          <ListItemButton
-                            key={option}
-                            onClick={() => handleExpireSelect(option)}
-                            selected={paymentSettings.expire === option}
-                            sx={{
-                              borderRadius: "8px",
-                              p: 1,
-                              minHeight: "40px",
-                              background:
-                                paymentSettings.expire === option
-                                  ? theme.palette.primary.light
-                                  : "transparent",
-                              "&:hover": {
-                                background: theme.palette.primary.light,
-                              },
-                              "&.Mui-selected": {
-                                background: theme.palette.primary.light,
-                                "&:hover": {
-                                  background: theme.palette.primary.light,
-                                },
-                              },
-                            }}
-                          >
-                            <ListItemText
-                              primary={
-                                option === "no"
-                                  ? tPaymentLink("no")
-                                  : option === "yes"
-                                    ? tPaymentLink("yes")
-                                    : option.charAt(0).toUpperCase() + option.slice(1)
-                              }
-                              primaryTypographyProps={{
-                                sx: {
-                                  fontFamily: "UrbanistMedium",
-                                  fontWeight: 500,
-                                  fontSize: isMobile ? "13px" : "15px",
-                                  color: theme.palette.text.primary,
-                                  lineHeight: "1",
-                                  textTransform: "capitalize",
-                                },
-                              }}
-                            />
-                          </ListItemButton>
-                        ))}
-                      </ExpireDropdown>
-                    </Popover>
-                  </Box>
-                </Box>
-
-                <Box>
-                  <PaymentSettingsLabel>
-                    <Image
-                      src={PaymentIcon}
-                      alt="blockchain fees"
-                      draggable={false}
-                    />
-                    <span>{tPaymentLink("blockchainFeesPaidBy")}</span>
-                  </PaymentSettingsLabel>
-                  <Box sx={{ marginTop: { xs: "8px", md: "16px" } }}>
-                    <FormControl component="fieldset">
-                      <RadioGroup
-                        value={blockchainFees}
-                        onChange={(e) =>
-                          handleBlockchainFeesChange(e.target.value)
-                        }
-                        sx={{
-                          "& .MuiFormControlLabel-label": {
-                            fontSize: { xs: "13px", md: "15px" },
-                            fontFamily: "UrbanistRegular",
-                            color: theme.palette.text.primary,
-                            paddingLeft: "8px",
-                            lineHeight: 1.2,
-                          },
-                          gap: { xs: "6px", md: "8px" },
-                        }}
-                      >
-                        <FormControlLabel
-                          value="customer"
-                          control={<CustomRadio />}
-                          label={tPaymentLink("customerFeesAdded")}
-                          sx={{ margin: "0px" }}
-                        />
-                        <FormControlLabel
-                          value="company"
-                          control={<CustomRadio />}
-                          label={tPaymentLink("companyPaysFees")}
-                          sx={{ margin: "0px" }}
-                        />
-                      </RadioGroup>
-                    </FormControl>
-                  </Box>
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  flex: 1,
-                }}
-              >
-                <InputField
-                  label={
-                    <PaymentSettingsLabel>
-                      <Image src={NoteIcon} alt="note" draggable={false} />
-                      <span>{tPaymentLink("description")}</span>
-                    </PaymentSettingsLabel>
-                  }
-                  value={paymentSettings.description}
-                  onChange={(e) =>
-                    handlePaymentSettingsChange("description", e.target.value)
-                  }
-                  onBlur={() => handlePaymentSettingsBlur("description")}
-                  error={
-                    paymentSettingsTouched.description &&
-                    Boolean(paymentSettingsErrors.description)
-                  }
-                  helperText={
-                    paymentSettingsTouched.description &&
-                      paymentSettingsErrors.description
-                      ? paymentSettingsErrors.description
-                      : undefined
-                  }
-                  maxLength={500}
-                  sx={{
-                    width: "100%",
-                  }}
-                  multiline={true}
-                  minRows={isMobile ? 4 : 9}
-                />
-              </Box>
-            </Box>
-            <Box>
-              <CustomButton
-                label={tPaymentLink("continue")}
-                variant="primary"
-                size="medium"
-                fullWidth={true}
-                onClick={handleCreatePaymentLink}
-                disabled={
-                  Boolean(paymentSettingsErrors.value) ||
-                  Boolean(paymentSettingsErrors.description) ||
-                  !paymentSettings.value ||
-                  paymentSettings.value.trim() === ""
-                }
-                sx={{
-                  [theme.breakpoints.down("md")]: {
-                    height: "32px",
-                    fontSize: "13px",
-                  },
-                }}
+              <ActionButtons
+                isMobile={isMobile}
+                hasPaymentLinkData={hasPaymentLinkData}
+                disabled={disabled}
+                tPaymentLink={tPaymentLink}
+                handleCreatePaymentLink={hasPaymentLinkData ? handleSaveChanges : handleCreatePaymentLink}
+                paymentSettingsErrors={paymentSettingsErrors}
+                paymentSettings={paymentSettings}
               />
             </Box>
           </TabContentContainer>
         )}
+
         {activeTab === 1 && (
           <TabContentContainer>
-            <InputField
-              label={tPaymentLink("callbackUrl")}
-              placeholder={tPaymentLink("callbackUrlPlaceholder")}
-              value={postPaymentSettings.callbackUrl}
-              onChange={(e) =>
-                handlePostPaymentSettingsChange("callbackUrl", e.target.value)
-              }
-              helperText={tPaymentLink("callbackUrlHelper")}
-              type="url"
-              sx={{
-                width: "100%",
-              }}
+            <PostPaymentSettings
+              hasPaymentLinkData={hasPaymentLinkData}
+              isMobile={isMobile}
+              tPaymentLink={tPaymentLink}
+              postPaymentSettings={postPaymentSettings}
+              handleChange={handlePostPaymentSettingsChange}
+              showHelpers={true}
+              showCreateButton={true}
+              onCreate={handleCreatePaymentLink}
             />
-            <InputField
-              label={tPaymentLink("redirectUrl")}
-              placeholder={tPaymentLink("redirectUrlPlaceholder")}
-              value={postPaymentSettings.redirectUrl}
-              onChange={(e) =>
-                handlePostPaymentSettingsChange("redirectUrl", e.target.value)
-              }
-              helperText={tPaymentLink("redirectUrlHelper")}
-              type="url"
-              sx={{
-                width: "100%",
-              }}
-            />
-            <InputField
-              label={tPaymentLink("webhookUrl")}
-              placeholder={tPaymentLink("webhookUrlPlaceholder")}
-              value={postPaymentSettings.webhookUrl}
-              onChange={(e) =>
-                handlePostPaymentSettingsChange("webhookUrl", e.target.value)
-              }
-              helperText={tPaymentLink("webhookUrlHelper")}
-              type="url"
-              sx={{
-                width: "100%",
-              }}
-            />
-            <Box>
-              <CustomButton
-                label={tPaymentLink("createPayment")}
-                variant="primary"
-                size="medium"
-                fullWidth={true}
-                onClick={handleCreatePaymentLink}
-                sx={{
-                  [theme.breakpoints.down("md")]: {
-                    height: "32px",
-                    fontSize: "13px",
-                  },
-                }}
-              />
-            </Box>
           </TabContentContainer>
         )}
       </PanelCard>

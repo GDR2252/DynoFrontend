@@ -23,6 +23,7 @@
   "linkIdHeader": "Link ID",
   "descriptionHeader": "Description",
   "usdValueHeader": "USD Value",
+  "cryptoValueHeader": "Crypto Value",
   "createdHeader": "Created",
   "expiresHeader": "Expires",
   "statusHeader": "Status",

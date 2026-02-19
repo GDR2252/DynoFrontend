@@ -33,5 +33,8 @@
   "walletWarnnigTitle": "configuração da carteira",
   "walletSetUpWarnnigTitle": "Configuração completa da carteira",
   "walletSetUpWarnnigSubtitle": "Por favor, adicione os oito endereços de carteira de criptomoedas. Algumas funcionalidades permanecerão indisponíveis até que todas as carteiras sejam adicionadas.",
-  "walletSetUpWarnnigSubtitleBold": "os oito endereços de carteira de criptomoedas"
+  "walletSetUpWarnnigSubtitleBold": "os oito endereços de carteira de criptomoedas",
+  "XRPTag": "Etiqueta XRP (opcional)",
+  "XRPTagPlaceholder": "Insira a tag XRP",
+  "XRPTagWarning": "É necessário usar a tag Memo se sua corretora ou carteira a possuir, caso contrário, você perderá seus fundos."
 }

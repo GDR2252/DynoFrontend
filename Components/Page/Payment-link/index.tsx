@@ -1,63 +1,60 @@
 import React, { useEffect } from "react";
 import { Box } from "@mui/material";
-import PaymentLinksTable, { PaymentLink } from "./PaymentLinksTable";
+import PaymentLinksTable from "./PaymentLinksTable";
 import PaymentLinksTopBar from "./PaymentLinksTopBar";
 import EmptyDataModel from "@/Components/UI/EmptyDataModel";
-
-interface Props {
-  setPageName?: (v: string) => void;
-  setPageDescription?: (v: string) => void;
-  setPageAction?: (v: React.ReactNode | null) => void;
-}
+import { PaymentLinkData, PaymentLinksProps } from "@/utils/types/paymentLink";
 
 const PaymentLinksPage = ({
   setPageName,
   setPageDescription,
   setPageAction,
-}: Props) => {
-
-  // 🔥 THIS IS THE KEY PART
+}: PaymentLinksProps) => {
   useEffect(() => {
     setPageName?.("");
     setPageDescription?.("");
     setPageAction?.(null);
   }, []);
 
-  const paymentLinks: PaymentLink[] = [
+  const paymentLinks: PaymentLinkData[] = [
     {
       id: "a7b9c1d2e3f4a5",
       description: "Premium Subscription - Annual Plan",
-      usdValue: "$1,250",
-      createdAt: "07.11.2025 15:32:00",
-      expiresAt: "07.11.2025 14:32:00",
+      usdValue: "1,250",
+      cryptoValue: "0.025 BTC",
+      createdAt: "2025-07-11T15:32:00Z",
+      expiresAt: "2025-07-11T14:32:00Z",
       status: "active",
       timesUsed: 2,
     },
     {
       id: "a7b9c1d2e3f4a5",
       description: "Digital Product Purchase",
-      usdValue: "$233",
-      createdAt: "04.11.2025 11:32:00",
-      expiresAt: "23.11.2025 14:32:00",
+      usdValue: "233",
+      cryptoValue: "0.004 BTC",
+      createdAt: "2025-11-04T11:32:00Z",
+      expiresAt: "2025-11-23T14:32:00Z",
       status: "expired",
       timesUsed: 2,
     },
     {
       id: "a7b9c1d2e3f4a5",
       description: "Consulting Services - January 2026",
-      usdValue: "$9,442",
-      createdAt: "01.11.2025 22:32:00",
-      expiresAt: "29.11.2025 14:32:00",
-      status: "active",
+      usdValue: "9,442",
+      cryptoValue: "0.018 BTC",
+      createdAt: "2025-11-01T22:32:00Z",
+      expiresAt: "2025-11-29T14:32:00Z",
+      status: "pending",
       timesUsed: 2,
     },
     {
       id: "a7b9c1d2e3f4a5",
       description: "Premium Subscription - Annual Plan",
-      usdValue: "$1,250",
-      createdAt: "07.11.2025 15:32:00",
-      expiresAt: "07.11.2025 14:32:00",
-      status: "active",
+      usdValue: "1,250",
+      cryptoValue: "0.025 BTC",
+      createdAt: "2025-07-11T15:32:00Z",
+      expiresAt: "2025-07-11T14:32:00Z",
+      status: "paid",
       timesUsed: 2,
     },
   ];
@@ -67,9 +64,7 @@ const PaymentLinksPage = ({
   };
 
   if (paymentLinks?.length === 0) {
-    return (
-      <EmptyDataModel pageName="payment-links" />
-    );
+    return <EmptyDataModel pageName="payment-links" />;
   }
 
   return (
@@ -86,10 +81,7 @@ const PaymentLinksPage = ({
     >
       <PaymentLinksTopBar onSearch={handleSearch} />
 
-      <PaymentLinksTable
-        paymentLinks={paymentLinks}
-        rowsPerPage={5}
-      />
+      <PaymentLinksTable paymentLinks={paymentLinks} rowsPerPage={5} />
     </Box>
   );
 };

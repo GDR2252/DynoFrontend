@@ -143,7 +143,7 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
           isMobile={isMobile}
           sx={{
             borderColor: borderColor,
-            borderRadius: "8px",
+            borderRadius: "6px",
             "&:hover": {
               borderColor: focusBorderColor,
             },

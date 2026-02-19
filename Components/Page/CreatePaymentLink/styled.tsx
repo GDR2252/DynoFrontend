@@ -2,6 +2,7 @@ import { styled } from "@mui/material/styles";
 import { Box, IconButton, Typography } from "@mui/material";
 import { theme } from "@/styles/theme";
 import styledEmotion from "@emotion/styled";
+import { Switch } from "@mui/material";
 
 export const TabContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -56,14 +57,14 @@ export const TabItem = styled(Box)<{ active?: boolean }>(
         textOverflow: "ellipsis",
       },
     },
-  })
+  }),
 );
 
 export const TabContentContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2, 0, 0, 0),
   display: "flex",
   flexDirection: "column",
-  gap: theme.spacing(2.25),
+  gap: theme.spacing(3),
   [theme.breakpoints.down("md")]: {
     padding: theme.spacing(1.75, 0, 0),
     gap: theme.spacing(1.75),
@@ -146,13 +147,13 @@ export const ExpireTrigger = styled(Box)<{
 
 export const ExpireText = styledEmotion.span<{ isMobile?: boolean }>(
   ({ isMobile }) => ({
-    fontSize: isMobile ? "13px" : "15px",
+    fontSize: isMobile ? "10px" : "13px",
     fontWeight: 500,
     fontFamily: "UrbanistMedium",
     color: theme.palette.text.primary,
     lineHeight: "1.5",
     textTransform: "capitalize",
-  })
+  }),
 );
 
 export const ExpireDropdown = styled(Box)({
@@ -202,6 +203,14 @@ export const LabelText = styled(Typography)(({ theme }) => ({
   },
 }));
 
+export const Text = styled(Typography)(({ theme }) => ({
+  fontFamily: "UrbanistMedium",
+  fontWeight: 500,
+  whiteSpace: "nowrap",
+  lineHeight: 1.2,
+  letterSpacing: 0,
+}));
+
 export const ValueText = styled(Typography)(({ theme }) => ({
   fontFamily: "UrbanistMedium",
   fontWeight: 500,
@@ -241,5 +250,43 @@ export const CloseIconButton = styled(IconButton)(({ theme }) => ({
       width: "12px",
       height: "12px",
     },
+  },
+}));
+
+export const AppSwitch = styled(Switch)(({ theme }) => ({
+  width: 45,
+  height: 27,
+  padding: 0,
+  display: "flex",
+  alignItems: "center",
+
+  "& .MuiSwitch-switchBase": {
+    padding: 3,
+    transitionDuration: "200ms",
+    "&.Mui-checked": {
+      transform: "translateX(18px)",
+      color: "#fff",
+      "& + .MuiSwitch-track": {
+        backgroundColor: theme.palette.primary.main,
+        border: "1px solid #BDBDBD",
+        opacity: 1,
+      },
+    },
+  },
+
+  "& .MuiSwitch-thumb": {
+    width: 19,
+    height: 19,
+    backgroundColor: theme.palette.common.white,
+    boxShadow: "0 1px 3px rgba(0,0,0,0.25)",
+    borderRadius: "50%",
+  },
+
+  "& .MuiSwitch-track": {
+    borderRadius: 63,
+    backgroundColor: theme.palette.secondary.contrastText,
+    border: "1px solid #BDBDBD",
+    opacity: 1,
+    boxSizing: "border-box",
   },
 }));

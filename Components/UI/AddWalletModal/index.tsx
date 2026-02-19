@@ -55,7 +55,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
     [t]
   );
   const [walletName, setWalletName] = useState("");
-  const [cryptocurrency, setCryptocurrency] = useState("BTC");
+  const [cryptocurrency, setCryptocurrency] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
   const [errors, setErrors] = useState<{
     walletName?: string;
@@ -391,6 +391,37 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
               <p>{tWallet("warningMessage")}</p>
             </WarningContent>
           </WarningContainer>
+
+          <InputField
+            label={tWallet("XRPTag")}
+            placeholder={tWallet("XRPTagPlaceholder")}
+            value={walletAddress}
+            onChange={(e) => {
+              setWalletAddress(e.target.value);
+              if (errors.walletAddress) {
+                setErrors({ ...errors, walletAddress: undefined });
+              }
+            }}
+            error={!!errors.walletAddress}
+            helperText={errors.walletAddress}
+          />
+
+          <WarningContainer>
+            <WarningIconContainer>
+              <Image
+                src={InfoIcon}
+                alt="info icon"
+                width={16}
+                height={16}
+                draggable={false}
+                style={{ filter: "brightness(0)" }}
+              />
+            </WarningIconContainer>
+            <WarningContent>
+              <p>{tWallet("XRPTagWarning")}</p>
+            </WarningContent>
+          </WarningContainer>
+
         </Box>
         <Box sx={{ display: "flex", gap: "20px", mt: "20px" }}>
           <CustomButton

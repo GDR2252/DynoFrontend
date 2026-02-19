@@ -1,19 +1,11 @@
 import React from "react";
-import { Box, Typography, TextField, IconButton, InputBase } from "@mui/material";
-import SearchIcon from "@/assets/Icons/search-icon.svg";
-import AddIcon from "@mui/icons-material/Add";
-import CustomButton from "@/Components/UI/Buttons";
-import { useRouter } from "next/router";
+import { Box, InputBase } from "@mui/material";
 import Image from "next/image";
 import SearchSvg from "@/assets/Icons/search.svg";
 import useIsMobile from "@/hooks/useIsMobile";
-import { t } from "i18next";
 import { useTranslation } from "react-i18next";
-interface Props {
-  onSearch: (value: string) => void;
-}
 
-const PaymentLinksTopBar = ({ onSearch }: Props) => {
+const PaymentLinksTopBar = ({ onSearch }: { onSearch: (value: string) => void }) => {
 
   const { t } = useTranslation("paymentLinks");
   const isMobile = useIsMobile("md");

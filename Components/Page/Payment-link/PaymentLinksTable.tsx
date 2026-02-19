@@ -30,6 +30,9 @@ import TimeIcon from "@/assets/Icons/time-icon.svg";
 import TimeUsedIcon from "@/assets/Icons/cryptocurrency_link.svg";
 import ActionIcon from "@/assets/Icons/Actions.svg";
 import CopyIcon from "@/assets/Icons/copy-icon.svg";
+import TrashIcon from "@/assets/Icons/trash-icon.svg";
+import EyeIcon from "@/assets/Icons/eye-icon.svg";
+import EditIcon from "@/assets/Icons/edit-icon.svg";
 
 import Image from "next/image";
 
@@ -42,40 +45,22 @@ import { MobileNavigationButtons } from "@/Components/Page/Transactions/styled";
 import useIsMobile from "@/hooks/useIsMobile";
 import Toast from "@/Components/UI/Toast";
 import { CopyButton } from "../Transactions/TransactionDetailsModal.styled";
-
-/* ================= TYPES ================= */
-
-export type PaymentLinkStatus = "active" | "expired";
-
-export interface PaymentLink {
-  id: string;
-  description: string;
-  usdValue: string;
-  createdAt: string;
-  expiresAt: string;
-  status: PaymentLinkStatus;
-  timesUsed: number;
-}
-
-interface Props {
-  paymentLinks: PaymentLink[];
-  rowsPerPage?: number;
-}
-
-/* ================= ICON MAP (MOVED OUT) ================= */
+import { HourGlassIcon } from "@/utils/customIcons";
+import { useRouter } from "next/router";
+import PaymentLinkSuccessModal from "../CreatePaymentLink/PaymentLinkSuccessModal";
+import { PaymentLinkData, PaymentLinksTableProps } from "@/utils/types/paymentLink";
 
 const headerIconMap: Record<string, any> = {
-  "linkIdHeader": TransactionIcon,
-  "descriptionHeader": CryptoIcon,
-  "usdValueHeader": RoundedStackIcon,
-  "createdHeader": TimeIcon,
-  "expiresHeader": TimeIcon,
-  "statusHeader": HexagonIcon,
-  "timesUsedHeader": TimeUsedIcon,
-  "actionsHeader": ActionIcon,
+  linkIdHeader: TransactionIcon,
+  descriptionHeader: CryptoIcon,
+  usdValueHeader: RoundedStackIcon,
+  cryptoValueHeader: CryptoIcon,
+  createdHeader: TimeIcon,
+  expiresHeader: TimeIcon,
+  statusHeader: HexagonIcon,
+  timesUsedHeader: TimeUsedIcon,
+  actionsHeader: ActionIcon,
 };
-
-/* ================= HEADER (MEMOIZED) ================= */
 
 const Header = React.memo(({ label }: { label: string }) => {
   const { t } = useTranslation("paymentLinks");
@@ -115,14 +100,13 @@ const Header = React.memo(({ label }: { label: string }) => {
         {t(label)}
       </Typography>
     </Box>
-  )
+  );
 });
 
 Header.displayName = "Header";
 
-/* ================= COMPONENT ================= */
-
-const PaymentLinksTable = ({ paymentLinks, rowsPerPage = 10 }: Props) => {
+const PaymentLinksTable = ({ paymentLinks, rowsPerPage = 10 }: PaymentLinksTableProps) => {
+  const router = useRouter();
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState(rowsPerPage);
   const { t } = useTranslation("paymentLinks");
@@ -131,6 +115,16 @@ const PaymentLinksTable = ({ paymentLinks, rowsPerPage = 10 }: Props) => {
   const isMobile = useIsMobile("md");
   const [openToast, setOpenToast] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [openViewModel, setOpenViewModel] = useState<boolean>(false);
+  const [viewModelData, setViewModelData] = useState<{
+    value: string;
+    cryptoValue: string;
+    expire: string;
+    description: string;
+    blockchainFees: string;
+    linkId: string
+  }>({ value: "", cryptoValue: "", expire: "", description: "", blockchainFees: "", linkId: "" });
+  const [paymentLink, setPaymentLink] = useState<string>("https://pay.dynopay.com/9vpej");
 
   const total = paymentLinks.length;
   const start = page * rows;
@@ -155,8 +149,75 @@ const PaymentLinksTable = ({ paymentLinks, rowsPerPage = 10 }: Props) => {
     }, 2000);
   };
 
+  function getDateDiffShort(from: string, to: string): string {
+    if (!from || !to) return "";
+
+    const start = new Date(from).getTime();
+    const end = new Date(to).getTime();
+
+    let diff = Math.abs(end - start);
+
+    const SECOND = 1000;
+    const MINUTE = 60 * SECOND;
+    const HOUR = 60 * MINUTE;
+    const DAY = 24 * HOUR;
+    const MONTH = 30 * DAY;
+    const YEAR = 365 * DAY;
+
+    if (diff >= YEAR) return `${Math.floor(diff / YEAR)}y`;
+    if (diff >= MONTH) return `${Math.floor(diff / MONTH)}m`;
+    if (diff >= DAY) return `${Math.floor(diff / DAY)}d`;
+    if (diff >= HOUR) return `${Math.floor(diff / HOUR)}h`;
+    if (diff >= MINUTE) return `${Math.floor(diff / MINUTE)}m`;
+    return `${Math.floor(diff / SECOND)}s`;
+  }
+
+  const handleViewModelOpen = (row: PaymentLinkData) => {
+    setViewModelData({
+      value: row.usdValue,
+      cryptoValue: row.cryptoValue || "",
+      expire: getDateDiffShort(row.createdAt, row.expiresAt),
+      description: row.description,
+      blockchainFees: row.status,
+      linkId: row.id
+    });
+    setOpenViewModel(true);
+  };
+  console.log("viewModelData", viewModelData.expire);
+
+  const handleCopyLink = () => {
+    if (paymentLink) {
+      navigator.clipboard.writeText(paymentLink);
+    }
+  };
+
+  function formatUtcToDisplay(dateString: string): string {
+    if (!dateString) return "";
+
+    const date = new Date(dateString);
+
+    const pad = (n: number) => n.toString().padStart(2, "0");
+
+    const month = pad(date.getUTCMonth() + 1);
+    const day = pad(date.getUTCDate());
+    const year = date.getUTCFullYear();
+
+    const hours = pad(date.getUTCHours());
+    const minutes = pad(date.getUTCMinutes());
+    const seconds = pad(date.getUTCSeconds());
+
+    return `${month}.${day}.${year} ${hours}:${minutes}:${seconds}`;
+  }
+
   return (
     <>
+      <PaymentLinkSuccessModal
+        open={openViewModel}
+        onClose={() => setOpenViewModel(false)}
+        paymentLink={paymentLink}
+        paymentSettings={viewModelData}
+        onCopyLink={handleCopyLink}
+      />
       <Box
         sx={{
           display: "flex",
@@ -169,7 +230,6 @@ const PaymentLinksTable = ({ paymentLinks, rowsPerPage = 10 }: Props) => {
         <TransactionsTableContainer>
           <TransactionsTableScrollWrapper>
             <Table>
-              {/* ================= TABLE HEAD ================= */}
               <TableHead
                 sx={{
                   position: "sticky",
@@ -179,28 +239,101 @@ const PaymentLinksTable = ({ paymentLinks, rowsPerPage = 10 }: Props) => {
                 }}
               >
                 <TableRow sx={{ backgroundColor: "#E5EDFF" }}>
-                  <TableCell><Header label="linkIdHeader" /></TableCell>
-                  <TableCell><Header label="descriptionHeader" /></TableCell>
-                  <TableCell><Header label="usdValueHeader" /></TableCell>
-                  <TableCell><Header label="createdHeader" /></TableCell>
-                  <TableCell><Header label="expiresHeader" /></TableCell>
-                  <TableCell><Header label="statusHeader" /></TableCell>
-                  <TableCell><Header label="timesUsedHeader" /></TableCell>
-                  <TableCell align="center"><Header label="actionsHeader" /></TableCell>
+                  <TableCell>
+                    <Header label="linkIdHeader" />
+                  </TableCell>
+                  <TableCell>
+                    <Header label="descriptionHeader" />
+                  </TableCell>
+                  <TableCell>
+                    <Header label="usdValueHeader" />
+                  </TableCell>
+                  <TableCell>
+                    <Header label="cryptoValueHeader" />
+                  </TableCell>
+                  <TableCell>
+                    <Header label="createdHeader" />
+                  </TableCell>
+                  <TableCell>
+                    <Header label="expiresHeader" />
+                  </TableCell>
+                  <TableCell>
+                    <Header label="statusHeader" />
+                  </TableCell>
+                  <TableCell>
+                    <Header label="timesUsedHeader" />
+                  </TableCell>
+                  <TableCell align="center">
+                    <Header label="actionsHeader" />
+                  </TableCell>
                 </TableRow>
               </TableHead>
 
-              {/* ================= TABLE BODY ================= */}
               <TableBody sx={{ marginTop: "7px", overflowY: "auto" }}>
                 {paginatedData.map((row, index) => (
                   <TableRow key={index}>
-                    <TableBodyCell sx={{ paddingY: isMobile ? "5px !important" : "11px !important" }}>{row.id}</TableBodyCell>
-                    <TableBodyCell sx={{ paddingY: isMobile ? "5px !important" : "11px !important" }}>{row.description}</TableBodyCell>
-                    <TableBodyCell sx={{ paddingY: isMobile ? "5px !important" : "11px !important" }}>{row.usdValue}</TableBodyCell>
-                    <TableBodyCell sx={{ paddingY: isMobile ? "5px !important" : "11px !important" }}>{row.createdAt}</TableBodyCell>
-                    <TableBodyCell sx={{ paddingY: isMobile ? "5px !important" : "11px !important" }}>{row.expiresAt}</TableBodyCell>
+                    <TableBodyCell
+                      sx={{
+                        paddingY: isMobile
+                          ? "5px !important"
+                          : "11px !important",
+                      }}
+                    >
+                      {row.id}
+                    </TableBodyCell>
+                    <TableBodyCell
+                      sx={{
+                        paddingY: isMobile
+                          ? "5px !important"
+                          : "11px !important",
+                      }}
+                    >
+                      {row.description}
+                    </TableBodyCell>
+                    <TableBodyCell
+                      sx={{
+                        paddingY: isMobile
+                          ? "5px !important"
+                          : "11px !important",
+                      }}
+                    >
+                      ${row.usdValue}
+                    </TableBodyCell>
+                    <TableBodyCell
+                      sx={{
+                        paddingY: isMobile
+                          ? "5px !important"
+                          : "11px !important",
+                      }}
+                    >
+                      {row.cryptoValue}
+                    </TableBodyCell>
+                    <TableBodyCell
+                      sx={{
+                        paddingY: isMobile
+                          ? "5px !important"
+                          : "11px !important",
+                      }}
+                    >
+                      {formatUtcToDisplay(row.createdAt)}
+                    </TableBodyCell>
+                    <TableBodyCell
+                      sx={{
+                        paddingY: isMobile
+                          ? "5px !important"
+                          : "11px !important",
+                      }}
+                    >
+                      {formatUtcToDisplay(row.expiresAt)}
+                    </TableBodyCell>
 
-                    <TableCell sx={{ paddingY: isMobile ? "5px !important" : "11px !important" }}>
+                    <TableCell
+                      sx={{
+                        paddingY: isMobile
+                          ? "5px !important"
+                          : "11px !important",
+                      }}
+                    >
                       <StatusChip status={row.status}>
                         {row.status === "active" ? (
                           <Image
@@ -210,7 +343,7 @@ const PaymentLinksTable = ({ paymentLinks, rowsPerPage = 10 }: Props) => {
                             height={isMobile ? 12 : 14}
                             draggable={false}
                           />
-                        ) : (
+                        ) : row.status === "expired" ? (
                           <Image
                             src={FalseIcon}
                             alt="False Icon"
@@ -218,25 +351,126 @@ const PaymentLinksTable = ({ paymentLinks, rowsPerPage = 10 }: Props) => {
                             height={isMobile ? 12 : 14}
                             draggable={false}
                           />
+                        ) : row.status === "paid" ? (
+                          <Image
+                            src={TrueIcon}
+                            alt="True Icon"
+                            width={isMobile ? 12 : 14}
+                            height={isMobile ? 12 : 14}
+                            draggable={false}
+                            style={{
+                              filter:
+                                "brightness(0) saturate(100%) invert(29%) sepia(88%) saturate(2646%) hue-rotate(189deg) brightness(95%) contrast(101%)",
+                            }}
+                          />
+                        ) : (
+                          <HourGlassIcon
+                            fill={"#F57C00"}
+                            size={isMobile ? 12 : 14}
+                          />
                         )}
-                        {row.status === "active" ? "Active" : "Expired"}
+                        {row.status === "active"
+                          ? "Active"
+                          : row.status === "expired"
+                            ? "Expired"
+                            : row.status === "paid"
+                              ? "Paid"
+                              : "Pending"}
                       </StatusChip>
                     </TableCell>
 
-                    <TableCell sx={{ paddingY: isMobile ? "5px !important" : "11px !important" }}>{row.timesUsed}</TableCell>
+                    <TableCell
+                      sx={{
+                        paddingY: isMobile
+                          ? "5px !important"
+                          : "11px !important",
+                      }}
+                    >
+                      {row.timesUsed}
+                    </TableCell>
 
-                    <TableCell align="center" sx={{ paddingY: isMobile ? "5px !important" : "11px !important" }}>
+                    <TableCell
+                      align="center"
+                      sx={{
+                        width: "fit-content",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      {row.status !== "expired" && (
+                        <CopyButton onClick={() => handleCopy(row.id)}>
+                          <Image
+                            src={CopyIcon}
+                            alt="Copy Icon"
+                            width={isMobile ? 12 : 14}
+                            height={isMobile ? 12 : 14}
+                            draggable={false}
+                          />
+                        </CopyButton>
+                      )}
                       <CopyButton
-                        onClick={() => handleCopy(row.id)}
+                        onClick={() => handleViewModelOpen(row)}
+                        sx={{
+                          borderColor: theme.palette.text.primary,
+                          "&:hover": {
+                            backgroundColor: "transparent",
+                            boxShadow: "none",
+                          },
+                        }}
                       >
                         <Image
-                          src={CopyIcon}
-                          alt="Copy Icon"
-                          width={isMobile ? 12 : 14}
+                          src={EyeIcon}
+                          alt="Eye Icon"
+                          width={isMobile ? 12 : 20}
                           height={isMobile ? 12 : 14}
                           draggable={false}
                         />
                       </CopyButton>
+                      {row.status !== "expired" && row.status !== "paid" && (
+                        <CopyButton
+                          onClick={() =>
+                            router.push(`/pay-links/${row?.id}`)
+                          }
+                          sx={{
+                            borderColor: theme.palette.text.primary,
+                            "&:hover": {
+                              backgroundColor: "transparent",
+                              boxShadow: "none",
+                            },
+                          }}
+                        >
+                          <Image
+                            src={EditIcon}
+                            alt="Edit Icon"
+                            width={isMobile ? 12 : 20}
+                            height={isMobile ? 12 : 16}
+                            draggable={false}
+                            style={{
+                              filter: "brightness(0) saturate(100%) invert(0%)",
+                            }}
+                          />
+                        </CopyButton>
+                      )}
+                      {row.status !== "expired" && row.status !== "paid" && (
+                        <CopyButton
+                          sx={{
+                            borderColor: theme.palette.text.primary,
+                            "&:hover": {
+                              backgroundColor: "transparent",
+                              boxShadow: "none",
+                            },
+                          }}
+                        >
+                          <Image
+                            src={TrashIcon}
+                            alt="Trash Icon"
+                            width={isMobile ? 12 : 20}
+                            height={isMobile ? 12 : 16}
+                            draggable={false}
+                          />
+                        </CopyButton>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

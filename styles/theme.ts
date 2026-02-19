@@ -73,11 +73,12 @@ export const theme = createTheme({
       main: "#f4f6fa", //background color
       dark: "#E9ECF2",
       light: "#F4F6FA",
-      contrastText:"#BDBDBD",
+      contrastText: "#D9D9D9",
     },
     text: {
       primary: "#242428",
       secondary: "#676768",
+      disabled: "#ACACAC",
     },
   },
   typography: {

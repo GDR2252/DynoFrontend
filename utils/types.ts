@@ -147,6 +147,7 @@ export interface toastReducer {
 }
 
 export interface LayoutProps {
+  pageBackBtn?: boolean;
   children: JSX.Element | JSX.Element[];
   pageName: string;
   pageDescription?: string;

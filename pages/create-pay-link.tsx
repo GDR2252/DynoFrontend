@@ -16,13 +16,13 @@ const CreatePaymentLink = ({
   const tCreatePaymentLink = useCallback(
     (key: string, defaultValue?: string) =>
       t(key, { ns: "createPaymentLinkScreen", defaultValue }),
-    [t]
+    [t],
   );
 
   useEffect(() => {
     if (setPageName && setPageDescription) {
       setPageName(
-        tCreatePaymentLink("createPaymentLinkTitle", "Create Payment Link")
+        tCreatePaymentLink("createPaymentLinkTitle", "Create Payment Link"),
       );
       setPageDescription("");
     }
@@ -37,7 +37,7 @@ const CreatePaymentLink = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box>
-        <CreatePaymentLinkPage />
+        <CreatePaymentLinkPage paymentLinkData={{}} disabled={false} />
       </Box>
     </>
   );

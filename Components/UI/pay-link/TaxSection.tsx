@@ -1,0 +1,193 @@
+import React from "react";
+import { Box } from "@mui/material";
+import Image from "next/image";
+import { Text } from "../../Page/CreatePaymentLink/styled";
+import { theme } from "@/styles/theme";
+import TrueIcon from "@/assets/Icons/True.svg";
+import InfoIcon from "@/assets/Icons/info-icon.svg";
+import CustomSwitch from "../CustomSwitch";
+import { TaxSectionProps } from "@/utils/types/paymentLink";
+
+const TaxSection: React.FC<TaxSectionProps> = ({
+    isMobile,
+    tPaymentLink,
+    includeTax,
+    setIncludeTax,
+    currentLng,
+}) => (
+    <>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: isMobile ? "12px" : "16px",
+            }}
+        >
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: isMobile ? "4px" : "8px",
+                }}
+            >
+                <Text
+                    sx={{
+                        fontSize: isMobile ? "15px" : "20px",
+                        color: theme.palette.text.primary,
+                    }}
+                >
+                    {tPaymentLink("tax")}
+                </Text>
+                <Text
+                    sx={{
+                        fontSize: isMobile ? "12px" : "15px",
+                        color: theme.palette.text.secondary,
+                    }}
+                >
+                    {tPaymentLink("taxDescription")}
+                </Text>
+            </Box>
+
+            <Box
+                sx={{
+                    width: isMobile ? "324px" : "300px",
+                    height: "49px",
+                    border: `1px solid ${theme.palette.border.main}`,
+                    borderRadius: "6px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "0 8px 0 14px",
+                }}
+            >
+                <Text
+                    sx={{ fontSize: "13px", color: theme.palette.text.primary }}
+                >
+                    {tPaymentLink("includeTax")}
+                </Text>
+                <Box sx={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                    <CustomSwitch
+                        checked={includeTax}
+                        onChange={(e, checked) => setIncludeTax(checked)}
+                        sx={{
+                            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                                backgroundColor: theme.palette.primary.main,
+                            },
+                        }}
+                    />
+                    <Text
+                        sx={{
+                            width: currentLng === "en" ? "23px" : "59px",
+                            fontSize: "13px",
+                            color: theme.palette.text.primary,
+                        }}
+                    >
+                        {includeTax ? tPaymentLink("on") : tPaymentLink("off")}
+                    </Text>
+                </Box>
+            </Box>
+
+            {includeTax ? (
+                <Box
+                    display={{
+                        width: "fit-content",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "12px",
+                        padding: "20px 24px",
+                        border: `1px solid ${theme.palette.border.success}`,
+                        borderRadius: "14px",
+                    }}
+                >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <Image
+                            src={TrueIcon}
+                            alt="true icon"
+                            width={14}
+                            height={14}
+                            draggable={false}
+                        />
+                        <Text
+                            sx={{
+                                fontSize: isMobile ? "13px" : "15px",
+                                fontWeight: 700,
+                                fontFamily: "UrbanistBold",
+                                color: theme.palette.border.success,
+                            }}
+                        >
+                            {tPaymentLink("taxEnabled")}
+                        </Text>
+                    </Box>
+
+                    <Text
+                        sx={{
+                            fontSize: isMobile ? "12px" : "15px",
+                            color: theme.palette.border.success,
+                            whiteSpace: "pre-line",
+                        }}
+                    >
+                        {tPaymentLink("taxWillBeCalculatedAtCheckout")}
+                    </Text>
+
+                    <Box>
+                        <Text
+                            sx={{
+                                fontSize: isMobile ? "12px" : "15px",
+                                color: theme.palette.text.primary,
+                            }}
+                        >
+                            {tPaymentLink("taxExamples")}
+                        </Text>
+                        <Text
+                            sx={{
+                                fontSize: isMobile ? "12px" : "15px",
+                                color: theme.palette.text.primary,
+                                paddingLeft: "25px",
+                            }}
+                        >
+                            <li>{tPaymentLink("taxExamplePortugal")}</li>
+                            <li>{tPaymentLink("taxExampleGermany")}</li>
+                            <li>{tPaymentLink("taxExampleUK")}</li>
+                            <li>{tPaymentLink("taxExampleUSA")}</li>
+                        </Text>
+                    </Box>
+                </Box>
+            ) : (
+                <Box
+                    sx={{
+                        width: "fit-content",
+                        border: `1px solid ${theme.palette.border.main}`,
+                        borderRadius: "7px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: isMobile ? "8px" : "12px",
+                        padding: "12px 14px 12px 18px",
+                        backgroundColor: theme.palette.primary.light,
+                    }}
+                >
+                    <Image
+                        src={InfoIcon}
+                        alt="info icon"
+                        width={16}
+                        height={16}
+                        draggable={false}
+                        style={{ filter: "brightness(0)" }}
+                    />
+                    <Text
+                        sx={{
+                            fontSize: isMobile ? "10px" : "13px",
+                            fontWeight: 600,
+                            fontFamily: "UrbanistSemibold",
+                            color: theme.palette.text.primary,
+                            whiteSpace: "wrap",
+                        }}
+                    >
+                        {tPaymentLink("taxInfo")}
+                    </Text>
+                </Box>
+            )}
+        </Box>
+    </>
+);
+
+export default TaxSection;

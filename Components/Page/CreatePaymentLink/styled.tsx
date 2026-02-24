@@ -1,8 +1,7 @@
-import { styled } from "@mui/material/styles";
-import { Box, IconButton, Typography } from "@mui/material";
 import { theme } from "@/styles/theme";
 import styledEmotion from "@emotion/styled";
-import { Switch } from "@mui/material";
+import { Box, IconButton, Switch, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 export const TabContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -16,7 +15,9 @@ export const TabContainer = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const TabItem = styled(Box)<{ active?: boolean }>(
+export const TabItem = styled(Box, {
+  shouldForwardProp: (prop) => prop !== "active",
+})<{ active?: boolean }>(
   ({ theme, active }) => ({
     flex: 1,
     padding: theme.spacing(0.75, 1),
@@ -99,7 +100,13 @@ export const PaymentSettingsLabel = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const ExpireTrigger = styled(Box)<{
+export const ExpireTrigger = styled(Box, {
+  shouldForwardProp: (prop) =>
+    prop !== "error" &&
+    prop !== "fullWidth" &&
+    prop !== "isOpen" &&
+    prop !== "isMobile",
+})<{
   error?: boolean;
   fullWidth?: boolean;
   isOpen?: boolean;

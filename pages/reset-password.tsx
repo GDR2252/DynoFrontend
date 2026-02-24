@@ -1,24 +1,24 @@
+import Logo from "@/assets/Images/auth/dynopay-logo.png";
+import InputField from "@/Components/UI/AuthLayout/InputFields";
+import PasswordValidation from "@/Components/UI/AuthLayout/PasswordValidation";
+import TitleDescription from "@/Components/UI/AuthLayout/TitleDescription";
+import CustomButton from "@/Components/UI/Buttons";
+import LanguageSwitcher from "@/Components/UI/LanguageSwitcher";
+import { AuthContainer, CardWrapper } from "@/Containers/Login/styled";
+import useIsMobile from "@/hooks/useIsMobile";
+import { UserAction } from "@/Redux/Actions";
+import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
+import { USER_RESET_PASSWORD } from "@/Redux/Actions/UserAction";
+import { theme } from "@/styles/theme";
+import { rootReducer } from "@/utils/types";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { Box } from "@mui/material";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
-import { Box } from "@mui/material";
-import TitleDescription from "@/Components/UI/AuthLayout/TitleDescription";
 import { useTranslation } from "react-i18next";
-import InputField from "@/Components/UI/AuthLayout/InputFields";
 import { useDispatch, useSelector } from "react-redux";
-import { rootReducer } from "@/utils/types";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import useIsMobile from "@/hooks/useIsMobile";
-import { theme } from "@/styles/theme";
-import PasswordValidation from "@/Components/UI/AuthLayout/PasswordValidation";
-import CustomButton from "@/Components/UI/Buttons";
-import { AuthContainer, CardWrapper } from "@/Containers/Login/styled";
-import { UserAction } from "@/Redux/Actions";
-import { USER_RESET_PASSWORD } from "@/Redux/Actions/UserAction";
-import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
-import Image from "next/image";
-import Logo from "@/assets/Images/auth/dynopay-logo.png";
-import LanguageSwitcher from "@/Components/UI/LanguageSwitcher";
 
 const ResetPasswordPage = () => {
   const router = useRouter();
@@ -42,27 +42,21 @@ const ResetPasswordPage = () => {
   ] = useState(false);
   const newPasswordFieldRef = useRef<HTMLDivElement | null>(null);
 
-  // Password validation regex
   const passwordRegex =
     /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()\-=__+{}\[\]:;<>,.?/~]).{8,20}$/;
 
-  // Handle new password change
   const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setNewPassword(value);
 
-    // Show validation if password doesn't match regex, hide if it does
     if (!value) {
       setNewPasswordShowPasswordValidation(false);
     } else if (passwordRegex.test(value)) {
-      // Hide validation when all conditions are met
       setNewPasswordShowPasswordValidation(false);
     } else {
-      // Show validation when password is invalid
       setNewPasswordShowPasswordValidation(true);
     }
 
-    // Check if confirm password matches (if confirm password has a value)
     if (newPasswordConfirm) {
       if (value && newPasswordConfirm && value !== newPasswordConfirm) {
         setNewPasswordConfirmError("passwordAndConfirmPasswordShouldBeSame");
@@ -72,31 +66,25 @@ const ResetPasswordPage = () => {
     }
   };
 
-  // Handle new password blur
   const handleNewPasswordBlur = () => {
-    // Hide validation popover on blur with a small delay
     setTimeout(() => {
       setNewPasswordShowPasswordValidation(false);
     }, 200);
   };
 
-  // Handle new password focus
   const handleNewPasswordFocus = () => {
-    // Show validation if password exists and doesn't match regex
     if (newPassword && !passwordRegex.test(newPassword)) {
       setNewPasswordShowPasswordValidation(true);
     }
   };
 
-  // Handle confirm password change
   const handleNewPasswordConfirmChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const value = e.target.value;
     setNewPasswordConfirm(value);
-    setNewPasswordConfirmError(""); // Clear error when typing
+    setNewPasswordConfirmError("");
 
-    // Check if passwords match
     if (newPassword && value && newPassword !== value) {
       setNewPasswordConfirmError("passwordAndConfirmPasswordShouldBeSame");
     } else {
@@ -106,7 +94,13 @@ const ResetPasswordPage = () => {
 
   const handleSetNewPassword = () => {
     try {
-      if (newPassword && newPasswordConfirm && token && email && (newPassword === newPasswordConfirm)) {
+      if (
+        newPassword &&
+        newPasswordConfirm &&
+        token &&
+        email &&
+        newPassword === newPasswordConfirm
+      ) {
         dispatch(
           UserAction(USER_RESET_PASSWORD, {
             token: token,
@@ -115,7 +109,7 @@ const ResetPasswordPage = () => {
             onSuccess: () => {
               router.replace("/auth/login");
             },
-          })
+          }),
         );
       }
     } catch (e: any) {
@@ -245,10 +239,10 @@ const ResetPasswordPage = () => {
               position: "absolute",
               ...(isMobile &&
                 theme.breakpoints.down("lg") && {
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: "100%",
-              }),
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: "100%",
+                }),
               zIndex: 5,
             }}
           >
@@ -313,7 +307,7 @@ const ResetPasswordPage = () => {
             sideButtonIconHeight={isMobile ? "14px" : "18px"}
             onSideButtonClick={() => {
               setNewPasswordConfirmShowPassword(
-                !newPasswordConfirmShowPassword
+                !newPasswordConfirmShowPassword,
               );
             }}
             showPasswordToggle={true}

@@ -1,17 +1,16 @@
 import { Grid } from "@mui/material";
-import React from "react";
 
 import { TokenData } from "@/utils/types";
-import UpdatePassword from "./UpdatePassword";
 import AccountSetting from "./AccountSetting";
+import UpdatePassword from "./UpdatePassword";
 
 const ProfilePage = ({ tokenData }: { tokenData: TokenData }) => {
   return (
-    <Grid container columnSpacing={3} sx={{ rowGap: 2 }}>
-      <Grid item md={6} xs={12}>
+    <Grid container columnSpacing={2.5} sx={{ rowGap: "14px" }}>
+      <Grid item md={6.89} xs={12}>
         <AccountSetting tokenData={tokenData} />
       </Grid>
-      <Grid item md={6} xs={12}>
+      <Grid item md={5.11} xs={12}>
         <UpdatePassword />
       </Grid>
     </Grid>

@@ -1,14 +1,14 @@
 import styled from "@emotion/styled";
-import { styled as muiStyled } from "@mui/material/styles";
-import { Box } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
+import { Box } from "@mui/material";
+import { styled as muiStyled } from "@mui/material/styles";
 
 export const PeriodTrigger = muiStyled(Box)(({ theme }: any) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   gap: "14px",
-  padding: "7px 14px",
+  padding: "10px 14px",
   borderRadius: "6px",
   border: "1px solid",
   borderColor: theme?.palette?.border?.main,
@@ -22,7 +22,7 @@ export const PeriodTrigger = muiStyled(Box)(({ theme }: any) => ({
     borderColor: theme?.palette?.border?.focus,
   },
   [theme.breakpoints.down("md")]: {
-    padding: "5px 8px",
+    padding: "8px 10px",
   },
 }));
 
@@ -42,4 +42,3 @@ export const VerticalLine = styled.div`
   height: 20px;
   background: #ddd;
 `;
-

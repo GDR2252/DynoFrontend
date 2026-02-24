@@ -4,7 +4,13 @@ import { Box } from "@mui/material";
 import { styled as muiStyled } from "@mui/material/styles";
 import Image from "next/image";
 
-export const CryptocurrencyTrigger = muiStyled(Box)<{
+export const CryptocurrencyTrigger = muiStyled(Box, {
+  shouldForwardProp: (prop) =>
+    prop !== "error" &&
+    prop !== "fullWidth" &&
+    prop !== "isOpen" &&
+    prop !== "isMobile",
+})<{
   error?: boolean;
   fullWidth?: boolean;
   isOpen?: boolean;
@@ -38,8 +44,6 @@ export const CryptocurrencyTrigger = muiStyled(Box)<{
 }));
 
 export const CryptocurrencyIcon = styled(Image)({
-  // width: "20px",
-  // height: "20px",
   objectFit: "contain",
   flexShrink: 0,
 });
@@ -56,7 +60,7 @@ export const CryptocurrencyText = styled.span<{ isMobile?: boolean }>(
     [theme.breakpoints.down("sm")]: {
       fontSize: "13px",
     },
-  })
+  }),
 );
 
 export const CryptocurrencyDropdown = styled(Box)({

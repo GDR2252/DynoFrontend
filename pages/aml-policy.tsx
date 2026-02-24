@@ -1,11 +1,13 @@
 import useIsMobile from "@/hooks/useIsMobile";
 import { Box, Typography } from "@mui/material";
 import React from "react";
-import { amlPolicy } from "@/utils/constants/aml-policy";
+import { useTranslation } from "react-i18next";
+
+const SECTION_IDS = Array.from({ length: 9 }, (_, i) => `section${i + 1}`);
 
 const AMLPolicy = () => {
-
   const isMobile = useIsMobile("md");
+  const { t } = useTranslation("amlPolicy");
 
   return (
     <Box
@@ -32,7 +34,7 @@ const AMLPolicy = () => {
           mb: "15px",
         }}
       >
-        AML Policy
+        {t("amlPolicyTitle")}
       </Typography>
 
       {/* SECTION CONTENT */}
@@ -55,86 +57,88 @@ const AMLPolicy = () => {
             letterSpacing: 0,
           }}
         >
-          This AML Policy describes how DynoPay (“we”, “us”, “our”) works to prevent money laundering, terrorist financing, and other illicit activity when users interact with our crypto payment services (“the Service”).
+          {t("intro")}
         </Typography>
 
-        {amlPolicy.map((section, index) => (
-          <Box key={index} sx={{ display: "flex", flexDirection: "column", gap: "30px" }}>
-            {/* ITEM TITLE */}
-            <Typography
-              sx={{
-                fontSize: "18px",
-                color: "#676B7E",
-                fontWeight: 600,
-                fontFamily: "OutfitBold",
-                lineHeight: "28px",
-                letterSpacing: 0,
-              }}
-            >
-              {section.title}
-            </Typography>
+        {SECTION_IDS.map((sectionId) => {
+          const desc = t(`${sectionId}Desc`);
+          const footer = t(`${sectionId}Footer`);
+          const bullets = t(`${sectionId}Bullets`, { returnObjects: true }) as string[];
 
-            {/* ITEM SECTION */}
-            {/* ITEM DESCRIPTION */}
-            {section.description && (
+          return (
+            <Box key={sectionId} sx={{ display: "flex", flexDirection: "column", gap: "30px" }}>
+              {/* ITEM TITLE */}
               <Typography
                 sx={{
                   fontSize: "18px",
                   color: "#676B7E",
-                  fontWeight: 400,
-                  fontFamily: "OutfitRegular",
-                  lineHeight: "28px",
-                  letterSpacing: 0,
-                  whiteSpace: "pre-line",
-                }}
-              >
-                {section.description.replace(
-                  /\. /,
-                  ".\n"
-                )}
-              </Typography>
-            )}
-
-            {/* ITEM BULLET POINTS */}
-            {section.bulletPoints?.length > 0 && (
-              <Box component="ul" sx={{ pl: "26px", my: "5px" }}>
-                {section.bulletPoints.map((point, pointIndex) => (
-                  <Box
-                    component="li"
-                    key={pointIndex}
-                    sx={{
-                      listStyle: "disc",
-                      fontSize: "18px",
-                      color: "#676B7E",
-                      fontWeight: 400,
-                      fontFamily: "OutfitRegular",
-                      lineHeight: "28px",
-                      letterSpacing: 0,
-                    }}
-                  >
-                    {point}
-                  </Box>
-                ))}
-              </Box>
-            )}
-
-            {/* ITEM FOOTER */}
-            {section.footer && (
-              <Typography
-                sx={{
-                  fontSize: "18px",
-                  color: "#676B7E",
-                  fontWeight: 400,
-                  fontFamily: "OutfitRegular",
+                  fontWeight: 600,
+                  fontFamily: "OutfitBold",
                   lineHeight: "28px",
                   letterSpacing: 0,
                 }}
               >
-                {section.footer}
+                {t(`${sectionId}Title`)}
               </Typography>
-            )}
-          </Box>
-        ))}
+
+              {/* ITEM DESCRIPTION */}
+              {desc && (
+                <Typography
+                  sx={{
+                    fontSize: "18px",
+                    color: "#676B7E",
+                    fontWeight: 400,
+                    fontFamily: "OutfitRegular",
+                    lineHeight: "28px",
+                    letterSpacing: 0,
+                    whiteSpace: "pre-line",
+                  }}
+                >
+                  {desc}
+                </Typography>
+              )}
+
+              {/* ITEM BULLET POINTS */}
+              {Array.isArray(bullets) && bullets.length > 0 && (
+                <Box component="ul" sx={{ pl: "26px", my: "5px" }}>
+                  {bullets.map((point, pointIndex) => (
+                    <Box
+                      component="li"
+                      key={pointIndex}
+                      sx={{
+                        listStyle: "disc",
+                        fontSize: "18px",
+                        color: "#676B7E",
+                        fontWeight: 400,
+                        fontFamily: "OutfitRegular",
+                        lineHeight: "28px",
+                        letterSpacing: 0,
+                      }}
+                    >
+                      {point}
+                    </Box>
+                  ))}
+                </Box>
+              )}
+
+              {/* ITEM FOOTER */}
+              {footer && (
+                <Typography
+                  sx={{
+                    fontSize: "18px",
+                    color: "#676B7E",
+                    fontWeight: 400,
+                    fontFamily: "OutfitRegular",
+                    lineHeight: "28px",
+                    letterSpacing: 0,
+                  }}
+                >
+                  {footer}
+                </Typography>
+              )}
+            </Box>
+          );
+        })}
       </Box>
     </Box>
   );

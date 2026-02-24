@@ -1,12 +1,11 @@
-import { LayoutProps, rootReducer } from "@/utils/types";
-import React from "react";
-import { LoginWrapper, ContentWrapper } from "./styled";
-import { useSelector } from "react-redux";
 import Toast from "@/Components/UI/Toast";
-import Image from "next/image";
 import bg from "@/assets/Images/auth/Background-Image.png";
 import AuthBg from "@/assets/Images/auth/auth-bg.png";
+import { LayoutProps, rootReducer } from "@/utils/types";
 import { Box } from "@mui/material";
+import Image from "next/image";
+import { useSelector } from "react-redux";
+import { ContentWrapper, LoginWrapper } from "./styled";
 
 const LoginLayout = ({ children, pageName, pageDescription }: LayoutProps) => {
   const ToastState = useSelector((state: rootReducer) => state.toastReducer);

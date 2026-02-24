@@ -17,7 +17,7 @@ export const ContentWrapper = styled(Box)(() => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  padding: "60px 20px 40px 20px",
+  padding: "60px 16px 40px 16px",
   minHeight: "100dvh",
   boxSizing: "border-box",
   scrollbarWidth: "none",
@@ -40,6 +40,7 @@ export const AuthContainer = styled(Box)(({ theme }) => ({
   maxWidth: "536px",
 
   [theme.breakpoints.down("sm")]: {
+    gap: "16px",
     padding: "0",
     width: "100%",
   },
@@ -50,7 +51,6 @@ export const CardWrapper = styled(Card)(({ theme }) => ({
   height: "fit-content",
   borderRadius: "14px",
   padding: "8px",
-  // zIndex: 2,
   background: "#fff",
   textAlign: "center",
   border: "1px solid #E9ECF2",

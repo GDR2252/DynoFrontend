@@ -1,10 +1,13 @@
 import useIsMobile from "@/hooks/useIsMobile";
 import { Box, Typography } from "@mui/material";
 import React from "react";
-import privacyData from "@/utils/constants/privacy-policy";
+import { useTranslation } from "react-i18next";
+
+const SECTION_IDS = Array.from({ length: 10 }, (_, i) => `section${i + 1}`);
 
 const PrivacyPolicy = () => {
   const isMobile = useIsMobile("md");
+  const { t } = useTranslation("privacyPolicy");
   return (
     <Box
       sx={{
@@ -30,7 +33,7 @@ const PrivacyPolicy = () => {
           mb: "15px",
         }}
       >
-        Privacy Policy
+        {t("privacyPolicyTitle")}
       </Typography>
 
       {/* PRIVACY POLICY DESCRIPTION */}
@@ -52,113 +55,116 @@ const PrivacyPolicy = () => {
             letterSpacing: 0,
           }}
         >
-          This Privacy Policy explains how DynoPay (“we”, “us”, “our”) collects,
-          uses, and protects your information when you use our website,
-          dashboard, or API (“the Service”).
+          {t("intro")}
         </Typography>
 
         {/* PRIVACY POLICY SECTIONS */}
-        {privacyData.map((section) => (
-          <Box key={section.title}>
-            {/* SECTION HEADING */}
-            <Typography
-              sx={{
-                fontSize: "18px",
-                color: "#676B7E",
-                fontWeight: 600,
-                fontFamily: "OutfitBold",
-                lineHeight: "28px",
-                letterSpacing: 0,
-              }}
-            >
-              {section.title}
-            </Typography>
-            {/* SECTION DESCRIPTION */}
-            <Typography
-              sx={{
-                fontSize: "18px",
-                color: "#676B7E",
-                fontWeight: 400,
-                fontFamily: "OutfitRegular",
-                lineHeight: "28px",
-                letterSpacing: 0,
-              }}
-            >
-              {section.description}
-            </Typography>
+        {SECTION_IDS.map((sectionId) => {
+          const info = t(`${sectionId}Info`, { returnObjects: true }) as { title: string; details: string }[];
+          const items = t(`${sectionId}Items`, { returnObjects: true }) as string[];
 
-            {/* SECTION INFO */}
-            <Box sx={{ my: section.info.length > 0 ? "28px" : 0 }}>
-              {section.info.length > 0 &&
-                section.info.map((info, infoIndex) => (
-                  <>
-                    {/* INFO HEADING */}
-                    <Typography
-                      key={infoIndex}
-                      sx={{
-                        fontSize: "18px",
-                        color: "#676B7E",
-                        fontWeight: 400,
-                        fontFamily: "OutfitRegular",
-                        lineHeight: "28px",
-                        letterSpacing: 0,
-                      }}
-                    >
-                      {info.title}
-                    </Typography>
+          return (
+            <Box key={sectionId}>
+              {/* SECTION HEADING */}
+              <Typography
+                sx={{
+                  fontSize: "18px",
+                  color: "#676B7E",
+                  fontWeight: 600,
+                  fontFamily: "OutfitBold",
+                  lineHeight: "28px",
+                  letterSpacing: 0,
+                }}
+              >
+                {t(`${sectionId}Title`)}
+              </Typography>
+              {/* SECTION DESCRIPTION */}
+              <Typography
+                sx={{
+                  fontSize: "18px",
+                  color: "#676B7E",
+                  fontWeight: 400,
+                  fontFamily: "OutfitRegular",
+                  lineHeight: "28px",
+                  letterSpacing: 0,
+                }}
+              >
+                {t(`${sectionId}Desc`)}
+              </Typography>
 
-                    {/* INFO DESCRIPTION */}
-                    <Typography
-                      sx={{
-                        fontSize: "18px",
-                        color: "#676B7E",
-                        fontWeight: 400,
-                        fontFamily: "OutfitRegular",
-                        lineHeight: "28px",
-                        letterSpacing: 0,
-                      }}
-                    >
-                      {info.details}
-                    </Typography>
-                  </>
-                ))}
-            </Box>
-            {/* SECTION ITEMS */}
-            {section.items.length > 0 && (
-              <Box component="ul" sx={{ pl: "26px" }}>
-                {section.items.map((item, itemIndex) => (
-                  <Box
-                    component="li"
-                    key={itemIndex}
-                    sx={{
-                      listStyle: "disc",
-                      fontSize: "18px",
-                      color: "#676B7E",
-                      fontWeight: 400,
-                      fontFamily: "OutfitRegular",
-                      lineHeight: "28px",
-                      letterSpacing: 0,
-                    }}
-                  >
-                    {item}
-                  </Box>
-                ))}
+              {/* SECTION INFO */}
+              <Box sx={{ my: Array.isArray(info) && info.length > 0 ? "28px" : 0 }}>
+                {Array.isArray(info) &&
+                  info.length > 0 &&
+                  info.map((infoItem, infoIndex) => (
+                    <React.Fragment key={infoIndex}>
+                      {/* INFO HEADING */}
+                      <Typography
+                        sx={{
+                          fontSize: "18px",
+                          color: "#676B7E",
+                          fontWeight: 400,
+                          fontFamily: "OutfitRegular",
+                          lineHeight: "28px",
+                          letterSpacing: 0,
+                        }}
+                      >
+                        {infoItem.title}
+                      </Typography>
+
+                      {/* INFO DESCRIPTION */}
+                      <Typography
+                        sx={{
+                          fontSize: "18px",
+                          color: "#676B7E",
+                          fontWeight: 400,
+                          fontFamily: "OutfitRegular",
+                          lineHeight: "28px",
+                          letterSpacing: 0,
+                        }}
+                      >
+                        {infoItem.details}
+                      </Typography>
+                    </React.Fragment>
+                  ))}
               </Box>
-            )}
-            <Typography
-              sx={{
-                fontSize: "18px",
-                color: "#676B7E",
-                fontWeight: 400,
-                fontFamily: "OutfitRegular",
-                lineHeight: "28px",
-                letterSpacing: 0,
-              }}
-            >
-              {section.footer}
-            </Typography>
-          </Box>
-        ))}
+              {/* SECTION ITEMS */}
+              {Array.isArray(items) && items.length > 0 && (
+                <Box component="ul" sx={{ pl: "26px" }}>
+                  {items.map((item, itemIndex) => (
+                    <Box
+                      component="li"
+                      key={itemIndex}
+                      sx={{
+                        listStyle: "disc",
+                        fontSize: "18px",
+                        color: "#676B7E",
+                        fontWeight: 400,
+                        fontFamily: "OutfitRegular",
+                        lineHeight: "28px",
+                        letterSpacing: 0,
+                      }}
+                    >
+                      {item}
+                    </Box>
+                  ))}
+                </Box>
+              )}
+              <Typography
+                sx={{
+                  fontSize: "18px",
+                  color: "#676B7E",
+                  fontWeight: 400,
+                  fontFamily: "OutfitRegular",
+                  lineHeight: "28px",
+                  letterSpacing: 0,
+                }}
+              >
+                {t(`${sectionId}Footer`)}
+              </Typography>
+            </Box>
+          );
+        })}
       </Box>
     </Box>
   );

@@ -1,4 +1,5 @@
 import { Box, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import Logo from "@/assets/Icons/home/dynopay-whiteLogo.svg";
 import X from "@/assets/Icons/home/X.svg";
@@ -22,14 +23,15 @@ const socials = [
 const HomeFooter = () => {
   const router = useRouter();
   const isMobile = useIsMobile("md");
+  const { t } = useTranslation("landing");
 
   const routes = [
-    { label: "Documentation", link: "#" },
-    { label: "Sandbox", link: "#" },
-    { label: "Term & Conditions", link: "/terms-conditions" },
-    { label: "Privacy Policy", link: "/privacy-policy" },
-    { label: "API Status", link: "/api-status" },
-    { label: "Support", link: "#" },
+    { labelKey: "documentation", link: "#" },
+    { labelKey: "footerSandbox", link: "#" },
+    { labelKey: "footerTerms", link: "/terms-conditions" },
+    { labelKey: "footerPrivacy", link: "/privacy-policy" },
+    { labelKey: "footerApiStatus", link: "/api-status" },
+    { labelKey: "footerSupport", link: "#" },
   ];
 
   return (
@@ -79,9 +81,9 @@ const HomeFooter = () => {
                 textWrap: "nowrap",
               }}
             >
-              Accept crypto payments in minutes. The modern
+              {t("footerDescription1")}
               <br />
-              payment gateway for forward-thinking businesses.
+              {t("footerDescription2")}
             </Typography>
 
             <Box
@@ -93,8 +95,8 @@ const HomeFooter = () => {
               }}
             >
               {routes.map((item) => (
-                <Link key={item.label} href={item.link}>
-                  <Navigation>{item.label}</Navigation>
+                <Link key={item.labelKey} href={item.link}>
+                  <Navigation>{t(item.labelKey)}</Navigation>
                 </Link>
               ))}
             </Box>
@@ -122,7 +124,7 @@ const HomeFooter = () => {
               fontFamily: "OutfitRegular",
             }}
           >
-            © 2024 DynoPay. All rights reserved
+            {t("footerCopyright")}
           </Typography>
 
           <Box sx={{ display: "flex", gap: 2 }}>

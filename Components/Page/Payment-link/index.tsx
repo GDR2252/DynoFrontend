@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import EmptyDataModel from "@/Components/UI/EmptyDataModel";
+import useIsMobile from "@/hooks/useIsMobile";
+import { PaymentLinkData, PaymentLinksProps } from "@/utils/types/paymentLink";
 import { Box } from "@mui/material";
+import { useEffect } from "react";
 import PaymentLinksTable from "./PaymentLinksTable";
 import PaymentLinksTopBar from "./PaymentLinksTopBar";
-import EmptyDataModel from "@/Components/UI/EmptyDataModel";
-import { PaymentLinkData, PaymentLinksProps } from "@/utils/types/paymentLink";
 
 const PaymentLinksPage = ({
   setPageName,
@@ -15,6 +16,8 @@ const PaymentLinksPage = ({
     setPageDescription?.("");
     setPageAction?.(null);
   }, []);
+
+  const isMobile = useIsMobile("md");
 
   const paymentLinks: PaymentLinkData[] = [
     {
@@ -75,7 +78,7 @@ const PaymentLinksPage = ({
         flex: 1,
         minHeight: 0,
         "> :not(:last-child)": {
-          marginBottom: { md: "20px", xs: "16px" },
+          marginBottom: isMobile ? "10px" : "20px",
         },
       }}
     >

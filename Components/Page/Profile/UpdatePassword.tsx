@@ -1,23 +1,23 @@
-import { Lock } from "@mui/icons-material";
-import { Box, IconButton } from "@mui/material";
-import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
-import * as yup from "yup";
+import InfoIcon from "@/assets/Icons/info-icon.svg";
+import InputField from "@/Components/UI/AuthLayout/InputFields";
+import PasswordValidation from "@/Components/UI/AuthLayout/PasswordValidation";
+import CustomButton from "@/Components/UI/Buttons";
+import PanelCard from "@/Components/UI/PanelCard";
+import useIsMobile from "@/hooks/useIsMobile";
 import { UserAction } from "@/Redux/Actions";
 import { USER_UPDATE_PASSWORD } from "@/Redux/Actions/UserAction";
-import FormManager from "../Common/FormManager";
-import InfoIcon from "@/assets/Icons/info-icon.svg";
-import PanelCard from "@/Components/UI/PanelCard";
+import { theme } from "@/styles/theme";
+import { Lock } from "@mui/icons-material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import InputField from "@/Components/UI/AuthLayout/InputFields";
-import { useTranslation } from "react-i18next";
-import { InfoIconBox, InfoText, InfoWrapper } from "./styled";
-import { theme } from "@/styles/theme";
+import { Box, IconButton } from "@mui/material";
 import Image from "next/image";
-import CustomButton from "@/Components/UI/Buttons";
-import useIsMobile from "@/hooks/useIsMobile";
-import PasswordValidation from "@/Components/UI/AuthLayout/PasswordValidation";
+import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import * as yup from "yup";
+import FormManager from "../Common/FormManager";
+import { InfoIconBox, InfoText, InfoWrapper } from "./styled";
 
 const initialPasswords = {
   oldPassword: "",
@@ -38,7 +38,6 @@ const UpdatePassword = () => {
   const [showPasswordValidation, setShowPasswordValidation] = useState(false);
   const newPasswordFieldRef = useRef<HTMLDivElement | null>(null);
 
-  // Track which fields have been interacted with (touched or changed)
   const [interactedFields, setInteractedFields] = useState<{
     oldPassword: boolean;
     newPassword: boolean;
@@ -49,7 +48,6 @@ const UpdatePassword = () => {
     confirmPassword: false,
   });
 
-  // Reset interacted fields when form is reset
   useEffect(() => {
     setInteractedFields({
       oldPassword: false,
@@ -68,9 +66,8 @@ const UpdatePassword = () => {
       .string()
       .nullable()
       .test("password-validation", "", function (value) {
-        // Only validate if value exists and is not empty
         if (!value || value.trim() === "") {
-          return true; // No error if empty
+          return true;
         }
         return passwordRegex.test(value);
       }),
@@ -78,11 +75,9 @@ const UpdatePassword = () => {
       .string()
       .nullable()
       .test("password-match", t("passwordMismatch"), function (value) {
-        // Only validate if value exists and is not empty
         if (!value || value.trim() === "") {
-          return true; // No error if empty
+          return true;
         }
-        // Check if it matches newPassword
         const newPassword = this.parent.newPassword;
         return value === newPassword;
       }),
@@ -90,18 +85,21 @@ const UpdatePassword = () => {
 
   const handlePasswordSubmit = (values: any) => {
     dispatch(UserAction(USER_UPDATE_PASSWORD, { ...values }));
-    // Reset form after submission
     setFormKey((prev) => prev + 1);
   };
 
   return (
     <PanelCard
-      bodyPadding={`${theme.spacing(2, 2.5, 2.5, 2.5)}`}
+      bodyPadding={
+        isMobile
+          ? `${theme.spacing(2, 2, 2, 2)}`
+          : `${theme.spacing(2, 2.5, 2.5, 2.5)}`
+      }
       title={t("updatePassword")}
       showHeaderBorder={false}
       headerAction={
         <IconButton>
-          <Lock color="action" />
+          <Lock color="action" style={{ height: "16px", width: "16px" }} />
         </IconButton>
       }
     >
@@ -119,30 +117,26 @@ const UpdatePassword = () => {
           touched,
           values,
         }) => {
-          // Helper to check if error should be shown
           const shouldShowError = (
             fieldName: keyof typeof interactedFields,
             touched: any,
-            errors: any
+            errors: any,
           ) => {
-            // Show error if field has been interacted with (touched or changed) AND there's an error
             return (
               (interactedFields[fieldName] || touched[fieldName]) &&
               !!errors[fieldName]
             );
           };
 
-          // Create enhanced handlers that track interactions
           const createChangeHandler = (
-            fieldName: keyof typeof interactedFields
+            fieldName: keyof typeof interactedFields,
           ) => {
             return (e: React.ChangeEvent<HTMLInputElement>) => {
               setInteractedFields((prev) => ({ ...prev, [fieldName]: true }));
               handleChange(e);
 
-              // Handle password validation for newPassword field
               if (fieldName === "newPassword") {
-                const value = e.target.value.replace(/\s/g, ""); // Remove spaces
+                const value = e.target.value.replace(/\s/g, "");
                 if (!value) {
                   setShowPasswordValidation(false);
                 } else if (passwordRegex.test(value)) {
@@ -155,13 +149,12 @@ const UpdatePassword = () => {
           };
 
           const createBlurHandler = (
-            fieldName: keyof typeof interactedFields
+            fieldName: keyof typeof interactedFields,
           ) => {
             return (e: React.FocusEvent<HTMLInputElement>) => {
               setInteractedFields((prev) => ({ ...prev, [fieldName]: true }));
               handleBlur(e);
 
-              // Handle password validation blur for newPassword field
               if (fieldName === "newPassword") {
                 setTimeout(() => {
                   setShowPasswordValidation(false);
@@ -182,7 +175,7 @@ const UpdatePassword = () => {
                 width: "100%",
                 display: "flex",
                 flexDirection: "column",
-                gap: 2,
+                gap: isMobile ? "16px" : "14px",
               }}
             >
               <Box
@@ -191,7 +184,7 @@ const UpdatePassword = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   flexDirection: "column",
-                  rowGap: "14px",
+                  rowGap: isMobile ? "12px" : "14px",
                   width: "100%",
                 }}
               >
@@ -200,7 +193,7 @@ const UpdatePassword = () => {
                     width: "100%",
                     display: "flex",
                     flexDirection: "column",
-                    gap: "12px",
+                    gap: isMobile ? "6px" : "12px",
                   }}
                 >
                   <InputField
@@ -218,6 +211,7 @@ const UpdatePassword = () => {
                         ? errors.oldPassword
                         : ""
                     }
+                    sx={{ gap: isMobile ? "6px" : "8px" }}
                     sideButton={true}
                     sideButtonType="primary"
                     iconBoxSize={isMobile ? "32px" : "38px"}
@@ -280,6 +274,7 @@ const UpdatePassword = () => {
                       shouldShowError("newPassword", touched, errors) ||
                       showPasswordValidation
                     }
+                    sx={{ gap: isMobile ? "6px" : "8px" }}
                     helperText={
                       shouldShowError("newPassword", touched, errors)
                         ? errors.newPassword
@@ -355,6 +350,7 @@ const UpdatePassword = () => {
                         ? errors.confirmPassword
                         : ""
                     }
+                    sx={{ gap: isMobile ? "6px" : "8px" }}
                     sideButton={true}
                     sideButtonType="primary"
                     iconBoxSize={isMobile ? "32px" : "38px"}

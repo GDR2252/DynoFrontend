@@ -27,19 +27,17 @@
  * </PanelCard>
  */
 
+import useIsMobile from "@/hooks/useIsMobile";
+import { Box, SxProps } from "@mui/material";
 import React, { ReactNode } from "react";
-import { Box, Typography, SxProps } from "@mui/material";
 import {
-  StyledCard,
+  CardBody,
   CardHeader,
   HeaderContent,
-  HeaderIcon,
-  CardBody,
-  CardFooter,
-  HeaderTitle,
   HeaderSubTitle,
+  HeaderTitle,
+  StyledCard,
 } from "./styled";
-import useIsMobile from "@/hooks/useIsMobile";
 
 export interface PanelCardProps {
   /**
@@ -50,6 +48,7 @@ export interface PanelCardProps {
    * Subtitle displayed in the card header
    */
   subTitle?: string;
+  titleGap?: SxProps;
   /**
    * Optional icon element displayed next to the title
    */
@@ -122,6 +121,7 @@ export interface PanelCardProps {
 const PanelCard: React.FC<PanelCardProps> = ({
   title,
   subTitle,
+  titleGap,
   headerIcon,
   headerAction,
   headerActionLayout = "absolute",
@@ -149,9 +149,20 @@ const PanelCard: React.FC<PanelCardProps> = ({
         >
           <HeaderContent>
             {headerIcon && <>{headerIcon}</>}
-            <Box sx={{ display: "flex", flexDirection: "column", gap: "6px", }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "6.41px",
+                ...titleGap,
+              }}
+            >
               {title && <HeaderTitle sx={{ ...headerSx }}>{title}</HeaderTitle>}
-              {subTitle && <HeaderSubTitle sx={{ ...subTitleSx }}>{subTitle}</HeaderSubTitle>}
+              {subTitle && (
+                <HeaderSubTitle sx={{ ...subTitleSx }}>
+                  {subTitle}
+                </HeaderSubTitle>
+              )}
             </Box>
           </HeaderContent>
           {headerAction &&

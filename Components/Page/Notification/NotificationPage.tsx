@@ -1,18 +1,19 @@
-import PanelCard from "@/Components/UI/PanelCard";
-import CustomSwitch from "@/Components/UI/CustomSwitch";
 import CustomButton from "@/Components/UI/Buttons";
+import CustomSwitch from "@/Components/UI/CustomSwitch";
+import PanelCard from "@/Components/UI/PanelCard";
 import { theme } from "@/styles/theme";
-import { Box, IconButton, Typography, Grid, Divider } from "@mui/material";
+import { Box, Divider, Grid, IconButton, Typography } from "@mui/material";
 import Image from "next/image";
 import React, { useRef, useState } from "react";
 
 import BellIcon from "@/assets/Icons/bell-icon.svg";
-import MobileIcon from "@/assets/Icons/mobile-icon.svg";
 import EnvelopeIcon from "@/assets/Icons/envelope-icon.svg";
-import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
-import { useTranslation } from "react-i18next";
-import { useCallback } from "react";
+import MobileIcon from "@/assets/Icons/mobile-icon.svg";
 import Toast from "@/Components/UI/Toast";
+import useIsMobile from "@/hooks/useIsMobile";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
 interface NotificationItemProps {
   title: string;
@@ -29,6 +30,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   onChange,
   showDivider = true,
 }) => {
+  const isMobile = useIsMobile("md");
   return (
     <>
       <Box
@@ -45,9 +47,9 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
               fontWeight: 700,
               fontFamily: "UrbanistBold",
               color: theme.palette.text.primary,
-              mb: 0.5,
-              lineHeight: "100%",
-              letterSpacing: 0
+              mb: isMobile ? "9px" : 1,
+              lineHeight: 1.2,
+              letterSpacing: 0,
             }}
           >
             {title}
@@ -57,7 +59,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
               fontSize: { xs: "13px", md: "15px" },
               fontFamily: "UrbanistMedium",
               color: theme.palette.text.primary,
-              lineHeight: 1.5,
+              lineHeight: 1.2,
             }}
           >
             {description}
@@ -88,7 +90,11 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
 const NotificationPage = () => {
   const namespaces = ["notifications"];
   const { t } = useTranslation(namespaces);
-  const tNotifications = useCallback((key: string) => t(key, { ns: "notifications" }), [t]);
+  const tNotifications = useCallback(
+    (key: string) => t(key, { ns: "notifications" }),
+    [t],
+  );
+  const isMobile = useIsMobile("md");
 
   // Transaction Alerts state
   const [transactionUpdates, setTransactionUpdates] = useState(true);
@@ -133,15 +139,29 @@ const NotificationPage = () => {
             {/* Transaction Alerts Card */}
             <PanelCard
               headerSx={{ fontSize: { xs: "15px", md: "20px" } }}
-              subTitleSx={{ fontSize: { xs: "13px", md: "15px" }, color: theme.palette.text.primary }}
+              subTitleSx={{
+                fontSize: { xs: "13px", md: "15px" },
+                color: theme.palette.text.primary,
+              }}
+              titleGap={{ gap: isMobile ? "12.41px" : "12px" }}
               title={tNotifications("transactionAlertsTitle")}
               subTitle={tNotifications("transactionAlertsSubtitle")}
               showHeaderBorder={false}
-              headerPadding={theme.spacing(2.5, 2.5, 0, 2.5)}
-              bodyPadding={theme.spacing(0, 2.5, 2.5, 2.5)}
+              headerPadding={
+                isMobile
+                  ? theme.spacing(2, 2, 0, 2)
+                  : theme.spacing(2.5, 2.5, 0, 2.5)
+              }
+              bodyPadding={
+                isMobile
+                  ? theme.spacing(0, 2, 2, 2)
+                  : theme.spacing(0, "18px", 2.5, 2.5)
+              }
               headerAction={
                 <IconButton
                   sx={{
+                    height: isMobile ? "32px" : "40px",
+                    width: isMobile ? "32px" : "40px",
                     padding: "8px",
                     "&:hover": { backgroundColor: "transparent" },
                   }}
@@ -149,8 +169,8 @@ const NotificationPage = () => {
                   <Image
                     src={BellIcon.src}
                     alt="bell-icon"
-                    width={20}
-                    height={20}
+                    width={isMobile ? 14 : 20}
+                    height={isMobile ? 14 : 20}
                     draggable={false}
                   />
                 </IconButton>
@@ -161,8 +181,8 @@ const NotificationPage = () => {
                 sx={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: 2,
-                  pt: { xs: 3, md: 5.5 },
+                  gap: isMobile ? "10px" : 2,
+                  pt: { xs: 3, md: "46px" },
                 }}
               >
                 <NotificationItem
@@ -184,15 +204,29 @@ const NotificationPage = () => {
             {/* Weekly Reports Card */}
             <PanelCard
               headerSx={{ fontSize: { xs: "15px", md: "20px" } }}
-              subTitleSx={{ fontSize: { xs: "13px", md: "15px" }, color: theme.palette.text.primary }}
+              subTitleSx={{
+                fontSize: { xs: "13px", md: "15px" },
+                color: theme.palette.text.primary,
+              }}
+              titleGap={{ gap: isMobile ? "12.41px" : "12px" }}
               title={tNotifications("weeklyReportsTitle")}
               subTitle={tNotifications("weeklyReportsSubtitle")}
               showHeaderBorder={false}
-              headerPadding={theme.spacing(2.5, 2.5, 0, 2.5)}
-              bodyPadding={theme.spacing(0, 2.5, 2.5, 2.5)}
+              headerPadding={
+                isMobile
+                  ? theme.spacing(2, 2, 0, 2)
+                  : theme.spacing(2.5, 2.5, 0, 2.5)
+              }
+              bodyPadding={
+                isMobile
+                  ? theme.spacing(0, 2, 2, 2)
+                  : theme.spacing(0, "18px", 2.5, 2.5)
+              }
               headerAction={
                 <IconButton
                   sx={{
+                    height: isMobile ? "32px" : "40px",
+                    width: isMobile ? "32px" : "40px",
                     padding: "8px",
                     "&:hover": { backgroundColor: "transparent" },
                   }}
@@ -200,15 +234,22 @@ const NotificationPage = () => {
                   <Image
                     src={MobileIcon.src}
                     alt="mobile-icon"
-                    width={20}
-                    height={20}
+                    width={isMobile ? 14 : 20}
+                    height={isMobile ? 14 : 20}
                     draggable={false}
                   />
                 </IconButton>
               }
               sx={{ height: "100%" }}
             >
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: { xs: 3, md: 5.5 }, }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: isMobile ? "10px" : 2,
+                  pt: { xs: 3, md: "46px" },
+                }}
+              >
                 <NotificationItem
                   title={tNotifications("weeklySummaryTitle")}
                   description={tNotifications("weeklySummaryDescription")}
@@ -233,22 +274,36 @@ const NotificationPage = () => {
             sx={{
               display: "flex",
               flexDirection: "column",
-              gap: 3,
+              gap: "16px",
               justifyContent: "space-between",
               height: "100%",
             }}
           >
             <PanelCard
               headerSx={{ fontSize: { xs: "15px", md: "20px" } }}
-              subTitleSx={{ fontSize: { xs: "13px", md: "15px" }, color: theme.palette.text.primary }}
+              subTitleSx={{
+                fontSize: { xs: "13px", md: "15px" },
+                color: theme.palette.text.primary,
+              }}
+              titleGap={{ gap: isMobile ? "12.41px" : "12px" }}
               title={tNotifications("emailNotificationsCardTitle")}
               subTitle={tNotifications("emailNotificationsCardSubtitle")}
               showHeaderBorder={false}
-              bodyPadding={theme.spacing(0, 2.5, 2.5, 2.5)}
-              headerPadding={theme.spacing(2.5, 2.5, 0, 2.5)}
+              bodyPadding={
+                isMobile
+                  ? theme.spacing(0, 2, 2, 2)
+                  : theme.spacing(0, 2.5, 2.5, 2.5)
+              }
+              headerPadding={
+                isMobile
+                  ? theme.spacing(2, 2, 0, 2)
+                  : theme.spacing(2.5, 2.5, 0, 2.5)
+              }
               headerAction={
                 <IconButton
                   sx={{
+                    height: isMobile ? "32px" : "40px",
+                    width: isMobile ? "32px" : "40px",
                     padding: "8px",
                     "&:hover": { backgroundColor: "transparent" },
                   }}
@@ -256,15 +311,22 @@ const NotificationPage = () => {
                   <Image
                     src={EnvelopeIcon.src}
                     alt="envelope-icon"
-                    width={20}
-                    height={20}
+                    width={isMobile ? 14 : 20}
+                    height={isMobile ? 14 : 20}
                     draggable={false}
                   />
                 </IconButton>
               }
               sx={{ height: "fit-content" }}
             >
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: { xs: 3, md: 5.5 } }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: isMobile ? "10px" : 2,
+                  pt: { xs: 3, md: "46px" },
+                }}
+              >
                 <NotificationItem
                   title={tNotifications("emailNotificationsTitle")}
                   description={tNotifications("emailNotificationsDescription")}
@@ -292,9 +354,9 @@ const NotificationPage = () => {
                         fontWeight: 700,
                         fontFamily: "UrbanistMedium",
                         color: theme.palette.text.primary,
-                        mb: 0.5,
-                        lineHeight: "100%",
-                        letterSpacing: 0
+                        mb: 1,
+                        lineHeight: 1.2,
+                        letterSpacing: 0,
                       }}
                     >
                       {tNotifications("browserNotificationsTitle")}
@@ -304,7 +366,7 @@ const NotificationPage = () => {
                         fontSize: { xs: "13px", md: "15px" },
                         fontFamily: "UrbanistRegular",
                         color: theme.palette.text.primary,
-                        lineHeight: 1.5,
+                        lineHeight: 1.2,
                       }}
                     >
                       {tNotifications("browserNotificationsDescription")}
@@ -313,14 +375,20 @@ const NotificationPage = () => {
                   <CustomButton
                     label={tNotifications("activate")}
                     variant="secondary"
-                    size="medium"
+                    size={isMobile ? "small" : "medium"}
+                    sx={{ padding: isMobile ? "8px 10px" : "15px 24px" }}
                     endIcon={
                       <Box>
-                        <ArrowOutwardIcon />
+                        <ArrowOutwardIcon
+                          style={{
+                            height: "16px",
+                            width: "16px",
+                            marginTop: "2px",
+                          }}
+                        />
                       </Box>
                     }
                     onClick={() => {
-                      // TODO: Implement browser notification activation
                       console.log("Activating browser notifications...");
                     }}
                   />
@@ -331,7 +399,7 @@ const NotificationPage = () => {
             <CustomButton
               label={tNotifications("saveChanges")}
               variant="primary"
-              size="large"
+              size={isMobile ? "small" : "medium"}
               fullWidth
               onClick={handleSaveChanges}
             />

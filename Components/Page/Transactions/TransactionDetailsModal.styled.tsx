@@ -1,6 +1,6 @@
+import { theme } from "@/styles/theme";
 import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { theme } from "@/styles/theme";
 
 export const HeaderTitleRow = styled(Box)({
   display: "flex",
@@ -22,7 +22,7 @@ export const TitleColumn = styled(Box)({
     gap: "8px",
   },
   [theme.breakpoints.down("sm")]: {
-    gap: "4px",
+    gap: "6px",
   },
 });
 
@@ -40,7 +40,6 @@ export const TitleLabel = styled(Typography)({
 export const TitleValue = styled(Typography)({
   fontSize: "20px",
   fontWeight: 500,
-  // whiteSpace: "nowrap",
   fontFamily: "UrbanistMedium",
   color: theme.palette.text.primary,
   lineHeight: "1.2",
@@ -133,8 +132,8 @@ export const StatusBadge = styled(Box)<{
   return {
     display: "inline-flex",
     alignItems: "center",
-    gap: "8px",
-    padding: "8px 12px",
+    gap: "4px",
+    padding: "9px 8px",
     borderRadius: "50px",
     backgroundColor: colors.bg,
     border: `1px solid ${colors.border}`,
@@ -142,12 +141,13 @@ export const StatusBadge = styled(Box)<{
     fontWeight: 500,
     fontFamily: "UrbanistMedium",
     width: "fit-content",
+    [theme.breakpoints.down("md")]: {
+      padding: "6px 7px",
+    },
   };
 });
 
-export const StatusIconWrapper = styled(Box)<{
-  status: "done" | "pending" | "failed";
-}>(({ status }) => {
+export const StatusIconWrapper = styled(Box)(({ theme }) => {
   return {
     display: "flex",
     alignItems: "center",
@@ -156,6 +156,12 @@ export const StatusIconWrapper = styled(Box)<{
     "& img": {
       width: "14px",
       height: "14px",
+    },
+    [theme.breakpoints.down("md")]: {
+      "& img": {
+        width: "10px",
+        height: "10px",
+      },
     },
   };
 });
@@ -181,7 +187,11 @@ export const StatusText = styled(Typography)<{
     color: statusColors[status].textColor,
     fontFamily: "UrbanistMedium",
     textTransform: "capitalize",
-    lineHeight: "16px",
+    lineHeight: 1.2,
+    [theme.breakpoints.down("md")]: {
+      fontSize: "10px",
+      lineHeight: "100%",
+    },
   };
 });
 
@@ -270,7 +280,7 @@ export const CopyButton = styled("button")(({ theme }) => ({
   "&:active": {
     transform: "scale(0.95)",
   },
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("md")]: {
     width: "32px",
     height: "32px",
     padding: "6px",
@@ -305,18 +315,18 @@ export const ExplorerButton = styled("button")(({ theme }) => ({
 }));
 
 export const WebhookResponseBox = styled(Box)(({ theme }) => ({
-  padding: "10px",
+  margin: "11px 8px 11px 14px",
   backgroundColor: theme.palette.common.white,
-  borderRadius: "6px",
-  border: `1px solid ${theme.palette.border.main}`,
   maxHeight: "150px",
   overflowY: "auto",
+  scrollbarWidth: "none",
   "& pre": {
     color: theme.palette.text.primary,
-    whiteSpace: "pre-wrap",
-    wordBreak: "break-all",
     fontSize: "13px",
     fontWeight: 500,
     fontFamily: "UrbanistMedium",
+  },
+  [theme.breakpoints.down("md")]: {
+    margin: "10px",
   },
 }));

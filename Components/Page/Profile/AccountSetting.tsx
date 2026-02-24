@@ -1,23 +1,23 @@
-import { CameraAlt, DeleteOutline, AccountBox } from "@mui/icons-material";
-import { Box, Grid, IconButton, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import React, { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
-import * as yup from "yup";
-import { TokenData } from "@/utils/types";
-import PanelCard from "@/Components/UI/PanelCard";
-import FormManager from "../Common/FormManager";
-import { UserAction } from "@/Redux/Actions";
-import { USER_UPDATE } from "@/Redux/Actions/UserAction";
-import InputField from "@/Components/UI/AuthLayout/InputFields";
-import Image from "next/image";
-import CustomButton from "@/Components/UI/Buttons";
-import useIsMobile from "@/hooks/useIsMobile";
 import CameraIcon from "@/assets/Icons/camera-icon.svg";
 import TrashIcon from "@/assets/Icons/trash-icon.svg";
-import { useTranslation } from "react-i18next";
-import { getInitials } from "@/helpers";
+import InputField from "@/Components/UI/AuthLayout/InputFields";
+import CustomButton from "@/Components/UI/Buttons";
 import CountryPhoneInput from "@/Components/UI/CountryPhoneInput";
+import PanelCard from "@/Components/UI/PanelCard";
+import { getInitials } from "@/helpers";
+import useIsMobile from "@/hooks/useIsMobile";
+import { UserAction } from "@/Redux/Actions";
+import { USER_UPDATE } from "@/Redux/Actions/UserAction";
+import { TokenData } from "@/utils/types";
+import { AccountBox } from "@mui/icons-material";
+import { Box, Grid, IconButton, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import Image from "next/image";
+import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import * as yup from "yup";
+import FormManager from "../Common/FormManager";
 
 const initialValue = {
   firstName: "",
@@ -117,12 +117,19 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
 
   return (
     <PanelCard
-      bodyPadding={`${theme.spacing(2, 2.5, 2.5, 2.5)}`}
+      bodyPadding={
+        isMobile
+          ? `${theme.spacing("12px", 2, 2, 2)}`
+          : `${theme.spacing(2, 2.5, 2.5, 2.5)}`
+      }
       title={t("accountSetting")}
       showHeaderBorder={false}
       headerAction={
         <IconButton>
-          <AccountBox color="action" />
+          <AccountBox
+            color="action"
+            style={{ height: "16px", width: "16px" }}
+          />
         </IconButton>
       }
     >
@@ -173,7 +180,7 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
         </Box>
 
         {/* Actions */}
-        <Box mt={"4px"}>
+        <Box mt={isMobile ? "10px" : "4px"}>
           <Box
             sx={{
               display: "flex",
@@ -195,7 +202,7 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
               <CustomButton
                 label={t("uploadNewPhoto")}
                 variant="outlined"
-                size="medium"
+                size={isMobile ? "small" : "medium"}
                 startIcon={
                   <Image
                     src={CameraIcon.src}
@@ -226,7 +233,7 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
               <CustomButton
                 label={t("remove")}
                 variant="outlined"
-                size="medium"
+                size={isMobile ? "small" : "medium"}
                 startIcon={
                   <Image
                     src={TrashIcon.src}
@@ -305,10 +312,15 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                     helperText={
                       touched.firstName && errors.firstName && errors.firstName
                     }
-                    sx={{ gap: "8px" }}
+                    sx={{ ap: isMobile ? "6px" : "8px" }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  sx={{ marginTop: { xs: "12px", sm: "0px" } }}
+                >
                   <InputField
                     fullWidth={true}
                     inputHeight={isMobile ? "32px" : "38px"}
@@ -332,8 +344,7 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                       touched.lastName && errors.lastName && errors.lastName
                     }
                     sx={{
-                      gap: "8px",
-                      marginTop: { xs: "12px", sm: "0px" },
+                      gap: isMobile ? "6px" : "8px",
                     }}
                   />
                 </Grid>
@@ -361,7 +372,7 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                       handleChange(event);
                     }}
                     onBlur={handleBlur}
-                    sx={{ gap: "8px" }}
+                    sx={{ ap: isMobile ? "6px" : "8px" }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -394,8 +405,8 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                       name="mobile"
                       defaultCountry="US"
                       value={values.mobile}
-                      inputHeight={isMobile ? "32px" : "38px"}
-                      onChange={(newValue, info) => {
+                      inputHeight={"38px"}
+                      onChange={(newValue) => {
                         const e: any = {
                           target: {
                             name: "mobile",
@@ -415,6 +426,7 @@ const AccountSetting = ({ tokenData }: { tokenData: TokenData }) => {
                   display: "flex",
                   justifyContent: { xs: "stretch", sm: "flex-end" },
                   gap: "10px",
+                  mt: "4px",
                   width: "100%",
                 }}
               >

@@ -1,46 +1,33 @@
+import { Box, SxProps, Theme } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import {
-  Popover,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  useTheme,
-  SxProps,
-  Theme,
-  Box,
-} from "@mui/material";
-import {
-  LangFlag,
-  LangTrigger,
-  LangText,
-  CheckIconStyled,
-  VerticalLine,
-} from "./styled";
+import { CheckIconStyled, LangFlag, LangText } from "./styled";
 
+import ExpandLessIcon from "@/assets/Icons/ExpendLess-Arrow.svg";
+import ExpandMoreIcon from "@/assets/Icons/ExpendMore-Arrow.svg";
+import CheckIcon from "@/assets/Icons/true-icon.svg";
 import portugalFlag from "@/assets/Images/Icons/flags/portugal-flag.png";
 import unitedStatesFlag from "@/assets/Images/Icons/flags/united-states-flag.png";
-import ExpandMoreIcon from "@/assets/Icons/ExpendMore-Arrow.svg";
-import ExpandLessIcon from "@/assets/Icons/ExpendLess-Arrow.svg";
-import CheckIcon from "@/assets/Icons/true-icon.svg";
 
-import i18n from "i18next";
 import useIsMobile from "@/hooks/useIsMobile";
+import i18n from "i18next";
 import Image from "next/image";
 
 const languages = [
   { code: "pt", label: "Português", flag: portugalFlag },
   { code: "en", label: "English", flag: unitedStatesFlag },
-  // { code: "fr", label: "Français", flag: franceFlag },
-  // { code: "es", label: "Español", flag: spainFlag },
 ];
 
-export default function LanguageSwitcher({ sx }: { sx?: SxProps<Theme> }) {
+export default function LanguageSwitcher({
+  sx,
+  mobileBreakpoint,
+  onLanguageChange,
+}: {
+  sx?: SxProps<Theme>;
+  mobileBreakpoint?: "xs" | "sm" | "md" | "lg" | "xl";
+  onLanguageChange?: () => void;
+}) {
   const current = i18n.language || "en";
-  const theme = useTheme();
-  const isMobile = useIsMobile("md");
-
-
+  const isMobile = useIsMobile(mobileBreakpoint || "md");
 
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -52,6 +39,7 @@ export default function LanguageSwitcher({ sx }: { sx?: SxProps<Theme> }) {
   const changeLang = (lng: string) => {
     i18n.changeLanguage(lng);
     localStorage.setItem("lang", lng);
+    onLanguageChange?.();
     handleClose();
   };
 
@@ -59,7 +47,10 @@ export default function LanguageSwitcher({ sx }: { sx?: SxProps<Theme> }) {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
         handleClose();
       }
     };
@@ -75,12 +66,11 @@ export default function LanguageSwitcher({ sx }: { sx?: SxProps<Theme> }) {
 
   return (
     <Box ref={wrapperRef} sx={{ position: "relative" }} width={"fit-content"}>
-      {/* Trigger (always visible) */}
       <Box
         onClick={Boolean(anchorEl) ? handleClose : handleOpen}
         height={isMobile ? "28px" : "40px"}
         sx={{
-          width: "111px",
+          width: "fit-content",
           padding: isMobile ? "7px 10px" : "10px 14px",
           border: "1px solid #E8F0FF",
           display: "flex",
@@ -90,18 +80,52 @@ export default function LanguageSwitcher({ sx }: { sx?: SxProps<Theme> }) {
           borderRadius: "6px",
           cursor: "pointer",
           background: "#fff",
+          ...sx,
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <LangFlag src={selected.flag.src} alt="flag" style={{ height: isMobile ? "14px" : "20px", width: isMobile ? "14px" : "20px" }} />
+          <LangFlag
+            src={selected.flag.src}
+            alt="flag"
+            style={{
+              height: isMobile ? "14px" : "20px",
+              width: isMobile ? "14px" : "20px",
+            }}
+          />
           <LangText style={{ fontSize: isMobile ? "10.5px" : "15px" }}>
             {selected.code.toUpperCase()}
           </LangText>
         </Box>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: isMobile ? "10px" : "14px" }}>
-          <Box style={{ height: isMobile ? "14px" : "20px", width: "1px", background: "#ddd" }} />
-          {Boolean(anchorEl) ? <Image src={ExpandLessIcon.src} alt="expand" width={isMobile ? 7 : 11} height={isMobile ? 4 : 6} /> : <Image src={ExpandMoreIcon.src} alt="expand" width={isMobile ? 7 : 11} height={isMobile ? 4 : 6} />}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: isMobile ? "10px" : "14px",
+          }}
+        >
+          <Box
+            style={{
+              height: isMobile ? "14px" : "20px",
+              width: "1px",
+              background: "#ddd",
+            }}
+          />
+          {Boolean(anchorEl) ? (
+            <Image
+              src={ExpandLessIcon.src}
+              alt="expand"
+              width={isMobile ? 7 : 11}
+              height={isMobile ? 4 : 6}
+            />
+          ) : (
+            <Image
+              src={ExpandMoreIcon.src}
+              alt="expand"
+              width={isMobile ? 7 : 11}
+              height={isMobile ? 4 : 6}
+            />
+          )}
         </Box>
       </Box>
 
@@ -114,7 +138,7 @@ export default function LanguageSwitcher({ sx }: { sx?: SxProps<Theme> }) {
             right: 0,
             width: "169px",
             border: "1px solid #E8F0FF",
-            borderRadius: "6px",
+            borderRadius: isMobile ? "2px" : "6px",
             background: "#fff",
             zIndex: 2000,
             padding: "10px 6px 6px",
@@ -128,18 +152,33 @@ export default function LanguageSwitcher({ sx }: { sx?: SxProps<Theme> }) {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              padding: "0px 8px 10px",
+              padding: isMobile ? "0px 8px 6px" : "0px 8px 10px",
               cursor: "pointer",
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <LangFlag src={selected.flag.src} alt="flag" style={{ height: "16px", width: "16px" }} />
+              <LangFlag
+                src={selected.flag.src}
+                alt="flag"
+                style={{ height: "16px", width: "16px" }}
+              />
               <LangText>{selected.code.toUpperCase()}</LangText>
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: "14px" }}>
-              <Box style={{ height: isMobile ? "14px" : "20px", width: "1px", background: "#ddd" }} />
-              <Image src={ExpandLessIcon.src} alt="expand" width={isMobile ? 7 : 11} height={isMobile ? 4 : 6} />
+              <Box
+                style={{
+                  height: isMobile ? "14px" : "20px",
+                  width: "1px",
+                  background: "#ddd",
+                }}
+              />
+              <Image
+                src={ExpandLessIcon.src}
+                alt="expand"
+                width={isMobile ? 7 : 11}
+                height={isMobile ? 4 : 6}
+              />
             </Box>
           </Box>
 
@@ -161,17 +200,27 @@ export default function LanguageSwitcher({ sx }: { sx?: SxProps<Theme> }) {
               }}
             >
               <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <LangFlag src={lng.flag.src} alt="flag" style={{ height: "16px", width: "16px" }} />
+                <LangFlag
+                  src={lng.flag.src}
+                  alt="flag"
+                  style={{ height: "16px", width: "16px" }}
+                />
                 <LangText>
                   {lng.code.toUpperCase()} - {lng.label}
                 </LangText>
               </Box>
 
               <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                {lng.code === current && <CheckIconStyled style={{
-                  width: isMobile ? "16px" : "11px",
-                  height: isMobile ? "16px" : "8px",
-                }} src={CheckIcon.src} alt="check" />}
+                {lng.code === current && (
+                  <CheckIconStyled
+                    style={{
+                      width: "11px",
+                      height: "8px",
+                    }}
+                    src={CheckIcon.src}
+                    alt="check"
+                  />
+                )}
               </Box>
             </Box>
           ))}

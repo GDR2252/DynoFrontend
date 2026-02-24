@@ -1,18 +1,17 @@
-import React from "react";
-import {
-  SidebarWrapper,
-  Menu,
-  MenuItem,
-  IconBox,
-  ActiveIndicator,
-} from "./styled";
-import AddIcon from "@mui/icons-material/Add";
 import useIsMobile from "@/hooks/useIsMobile";
-import { useRouter } from "next/router";
+import SidebarIcon from "@/utils/customIcons/sidebar-icons";
+import AddIcon from "@mui/icons-material/Add";
 import { Box, useTheme } from "@mui/material";
+import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import ReferralAndKnowledge from "../ReferralAndKnowledge";
-import SidebarIcon from "@/utils/customIcons/sidebar-icons";
+import {
+  ActiveIndicator,
+  IconBox,
+  Menu,
+  MenuItem,
+  SidebarWrapper,
+} from "./styled";
 
 const NewSidebar = () => {
   const isMobile = useIsMobile("md");
@@ -61,13 +60,6 @@ const NewSidebar = () => {
             >
               <ActiveIndicator active={isActive} />
               <IconBox active={isActive}>
-                {/* <Image
-                  src={item.icon}
-                  width={20}
-                  height={20}
-                  alt={item.label}
-                  draggable={false}
-                /> */}
                 <SidebarIcon
                   name={item.icon}
                   size={20}

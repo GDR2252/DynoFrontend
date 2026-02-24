@@ -232,7 +232,7 @@ export const HeaderSubTitle = styled(Typography)(({ theme }) => ({
 export const SuccessChip = styled(Box)(({ theme }) => ({
   backgroundColor: "#22C55E1A",
   height: "50px",
-  width: "260px",
+  width: "100%",
   border: "1px solid",
   borderColor: "#22C55E33",
   borderRadius: "9999px",

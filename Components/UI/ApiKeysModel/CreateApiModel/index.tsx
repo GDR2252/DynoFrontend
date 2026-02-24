@@ -1,26 +1,26 @@
-import React, { useState } from "react";
-import PopupModal from "../../PopupModal";
-import { useTranslation } from "react-i18next";
-import { Button, Typography } from "@mui/material";
-import { Box } from "@mui/material";
-import FormManager from "@/Components/Page/Common/FormManager";
-import { theme } from "@/styles/theme";
-import InputField from "../../AuthLayout/InputFields";
-import PanelCard from "../../PanelCard";
-import Image from "next/image";
-import WalletIcon from "@/assets/Icons/wallet-icon.svg";
-import * as yup from "yup";
 import InfoIcon from "@/assets/Icons/info-icon.svg";
-import CurrencySelector from "../../CurrencySelector";
-import {
-  PermissionsContainer,
-  IconContainer,
-  ContentContainer,
-  PermissionsTitle,
-  PermissionsList,
-} from "./styled";
+import WalletIcon from "@/assets/Icons/wallet-icon.svg";
+import FormManager from "@/Components/Page/Common/FormManager";
+import useIsMobile from "@/hooks/useIsMobile";
+import { theme } from "@/styles/theme";
+import { Box, Typography } from "@mui/material";
+import Image from "next/image";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import * as yup from "yup";
+import InputField from "../../AuthLayout/InputFields";
 import CustomButton from "../../Buttons";
+import CurrencySelector from "../../CurrencySelector";
+import PanelCard from "../../PanelCard";
+import PopupModal from "../../PopupModal";
 import SuccessAPIModel from "../SuccessAPIModel";
+import {
+  ContentContainer,
+  IconContainer,
+  PermissionsContainer,
+  PermissionsList,
+  PermissionsTitle,
+} from "./styled";
 
 export interface CreateApiModelProps {
   open: boolean;
@@ -29,11 +29,11 @@ export interface CreateApiModelProps {
 
 const CreateApiModel: React.FC<CreateApiModelProps> = ({ open, onClose }) => {
   const { t } = useTranslation("apiScreen");
+  const isMobile = useIsMobile("md");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const onSubmit = (values: any) => {
     console.log("Form submitted with data:", values);
-    // Close the create modal and open the success modal
     onClose();
     setShowSuccessModal(true);
   };
@@ -52,7 +52,7 @@ const CreateApiModel: React.FC<CreateApiModelProps> = ({ open, onClose }) => {
         sx={{
           "& .MuiDialog-paper": {
             width: "100%",
-            maxWidth: "443px",
+            maxWidth: "475px",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
@@ -72,19 +72,26 @@ const CreateApiModel: React.FC<CreateApiModelProps> = ({ open, onClose }) => {
               draggable={false}
             />
           }
-          bodyPadding={theme.spacing(1.5, 3.75, 3.75, 3.75)}
+          bodyPadding={
+            isMobile
+              ? theme.spacing(2, 2, 2, 2)
+              : theme.spacing(1.5, 3.75, 3.75, 3.75)
+          }
           headerPadding={theme.spacing(3.75, 3.75, 0, 3.75)}
           headerActionLayout="inline"
         >
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Typography
-              variant="body2"
-              color="text.primary"
-              sx={{ fontFamily: "UrbanistMedium", lineHeight: 1.2 }}
-            >
-              {t("generate.modalSubtitle")}
-            </Typography>
-          </Box>
+          <Typography
+            variant="body2"
+            sx={{
+              fontSize: isMobile ? "13px" : "15px",
+              fontWeight: 500,
+              letterSpacing: 0,
+              fontFamily: "UrbanistMedium",
+              lineHeight: isMobile ? "16px" : "18px",
+            }}
+          >
+            {t("generate.modalSubtitle")}
+          </Typography>
           <FormManager
             initialValues={{ key_name: "", base_currency: "USD" }}
             yupSchema={yup.object().shape({
@@ -102,7 +109,12 @@ const CreateApiModel: React.FC<CreateApiModelProps> = ({ open, onClose }) => {
               values,
             }) => (
               <Box
-                sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                  mt: 2,
+                }}
               >
                 <InputField
                   fullWidth
@@ -172,10 +184,17 @@ const CreateApiModel: React.FC<CreateApiModelProps> = ({ open, onClose }) => {
                   </ContentContainer>
                 </PermissionsContainer>
 
-                <Box sx={{ display: "flex", gap: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: isMobile ? "column-reverse" : "row",
+                    gap: 1,
+                    mt: isMobile ? "0px" : "10px",
+                  }}
+                >
                   <CustomButton
                     variant="outlined"
-                    size="medium"
+                    size={isMobile ? "small" : "medium"}
                     label={t("actions.cancel")}
                     onClick={onClose}
                     sx={{
@@ -185,7 +204,7 @@ const CreateApiModel: React.FC<CreateApiModelProps> = ({ open, onClose }) => {
                   <CustomButton
                     type="submit"
                     variant="primary"
-                    size="medium"
+                    size={isMobile ? "small" : "medium"}
                     label={t("actions.generate")}
                     disabled={submitDisable}
                     sx={{

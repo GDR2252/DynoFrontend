@@ -1,10 +1,9 @@
-import React from "react";
-import { Button as MuiButton, Box } from "@mui/material";
-import { borderRadius, fontFamily, SxProps, Theme } from "@mui/system";
-import Image from "next/image";
-import { StaticImageData } from "next/image";
-import { theme } from "@/styles/theme";
 import useIsMobile from "@/hooks/useIsMobile";
+import { theme } from "@/styles/theme";
+import { Box, Button as MuiButton, Typography } from "@mui/material";
+import { SxProps, Theme } from "@mui/system";
+import Image, { StaticImageData } from "next/image";
+import React from "react";
 
 export interface CustomButtonProps {
   label: string;
@@ -18,19 +17,13 @@ export interface CustomButtonProps {
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
   sx?: SxProps<Theme>;
+  labelSx?: SxProps<Theme>;
   hideLabelWhenLoading?: boolean;
   showSuccessAnimation?: boolean;
   showErrorAnimation?: boolean;
   hideLabel?: boolean;
 }
 
-/**
- * Custom Button Component with Primary and Secondary variants
- * - Primary: Blue background (#1034A6), white text
- * - Secondary: White background, blue text (#1034A6)
- * - Supports icons (startIcon/endIcon) and multiple sizes
- * - Disabled state with proper styling
- */
 const CustomButton: React.FC<CustomButtonProps> = ({
   label,
   variant = "primary",
@@ -43,13 +36,13 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   onClick,
   type = "button",
   sx,
+  labelSx,
   hideLabelWhenLoading = false,
   showSuccessAnimation = false,
   showErrorAnimation = false,
   hideLabel = false,
 }) => {
   const isMobile = useIsMobile("sm");
-  // Size configuration
   const sizeConfig = {
     small: {
       padding: "8px 16px",
@@ -73,7 +66,6 @@ const CustomButton: React.FC<CustomButtonProps> = ({
 
   const config = sizeConfig[size];
 
-  // Variant configuration
   const variantConfig = {
     primary: {
       backgroundColor: theme.palette.primary.main,
@@ -121,14 +113,12 @@ const CustomButton: React.FC<CustomButtonProps> = ({
 
   const variantStyle = variantConfig[variant];
 
-  // Helper function to render icon (handles both React components and image imports)
   const renderIcon = (
     icon: React.ReactNode | StaticImageData | undefined,
-    iconSize: number
+    iconSize: number,
   ): React.ReactNode => {
     if (!icon) return null;
 
-    // Check if it's a StaticImageData (image import from Next.js)
     if (typeof icon === "object" && "src" in icon) {
       return (
         <Image
@@ -142,11 +132,9 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       );
     }
 
-    // Otherwise, treat it as a React component
     return icon as React.ReactNode;
   };
 
-  // Calculate icon size: use prop if provided, otherwise default to 10px
   const finalIconSize = iconSize ?? 10;
 
   const shouldHideLabel = hideLabelWhenLoading && disabled;
@@ -179,11 +167,11 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         ...variantStyle,
         ...(variant === "primary" &&
           !disabled && {
-          "&:hover": {
-            backgroundColor: "#0004FF99",
-            color: "#FFFFFF",
-          },
-        }),
+            "&:hover": {
+              backgroundColor: "#0004FF99",
+              color: "#FFFFFF",
+            },
+          }),
         ...(disabled && {
           backgroundColor: variant === "primary" ? "#B0BEC5" : "#FFFFFF",
           color:
@@ -235,8 +223,21 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         </Box>
       )}
 
-      {((!shouldHideLabel) && !hideLabel) && (
-        <span className="custom-button-label" style={{ fontSize: isMobile ? "13px" : "15px", fontFamily: "UrbanistMedium", fontWeight: 500, whiteSpace: "nowrap" }}>{label}</span>
+      {!shouldHideLabel && !hideLabel && (
+        <Typography
+          className="custom-button-label"
+          sx={{
+            fontSize: isMobile ? "13px" : "15px",
+            fontFamily: "UrbanistMedium",
+            fontWeight: 500,
+            lineHeight: "1.2",
+            letterSpacing: 0,
+            whiteSpace: "nowrap",
+            ...labelSx,
+          }}
+        >
+          {label}
+        </Typography>
       )}
 
       {endIcon && (

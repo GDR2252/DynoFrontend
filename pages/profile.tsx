@@ -1,7 +1,7 @@
-import useTokenData from "@/hooks/useTokenData";
-import React, { useCallback, useEffect } from "react";
 import ProfilePage from "@/Components/Page/Profile/ProfilePage";
+import useTokenData from "@/hooks/useTokenData";
 import { pageProps } from "@/utils/types";
+import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 const Profile = ({ setPageName, setPageDescription }: pageProps) => {
@@ -9,7 +9,6 @@ const Profile = ({ setPageName, setPageDescription }: pageProps) => {
   const namespaces = ["profile", "common"];
   const { t } = useTranslation(namespaces);
   const tProfile = useCallback((key: string) => t(key, { ns: "profile" }), [t]);
-  const tCommon = useCallback((key: string) => t(key, { ns: "common" }), [t]);
   useEffect(() => {
     if (setPageName && setPageDescription) {
       setPageName(tProfile("profile"));

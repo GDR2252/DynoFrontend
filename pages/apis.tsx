@@ -1,10 +1,10 @@
 import ApiKeysPage from "@/Components/Page/API/ApiKeysPage";
-import { pageProps } from "@/utils/types";
 import CustomButton from "@/Components/UI/Buttons";
-import { AddRounded } from "@mui/icons-material";
-import React, { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import useIsMobile from "@/hooks/useIsMobile";
+import { pageProps } from "@/utils/types";
+import { AddRounded } from "@mui/icons-material";
+import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const APIs = ({
   setPageName,
@@ -17,7 +17,7 @@ const APIs = ({
   const tApi = useCallback(
     (key: string, defaultValue?: string) =>
       t(key, { ns: "apiScreen", defaultValue }),
-    [t]
+    [t],
   );
 
   const [openCreate, setOpenCreate] = useState(false);
@@ -28,8 +28,8 @@ const APIs = ({
       setPageDescription(
         tApi(
           "apiKeysDescription",
-          "Manage API keys for integrating DynoPay into your applications"
-        )
+          "Manage API keys for integrating DynoPay into your applications",
+        ),
       );
     }
   }, [setPageName, setPageDescription, tApi]);
@@ -48,7 +48,7 @@ const APIs = ({
           px: isMobile ? 1.5 : 2.5,
           fontSize: isMobile ? 13 : 15,
         }}
-      />
+      />,
     );
     return () => setPageAction(null);
   }, [setPageAction, tApi, isMobile]);

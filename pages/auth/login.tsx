@@ -1,34 +1,23 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  Box,
-  Typography,
-  Divider,
-  useTheme,
-  RadioGroup,
-  FormControlLabel,
-} from "@mui/material";
-import Image from "next/image";
-import GoogleIcon from "@/assets/Images/googleIcon.svg";
-import ArrowUpwardIcon from "@/assets/Icons/up-arrow-icon.png";
 import EditIcon from "@/assets/Icons/editicon.png";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import LoadingIcon from "@/assets/Icons/LoadingIcon";
+import ArrowUpwardIcon from "@/assets/Icons/up-arrow-icon.png";
 import Logo from "@/assets/Images/auth/dynopay-logo.png";
-import { useTranslation } from "react-i18next";
+import GoogleIcon from "@/assets/Images/googleIcon.svg";
+import axiosBaseApi from "@/axiosConfig";
+import InputField from "@/Components/UI/AuthLayout/InputFields";
+import TitleDescription from "@/Components/UI/AuthLayout/TitleDescription";
+import CustomButton from "@/Components/UI/Buttons";
+import ForgotPasswordDialog from "@/Components/UI/ForgotPasswordDialog";
+import LanguageSwitcher from "@/Components/UI/LanguageSwitcher";
+import OtpDialog from "@/Components/UI/OtpDialog";
+import CustomRadio from "@/Components/UI/RadioGroup";
 import {
   AuthContainer,
   CardWrapper,
   ImageCenter,
 } from "@/Containers/Login/styled";
-import TitleDescription from "@/Components/UI/AuthLayout/TitleDescription";
-import InputField from "@/Components/UI/AuthLayout/InputFields";
-import CustomRadio from "@/Components/UI/RadioGroup";
-import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "next/router";
-import { rootReducer } from "@/utils/types";
-import * as yup from "yup";
+import useIsMobile from "@/hooks/useIsMobile";
 import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
-import axiosBaseApi from "@/axiosConfig";
 import {
   USER_API_ERROR,
   USER_CONFIRM_CODE,
@@ -38,13 +27,24 @@ import {
   USER_SEND_RESET_LINK,
   UserAction,
 } from "@/Redux/Actions/UserAction";
-import CustomButton from "@/Components/UI/Buttons";
-import useIsMobile from "@/hooks/useIsMobile";
-import LoadingIcon from "@/assets/Icons/LoadingIcon";
+import { rootReducer } from "@/utils/types";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import {
+  Box,
+  Divider,
+  FormControlLabel,
+  RadioGroup,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { signIn } from "next-auth/react";
-import LanguageSwitcher from "@/Components/UI/LanguageSwitcher";
-import OtpDialog from "@/Components/UI/OtpDialog";
-import ForgotPasswordDialog from "@/Components/UI/ForgotPasswordDialog";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import * as yup from "yup";
 
 export default function Login() {
   const { t } = useTranslation("auth");
@@ -102,10 +102,6 @@ export default function Login() {
   const [forgotPasswordOtpError, setForgotPasswordOtpError] = useState("");
   const [isPasswordRecoveryMode, setIsPasswordRecoveryMode] = useState(false);
 
-  // Password validation regex
-  const passwordRegex =
-    /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()\-=__+{}\[\]:;<>,.?/~]).{8,20}$/;
-
   // Validation schemas - use translation keys instead of translated strings
   const emailSchema = yup.object().shape({
     email: yup.string().email("emailInvalid").required("emailRequired"),
@@ -115,15 +111,11 @@ export default function Login() {
     password: yup.string().required("passwordRequired"),
   });
 
-  const emailOtpSchema = yup.object().shape({
-    emailOTP: yup.string().required("otpRequired"),
-  });
-
   // Navigate to home if user is logged in (but not in password recovery mode)
   useEffect(() => {
     if (userState.name && !isPasswordRecoveryMode) {
       setShowSuccessAnimation(true);
-      setEmailOtpDialogOpen(false); // Close dialog on successful login
+      setEmailOtpDialogOpen(false);
       setTimeout(() => {
         router.replace("/dashboard");
       }, 600);
@@ -132,16 +124,12 @@ export default function Login() {
 
   // Handle successful OTP verification for password recovery
   useEffect(() => {
-    // If we're in password recovery mode and OTP was verified successfully
-    // (no error and loading stopped), close dialog and show reset form
     if (
       isPasswordRecoveryMode &&
       !userState.loading &&
       previousLoadingState &&
       !userState.error
     ) {
-      // OTP verified successfully for password recovery
-      // setShowForgotPasswordForm(true);
       setForgotPasswordDialogOpen(false);
       setIsPasswordRecoveryMode(false);
     }
@@ -154,11 +142,8 @@ export default function Login() {
 
   // Handle loading state changes for animations and ensure loading stops on error
   useEffect(() => {
-    // When loading changes from true to false, check if it was an error
     if (previousLoadingState && !userState.loading) {
-      // If user is not logged in and loading stopped, it was likely an error
       if (!userState.name && showLoginMethods) {
-        // Don't show error animation if OTP dialog is open for email or SMS verification
         const shouldShowErrorAnimation = !(
           (loginMethod === "email" && emailOtpDialogOpen) ||
           (loginMethod === "sms" && smsOtpDialogOpen)
@@ -171,48 +156,37 @@ export default function Login() {
           }, 500);
         }
 
-        // Handle API errors - set error message in form if it's an OTP verification error
         if (
           userState.error &&
           userState.error.actionType === USER_CONFIRM_CODE
         ) {
-          // If in password recovery mode, set error in forgot password dialog
           if (isPasswordRecoveryMode) {
             setForgotPasswordOtpError(
-              userState.error.message || "OTP verification failed"
+              userState.error.message || "OTP verification failed",
             );
           } else if (loginMethod === "email" && emailOtp) {
-            // Set the error message so it displays in the OTP dialog
             setEmailOtpError(
-              userState.error.message || "OTP verification failed"
+              userState.error.message || "OTP verification failed",
             );
             setEmailOtpTouched(true);
-            // Keep dialog open so user can retry
             if (!emailOtpDialogOpen) {
               setEmailOtpDialogOpen(true);
             }
           } else if (loginMethod === "sms" && otp) {
-            // Set the error message so it displays in the OTP dialog
             setOtpError(userState.error.message || "OTP verification failed");
             setOtpTouched(true);
-            // Keep dialog open so user can retry
             if (!smsOtpDialogOpen) {
               setSmsOtpDialogOpen(true);
             }
           }
         } else {
-          // Clear OTP error states after API error so user can retry
           if (loginMethod === "email" && emailOtp) {
-            // Just ensure touched state allows retry
             setEmailOtpTouched(false);
-            // Keep dialog open so user can retry
             if (!emailOtpDialogOpen) {
               setEmailOtpDialogOpen(true);
             }
           } else if (loginMethod === "sms" && otp) {
-            // Just ensure touched state allows retry
             setOtpTouched(false);
-            // Keep dialog open so user can retry
             if (!smsOtpDialogOpen) {
               setSmsOtpDialogOpen(true);
             }
@@ -237,14 +211,12 @@ export default function Login() {
 
   // Ensure loading stops if there's an error (safety check)
   useEffect(() => {
-    // If loading is stuck, reset it after a timeout (safety mechanism)
     if (userState.loading) {
       const timeout = setTimeout(() => {
-        // Only reset if user is not logged in (meaning it's an error)
         if (!userState.name) {
           dispatch({ type: USER_API_ERROR });
         }
-      }, 10000); // 10 second timeout
+      }, 10000);
       return () => clearTimeout(timeout);
     }
   }, [userState.loading, userState.name, dispatch]);
@@ -257,7 +229,6 @@ export default function Login() {
       }, 1000);
       return () => clearTimeout(timerId);
     }
-    // Don't reset emailOtpSent when countdown ends - keep showing resend button
   }, [emailOtpCountdown]);
 
   // SMS OTP countdown timer
@@ -268,7 +239,6 @@ export default function Login() {
       }, 1000);
       return () => clearTimeout(timerId);
     }
-    // Don't reset isOtpSent when countdown ends - keep showing resend button
   }, [smsOtpCountdown]);
 
   // Validate email (only called on button click)
@@ -282,7 +252,6 @@ export default function Login() {
       setEmailError("");
       return true;
     } catch (err: any) {
-      // Store translation key instead of translated message
       setEmailError(err.message || "emailInvalid");
       return false;
     }
@@ -297,10 +266,9 @@ export default function Login() {
     setEmailCheckLoading(true);
     try {
       const response = await axiosBaseApi.get(
-        "/user/checkEmail?email=" + emailInput
+        "/user/checkEmail?email=" + emailInput,
       );
 
-      // Check if response and data exist
       if (!response || !response.data) {
         setEmailError("errorCheckingEmail");
         dispatch({
@@ -316,7 +284,6 @@ export default function Login() {
 
       const data = response.data?.data;
 
-      // Check if data exists and has validEmail property
       if (data && typeof data.validEmail === "boolean") {
         if (data.validEmail) {
           setVerifiedEmail(emailInput);
@@ -327,7 +294,6 @@ export default function Login() {
           setEmailError("emailNotFound");
         }
       } else {
-        // Invalid response structure
         setEmailError("errorCheckingEmail");
         dispatch({
           type: TOAST_SHOW,
@@ -338,7 +304,6 @@ export default function Login() {
         });
       }
     } catch (e: any) {
-      // Show generic error message for API errors
       setEmailError("errorCheckingEmail");
       dispatch({
         type: TOAST_SHOW,
@@ -354,13 +319,11 @@ export default function Login() {
 
   // Handle send email OTP
   const handleSendEmailOtp = async () => {
-    // If countdown is still active and dialog is closed, just reopen it
     if (emailOtpCountdown > 0 && !emailOtpDialogOpen) {
       setEmailOtpDialogOpen(true);
       return;
     }
 
-    // If countdown is active, don't send new OTP, just reopen dialog
     if (emailOtpCountdown > 0) {
       setEmailOtpDialogOpen(true);
       return;
@@ -371,12 +334,11 @@ export default function Login() {
         UserAction(USER_SEND_OTP, {
           email: verifiedEmail,
           mobile: null,
-        })
+        }),
       );
       setEmailOtpSent(true);
       setEmailOtpCountdown(30);
       setEmailOtpDialogOpen(true);
-      // Clear any previous errors
       setEmailOtpError("");
       setEmailOtpTouched(false);
     } catch (e: any) {
@@ -394,29 +356,25 @@ export default function Login() {
 
   // Handle OTP verification from dialog
   const handleEmailOtpVerify = (otp: string) => {
-    // Don't proceed if still loading from previous request
     if (userState.loading) {
       return;
     }
 
     setEmailOtp(otp);
-    // Clear any previous errors before submitting
     setEmailOtpError("");
     setEmailOtpTouched(false);
 
-    // Validate and submit
     if (!otp || otp.trim().length !== 6) {
       setEmailOtpError("otpInvalid6Digit");
       setEmailOtpTouched(true);
       return;
     }
 
-    // Submit - don't close dialog yet, let the API response handle it
     dispatch(
       UserAction(USER_CONFIRM_CODE, {
         email: verifiedEmail,
         otp: otp.trim(),
-      })
+      }),
     );
   };
 
@@ -426,7 +384,6 @@ export default function Login() {
       setMobileError("mobileRequired");
       return false;
     }
-    // Basic validation - should be at least 10 digits
     const cleanedMobile = mobile.replace(/\D/g, "");
     if (cleanedMobile.length < 10) {
       setMobileError("mobileInvalid");
@@ -438,31 +395,27 @@ export default function Login() {
 
   // Handle send SMS OTP
   const handleSendSmsOtp = async () => {
-    // If countdown is still active and dialog is closed, just reopen it
     if (smsOtpCountdown > 0 && !smsOtpDialogOpen) {
       setSmsOtpDialogOpen(true);
       return;
     }
 
-    // If countdown is active, don't send new OTP, just reopen dialog
     if (smsOtpCountdown > 0) {
       setSmsOtpDialogOpen(true);
       return;
     }
 
-    // If mobile is available from userState (from email check), use it directly
     if (userState.mobile) {
       try {
         dispatch(
           UserAction(USER_SEND_OTP, {
             email: verifiedEmail,
             mobile: userState.mobile,
-          })
+          }),
         );
         setIsOtpSent(true);
         setSmsOtpCountdown(30);
         setSmsOtpDialogOpen(true);
-        // Clear any previous errors
         setOtpError("");
         setOtpTouched(false);
         setMobileError("");
@@ -482,7 +435,6 @@ export default function Login() {
       }
     }
 
-    // If no mobile in userState, validate input mobile
     setMobileTouched(true);
     if (!validateMobile()) {
       return;
@@ -493,12 +445,11 @@ export default function Login() {
         UserAction(USER_SEND_OTP, {
           email: verifiedEmail,
           mobile: mobile,
-        })
+        }),
       );
       setIsOtpSent(true);
       setSmsOtpCountdown(30);
       setSmsOtpDialogOpen(true);
-      // Clear any previous errors
       setOtpError("");
       setOtpTouched(false);
       setMobileError("");
@@ -515,49 +466,34 @@ export default function Login() {
     }
   };
 
-  // Validate SMS OTP
-  const validateSmsOtp = () => {
-    if (!otp || otp.trim().length !== 6) {
-      setOtpError("otpInvalid6Digit");
-      return false;
-    }
-    setOtpError("");
-    return true;
-  };
-
   // Handle SMS OTP verification from dialog
   const handleSmsOtpVerify = (otp: string) => {
-    // Don't proceed if still loading from previous request
     if (userState.loading) {
       return;
     }
 
     setOtp(otp);
-    // Clear any previous errors before submitting
     setOtpError("");
     setOtpTouched(false);
 
-    // Validate and submit
     if (!otp || otp.trim().length !== 6) {
       setOtpError("otpInvalid6Digit");
       setOtpTouched(true);
       return;
     }
 
-    // Get mobile number - use input or from userState
     const mobileToUse = mobile || userState.mobile;
     if (!mobileToUse) {
       setMobileError("mobileRequired");
       return;
     }
 
-    // Submit - don't close dialog yet, let the API response handle it
     dispatch(
       UserAction(USER_CONFIRM_CODE, {
         email: verifiedEmail,
         otp: otp.trim(),
         mobile: mobileToUse,
-      })
+      }),
     );
   };
 
@@ -572,7 +508,6 @@ export default function Login() {
       setPasswordError("");
       return true;
     } catch (err: any) {
-      // Store translation key instead of translated message
       setPasswordError(err.message || "passwordRequired");
       return false;
     }
@@ -600,30 +535,25 @@ export default function Login() {
         return;
       }
 
-      // If dialog is open, don't submit here - let dialog handle it
       if (emailOtpDialogOpen) {
         return;
       }
 
-      // Basic validation - just check if OTP is entered and is 6 digits
       if (!emailOtp || emailOtp.trim().length !== 6) {
         setEmailOtpTouched(true);
         setEmailOtpError("otpInvalid6Digit");
-        // Reopen dialog if OTP is not valid
         setEmailOtpDialogOpen(true);
         return;
       }
 
-      // Clear any previous errors before submitting (only if validation passes)
       setEmailOtpError("");
       setEmailOtpTouched(false);
 
-      // All validation passed - call API
       dispatch(
         UserAction(USER_CONFIRM_CODE, {
           email: verifiedEmail,
           otp: emailOtp.trim(),
-        })
+        }),
       );
     } else if (loginMethod === "sms") {
       if (!isOtpSent) {
@@ -637,38 +567,32 @@ export default function Login() {
         return;
       }
 
-      // If dialog is open, don't submit here - let dialog handle it
       if (smsOtpDialogOpen) {
         return;
       }
 
-      // Basic validation - just check if OTP is entered and is 6 digits
       if (!otp || otp.trim().length !== 6) {
         setOtpTouched(true);
         setOtpError("otpInvalid6Digit");
-        // Reopen dialog if OTP is not valid
         setSmsOtpDialogOpen(true);
         return;
       }
 
-      // Clear any previous errors before submitting (only if validation passes)
       setOtpError("");
       setOtpTouched(false);
 
-      // Get mobile number - use input or from userState
       const mobileToUse = mobile || userState.mobile;
       if (!mobileToUse) {
         setMobileError("mobileRequired");
         return;
       }
 
-      // All validation passed - call API
       dispatch(
         UserAction(USER_CONFIRM_CODE, {
           email: verifiedEmail,
           otp: otp.trim(),
           mobile: mobileToUse,
-        })
+        }),
       );
     }
   };
@@ -682,12 +606,10 @@ export default function Login() {
     setPassword("");
     setLoginMethod("email");
     setEmailOtpCountdown(0);
-    // Clear all errors
     setPasswordError("");
     setPasswordTouched(false);
     setEmailOtpError("");
     setEmailOtpTouched(false);
-    // Clear SMS state
     setIsOtpSent(false);
     setMobile("");
     setMobileError("");
@@ -702,7 +624,6 @@ export default function Login() {
   // Handle login method change - clear errors when switching
   const handleLoginMethodChange = (value: string) => {
     setLoginMethod(value);
-    // Clear errors when switching methods
     setPasswordError("");
     setPasswordTouched(false);
     setEmailOtpError("");
@@ -740,11 +661,10 @@ export default function Login() {
       } = await axiosBaseApi.get("/user/checkEmail?email=" + email);
 
       if (data.validEmail) {
-        // Send OTP for password recovery
         dispatch(
           UserAction(USER_SEND_RESET_LINK, {
             email: email,
-          })
+          }),
         );
         setForgotPasswordEmailError("");
       } else {
@@ -764,7 +684,7 @@ export default function Login() {
         },
       });
     }
-  }
+  };
 
   return (
     <AuthContainer>
@@ -802,28 +722,23 @@ export default function Login() {
       </CardWrapper>
 
       {/* Login Card */}
-      {/* {!showForgotPasswordForm && ( */}
       <CardWrapper sx={{ padding: "30px" }}>
-        {/* Login Title & Description */}
         <TitleDescription
           title={t("login")}
           description={t("loginDescription")}
           align="left"
-          titleVariant="h2"
-          descriptionVariant="p"
         />
 
         {/* Email Input field - shown initially or when changing email */}
         {!showLoginMethods ? (
           <>
-            <Box sx={{ marginTop: "24px" }}>
+            <Box sx={{ marginTop: isMobile ? "18px" : "24px" }}>
               <InputField
                 label={t("email")}
                 type="email"
                 value={emailInput}
                 onChange={(e) => {
                   setEmailInput(e.target.value);
-                  // Clear error when typing
                   if (emailError) {
                     setEmailError("");
                     setEmailTouched(false);
@@ -852,43 +767,41 @@ export default function Login() {
               sx={{
                 display: "flex",
                 gap: "7px",
-                marginTop: "16px",
-                textAlign: "start",
+                marginTop: isMobile ? "16px" : "16px",
               }}
             >
               <Typography
-                width="100%"
                 sx={{
                   fontSize: "13px",
                   color: theme.palette.text.secondary,
                   fontFamily: "UrbanistMedium",
+                  lineHeight: "1.2",
+                  letterSpacing: 0,
                 }}
                 fontWeight={500}
               >
                 {t("dontHaveAccount")}
-                <Typography
-                  component="span"
-                  sx={{
-                    fontSize: "13px",
-                    color: theme.palette.primary.main,
-                    fontWeight: 500,
-                    textAlign: "start",
-                    cursor: "pointer",
-                    paddingLeft: "7px",
-                    textDecoration: "underline",
-                    textUnderlineOffset: "2px",
-                    fontFamily: "UrbanistMedium",
-                  }}
-                  onClick={() => {
-                    router.push("/auth/register");
-                  }}
-                >
-                  {t("createNewAccount")}
-                </Typography>
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: "13px",
+                  color: theme.palette.primary.main,
+                  fontWeight: 500,
+                  lineHeight: "1.2",
+                  letterSpacing: 0,
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  fontFamily: "UrbanistMedium",
+                }}
+                onClick={() => {
+                  router.push("/auth/register");
+                }}
+              >
+                {t("createNewAccount")}
               </Typography>
             </Box>
 
-            <Box sx={{ marginTop: "24px" }}>
+            <Box sx={{ marginTop: isMobile ? "20px" : "24px" }}>
               <CustomButton
                 label={t("continue")}
                 variant="primary"
@@ -911,7 +824,7 @@ export default function Login() {
         ) : (
           <>
             {/* Show verified email in InputBox with edit button */}
-            <Box sx={{ marginTop: "24px" }}>
+            <Box sx={{ marginTop: isMobile ? "16px" : "24px" }}>
               <InputField
                 label={t("email")}
                 type="email"
@@ -932,6 +845,8 @@ export default function Login() {
                   textAlign: "start",
                   fontSize: isMobile ? "13px" : "15px",
                   fontFamily: "UrbanistMedium",
+                  lineHeight: "1.2",
+                  letterSpacing: 0,
                   color: "#676768",
                 }}
               >
@@ -1038,7 +953,6 @@ export default function Login() {
                           onChange={(e) => {
                             const value = e.target.value.replace(/\D/g, "");
                             setMobile(value);
-                            // Clear error when typing
                             if (mobileError) {
                               setMobileError("");
                               setMobileTouched(false);
@@ -1081,7 +995,6 @@ export default function Login() {
                           onChange={(e) => {
                             const value = e.target.value.replace(/\D/g, "");
                             setMobile(value);
-                            // Clear error when typing
                             if (mobileError) {
                               setMobileError("");
                               setMobileTouched(false);
@@ -1191,22 +1104,20 @@ export default function Login() {
                       }}
                     />
                     {/* Get Code Button */}
-                    {loginMethod === "email" &&
-                      !isMobile &&
-                      !emailOtpSent && (
-                        <CustomButton
-                          variant="secondary"
-                          size="medium"
-                          label={t("getCode")}
-                          onClick={handleSendEmailOtp}
-                          disabled={userState.loading}
-                          sx={{
-                            fontWeight: 500,
-                            padding: "8px 22.5px",
-                          }}
-                          endIcon={ArrowUpwardIcon}
-                        />
-                      )}
+                    {loginMethod === "email" && !isMobile && !emailOtpSent && (
+                      <CustomButton
+                        variant="secondary"
+                        size="medium"
+                        label={t("getCode")}
+                        onClick={handleSendEmailOtp}
+                        disabled={userState.loading}
+                        sx={{
+                          fontWeight: 500,
+                          padding: "8px 22.5px",
+                        }}
+                        endIcon={ArrowUpwardIcon}
+                      />
+                    )}
 
                     {/* Resend Code Button */}
                     {loginMethod === "email" && !isMobile && emailOtpSent && (
@@ -1238,7 +1149,7 @@ export default function Login() {
 
                   {/* Get Code Button - Mobile */}
                   {loginMethod === "email" && isMobile && !emailOtpSent && (
-                    <Box sx={{ marginTop: "16px" }}>
+                    <Box sx={{ marginTop: "10px" }}>
                       <CustomButton
                         variant="secondary"
                         size="small"
@@ -1294,6 +1205,13 @@ export default function Login() {
                       control={<CustomRadio />}
                       label={t("password")}
                       sx={{ margin: "0px", color: "#242428" }}
+                      onClick={() => {
+                        setLoginMethod("password");
+                        setTimeout(() => {
+                          const input = document.getElementById("password");
+                          input?.focus();
+                        }, 0);
+                      }}
                     />
                     {loginMethod === "password" && (
                       <Typography
@@ -1320,11 +1238,11 @@ export default function Login() {
                   {loginMethod === "password" && (
                     <Box sx={{ marginTop: "10px" }}>
                       <InputField
+                        name="password"
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => {
                           setPassword(e.target.value);
-                          // Clear error when typing
                           if (passwordError) {
                             setPasswordError("");
                             setPasswordTouched(false);
@@ -1344,8 +1262,8 @@ export default function Login() {
                         }
                         helperText={
                           loginMethod === "password" &&
-                            passwordTouched &&
-                            passwordError
+                          passwordTouched &&
+                          passwordError
                             ? passwordError.includes(" ")
                               ? passwordError
                               : t(passwordError)
@@ -1400,7 +1318,6 @@ export default function Login() {
                   )
                 }
                 onClick={() => {
-                  // Ensure we can submit even after previous errors
                   handleLoginSubmit();
                 }}
                 hideLabelWhenLoading={true}
@@ -1423,10 +1340,10 @@ export default function Login() {
                 }}
                 endIcon={
                   userState.loading &&
-                    !(
-                      (loginMethod === "email" && emailOtpDialogOpen) ||
-                      (loginMethod === "sms" && smsOtpDialogOpen)
-                    ) ? (
+                  !(
+                    (loginMethod === "email" && emailOtpDialogOpen) ||
+                    (loginMethod === "sms" && smsOtpDialogOpen)
+                  ) ? (
                     <LoadingIcon size={20} />
                   ) : undefined
                 }
@@ -1453,6 +1370,9 @@ export default function Login() {
                 color: "#676768",
                 padding: "0 24px",
                 fontSize: isMobile ? "10px" : "15px",
+                fontWeight: 500,
+                lineHeight: "1.2",
+                letterSpacing: 0,
               }}
             >
               {t("or")}
@@ -1476,6 +1396,9 @@ export default function Login() {
               fontSize: isMobile ? "13px" : "15px",
               fontFamily: "UrbanistMedium",
               color: "#676768",
+              fontWeight: 500,
+              lineHeight: "1.2",
+              letterSpacing: 0,
             }}
           >
             {t("registerLogin")}
@@ -1512,7 +1435,6 @@ export default function Login() {
           </Box>
         </Box>
       </CardWrapper>
-      {/* )} */}
 
       {/* Email OTP Dialog */}
       {loginMethod === "email" && (
@@ -1520,7 +1442,6 @@ export default function Login() {
           open={emailOtpDialogOpen}
           onClose={() => {
             setEmailOtpDialogOpen(false);
-            // Don't reset emailOtpSent so resend button still shows
           }}
           title={t("emailVerification")}
           subtitle={t("emailVerificationSubtitle")}
@@ -1532,7 +1453,6 @@ export default function Login() {
           onResendCode={handleSendEmailOtp}
           onVerify={handleEmailOtpVerify}
           onClearError={() => {
-            // Clear error when user starts typing
             setEmailOtpError("");
             setEmailOtpTouched(false);
           }}
@@ -1555,7 +1475,6 @@ export default function Login() {
           open={smsOtpDialogOpen}
           onClose={() => {
             setSmsOtpDialogOpen(false);
-            // Don't reset isOtpSent so resend button still shows
           }}
           title={t("smsVerification") || "SMS Verification"}
           subtitle={
@@ -1570,7 +1489,6 @@ export default function Login() {
           onResendCode={handleSendSmsOtp}
           onVerify={handleSmsOtpVerify}
           onClearError={() => {
-            // Clear error when user starts typing
             setOtpError("");
             setOtpTouched(false);
           }}

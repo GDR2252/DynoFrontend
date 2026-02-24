@@ -1,38 +1,33 @@
-import React, { useState, useCallback } from "react";
 import CopyIcon from "@/assets/Icons/copy-icon.svg";
 import EditIcon from "@/assets/Icons/edit-icon.svg";
-import WalletIcon from "@/assets/Icons/home/wallet.svg";
 import LinkIcon from "@/assets/Icons/link-icon.svg";
 import RoundedStackIcon from "@/assets/Icons/roundedStck-icon.svg";
-import { Box, Typography, Grid, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, CircularProgress } from "@mui/material";
-import Image from "next/image";
-import { ArrowOutward } from "@mui/icons-material";
-import { theme } from "@/styles/theme";
-import { getCurrencySymbol, formatNumberWithComma } from "@/helpers";
-import { useDispatch, useSelector } from "react-redux";
-import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
-import { useTranslation } from "react-i18next";
+import AddWalletModal from "@/Components/UI/AddWalletModal";
+import InputField from "@/Components/UI/AuthLayout/InputFields";
+import CustomButton from "@/Components/UI/Buttons";
+import EmptyDataModel from "@/Components/UI/EmptyDataModel";
 import PanelCard from "@/Components/UI/PanelCard";
-import InfoIcon from "@/assets/Icons/info-icon.svg";
+import { formatNumberWithComma, getCurrencySymbol } from "@/helpers";
+import useIsMobile from "@/hooks/useIsMobile";
+import { useWalletData } from "@/hooks/useWalletData";
+import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
+import { theme } from "@/styles/theme";
+import { ArrowOutward } from "@mui/icons-material";
+import { Box, CircularProgress, Grid, Typography } from "@mui/material";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { CopyButton } from "../Transactions/TransactionDetailsModal.styled";
 import {
   HeaderIcon,
-  SetupWarnnigContainer,
   WalletCardBody,
   WalletCardBodyRow,
-  WalletCopyButton,
   WalletEditButton,
   WalletHeaderAction,
   WalletLabel,
 } from "./styled";
-import InputField from "@/Components/UI/AuthLayout/InputFields";
-import CustomButton from "@/Components/UI/Buttons";
-import AddWalletModal from "@/Components/UI/AddWalletModal";
-import { WarningIconContainer } from "@/Components/UI/AddWalletModal/styled";
-import useIsMobile from "@/hooks/useIsMobile";
-import { useWalletData } from "@/hooks/useWalletData";
-import EmptyDataModel from "@/Components/UI/EmptyDataModel";
-import { CopyButton } from "../Transactions/TransactionDetailsModal.styled";
-import { useRouter } from "next/router";
 
 import BitcoinIcon from "@/assets/cryptocurrency/Bitcoin-icon.svg";
 import EthereumIcon from "@/assets/cryptocurrency/Ethereum-icon.svg";
@@ -61,7 +56,7 @@ const Wallet = () => {
       const result = t(key, { ns: "walletScreen" });
       return typeof result === "string" ? result : String(result);
     },
-    [t]
+    [t],
   );
 
   const ToastState = useSelector((state: rootReducer) => state.toastReducer);
@@ -134,35 +129,35 @@ const Wallet = () => {
     });
   };
 
-  const handleViewTransactions = (wallet: WalletData) => {
-    console.log("View transactions for:", wallet.walletTitle);
-  };
-
   const handleEdit = (wallet: WalletData) => {
     console.log("Edit wallet:", wallet.walletTitle);
     setOpenEditModal(true);
   };
 
   if (walletLoading) {
-    return <Box
-      sx={{
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <CircularProgress
+    return (
+      <Box
         sx={{
-          color: "#0004ff",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
-      />
-    </Box>;
+      >
+        <CircularProgress
+          sx={{
+            color: "#0004ff",
+          }}
+        />
+      </Box>
+    );
   }
 
   if (walletData.length === 0 && !walletLoading) {
     return (
-      <EmptyDataModel pageName="wallet" />
+      <>
+        <EmptyDataModel pageName="wallet" />
+      </>
     );
   }
 

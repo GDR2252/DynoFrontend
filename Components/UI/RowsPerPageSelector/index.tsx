@@ -1,31 +1,18 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import {
-  Box,
-  Typography,
-  useTheme,
-  MenuItem,
-  MenuList,
-  Popover,
-} from "@mui/material";
+import MenuIcon from "@/assets/Icons/menu-icon.svg";
+import CheckIcon from "@/assets/Icons/true-icon.svg";
+import useIsMobile from "@/hooks/useIsMobile";
+import { RowsPerPageSelectorProps } from "@/utils/types/transaction";
 import { KeyboardArrowDown } from "@mui/icons-material";
-import { menuItem } from "@/utils/types";
+import { Box, MenuList, Popover, Typography, useTheme } from "@mui/material";
+import Image from "next/image";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  RowsPerPageContainer,
-  VerticalSeparator,
   CustomSelect,
   CustomSelectValue,
+  RowsPerPageContainer,
+  VerticalSeparator,
 } from "./styled";
-import MenuIcon from "@/assets/Icons/menu-icon.svg";
-import Image from "next/image";
-import useIsMobile from "@/hooks/useIsMobile";
-import { useTranslation } from "react-i18next";
-import CheckIcon from "@/assets/Icons/true-icon.svg";
-
-interface RowsPerPageSelectorProps {
-  value: number;
-  onChange: (value: number) => void;
-  menuItems?: menuItem[];
-}
 
 const RowsPerPageSelector: React.FC<RowsPerPageSelectorProps> = ({
   value,
@@ -48,7 +35,7 @@ const RowsPerPageSelector: React.FC<RowsPerPageSelectorProps> = ({
       const result = t(key, { ns: "transactions", ...options });
       return typeof result === "string" ? result : String(result);
     },
-    [t]
+    [t],
   );
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -67,7 +54,6 @@ const RowsPerPageSelector: React.FC<RowsPerPageSelectorProps> = ({
   const selectedLabel =
     menuItems.find((item) => item.value === value)?.label || value;
 
-  // Handle click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -148,7 +134,15 @@ const RowsPerPageSelector: React.FC<RowsPerPageSelectorProps> = ({
             },
           }}
         >
-          <MenuList sx={{ padding: "10px 6px", width: isMobile ? "80px" : "88px", display: "flex", flexDirection: "column", gap: "2px" }}>
+          <MenuList
+            sx={{
+              padding: "10px 6px",
+              width: isMobile ? "80px" : "88px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "2px",
+            }}
+          >
             {menuItems.map((item) => (
               <Box
                 key={item.value}
@@ -160,7 +154,9 @@ const RowsPerPageSelector: React.FC<RowsPerPageSelectorProps> = ({
                   cursor: "pointer",
                   borderRadius: "82px",
                   backgroundColor:
-                    item.value === value ? theme.palette.primary.light : "transparent",
+                    item.value === value
+                      ? theme.palette.primary.light
+                      : "transparent",
                   "&:hover": {
                     backgroundColor: theme.palette.primary.light,
                   },

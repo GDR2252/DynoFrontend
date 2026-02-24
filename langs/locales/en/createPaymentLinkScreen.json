@@ -69,7 +69,7 @@
   "currency": "Currency",
   "of": "of",
   "currenciesSelected": "currencies selected",
-  "stable": "Stable",
+  "stable": "stable",
   "searchCryptocurrencies": "Search cryptocurrencies...",
   "showAll": "Show All ({{count}} more)",
   "showLess": "Show Less",
@@ -78,5 +78,7 @@
   "saveChanges": "Save Changes",
   "paidWarning": "This payment has been completed and cannot be edited",
   "backToPaymentLinks": "Back to Payment Links",
-  "editPaymentLink": "Edit Payment Link"
+  "editPaymentLink": "Edit Payment Link",
+  "expiteDate": "Expiration date",
+  "expiteTime": "Expiration time"
 }

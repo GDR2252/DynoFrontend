@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { Box, Button, Divider, IconButton, Drawer } from "@mui/material";
+import { Box, Button, Divider, Drawer } from "@mui/material";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { useTranslation } from "react-i18next";
 import DynopayLogo from "@/assets/Images/auth/dynopay-logo.svg";
-import CloseIcon from "@/assets/Icons/close-icon.svg";
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import {
   HeaderContainer,
   NavLinks,
@@ -17,26 +18,28 @@ import useIsMobile from "@/hooks/useIsMobile";
 import HomeButton from "../HomeButton";
 import { theme } from "@/styles/theme";
 import { MenuRounded } from "@mui/icons-material";
+import LanguageSwitcher from "@/Components/UI/LanguageSwitcher";
 
 const HomeHeader = () => {
   const router = useRouter();
+  const { t } = useTranslation("landing");
   const isMobile = useIsMobile("md");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const lastScrollY = useRef(0);
-  const scrollThreshold = 10; // Minimum scroll distance to trigger hide/show
+  const scrollThreshold = 10;
 
   const HeaderItems = [
-    { label: "How It Works", sectionId: "how-it-works", path: "/" },
-    { label: "Features", sectionId: "features", path: "/" },
-    { label: "Use Cases", sectionId: "use-cases", path: "/" },
-    { label: "Documentation", path: "/" },
+    { translationKey: "howItWorks", sectionId: "how-it-works", path: "/" },
+    { translationKey: "features", sectionId: "features", path: "/" },
+    { translationKey: "useCases", sectionId: "use-cases", path: "/" },
+    { translationKey: "documentation", path: "/" },
   ];
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      const headerOffset = 100; // Adjust this value based on your header height
+      const headerOffset = 100;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
@@ -50,10 +53,8 @@ const HomeHeader = () => {
 
   const handleNavClick = (item: typeof HeaderItems[0]) => {
     if (item.sectionId) {
-      // If we're not on the home page, navigate first then scroll
       if (router.pathname !== "/") {
         router.push("/").then(() => {
-          // Wait for page to load, then scroll
           setTimeout(() => {
             scrollToSection(item.sectionId!);
           }, 100);
@@ -75,12 +76,9 @@ const HomeHeader = () => {
       if (currentScrollY < scrollThreshold) {
         setIsHeaderVisible(true);
       } else {
-        // Determine scroll direction
         if (currentScrollY > lastScrollY.current) {
-          // Scrolling down - hide header
           setIsHeaderVisible(false);
         } else if (currentScrollY < lastScrollY.current) {
-          // Scrolling up - show header
           setIsHeaderVisible(true);
         }
       }
@@ -97,15 +95,35 @@ const HomeHeader = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      const scrollBarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+      document.body.style.paddingRight = `${scrollBarWidth}px`;
+    } else {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <div
       style={{
-        overflow: "hidden",
         position: "fixed",
         top: 0,
         left: 0,
         right: 0,
-        zIndex: 999,
+        zIndex: 1400,
         backgroundColor: "white",
         transform: isHeaderVisible ? "translateY(0)" : "translateY(-100%)",
         transition: "transform 0.3s ease-in-out",
@@ -113,37 +131,50 @@ const HomeHeader = () => {
       }}
     >
       <HeaderContainer>
-        {/* Logo */}
-        <Image
-          src={DynopayLogo}
-          alt="Dynopay"
-          width={134}
-          height={45}
-          draggable={false}
-          className="logo"
-          style={{ width: "134px", height: "45px" }}
-          onClick={() => router.push("/")}
-        />
+        <Box sx={{ display: "flex", alignItems: "center", gap: "102px" }}>
 
-        {/* Center Nav - Desktop Only */}
-        <NavLinks className="desktop-nav">
-          {HeaderItems.map((item) => (
-            <Button disableRipple key={item.label} onClick={() => handleNavClick(item)}>
-              {item.label}
-            </Button>
-          ))}
-        </NavLinks>
+          {/* Logo */}
+          <Image
+            src={DynopayLogo}
+            alt="Dynopay"
+            width={134}
+            height={45}
+            draggable={false}
+            className="logo"
+            style={{ width: "134px", height: "45px" }}
+            onClick={() => router.push("/")}
+          />
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: "11px" }}>
+          {/* Center Nav - Desktop Only */}
+          <NavLinks className="desktop-nav">
+            {HeaderItems.map((item) => (
+              <Button disableRipple key={item.translationKey} onClick={() => handleNavClick(item)}>
+                {t(item.translationKey)}
+              </Button>
+            ))}
+          </NavLinks>
+        </Box>
+
+        <Box sx={{ display: "flex", alignItems: "center", gap: "12px" }}>
           {/* Right Actions */}
           <Actions>
+            {!isMobile && (
+              <Box sx={{ marginRight: "8px" }}>
+                <LanguageSwitcher
+                  sx={{
+                    maxWidth: isMobile ? "78px" : "111px",
+                    padding: isMobile ? "7px 10px" : "10px 14px",
+                  }}
+                />
+              </Box>
+            )}
             <Button disableRipple className="signin" onClick={() => router.push("/auth/login")}>
-              Sign In
+              {t("signIn")}
             </Button>
 
             <HomeButton
               variant="primary"
-              label="Get Started"
+              label={t("getStarted")}
               onClick={() => router.push("/auth/register")}
               showIcon={false}
               sx={{
@@ -154,81 +185,88 @@ const HomeHeader = () => {
             />
           </Actions>
           {/* Mobile Menu Button */}
-          {isMobile && (
+          {isMobile && !mobileMenuOpen && (
             <MobileMenuButton onClick={() => setMobileMenuOpen(true)}>
               <MenuRounded sx={{ color: theme.palette.text.primary, fontSize: 24 }} />
+            </MobileMenuButton>
+          )}
+          {isMobile && mobileMenuOpen && (
+            <MobileMenuButton onClick={() => setMobileMenuOpen(false)}>
+              <CloseRoundedIcon sx={{ color: theme.palette.text.primary, fontSize: 24 }} />
             </MobileMenuButton>
           )}
         </Box>
       </HeaderContainer>
 
-      {/* Mobile Drawer */}
-      <Drawer
-        anchor="right"
-        open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        sx={{
-          "& .MuiDrawer-paper": {
-            width: "100%",
-            maxWidth: "320px",
-          },
-          "& .MuiBackdrop-root": {
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-          },
-        }}
-      >
-        <MobileDrawer>
-          {/* Close Button */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              padding: "16px",
-              flexShrink: 0,
-            }}
-          >
-            <IconButton
-              onClick={() => setMobileMenuOpen(false)}
+      {/* Mobile Drawer - positioned below fixed header */}
+      {isMobile && (
+        <Drawer
+          anchor="right"
+          open={mobileMenuOpen}
+          onClose={() => setMobileMenuOpen(false)}
+          ModalProps={{
+            keepMounted: true,
+            disableScrollLock: false,
+          }}
+          sx={{
+            zIndex: 1200,
+            "& .MuiDrawer-paper": {
+              top: "64px !important",
+              height: "calc(100vh - 64px) !important",
+              width: "100%",
+              maxWidth: "320px",
+              backgroundColor: "transparent !important",
+              boxShadow: "none !important",
+              border: "none !important",
+            },
+            "& .MuiBackdrop-root": {
+              backgroundColor: "#FFFFFFCC",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+            },
+          }}
+        >
+          <MobileDrawer>
+            {/* Mobile Nav Items */}
+            <Box
+              onClick={(e) => {
+                // Only close if user clicked the empty area of this container
+                if (e.target === e.currentTarget) setMobileMenuOpen(false);
+              }}
               sx={{
-                padding: "8px",
-                "&:hover": {
-                  backgroundColor: "transparent",
-                },
+                marginTop: "51px",
+                padding: "0 16px",
+                flex: 1,
+                overflowY: "auto",
+                display: "flex",
+                flexDirection: "column",
+                gap: "36.29px",
+                alignItems: "flex-end",
               }}
             >
-              <Image
-                src={CloseIcon}
-                alt="Close"
-                width={24}
-                height={24}
-                draggable={false}
-              />
-            </IconButton>
-          </Box>
+              {HeaderItems.map((item) => (
+                <MobileNavItem
+                  key={item.translationKey}
+                  onClick={() => handleNavClick(item)}
+                >
+                  {t(item.translationKey)}
+                </MobileNavItem>
+              ))}
 
-          {/* Mobile Nav Items - Scrollable */}
-          <Box
-            sx={{
-              padding: "0 24px",
-              marginTop: "32px",
-              paddingBottom: "32px",
-              flex: 1,
-              overflowY: "auto",
-            }}
-          >
-            {HeaderItems.map((item) => (
-              <MobileNavItem
-                key={item.label}
-                onClick={() => handleNavClick(item)}
-              >
-                {item.label}
-              </MobileNavItem>
-            ))}
-          </Box>
-        </MobileDrawer>
-      </Drawer>
+              <Box onClick={(e) => e.stopPropagation()}>
+                <LanguageSwitcher
+                  sx={{
+                    maxWidth: "111px",
+                    height: "40px",
+                  }}
+                  mobileBreakpoint='xs'
+                  onLanguageChange={() => setMobileMenuOpen(false)}
+                />
+              </Box>
+            </Box>
+          </MobileDrawer>
+        </Drawer>
+      )}
 
       <Divider sx={{ borderColor: homeTheme.palette.border.main }} />
     </div>

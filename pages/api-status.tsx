@@ -1,6 +1,7 @@
 import useIsMobile from "@/hooks/useIsMobile";
 import { Box, Typography } from "@mui/material";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { homeTheme } from "@/styles/homeTheme";
 import {
   SuccessChip,
@@ -11,48 +12,30 @@ import {
 import successIcon from "@/assets/Icons/home/success.svg";
 import serviceIcon from "@/assets/Icons/home/service.svg";
 import Image from "next/image";
+import Bars from "@/Components/UI/APIStatus/Bars";
 
 const ApiStatus = () => {
   const isMobile = useIsMobile();
+  const { t } = useTranslation("apiStatus");
 
   const services = [
-    {
-      name: "API Gateway",
-      uptime: "99.99%",
-      status: "Operational",
-    },
-    {
-      name: "Payment Processing",
-      uptime: "99.98%",
-      status: "Operational",
-    },
-    {
-      name: "Wallet Services",
-      uptime: "99.97%",
-      status: "Operational",
-    },
-    {
-      name: "Webhook Delivery",
-      uptime: "99.95%",
-      status: "Operational",
-    },
-    {
-      name: "Dashboard",
-      uptime: "99.99%",
-      status: "Operational",
-    },
+    { nameKey: "service1Name", uptime: "99.99%", statusKey: "operational" },
+    { nameKey: "service2Name", uptime: "99.98%", statusKey: "operational" },
+    { nameKey: "service3Name", uptime: "99.97%", statusKey: "operational" },
+    { nameKey: "service4Name", uptime: "99.95%", statusKey: "operational" },
+    { nameKey: "service5Name", uptime: "99.99%", statusKey: "operational" },
   ];
 
   const incidents = [
     {
-      name: "Scheduled Maintenance",
-      time: "Dec 5, 2025",
-      description: "Routine database maintenance completed successfully.",
+      nameKey: "incident1Name",
+      timeKey: "incident1Time",
+      descriptionKey: "incident1Description",
     },
     {
-      name: "API Latency Increase",
-      time: "Nov 28, 2025",
-      description: "Brief latency spike resolved within 15 minutes.",
+      nameKey: "incident2Name",
+      timeKey: "incident2Time",
+      descriptionKey: "incident2Description",
     },
   ];
 
@@ -94,7 +77,7 @@ const ApiStatus = () => {
               letterSpacing: 0,
             }}
           >
-            All Systems Operational
+            {t("allSystemsOperational")}
           </Typography>
         </SuccessChip>
 
@@ -109,7 +92,7 @@ const ApiStatus = () => {
             letterSpacing: 0,
           }}
         >
-          DynoPay Status
+          {t("dynoPayStatus")}
         </Typography>
 
         <Typography
@@ -122,7 +105,7 @@ const ApiStatus = () => {
             color: "#676B7E",
           }}
         >
-          Current status of all DynoPay services
+          {t("statusSubtitle")}
         </Typography>
       </Box>
 
@@ -146,7 +129,7 @@ const ApiStatus = () => {
           }}
         >
           <Image src={serviceIcon} alt="service" width={20} height={20} />
-          <TypographyTitle>Services</TypographyTitle>
+          <TypographyTitle>{t("services")}</TypographyTitle>
         </Box>
 
         <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -172,7 +155,7 @@ const ApiStatus = () => {
               >
                 <Image
                   src={successIcon}
-                  alt={service.name}
+                  alt={t(service.nameKey)}
                   width={isMobile ? 19.02 : 20}
                   height={20}
                 />
@@ -184,7 +167,7 @@ const ApiStatus = () => {
                     color: "#131520",
                   }}
                 >
-                  {service.name}
+                  {t(service.nameKey)}
                 </Typography>
               </Box>
 
@@ -198,7 +181,7 @@ const ApiStatus = () => {
                 }}
               >
                 <TypographyDescription>
-                  {service.uptime} uptime
+                  {service.uptime} {t("uptime")}
                 </TypographyDescription>
 
                 <Typography
@@ -210,7 +193,7 @@ const ApiStatus = () => {
                     color: homeTheme.palette.success.main,
                   }}
                 >
-                  {service.status}
+                  {t(service.statusKey)}
                 </Typography>
               </Box>
             </Box>
@@ -221,27 +204,15 @@ const ApiStatus = () => {
       <Box
         height={146}
         width={"100%"}
-        sx={{ border: "1px solid #E7E8EF", borderRadius: "16px", p: "24px" }}
+        sx={{ border: "1px solid #E7E8EF", borderRadius: "16px", p: isMobile ? "25px" : "24px" }}
       >
-        <TypographyTitle>90-Day Uptime</TypographyTitle>
-        <Box sx={{ display: "flex", gap: "2px", mt: "16px" }}>
-          {Array.from({ length: 90 }).map((_, index) => (
-            <Box
-              key={index}
-              sx={{
-                width: "5.47px",
-                height: "32px",
-                background: "#22C55E",
-                borderRadius: "20px",
-              }}
-            />
-          ))}
-        </Box>
+        <TypographyTitle>{t("ninetyDayUptime")}</TypographyTitle>
+        <Bars />
         <Box
           sx={{ mt: "8px", display: "flex", justifyContent: "space-between" }}
         >
-          <TypographyTime>90 days ago</TypographyTime>
-          <TypographyTime>Today</TypographyTime>
+          <TypographyTime>{t("ninetyDaysAgo")}</TypographyTime>
+          <TypographyTime>{t("today")}</TypographyTime>
         </Box>
       </Box>
 
@@ -250,7 +221,7 @@ const ApiStatus = () => {
         width={"100%"}
         sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
       >
-        <TypographyTitle>Recent Incidents</TypographyTitle>
+        <TypographyTitle>{t("recentIncidents")}</TypographyTitle>
         {incidents.map((incident, index) => (
           <Box
             key={index}
@@ -274,12 +245,12 @@ const ApiStatus = () => {
                   color: "#131520",
                 }}
               >
-                {incident.name}
+                {t(incident.nameKey)}
               </Typography>
-              <TypographyTime>{incident.time}</TypographyTime>
+              <TypographyTime>{t(incident.timeKey)}</TypographyTime>
             </Box>
             <TypographyDescription>
-              {incident.description}
+              {t(incident.descriptionKey)}
             </TypographyDescription>
             <Box
               height={26}
@@ -302,7 +273,7 @@ const ApiStatus = () => {
                   color: homeTheme.palette.success.main,
                 }}
               >
-                Resolved
+                {t("resolved")}
               </Typography>
             </Box>
           </Box>

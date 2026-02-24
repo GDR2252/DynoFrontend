@@ -1,7 +1,7 @@
-import styled from "@emotion/styled";
-import { styled as muiStyled } from "@mui/material/styles";
-import { Box } from "@mui/material";
 import { theme } from "@/styles/theme";
+import styled from "@emotion/styled";
+import { Box } from "@mui/material";
+import { styled as muiStyled } from "@mui/material/styles";
 
 export const LangTrigger = muiStyled(Box)(({ theme }: any) => ({
   display: "flex",
@@ -31,8 +31,11 @@ export const LangText = styled.span`
   font-size: 15px;
   font-weight: 500;
   font-family: UrbanistMedium;
-  line-height: 100%;
+  line-height: 1.2;
   letter-spacing: 0;
+  ${theme.breakpoints.down("md")} {
+    font-size: 13px;
+  }
 `;
 
 export const CheckIconStyled = styled.img`

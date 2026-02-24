@@ -1,3 +1,4 @@
+import { DateRange } from "@/utils/types/dashboard";
 import {
   addMonths,
   endOfMonth,
@@ -10,11 +11,6 @@ import {
   subDays,
   subMonths,
 } from "date-fns";
-
-export interface DateRange {
-  startDate: Date | null;
-  endDate: Date | null;
-}
 
 export type PresetType =
   | "today"
@@ -53,7 +49,7 @@ export const sanitizeRange = (range: DateRange, maxDate: Date): DateRange => {
 
 export const getPresetDates = (
   preset: PresetType,
-  maxDate: Date
+  maxDate: Date,
 ): DateRange => {
   const today = startOfDay(maxDate);
   const startOfToday = today;
@@ -92,7 +88,7 @@ export const getPresetDates = (
 
 export const detectPreset = (
   dateRange: DateRange,
-  maxDate: Date
+  maxDate: Date,
 ): PresetType | null => {
   if (!dateRange.startDate || !dateRange.endDate) {
     return null;

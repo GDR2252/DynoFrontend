@@ -13,7 +13,7 @@ export default function EditPaymentLink() {
   const router = useRouter();
   const { slug } = router.query;
   const isMobile = useIsMobile();
-    const { t } = useTranslation("createPaymentLinkScreen");
+  const { t } = useTranslation("createPaymentLinkScreen");
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -25,33 +25,33 @@ export default function EditPaymentLink() {
 
   const paymentLinkData: PaymentLink | {} = (slug as string)
     ? {
-      link_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-      amount: 199.99,
-      currency: "USD",
-      description: "Order #12345 - Premium Subscription",
-      status: "active",
-      clientName: "Artur S.",
-      expire: "yes",
-      blockchainFees: "customer",
-      acceptedCryptoCurrency: ["BTC", "ETH", "LTC", "DOGE", "USDT"],
-      payment_url:
-        "https://checkout.dynopay.com/pay/a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-      redirect_url: "https://mystore.com/order/12345/success",
-      webhook_url: "https://mystore.com/webhooks/dynopay",
-      metadata: {
-        order_id: "12345",
-        customer_email: "customer@example.com",
-      },
-      created_at: "2024-01-15T10:30:00Z",
-      paid_at: "2024-01-15T10:45:00Z",
-      transaction: {
-        transaction_id: "txn_abc123",
-        crypto_currency: "BTC",
-        crypto_amount: 0.00456,
-        confirmations: 3,
-        tx_hash: "0x1234567890abcdef...",
-      },
-    }
+        link_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        amount: 199.99,
+        currency: "USD",
+        description: "Order #12345 - Premium Subscription",
+        status: "active",
+        clientName: "Artur S.",
+        expire: "yes",
+        blockchainFees: "customer",
+        acceptedCryptoCurrency: ["BTC", "ETH", "LTC", "DOGE", "USDT"],
+        payment_url:
+          "https://checkout.dynopay.com/pay/a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        redirect_url: "https://mystore.com/order/12345/success",
+        webhook_url: "https://mystore.com/webhooks/dynopay",
+        metadata: {
+          order_id: "12345",
+          customer_email: "customer@example.com",
+        },
+        created_at: "2024-01-15T10:30:00Z",
+        paid_at: "2024-01-15T10:45:00Z",
+        transaction: {
+          transaction_id: "txn_abc123",
+          crypto_currency: "BTC",
+          crypto_amount: 0.00456,
+          confirmations: 3,
+          tx_hash: "0x1234567890abcdef...",
+        },
+      }
     : {};
 
   return (
@@ -96,7 +96,11 @@ export default function EditPaymentLink() {
       </Text>
       <CreatePaymentLinkPage
         paymentLinkData={paymentLinkData}
-        disabled={'status' in paymentLinkData && paymentLinkData.status === "paid"}
+        disabled={
+          "status" in paymentLinkData &&
+          (paymentLinkData.status === "paid" ||
+            paymentLinkData.status === "expired")
+        }
       />
     </Box>
   );

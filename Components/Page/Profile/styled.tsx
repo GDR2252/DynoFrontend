@@ -11,6 +11,9 @@ export const InfoWrapper = styled(Box)(({ theme }) => ({
   borderRadius: "8px",
   gap: "12px",
   outline: `1px solid ${theme.palette.border.main}`,
+  [theme.breakpoints.down("md")]: {
+    padding: "9px 22px 9px 12px",
+  },
 }));
 
 export const InfoText = styled(Typography)(({ theme }) => ({

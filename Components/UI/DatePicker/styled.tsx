@@ -50,7 +50,9 @@ export const PresetTitle = styled(Typography)(({ theme }) => ({
   },
 }));
 
-export const PresetItem = styled(Box)<{ active?: boolean }>(
+export const PresetItem = styled(Box, {
+  shouldForwardProp: (prop) => prop !== "active",
+})<{ active?: boolean }>(
   ({ theme, active }) => ({
     display: "flex",
     alignItems: "center",
@@ -141,7 +143,14 @@ export const CalendarGrid = styled(Box)(({ theme }) => ({
   rowGap: "4px",
 }));
 
-export const DateCellWrapper = styled(Box)<{
+export const DateCellWrapper = styled(Box, {
+  shouldForwardProp: (prop) =>
+    prop !== "inRange" &&
+    prop !== "isStart" &&
+    prop !== "isEnd" &&
+    prop !== "isWeekStart" &&
+    prop !== "isWeekEnd",
+})<{
   inRange?: boolean;
   isStart?: boolean;
   isEnd?: boolean;
@@ -184,7 +193,13 @@ export const DateCellWrapper = styled(Box)<{
   }),
 }));
 
-export const DateButton = styled(Button)<{
+export const DateButton = styled(Button, {
+  shouldForwardProp: (prop) =>
+    prop !== "selected" &&
+    prop !== "iscurrentmonth" &&
+    prop !== "isStart" &&
+    prop !== "isEnd",
+})<{
   selected?: boolean;
   iscurrentmonth?: boolean;
   isStart?: boolean;

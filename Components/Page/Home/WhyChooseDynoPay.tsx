@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import HomeCard from "@/Components/UI/HomeCard";
 import { Box, Grid, Typography } from "@mui/material";
@@ -17,31 +18,28 @@ import GlobalReachIcon from "@/assets/Icons/home/global-icon.svg";
 
 const WhyChooseDynopaySection = () => {
   const isMobile = useIsMobile("md");
+  const { t } = useTranslation("landing");
 
   const whyChooseItems = [
     {
       icon: LowerFeesIcon,
-      iconAlt: "lower fees icon",
-      title: "Lower Fees",
-      description: "Minimal blockchain costs, nothing hidden. Save more on every transaction.",
+      titleKey: "whyChoose1Title",
+      descriptionKey: "whyChoose1Description",
     },
     {
       icon: FullControlOfFundsIcon,
-      iconAlt: "full control of funds icon",
-      title: "Full Control of Funds",
-      description: "Crypto goes directly into your own wallets. Non-custodial by design.",
+      titleKey: "whyChoose2Title",
+      descriptionKey: "whyChoose2Description",
     },
     {
       icon: FastIntegrationIcon,
-      iconAlt: "fast integration icon",
-      title: "Fast Integration",
-      description: "Payment links for non-dev teams, powerful API for developers.",
+      titleKey: "whyChoose3Title",
+      descriptionKey: "whyChoose3Description",
     },
     {
       icon: GlobalReachIcon,
-      iconAlt: "global reach icon",
-      title: "Global Reach",
-      description: "Let customers pay from anywhere in the world, instantly.",
+      titleKey: "whyChoose4Title",
+      descriptionKey: "whyChoose4Description",
     },
   ];
 
@@ -56,10 +54,10 @@ const WhyChooseDynopaySection = () => {
       {/* Why Choose DynoPay Section Title */}
       <HomeSectionTitle
         type="small"
-        badgeText="Why DynoPay"
-        title="Why businesses choose us"
-        highlightText="choose us"
-        subtitle="Built for modern businesses that want to accept crypto without the complexity."
+        badgeText={t("whyChooseBadge")}
+        title={t("whyChooseTitle")}
+        highlightText={t("whyChooseHighlight")}
+        subtitle={t("whyChooseSubtitle")}
         sx={{ maxWidth: "100%" }}
       />
       {/* Why Choose DynoPay Section Cards */}
@@ -85,7 +83,7 @@ const WhyChooseDynopaySection = () => {
                   <WhyChooseDynoPayIcon>
                     <Image
                       src={item.icon}
-                      alt={item.iconAlt}
+                      alt={t(item.titleKey)}
                       width={28}
                       height={28}
                       draggable={false}
@@ -93,10 +91,10 @@ const WhyChooseDynopaySection = () => {
                   </WhyChooseDynoPayIcon>
 
                   <WhyChooseDynoPayTitle sx={{ marginTop: 2 }}>
-                    {item.title}
+                    {t(item.titleKey)}
                   </WhyChooseDynoPayTitle>
                   <WhyChooseDynoPayDescription sx={{ marginTop: 1 }}>
-                    {item.description}
+                    {t(item.descriptionKey)}
                   </WhyChooseDynoPayDescription>
                 </WhyChooseUsCard>
               </Box>

@@ -1,6 +1,6 @@
-import { styled } from "@mui/material/styles";
-import { Box, TableCell } from "@mui/material";
 import { theme } from "@/styles/theme";
+import { Box, TableCell } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 /* ================= TABLE HEADER ================= */
 
@@ -17,16 +17,18 @@ export const TableHeaderCell = styled(TableCell)(({ theme }) => ({
 /* ================= TABLE BODY ================= */
 
 export const TableBodyCell = styled(TableCell)(({ theme }) => ({
+  border: "none",
+  padding: "0px 10px",
   fontSize: "15px",
   fontWeight: 500,
   fontFamily: "UrbanistMedium",
   color: "#242428",
-  borderBottom: "1px solid #E5E7EB",
-  lineHeight: "100%",
+  lineHeight: 1,
   letterSpacing: 0,
   whiteSpace: "nowrap",
   [theme.breakpoints.down("md")]: {
     fontSize: "13px",
+    padding: "0px 12px",
   },
 }));
 
@@ -107,12 +109,12 @@ export const TableFooter = styled(Box)(({ theme }) => ({
   flexDirection: "row",
   justifyContent: "space-between",
   alignItems: "center",
-  padding: "16px 24px 20px 24px",
+  padding: "22px 20px 24px 20px",
   flexShrink: 0,
   minHeight: "max-content",
   borderTop: "1px solid #E5E7EB",
   [theme.breakpoints.down("md")]: {
-    padding: "12px 12px 16px 12px",
+    padding: "30px 12px 12px 12px",
     flexWrap: "wrap",
     gap: "8px",
   },

@@ -1,23 +1,23 @@
-import React, { useCallback, useRef, useState } from "react";
+import CopyIcon from "@/assets/Icons/copy-icon.svg";
+import Help_Support from "@/assets/Icons/Help&Support.svg";
+import BGOverlay from "@/assets/Images/bg-overlay.png";
 import {
-  SidebarFooter,
-  ReferralCard,
-  ReferralCardContent,
-  ReferralCardTitle,
-  ReferralCardContentValue,
-  ReferralCardContentValueContainer,
   CopyButton,
   HelpSupportBtn,
   KnowledgeBaseTitle,
+  ReferralCard,
+  ReferralCardContent,
+  ReferralCardContentValue,
+  ReferralCardContentValueContainer,
+  ReferralCardTitle,
+  SidebarFooter,
 } from "@/Components/Layout/NewSidebar/styled";
+import Toast from "@/Components/UI/Toast";
 import { Box } from "@mui/material";
 import Image from "next/image";
-import BGOverlay from "@/assets/Images/bg-overlay.png";
-import CopyIcon from "@/assets/Icons/copy-icon.svg";
-import Help_Support from "@/assets/Icons/Help&Support.svg";
-import { useTranslation } from "react-i18next";
-import Toast from "@/Components/UI/Toast";
 import { useRouter } from "next/router";
+import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const ReferralAndKnowledge = ({ isMobile }: { isMobile: boolean }) => {
   const router = useRouter();
@@ -41,7 +41,7 @@ const ReferralAndKnowledge = ({ isMobile }: { isMobile: boolean }) => {
     toastTimer.current = setTimeout(() => {
       setOpenToast(false);
     }, 2000);
-  }
+  };
 
   return (
     <SidebarFooter>
@@ -69,9 +69,7 @@ const ReferralAndKnowledge = ({ isMobile }: { isMobile: boolean }) => {
 
           <ReferralCardContentValueContainer>
             <ReferralCardContentValue>DYNO2024XYZ</ReferralCardContentValue>
-            <CopyButton
-              onClick={handleCopy}
-            >
+            <CopyButton onClick={handleCopy}>
               <Image
                 src={CopyIcon}
                 alt="Copy Icon"
@@ -84,7 +82,7 @@ const ReferralAndKnowledge = ({ isMobile }: { isMobile: boolean }) => {
         </ReferralCardContent>
       </ReferralCard>
 
-      <HelpSupportBtn onClick={()=> router.push("/help-support")}>
+      <HelpSupportBtn onClick={() => router.push("/help-support")}>
         <Image
           src={Help_Support}
           alt="File Icon"

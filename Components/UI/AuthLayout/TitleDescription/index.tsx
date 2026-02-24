@@ -1,7 +1,7 @@
-import React from "react";
+import useIsMobile from "@/hooks/useIsMobile";
 import { Box, Typography } from "@mui/material";
 import { SxProps, Theme } from "@mui/system";
-import useIsMobile from "@/hooks/useIsMobile";
+import React from "react";
 
 export interface TitleDescriptionProps {
   title?: React.ReactNode;
@@ -28,10 +28,6 @@ const TitleDescription: React.FC<TitleDescriptionProps> = ({
   title,
   description,
   align = "left",
-  titleVariant = "h2",
-  descriptionVariant = "body2",
-  gutterBottom = true,
-  divider = false,
   sx,
 }) => {
   const isMobile = useIsMobile("sm");
@@ -44,6 +40,7 @@ const TitleDescription: React.FC<TitleDescriptionProps> = ({
         display: "flex",
         flexDirection: "column",
         textAlign: align,
+        gap: isMobile ? "10px" : "12px",
         ...sx,
       }}
     >
@@ -54,7 +51,8 @@ const TitleDescription: React.FC<TitleDescriptionProps> = ({
             fontSize: "20px",
             fontFamily: "UrbanistMedium",
             color: "#242428",
-            lineHeight: "1",
+            lineHeight: "1.2",
+            letterSpacing: 0,
             ...(isMobile && { fontSize: "15px" }),
           }}
         >
@@ -66,9 +64,10 @@ const TitleDescription: React.FC<TitleDescriptionProps> = ({
         <Typography
           sx={{
             fontSize: "15px",
-            marginTop: "12px",
             fontFamily: "UrbanistMedium",
             color: "#676768",
+            lineHeight: "1.2",
+            letterSpacing: 0,
             ...(isMobile && { fontSize: "13px" }),
           }}
         >

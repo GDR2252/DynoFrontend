@@ -1,19 +1,31 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { Box, CircularProgress } from "@mui/material";
-import TransactionsTable, { Transaction } from "./TransactionsTable";
-import TransactionsTopBar from "./TransactionsTopBar";
-import { useDispatch, useSelector } from "react-redux";
-import { rootReducer, ICustomerTransactions } from "@/utils/types";
+import EmptyDataModel from "@/Components/UI/EmptyDataModel";
 import { TransactionAction } from "@/Redux/Actions";
 import { TRANSACTION_FETCH } from "@/Redux/Actions/TransactionAction";
-import { DateRange } from "@/Components/UI/DatePicker";
-import { isWithinInterval, parseISO, startOfDay, endOfDay } from "date-fns";
-import EmptyDataModel from "@/Components/UI/EmptyDataModel";
+import { ICustomerTransactions, rootReducer } from "@/utils/types";
+import { DateRange } from "@/utils/types/dashboard";
+import { ExtendedTransaction } from "@/utils/types/transaction";
+import { Box, CircularProgress } from "@mui/material";
+import { endOfDay, isWithinInterval, parseISO, startOfDay } from "date-fns";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import TransactionsTable from "./TransactionsTable";
+import TransactionsTopBar from "./TransactionsTopBar";
+
+const walletMapping: { [key: string]: string } = {
+  all: "all",
+  wallet1: "BTC",
+  wallet2: "ETH",
+  wallet3: "LTC",
+  wallet4: "DOGE",
+  wallet5: "BCH",
+  wallet6: "TRX",
+  wallet7: "USDT-ERC20",
+  wallet8: "USDT-TRC20",
+};
 
 const TransactionPage = () => {
   const dispatch = useDispatch();
 
-  // State for filters
   const [searchTerm, setSearchTerm] = useState("");
   const [dateRange, setDateRange] = useState<DateRange>({
     startDate: null,
@@ -22,25 +34,12 @@ const TransactionPage = () => {
   const [selectedWallet, setSelectedWallet] = useState("all");
 
   const transactionState = useSelector(
-    (state: rootReducer) => state.transactionReducer
+    (state: rootReducer) => state.transactionReducer,
   );
 
   // useEffect(() => {
   //   dispatch(TransactionAction(TRANSACTION_FETCH));
   // }, [dispatch]);
-
-  // Wallet mapping for filtering: Matches values in TransactionsTopBar
-  const walletMapping: { [key: string]: string } = {
-    all: "all",
-    wallet1: "BTC",
-    wallet2: "ETH",
-    wallet3: "LTC",
-    wallet4: "DOGE",
-    wallet5: "BCH",
-    wallet6: "TRX",
-    wallet7: "USDT-ERC20",
-    wallet8: "USDT-TRC20",
-  };
 
   const formatDateTime = (isoString: string) => {
     const date = new Date(isoString);
@@ -54,7 +53,7 @@ const TransactionPage = () => {
     const seconds = String(date.getSeconds()).padStart(2, "0");
 
     return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
-  }
+  };
 
   // const processedTransactions: Transaction[] = useMemo(() => {
   //   if (!transactionState?.customers_transactions) return [];
@@ -123,7 +122,7 @@ const TransactionPage = () => {
   //     }));
   // }, [transactionState.customers_transactions, searchTerm, selectedWallet, dateRange]);
 
-  const processedTransactions: Transaction[]= [
+  const processedTransactions: ExtendedTransaction[]= [
     {
       id: "69e2fc89-58c1-49db-8be4-f5b7004fada0",
       crypto: "BTC",
@@ -250,7 +249,6 @@ const TransactionPage = () => {
 
   const handleExport = () => {
     console.log("Export triggered");
-    // TODO: Implement export functionality
   };
 
   // if (transactionState.loading) {

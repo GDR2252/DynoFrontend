@@ -1,29 +1,42 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { Box, Typography, useTheme } from "@mui/material";
-import Image from "next/image";
-import { useTranslation } from "react-i18next";
 import BitcoinIcon from "@/assets/cryptocurrency/Bitcoin-icon.svg";
+import BitcoinCashIcon from "@/assets/cryptocurrency/BitcoinCash-icon.svg";
+import DogecoinIcon from "@/assets/cryptocurrency/Dogecoin-icon.svg";
 import EthereumIcon from "@/assets/cryptocurrency/Ethereum-icon.svg";
 import LitecoinIcon from "@/assets/cryptocurrency/Litecoin-icon.svg";
-import DogecoinIcon from "@/assets/cryptocurrency/Dogecoin-icon.svg";
-import BitcoinCashIcon from "@/assets/cryptocurrency/BitcoinCash-icon.svg";
 import TronIcon from "@/assets/cryptocurrency/Tron-icon.svg";
 import USDTIcon from "@/assets/cryptocurrency/USDT-icon.svg";
+import { Box, Typography, useTheme } from "@mui/material";
+import Image from "next/image";
+import React, { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import CorrectIcon from "@/assets/Icons/correct-icon.png";
 import WrongIcon from "@/assets/Icons/wrong-icon.png";
 
-import TransactionIcon from "@/assets/Icons/transaction-icon.svg";
 import CryptoIcon from "@/assets/Icons/crypto-icon.svg";
-import RoundedStackIcon from "@/assets/Icons/roundedStck-icon.svg";
 import CurrencyIcon from "@/assets/Icons/dollar-sign-icon.svg";
 import HexagonIcon from "@/assets/Icons/hexagon-icon.svg";
+import RoundedStackIcon from "@/assets/Icons/roundedStck-icon.svg";
 import TimeIcon from "@/assets/Icons/time-icon.svg";
+import TransactionIcon from "@/assets/Icons/transaction-icon.svg";
 
 import KeyboardArrowLeftRoundedIcon from "@mui/icons-material/KeyboardArrowLeftRounded";
 import KeyboardArrowRightRoundedIcon from "@mui/icons-material/KeyboardArrowRightRounded";
 
+import CustomButton from "@/Components/UI/Buttons";
+import RowsPerPageSelector from "@/Components/UI/RowsPerPageSelector";
+import useIsMobile from "@/hooks/useIsMobile";
+import { HourGlassIcon } from "@/utils/customIcons";
 import {
+  ExtendedTransaction,
+  TransactionsTableProps,
+} from "@/utils/types/transaction";
+import {
+  CryptoIconChip,
+  MobileNavigationButtons,
+  StatusBadge,
+  StatusIconWrapper,
+  StatusText,
   TransactionsTableBody,
   TransactionsTableCell,
   TransactionsTableFooter,
@@ -31,26 +44,8 @@ import {
   TransactionsTableHeader,
   TransactionsTableHeaderItem,
   TransactionsTableRow,
-  StatusBadge,
-  StatusIconWrapper,
-  StatusText,
-  CryptoIconChip,
-  MobileNavigationButtons,
 } from "./styled";
-import CustomButton from "@/Components/UI/Buttons";
-import RowsPerPageSelector from "@/Components/UI/RowsPerPageSelector";
-import useIsMobile from "@/hooks/useIsMobile";
-import TransactionDetailsModal, {
-  ExtendedTransaction,
-} from "./TransactionDetailsModal";
-import { HourGlassIcon } from "@/utils/customIcons";
-
-export type Transaction = ExtendedTransaction;
-
-interface TransactionsTableProps {
-  transactions: Transaction[];
-  rowsPerPage?: number;
-}
+import TransactionDetailsModal from "./TransactionDetailsModal";
 
 const TransactionsTable: React.FC<TransactionsTableProps> = ({
   transactions,
@@ -63,7 +58,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
       const result = t(key, { ns: "transactions", ...options });
       return typeof result === "string" ? result : String(result);
     },
-    [t]
+    [t],
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
@@ -121,7 +116,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
     setCurrentPage(1);
   };
 
-  const handleRowClick = (transaction: Transaction) => {
+  const handleRowClick = (transaction: ExtendedTransaction) => {
     setSelectedTransaction(transaction);
     setModalOpen(true);
   };
@@ -199,7 +194,16 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
   const isDataEmpty = currentTransactions.length === 0;
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, maxHeight: "fit-content" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        minHeight: 0,
+        maxHeight: "fit-content",
+        p: { xs: "0px 0px 0px 16px", sm: "0px 16px", md: "0px" },
+      }}
+    >
       <Box
         sx={{
           flex: 1,
@@ -209,7 +213,14 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
           scrollbarWidth: "none",
         }}
       >
-        <Box sx={{ display: "flex", flexDirection: "column", minWidth: "max-content", height: "100%" }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            minWidth: "max-content",
+            height: "100%",
+          }}
+        >
           {/* Header Section */}
           <Box sx={{ display: "flex", height: isMobile ? 44 : 56 }}>
             <TransactionsTableHeader>
@@ -218,7 +229,9 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
                   <Image
                     src={item.icon}
                     alt={item.label}
-                    style={{ filter: `brightness(0) saturate(100%) invert(15%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(100%)` }}
+                    style={{
+                      filter: `brightness(0) saturate(100%) invert(15%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(100%)`,
+                    }}
                     draggable={false}
                   />
                   <span>{item.label}</span>
@@ -239,7 +252,15 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
           >
             <TransactionsTableBody>
               {isDataEmpty ? (
-                <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", mt: 3 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    mt: 3,
+                  }}
+                >
                   {t("transactionsNotAvailable", { ns: "common" })}
                 </Box>
               ) : (
@@ -252,22 +273,37 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
                       cursor: "pointer",
                     }}
                   >
-                    <TransactionsTableCell>{transaction.id}</TransactionsTableCell>
+                    <TransactionsTableCell>
+                      {transaction.id}
+                    </TransactionsTableCell>
 
                     <TransactionsTableCell>
                       <CryptoIconChip sx={{ width: "fit-content" }}>
-                        <Image src={getCryptoIcon(transaction.crypto)} alt={transaction.crypto} draggable={false} />
-                        <Typography component="span" sx={{ color: theme.palette.text.secondary }}>
+                        <Image
+                          src={getCryptoIcon(transaction.crypto)}
+                          alt={transaction.crypto}
+                          draggable={false}
+                        />
+                        <Typography
+                          component="span"
+                          sx={{ color: theme.palette.text.secondary }}
+                        >
                           {transaction.crypto}
                         </Typography>
                       </CryptoIconChip>
                     </TransactionsTableCell>
 
-                    <TransactionsTableCell>{formatAmount(transaction.amount)}</TransactionsTableCell>
+                    <TransactionsTableCell>
+                      {formatAmount(transaction.amount)}
+                    </TransactionsTableCell>
 
-                    <TransactionsTableCell>{formatUsd(transaction.usdValue)}</TransactionsTableCell>
+                    <TransactionsTableCell>
+                      {formatUsd(transaction.usdValue)}
+                    </TransactionsTableCell>
 
-                    <TransactionsTableCell>{transaction.dateTime}</TransactionsTableCell>
+                    <TransactionsTableCell>
+                      {transaction.dateTime}
+                    </TransactionsTableCell>
 
                     <TransactionsTableCell>
                       <StatusBadge status={transaction.status}>
@@ -288,12 +324,18 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
       </Box>
 
       {/* Footer Section */}
-      <Box sx={{ backgroundColor: theme.palette.common.white, borderEndStartRadius: "14px", borderEndEndRadius: "14px" }}>
+      <Box
+        sx={{
+          backgroundColor: theme.palette.common.white,
+          borderEndStartRadius: "14px",
+          borderEndEndRadius: "14px",
+        }}
+      >
         <TransactionsTableFooter>
           <RowsPerPageSelector
             value={rowsPerPage}
             onChange={handleRowsPerPageChange}
-            menuItems={[5, 10, 15, 20].map(v => ({ value: v, label: v }))}
+            menuItems={[5, 10, 15, 20].map((v) => ({ value: v, label: v }))}
           />
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -308,39 +350,55 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
               label={tTransactions("previous")}
               variant="outlined"
               sx={navButtonStyle}
-              startIcon={<KeyboardArrowLeftRoundedIcon sx={{ height: "20px", width: "20px" }} />}
+              startIcon={
+                <KeyboardArrowLeftRoundedIcon
+                  sx={{ height: "20px", width: "20px" }}
+                />
+              }
               disabled={currentPage === 1 || isDataEmpty}
-              onClick={() => setCurrentPage(prev => prev - 1)}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
             />
 
             <CustomButton
               label={tTransactions("next")}
               variant="outlined"
               sx={navButtonStyle}
-              endIcon={<KeyboardArrowRightRoundedIcon sx={{ height: "20px", width: "20px" }} />}
+              endIcon={
+                <KeyboardArrowRightRoundedIcon
+                  sx={{ height: "20px", width: "20px" }}
+                />
+              }
               disabled={currentPage === totalPages || isDataEmpty}
-              onClick={() => setCurrentPage(prev => prev + 1)}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
             />
 
             {/* Mobile Nav */}
             <MobileNavigationButtons
-              onClick={() => setCurrentPage(prev => prev - 1)}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
               disabled={currentPage === 1 || isDataEmpty}
             >
-              <KeyboardArrowLeftRoundedIcon sx={{ height: "16px", width: "16px", color: "inherit" }} />
+              <KeyboardArrowLeftRoundedIcon
+                sx={{ height: "16px", width: "16px", color: "inherit" }}
+              />
             </MobileNavigationButtons>
 
             <MobileNavigationButtons
-              onClick={() => setCurrentPage(prev => prev + 1)}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
               disabled={currentPage === totalPages || isDataEmpty}
             >
-              <KeyboardArrowRightRoundedIcon sx={{ height: "16px", width: "16px", color: "inherit" }} />
+              <KeyboardArrowRightRoundedIcon
+                sx={{ height: "16px", width: "16px", color: "inherit" }}
+              />
             </MobileNavigationButtons>
           </Box>
         </TransactionsTableFooter>
       </Box>
 
-      <TransactionDetailsModal open={modalOpen} onClose={handleCloseModal} transaction={selectedTransaction} />
+      <TransactionDetailsModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        transaction={selectedTransaction}
+      />
     </Box>
   );
 };

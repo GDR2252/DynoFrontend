@@ -1,5 +1,5 @@
-import { styled } from "@mui/material/styles";
 import { Box, IconButton, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 export const ApiKeyCard = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -8,21 +8,19 @@ export const ApiKeyCard = styled(Box)(({ theme }) => ({
 }));
 
 export const ApiKeyCardSubTitle = styled(Typography)(({ theme }) => ({
+  paddingTop: "7px",
   fontSize: 14,
   color: theme.palette.text.primary,
   fontWeight: 500,
   lineHeight: "17px",
   fontFamily: "UrbanistMedium",
-
   display: "inline-flex",
   alignItems: "center",
-  gap: 6,
-
+  gap: 7,
   "& .flag": {
     display: "inline-flex",
     alignItems: "center",
   },
-
   "& img": {
     display: "block",
     position: "relative",
@@ -36,14 +34,13 @@ export const ApiKeyCardSubTitle = styled(Typography)(({ theme }) => ({
 export const ApiKeyCardBody = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: 18,
+  gap: 14,
 }));
 
-export const ApiKeyCardTopRow = styled(Box)(({ theme }) => ({
+export const ApiKeyCardTopRow = styled(Box)(() => ({
   display: "flex",
   alignItems: "end",
   justifyContent: "space-between",
-  //   flexWrap: "wrap",
 }));
 
 export const ApiKeyViewButton = styled(IconButton)(({ theme }) => ({
@@ -92,6 +89,7 @@ export const ApiKeyCopyButton = styled(IconButton)(({ theme }) => ({
 }));
 
 export const ApiKeyDeleteButton = styled(IconButton)(({ theme }) => ({
+  marginTop: "6px",
   border: `1px solid ${theme.palette.border.main}`,
   borderRadius: 6,
   width: 40,
@@ -112,6 +110,7 @@ export const ApiKeyDeleteButton = styled(IconButton)(({ theme }) => ({
 }));
 
 export const ApiKeyCreatedText = styled(Typography)(({ theme }) => ({
+  marginTop: "6px",
   color: theme.palette.text.secondary,
   display: "flex",
   alignItems: "center",
@@ -162,7 +161,7 @@ export const InfoText = styled(Typography)(({ theme }) => ({
   fontFamily: "UrbanistMedium",
   [theme.breakpoints.down("md")]: {
     fontSize: "10px",
-    lineHeight: "17px",
+    lineHeight: "12px",
   },
 }));
 
@@ -172,11 +171,11 @@ export const ApiDocumentationCardDescription = styled(Typography)(
     fontSize: 13,
     color: theme.palette.text.secondary,
     fontWeight: 500,
-    lineHeight: "17px",
+    lineHeight: "16px",
     maxWidth: "309px",
     [theme.breakpoints.down("md")]: {
       fontSize: 10,
-      lineHeight: "14px",
+      lineHeight: "12px",
     },
-  })
+  }),
 );

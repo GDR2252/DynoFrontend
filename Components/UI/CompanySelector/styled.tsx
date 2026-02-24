@@ -42,7 +42,9 @@ export const CompanyListWrapper = styled("div")(({ theme }) => ({
   marginTop: "6px",
 }));
 
-export const CompanyItem = styled("div")<{ active: boolean }>(
+export const CompanyItem = styled("div", {
+  shouldForwardProp: (prop) => prop !== "active",
+})<{ active: boolean }>(
   ({ active, theme }) => ({
     display: "flex",
     justifyContent: "space-between",
@@ -87,7 +89,9 @@ export const ItemLeft = styled("div")(() => ({
   justifyContent: "space-between",
 }));
 
-export const ItemRight = styled("div")<{ active: boolean }>(
+export const ItemRight = styled("div", {
+  shouldForwardProp: (prop) => prop !== "active",
+})<{ active: boolean }>(
   ({ active, theme }) => ({
     background: active ? theme.palette.primary.light : "transparent",
     border: active ? "1px solid #fff" : "1px solid #d1d5db",

@@ -1,40 +1,32 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Box, Typography } from "@mui/material";
-import PopupModal from "@/Components/UI/PopupModal";
-import InputField from "@/Components/UI/AuthLayout/InputFields";
-import CryptocurrencySelector from "@/Components/UI/CryptocurrencySelector";
-import CustomButton from "@/Components/UI/Buttons";
-import Image from "next/image";
-import WalletIcon from "@/assets/Icons/wallet-icon.svg";
 import InfoIcon from "@/assets/Icons/info-icon.svg";
-import OtpDialog from "@/Components/UI/OtpDialog";
-import { theme } from "@/styles/theme";
-import useIsMobile from "@/hooks/useIsMobile";
+import WalletIcon from "@/assets/Icons/wallet-icon.svg";
 import axiosBaseApi from "@/axiosConfig";
-import { verifyOtp } from "@/Redux/Sagas/WalletSaga";
-import { useDispatch, useSelector } from "react-redux";
+import InputField from "@/Components/UI/AuthLayout/InputFields";
+import CustomButton from "@/Components/UI/Buttons";
+import CryptocurrencySelector from "@/Components/UI/CryptocurrencySelector";
+import OtpDialog from "@/Components/UI/OtpDialog";
+import PopupModal from "@/Components/UI/PopupModal";
+import useIsMobile from "@/hooks/useIsMobile";
 import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
+import { verifyOtp } from "@/Redux/Sagas/WalletSaga";
+import { theme } from "@/styles/theme";
 import { rootReducer } from "@/utils/types";
+import {
+  Address,
+  AddWalletModalProps,
+  WalletError,
+} from "@/utils/types/wallet";
+import { Box, Typography } from "@mui/material";
+import Image from "next/image";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import PanelCard from "../PanelCard";
 import {
   WarningContainer,
-  WarningIconContainer,
   WarningContent,
+  WarningIconContainer,
 } from "./styled";
-import PanelCard from "../PanelCard";
-
-export interface AddWalletModalProps {
-  open: boolean;
-  onClose: () => void;
-  fiatData?: any[];
-  cryptoData?: any[];
-  onWalletAdded?: () => void;
-}
-
-type Address = {
-  wallet_address: string;
-  currency: string;
-};
 
 const AddWalletModal: React.FC<AddWalletModalProps> = ({
   open,
@@ -52,16 +44,12 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
       const result = t(key, { ns: "walletScreen" });
       return typeof result === "string" ? result : String(result);
     },
-    [t]
+    [t],
   );
   const [walletName, setWalletName] = useState("");
   const [cryptocurrency, setCryptocurrency] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
-  const [errors, setErrors] = useState<{
-    walletName?: string;
-    cryptocurrency?: string;
-    walletAddress?: string;
-  }>({});
+  const [errors, setErrors] = useState<WalletError>({});
   const [popupLoading, setPopupLoading] = useState(false);
   const [otpModalOpen, setOtpModalOpen] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
@@ -89,7 +77,6 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  // Reset error state when OTP modal closes
   useEffect(() => {
     if (!otpModalOpen) {
       setOtpError("");
@@ -112,7 +99,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
 
       const response: any = await axiosBaseApi.post(
         "/wallet/validateWalletAddress",
-        values
+        values,
       );
 
       if (response.status !== 200 || response.error) {
@@ -223,7 +210,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
       setOtpError("");
       const response: any = await axiosBaseApi.post(
         "/wallet/validateWalletAddress",
-        address
+        address,
       );
 
       if (response.status === 200 && !response.error) {
@@ -325,15 +312,15 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
             fontSize: isMobile ? "13px" : "15px",
             fontWeight: 500,
             fontFamily: "UrbanistMedium",
-            lineHeight: "1.5",
-            mb: "10px",
+            lineHeight: isMobile ? "16px" : "18px",
+            mb: isMobile ? "14px" : "16px",
           }}
         >
           {tWallet("addWalletDescription")}
         </Typography>
         <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <InputField
-            label={tWallet("walletName") + " *"}
+            label={tWallet("walletName")}
             placeholder={tWallet("walletNamePlaceholder")}
             value={walletName}
             onChange={(e) => {
@@ -421,9 +408,10 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
               <p>{tWallet("XRPTagWarning")}</p>
             </WarningContent>
           </WarningContainer>
-
         </Box>
-        <Box sx={{ display: "flex", gap: "20px", mt: "20px" }}>
+        <Box
+          sx={{ display: "flex", gap: "20px", mt: isMobile ? "14px" : "20px" }}
+        >
           <CustomButton
             label={tWallet("cancel")}
             variant="outlined"

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import HomeCard from "@/Components/UI/HomeCard";
 import { Box, Grid, Typography } from "@mui/material";
@@ -17,21 +18,22 @@ import { useDevice } from "@/hooks/useDevice";
 const GoLiveSection = () => {
   const isMobile = useIsMobile("md");
   const { os, browser } = useDevice();
+  const { t } = useTranslation("landing");
 
   const cardData = [
     {
-      title: "Create a Company Workspace",
-      description: "Set up your business profile and configure your payment preferences in minutes.",
+      titleKey: "goLiveCard1Title",
+      descriptionKey: "goLiveCard1Description",
       image: os === "ios" || browser === "safari" ? CompanySelectorImage_png : CompanySelectorImage_svg,
     },
     {
-      title: "Add Your Crypto Wallets",
-      description: "Connect BTC, ETH, LTC, and more. All your assets managed in one secure place.",
+      titleKey: "goLiveCard2Title",
+      descriptionKey: "goLiveCard2Description",
       image: os === "ios" || browser === "safari" ? AllWalletsImage_png : AllWalletsImage_svg,
     },
     {
-      title: "Generate Payment Links or Integrate API",
-      description: "Create instant payment links for non-dev teams or use our developer-friendly API.",
+      titleKey: "goLiveCard3Title",
+      descriptionKey: "goLiveCard3Description",
       image: os === "ios" || browser === "safari" ? PaymentLinkAddImage_png : PaymentLinkAddImage_svg,
     },
   ];
@@ -48,10 +50,10 @@ const GoLiveSection = () => {
       {/* Section Title */}
       <HomeSectionTitle
         type="small"
-        badgeText="How It Works"
-        title="Go live in three simple steps"
-        highlightText="three simple steps"
-        subtitle="Getting started with DynoPay takes minutes, not days. Here's how simple it is."
+        badgeText={t("howItWorks")}
+        title={t("goLiveTitle")}
+        highlightText={t("goLiveHighlight")}
+        subtitle={t("goLiveSubtitle")}
         sx={{ maxWidth: "100%" }}
       />
 
@@ -60,7 +62,7 @@ const GoLiveSection = () => {
         <Grid container spacing={4} justifyContent="center">
           {cardData.map((card, index) => (
             <Grid
-              key={card.title}
+              key={card.titleKey}
               item
               xs={12}
               sm={12}
@@ -97,7 +99,7 @@ const GoLiveSection = () => {
                     fontFamily: "OutfitMedium",
                     color: theme.palette.text.primary,
                   }}>
-                    {card.title}
+                    {t(card.titleKey)}
                   </Typography>
                   <Typography sx={{ mb: 1 }} style={{
                     fontSize: "16px",
@@ -107,7 +109,7 @@ const GoLiveSection = () => {
                     fontFamily: "OutfitRegular",
                     color: theme.palette.text.secondary,
                   }}>
-                    {card.description}
+                    {t(card.descriptionKey)}
                   </Typography>
 
                   <Box
@@ -121,11 +123,11 @@ const GoLiveSection = () => {
                   >
                     <Image
                       src={card.image}
-                      alt={card.title}
+                      alt={t(card.titleKey)}
                       quality={100}
                       priority={index < 3}
                       style={{
-                        width: isMobile ? card.title === "Generate Payment Links or Integrate API" ? "110%" : "120%" : "100%",
+                        width: isMobile ? index === 2 ? "110%" : "120%" : "100%",
                         height: "100%",
                         objectFit: "contain",
                       }}

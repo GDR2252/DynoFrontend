@@ -1,16 +1,15 @@
-import React from "react";
+import SearchIcon from "@/assets/Icons/search-icon.svg";
+import useIsMobile from "@/hooks/useIsMobile";
 import { Box, InputBase } from "@mui/material";
 import Image from "next/image";
-import SearchIcon  from "@/assets/Icons/search.svg";
-import useIsMobile from "@/hooks/useIsMobile";
 import { useTranslation } from "react-i18next";
 import { SearchIconButton } from "../Transactions/styled";
-interface Props {
+
+const PaymentLinksTopBar = ({
+  onSearch,
+}: {
   onSearch: (value: string) => void;
-}
-
-const PaymentLinksTopBar = ({ onSearch }: { onSearch: (value: string) => void }) => {
-
+}) => {
   const { t } = useTranslation("paymentLinks");
   const isMobile = useIsMobile("md");
 
@@ -21,6 +20,7 @@ const PaymentLinksTopBar = ({ onSearch }: { onSearch: (value: string) => void })
         alignItems: "center",
         gap: "8px",
         maxWidth: isMobile ? "100%" : "50%",
+        p: { xs: "0px 16px", md: "0px" },
       }}
     >
       <InputBase

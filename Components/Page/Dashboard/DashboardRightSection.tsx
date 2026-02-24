@@ -1,23 +1,23 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { ArrowOutward } from "@mui/icons-material";
+import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import PanelCard from "@/Components/UI/PanelCard";
-import CustomButton from "@/Components/UI/Buttons";
-import FeeTierProgress from "./FeeTierProgress";
 import ReferralAndKnowledge from "@/Components/Layout/ReferralAndKnowledge";
+import CustomButton from "@/Components/UI/Buttons";
+import PanelCard from "@/Components/UI/PanelCard";
+import FeeTierProgress from "./FeeTierProgress";
 
+import { formatNumberWithComma, getCurrencySymbol } from "@/helpers";
 import useIsMobile from "@/hooks/useIsMobile";
 import { theme } from "@/styles/theme";
-import { formatNumberWithComma, getCurrencySymbol } from "@/helpers";
 
-import CurrencyIcon from "@/assets/Icons/dollar-sign-icon.svg";
 import CheckCircleIcon from "@/assets/Icons/correct-icon.png";
+import CurrencyIcon from "@/assets/Icons/dollar-sign-icon.svg";
 import CrownIcon from "@/assets/Icons/premium-icon.svg";
+import BgDesktopImage from "@/assets/Images/bg-white.png";
 import BgMobileImage from "@/assets/Images/premium-card-bg.png";
-import BgDesktopImage from "@/assets/Images/bg-white.png"
 
 import { PremiumTierCard } from "./styled";
 
@@ -32,13 +32,12 @@ const DashboardRightSection = () => {
   const { t } = useTranslation(["dashboardLayout", "common"]);
   const tDashboard = useCallback(
     (key: string) => t(key, { ns: "dashboardLayout" }),
-    [t]
+    [t],
   );
 
   const [monthlyLimit] = useState(DEFAULT_MONTHLY_LIMIT);
   const [usedAmount, setUsedAmount] = useState(DEFAULT_USED_AMOUNT);
 
-  // Prevent overflow beyond limit
   useEffect(() => {
     if (usedAmount > monthlyLimit) {
       setUsedAmount(monthlyLimit);
@@ -46,13 +45,17 @@ const DashboardRightSection = () => {
   }, [usedAmount, monthlyLimit]);
 
   return (
-    <Box>
+    <Box sx={{ px: { xs: "16px", md: "0px" } }}>
       <PanelCard
         title={tDashboard("feeTierProgress")}
         subTitle={tDashboard("yourProgressTowardsTheNextFeeTier")}
         showHeaderBorder={false}
-        headerPadding={theme.spacing(2.5, 1.5, 0, 2.5)}
-        bodyPadding={isMobile ? theme.spacing("12px", 2, 2, 2) : theme.spacing("26px", 2.5, 2.5, 2.5)}
+        headerPadding={theme.spacing(2.5, 2.5, 0, 2.5)}
+        bodyPadding={
+          isMobile
+            ? theme.spacing("12px", 2, 2, 2)
+            : theme.spacing("22px", 2.5, 2.5, 2.5)
+        }
         headerActionLayout="inline"
         headerSx={{ alignItems: "start" }}
         headerAction={
@@ -83,10 +86,11 @@ const DashboardRightSection = () => {
           {/* Monthly Volume */}
           <Box
             sx={{
+              height: isMobile ? "16px" : "18px",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              mb: 1.5,
+              mb: isMobile ? "8px" : "14px",
             }}
           >
             <Typography
@@ -94,31 +98,35 @@ const DashboardRightSection = () => {
                 fontSize: isMobile ? 10 : 13,
                 color: muiTheme.palette.text.secondary,
                 fontFamily: "UrbanistMedium",
+                lineHeight: 1.2,
+                letterSpacing: 0,
                 fontWeight: 500,
               }}
             >
               {tDashboard("monthlyVolume")}
             </Typography>
 
-            <Typography sx={{ fontFamily: "UrbanistMedium" }}>
+            <Typography component="div" sx={{ fontFamily: "UrbanistMedium" }}>
               <Box
                 component="span"
                 sx={{
                   fontSize: isMobile ? 13 : 15,
                   color: muiTheme.palette.text.primary,
+                  lineHeight: 1.2,
+                  letterSpacing: 0,
                   fontWeight: 500,
                 }}
               >
-                {getCurrencySymbol(
-                  "USD",
-                  formatNumberWithComma(usedAmount)
-                )}
+                {getCurrencySymbol("USD", formatNumberWithComma(usedAmount))}
               </Box>
               <Box
                 component="span"
                 sx={{
                   px: "6px",
                   fontSize: isMobile ? 10 : 13,
+                  lineHeight: 1.2,
+                  letterSpacing: 0,
+                  fontWeight: 500,
                   color: muiTheme.palette.text.secondary,
                 }}
               >
@@ -128,13 +136,13 @@ const DashboardRightSection = () => {
                 component="span"
                 sx={{
                   fontSize: isMobile ? 10 : 13,
+                  lineHeight: 1.2,
+                  letterSpacing: 0,
+                  fontWeight: 500,
                   color: muiTheme.palette.text.secondary,
                 }}
               >
-                {getCurrencySymbol(
-                  "USD",
-                  monthlyLimit.toLocaleString()
-                )}
+                {getCurrencySymbol("USD", monthlyLimit.toLocaleString())}
               </Box>
             </Typography>
           </Box>
@@ -149,25 +157,29 @@ const DashboardRightSection = () => {
           {/* Current Tier Badge */}
           <Box
             sx={{
-              mt: 2,
+              mt: isMobile ? 1.5 : 3,
+              height: isMobile ? "32px" : "40px",
               width: "100%",
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
               gap: 0.75,
               px: 1.5,
-              py: 1.4,
+              py: isMobile ? "8px" : "11px",
               borderRadius: "100px",
               background: theme.palette.success.main,
               border: `1px solid ${theme.palette.success.light}`,
             }}
           >
             <Typography
+              component="div"
               sx={{
                 fontSize: isMobile ? 13 : 15,
                 fontWeight: 500,
                 color: theme.palette.success.dark,
                 fontFamily: "UrbanistMedium",
+                lineHeight: 1.2,
+                letterSpacing: "0",
                 display: "flex",
                 alignItems: "center",
                 gap: 1,
@@ -188,7 +200,9 @@ const DashboardRightSection = () => {
           </Box>
 
           {/* Premium Upgrade Card */}
-          <PremiumTierCard sx={{ mt: isMobile ? 1.5 : 2, position: "relative" }}>
+          <PremiumTierCard
+            sx={{ mt: isMobile ? 1.5 : 2, position: "relative" }}
+          >
             <Box
               sx={{
                 position: "absolute",
@@ -203,6 +217,7 @@ const DashboardRightSection = () => {
                 src={isMobile ? BgMobileImage : BgDesktopImage}
                 alt="Background"
                 fill
+                sizes={isMobile ? "100vw" : "310px"}
                 draggable={false}
                 style={{ objectFit: "contain" }}
               />
@@ -217,7 +232,7 @@ const DashboardRightSection = () => {
                     fontFamily: "UrbanistMedium",
                     lineHeight: "1.2",
                     letterSpacing: "0",
-                    wordBreak: "break-all"
+                    wordBreak: "break-all",
                   }}
                 >
                   {tDashboard("upgradeToPremiumTier")}
@@ -229,10 +244,10 @@ const DashboardRightSection = () => {
                     fontWeight: 500,
                     color: theme.palette.text.secondary,
                     fontFamily: "UrbanistMedium",
-                    mt: isMobile ? 0.75 : 1.5,
+                    mt: isMobile ? 0.75 : 1.2,
                     lineHeight: "1.2",
                     letterSpacing: "0",
-                    wordBreak: "break-all"
+                    wordBreak: "break-all",
                   }}
                 >
                   {tDashboard("lowerFeesAndPrioritySupport")}
@@ -241,9 +256,6 @@ const DashboardRightSection = () => {
 
               <Box
                 sx={{
-                  position: "absolute",
-                  right: isMobile ? "6px" : "24px",
-                  top: isMobile ? "6px" : "24px",
                   width: isMobile ? 32 : 49,
                   height: isMobile ? 32 : 49,
                   border: `1px solid ${theme.palette.border.main}`,

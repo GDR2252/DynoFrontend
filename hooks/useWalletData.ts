@@ -1,52 +1,21 @@
+import { WalletAction } from "@/Redux/Actions";
+import { WALLET_FETCH } from "@/Redux/Actions/WalletAction";
 import { rootReducer } from "@/utils/types";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { WalletAction } from "@/Redux/Actions";
-import { WALLET_FETCH } from "@/Redux/Actions/WalletAction";
 
 import BitcoinIcon from "@/assets/cryptocurrency/Bitcoin-icon.svg";
+import BitcoinCashIcon from "@/assets/cryptocurrency/BitcoinCash-icon.svg";
+import DogecoinIcon from "@/assets/cryptocurrency/Dogecoin-icon.svg";
 import EthereumIcon from "@/assets/cryptocurrency/Ethereum-icon.svg";
 import LitecoinIcon from "@/assets/cryptocurrency/Litecoin-icon.svg";
-import DogecoinIcon from "@/assets/cryptocurrency/Dogecoin-icon.svg";
-import BitcoinCashIcon from "@/assets/cryptocurrency/BitcoinCash-icon.svg";
 import TronIcon from "@/assets/cryptocurrency/Tron-icon.svg";
 import USDTIcon from "@/assets/cryptocurrency/USDT-icon.svg";
-
-/* ---------------------------------- Types --------------------------------- */
-
-export type WalletType =
-  | "BTC"
-  | "ETH"
-  | "LTC"
-  | "DOGE"
-  | "BCH"
-  | "TRX"
-  | "USDT-ERC20"
-  | "USDT-TRC20";
-
-export type CryptoCode =
-  | "BTC"
-  | "ETH"
-  | "LTC"
-  | "DOGE"
-  | "BCH"
-  | "TRX"
-  | "USDT-ERC20"
-  | "USDT-TRC20";
-
-export interface WalletDataType {
-  icon: any;
-  walletTitle: WalletType;
-  walletAddress: string;
-  name: string;
-  totalProcessed: number;
-}
-
-export interface Cryptocurrency {
-  code: CryptoCode;
-  name: string;
-  icon: any;
-}
+import {
+  Cryptocurrency,
+  WalletDataType,
+  WalletType,
+} from "@/utils/types/wallet";
 
 /* ------------------------------- Static Maps ------------------------------- */
 
@@ -94,23 +63,33 @@ export const ALLCRYPTOCURRENCIES: readonly Cryptocurrency[] = [
   { code: "USDT-TRC20", name: "USDT-TRC20", icon: USDTIcon },
 ];
 
+const requestedWalletFetchByToken = new Set<string>();
+
 /* ------------------------------- Main Hook -------------------------------- */
 
 export const useWalletData = () => {
   const dispatch = useDispatch();
   const walletState = useSelector((state: rootReducer) => state.walletReducer);
   const walletLoading = Boolean(walletState?.loading);
+  const walletListLength = Array.isArray(walletState?.walletList)
+    ? walletState.walletList.length
+    : 0;
   const [walletWarning, setWalletWarning] = useState(false);
 
   useEffect(() => {
-    if (
-      !walletState?.loading &&
-      (!Array.isArray(walletState?.walletList) ||
-        walletState.walletList.length === 0)
-    ) {
-      dispatch(WalletAction(WALLET_FETCH));
+    if (typeof window === "undefined") return;
+    const token = window.localStorage.getItem("token");
+    if (!token) return;
+    if (walletListLength > 0) {
+      requestedWalletFetchByToken.add(token);
+      return;
     }
-  }, [dispatch]);
+    if (walletLoading) return;
+    if (requestedWalletFetchByToken.has(token)) return;
+
+    requestedWalletFetchByToken.add(token);
+    dispatch(WalletAction(WALLET_FETCH));
+  }, [dispatch, walletLoading, walletListLength]);
 
   /* ---------------------------- Wallet Data ---------------------------- */
 
@@ -124,12 +103,12 @@ export const useWalletData = () => {
       .filter(
         (wallet) =>
           WALLET_ORDER.includes(wallet.wallet_type as WalletType) &&
-          Boolean(wallet.wallet_address)
+          Boolean(wallet.wallet_address),
       )
       .sort(
         (a, b) =>
           WALLET_ORDER.indexOf(a.wallet_type as WalletType) -
-          WALLET_ORDER.indexOf(b.wallet_type as WalletType)
+          WALLET_ORDER.indexOf(b.wallet_type as WalletType),
       )
       .map((wallet) => {
         const type = wallet.wallet_type as WalletType;
@@ -151,7 +130,7 @@ export const useWalletData = () => {
 
     return ALLCRYPTOCURRENCIES.filter(
       (crypto) =>
-        !walletData.some((wallet) => wallet.walletTitle === crypto.code)
+        !walletData.some((wallet) => wallet.walletTitle === crypto.code),
     );
   }, [walletData]);
 

@@ -1,27 +1,27 @@
-import { use, useEffect, useMemo, useRef, useState } from "react";
-import { useTheme, Box, Divider, Typography } from "@mui/material";
-import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import EditIcon from "@/assets/Icons/edit-icon.svg";
+import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
+import { Box, Divider, Typography, useTheme } from "@mui/material";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  SelectorTrigger,
-  TriggerText,
   CompanyItem,
   ItemLeft,
   ItemRight,
+  SelectorTrigger,
+  TriggerText,
 } from "./styled";
 
-import Image from "next/image";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import { VerticalLine } from "../LanguageSwitcher/styled";
-import { useTranslation } from "react-i18next";
-import { Add } from "@mui/icons-material";
-import CustomButton from "../Buttons";
-import { useSelector } from "react-redux";
-import { rootReducer } from "@/utils/types";
 import { useCompanyDialog } from "@/Components/UI/CompanyDialog/context";
+import { useCompanySettingsDialog } from "@/Components/UI/CompanySettingsDialog/context";
 import useIsMobile from "@/hooks/useIsMobile";
-import { set } from "date-fns";
+import { rootReducer } from "@/utils/types";
+import { Add } from "@mui/icons-material";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Image from "next/image";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import CustomButton from "../Buttons";
+import { VerticalLine } from "../LanguageSwitcher/styled";
 
 export default function CompanySelector() {
   const { t } = useTranslation("dashboardLayout");
@@ -29,8 +29,9 @@ export default function CompanySelector() {
   const isMobile = useIsMobile("md");
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { openAddCompany, openEditCompany } = useCompanyDialog();
+  const { openCompanySettings } = useCompanySettingsDialog();
   const companyState = useSelector(
-    (state: rootReducer) => state.companyReducer
+    (state: rootReducer) => state.companyReducer,
   );
 
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -58,10 +59,9 @@ export default function CompanySelector() {
     setCount(BASE_COUNT + extra);
   }, [windowWidth]);
 
-
   const companies = useMemo(
     () => companyState.companyList ?? [],
-    [companyState.companyList]
+    [companyState.companyList],
   );
   const [active, setActive] = useState<number | null>(null);
 
@@ -77,7 +77,10 @@ export default function CompanySelector() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
         handleClose();
       }
     };
@@ -106,7 +109,7 @@ export default function CompanySelector() {
         position: "relative",
         width: isMobile ? "fit-content" : "clamp(265px, 18vw, 300px)",
         mt: Boolean(anchorEl) && isMobile ? "-16px !important" : "0px",
-        ml: Boolean(anchorEl) && isMobile ? "-6px !important" : "0px"
+        ml: Boolean(anchorEl) && isMobile ? "-6px !important" : "0px",
       }}
     >
       {/* Trigger */}
@@ -115,18 +118,29 @@ export default function CompanySelector() {
           <BusinessCenterIcon
             sx={{
               color: theme.palette.primary.main,
-              fontSize: isMobile ? "16.5px" : "20px",
+              fontSize: isMobile ? "16.5px" : "19px",
+              mt: "-3px",
             }}
           />
-          <TriggerText sx={{ color: theme.palette.primary.main }}>{windowWidth < 600 ? truncateByWords(selected?.company_name ?? "-", count) : selected?.company_name ?? "-"}</TriggerText>
+          <TriggerText sx={{ color: theme.palette.primary.main }}>
+            {windowWidth < 600
+              ? truncateByWords(selected?.company_name ?? "-", count)
+              : (selected?.company_name ?? "-")}
+          </TriggerText>
         </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <VerticalLine />
           {!anchorEl ? (
-            <ExpandMoreIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+            <ExpandMoreIcon
+              fontSize="small"
+              sx={{ color: theme.palette.text.secondary }}
+            />
           ) : (
-            <ExpandLess fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+            <ExpandLess
+              fontSize="small"
+              sx={{ color: theme.palette.text.secondary }}
+            />
           )}
         </Box>
       </SelectorTrigger>
@@ -159,19 +173,34 @@ export default function CompanySelector() {
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <BusinessCenterIcon
-                sx={{ color: theme.palette.primary.main, fontSize: isMobile ? "16.5px" : "20px" }}
+                sx={{
+                  color: theme.palette.primary.main,
+                  fontSize: isMobile ? "16.5px" : "20px",
+                }}
               />
-              <TriggerText sx={{ color: theme.palette.primary.main }}>{selected?.company_name ?? "-"}</TriggerText>
+              <TriggerText sx={{ color: theme.palette.primary.main }}>
+                {selected?.company_name ?? "-"}
+              </TriggerText>
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <VerticalLine />
-              <ExpandLess fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+              <ExpandLess
+                fontSize="small"
+                sx={{ color: theme.palette.text.secondary }}
+              />
             </Box>
           </Box>
 
           {/* Content */}
-          <Box sx={{ mt: "13px", display: "flex", flexDirection: "column", gap: isMobile ? "0px" : "6px" }}>
+          <Box
+            sx={{
+              mt: "13px",
+              display: "flex",
+              flexDirection: "column",
+              gap: isMobile ? "0px" : "6px",
+            }}
+          >
             <Typography
               sx={{
                 display: isMobile ? "none" : "block",
@@ -195,11 +224,17 @@ export default function CompanySelector() {
                 }}
               >
                 <ItemLeft>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <Box
+                    sx={{ display: "flex", alignItems: "center", gap: "6px" }}
+                  >
                     <BusinessCenterIcon
                       sx={{ fontSize: isMobile ? "16.5px" : "20px" }}
                     />
-                    <TriggerText>{isMobile ? truncateByWords(c?.company_name ?? "-", 18) : c?.company_name ?? "-"}</TriggerText>
+                    <TriggerText>
+                      {isMobile
+                        ? truncateByWords(c?.company_name ?? "-", 18)
+                        : (c?.company_name ?? "-")}
+                    </TriggerText>
                   </Box>
                   <Typography
                     sx={{
@@ -217,7 +252,7 @@ export default function CompanySelector() {
                   onClick={(e: any) => {
                     e.stopPropagation();
                     handleClose();
-                    openEditCompany(c);
+                    openCompanySettings(c);
                   }}
                 >
                   <Image

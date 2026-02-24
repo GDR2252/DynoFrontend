@@ -16,12 +16,14 @@ export const SidebarWrapper = styled("aside")(({ theme }) => ({
 export const Menu = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: "6px",
+  gap: "4px",
   background: theme.palette.common.white,
   borderRadius: "12px",
 }));
 
-export const MenuItem = styled("div")<{ active?: boolean }>(
+export const MenuItem = styled("div", {
+  shouldForwardProp: (prop) => prop !== "active",
+})<{ active?: boolean }>(
   ({ active, theme }) => ({
     display: "flex",
     alignItems: "center",
@@ -38,12 +40,14 @@ export const MenuItem = styled("div")<{ active?: boolean }>(
     position: "relative",
 
     "&:hover": {
-      background: theme.palette.primary.light
+      background: theme.palette.primary.light,
     },
-  })
+  }),
 );
 
-export const ActiveIndicator = styled("div")<{ active?: boolean }>(
+export const ActiveIndicator = styled("div", {
+  shouldForwardProp: (prop) => prop !== "active",
+})<{ active?: boolean }>(
   ({ active, theme }) => ({
     position: "absolute",
     left: "-16px",
@@ -53,10 +57,12 @@ export const ActiveIndicator = styled("div")<{ active?: boolean }>(
     background: active ? theme.palette.primary.main : "transparent",
     borderRadius: "0 7px 7px 0",
     transition: "all 0.2s ease",
-  })
+  }),
 );
 
-export const IconBox = styled("div")<{ active?: boolean }>(
+export const IconBox = styled("div", {
+  shouldForwardProp: (prop) => prop !== "active",
+})<{ active?: boolean }>(
   ({ active, theme }) => ({
     display: "flex",
     justifyContent: "center",
@@ -71,13 +77,16 @@ export const IconBox = styled("div")<{ active?: boolean }>(
         ? "brightness(0) saturate(100%) invert(13%) sepia(94%) saturate(7151%) hue-rotate(240deg) brightness(101%) contrast(150%)"
         : "brightness(0) saturate(100%) invert(15%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(100%)",
     },
-  })
+  }),
 );
 
 export const SidebarFooter = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "16px",
+  [theme.breakpoints.down("md")]: {
+    gap: "10px",
+  },
 }));
 
 export const HelpSupportBtn = styled("button")(({ theme }) => ({
@@ -109,7 +118,7 @@ export const ReferralCard = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "12px",
-  padding: "14px",
+  padding: "24px 20px",
   borderRadius: "12px",
   border: `1px solid ${theme.palette.border.main}`,
   fontWeight: 500,
@@ -117,6 +126,9 @@ export const ReferralCard = styled("div")(({ theme }) => ({
   background: theme.palette.secondary.main,
   position: "relative",
   overflow: "hidden",
+  [theme.breakpoints.down("md")]: {
+    padding: "13px 14px 13px 14px",
+  },
 }));
 
 export const ReferralCardTitle = styled("div")(({ theme }) => ({
@@ -139,7 +151,7 @@ export const ReferralCardContent = styled("div")(({ theme }) => ({
   color: theme.palette.text.primary,
   position: "relative",
   [theme.breakpoints.down("md")]: {
-    gap: "6px",
+    gap: "6.41px",
   },
 }));
 

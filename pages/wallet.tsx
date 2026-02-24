@@ -1,24 +1,23 @@
-import { Box, Typography } from "@mui/material";
-import Head from "next/head";
-import React from "react";
-import useIsMobile from "@/hooks/useIsMobile";
-import { useTranslation } from "react-i18next";
-import { useCallback, useEffect, useState } from "react";
+import InfoIcon from "@/assets/Icons/info-icon.svg";
+import Wallet from "@/Components/Page/Wallet";
+import { SetupWarnnigContainer } from "@/Components/Page/Wallet/styled";
+import AddWalletModal from "@/Components/UI/AddWalletModal";
+import { WarningIconContainer } from "@/Components/UI/AddWalletModal/styled";
 import CustomButton from "@/Components/UI/Buttons";
+import useIsMobile from "@/hooks/useIsMobile";
+import { useWalletData } from "@/hooks/useWalletData";
+import { theme } from "@/styles/theme";
+import { pageProps } from "@/utils/types";
 import {
   AddRounded,
   ArrowOutward as ArrowOutwardIcon,
 } from "@mui/icons-material";
-import { pageProps } from "@/utils/types";
-import { theme } from "@/styles/theme";
-import Wallet from "@/Components/Page/Wallet";
-import AddWalletModal from "@/Components/UI/AddWalletModal";
-import { useRouter } from "next/router";
-import { SetupWarnnigContainer } from "@/Components/Page/Wallet/styled";
-import { WarningIconContainer } from "@/Components/UI/AddWalletModal/styled";
+import { Box, Typography } from "@mui/material";
+import Head from "next/head";
 import Image from "next/image";
-import InfoIcon from "@/assets/Icons/info-icon.svg";
-import { useWalletData } from "@/hooks/useWalletData";
+import { useRouter } from "next/router";
+import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const WalletPage = ({
   setPageName,
@@ -34,7 +33,7 @@ const WalletPage = ({
   const tDashboard = useCallback(
     (key: string, defaultValue?: string) =>
       t(key, { ns: "walletScreen", defaultValue }),
-    [t]
+    [t],
   );
 
   const [openCreate, setOpenCreate] = useState(false);
@@ -47,15 +46,14 @@ const WalletPage = ({
       setPageDescription(
         tDashboard(
           "walletsDescription",
-          "Manage your cryptocurrency wallet addresses"
-        )
+          "Manage your cryptocurrency wallet addresses",
+        ),
       );
     }
   }, [setPageName, setPageDescription, tDashboard]);
 
   useEffect(() => {
     if (setPageHeaderSx) {
-      // Example: You can set custom styles for PageHeader from here
       setPageHeaderSx({
         [theme.breakpoints.down("sm")]: {
           flexDirection: "column",
@@ -83,7 +81,7 @@ const WalletPage = ({
     setPageWarning(
       <>
         {walletWarning && (
-          <SetupWarnnigContainer >
+          <SetupWarnnigContainer>
             <WarningIconContainer>
               <Image
                 src={InfoIcon}
@@ -95,8 +93,26 @@ const WalletPage = ({
               />
             </WarningIconContainer>
             <Box>
-              <Typography sx={{ fontFamily: "UrbanistSemibold", fontWeight: "600", fontSize: isMobile ? "10px" : "15px", lineHeight: "130%", letterSpacing: 0 }}>{t("walletSetUpWarnnigTitle")}</Typography>
-              <Typography sx={{ fontFamily: "UrbanistMedium", fontWeight: "500", fontSize: isMobile ? "10px" : "15px", lineHeight: "130%", letterSpacing: 0 }}>
+              <Typography
+                sx={{
+                  fontFamily: "UrbanistSemibold",
+                  fontWeight: "600",
+                  fontSize: isMobile ? "10px" : "15px",
+                  lineHeight: "130%",
+                  letterSpacing: 0,
+                }}
+              >
+                {t("walletSetUpWarnnigTitle")}
+              </Typography>
+              <Typography
+                sx={{
+                  fontFamily: "UrbanistMedium",
+                  fontWeight: "500",
+                  fontSize: isMobile ? "10px" : "15px",
+                  lineHeight: "130%",
+                  letterSpacing: 0,
+                }}
+              >
                 {(() => {
                   const text = t("walletSetUpWarnnigSubtitle");
                   const boldText = t("walletSetUpWarnnigSubtitleBold");
@@ -105,7 +121,16 @@ const WalletPage = ({
                     return (
                       <>
                         {parts[0]}
-                        <Typography component="span" sx={{ fontFamily: "UrbanistSemibold", fontWeight: "600", fontSize: isMobile ? "10px" : "15px", lineHeight: "130%", letterSpacing: 0 }}>
+                        <Typography
+                          component="span"
+                          sx={{
+                            fontFamily: "UrbanistSemibold",
+                            fontWeight: "600",
+                            fontSize: isMobile ? "10px" : "15px",
+                            lineHeight: "130%",
+                            letterSpacing: 0,
+                          }}
+                        >
                           {boldText}
                         </Typography>
                         {parts[1]}
@@ -118,7 +143,7 @@ const WalletPage = ({
             </Box>
           </SetupWarnnigContainer>
         )}
-      </>
+      </>,
     );
     return () => setPageWarning(null);
   }, [setPageWarning, isMobile, t, walletWarning]);
@@ -175,10 +200,10 @@ const WalletPage = ({
             },
           }}
         />
-      </>
+      </>,
     );
     return () => setPageAction(null);
-  }, [setPageAction, tDashboard, isMobile]);
+  }, [setPageAction, tDashboard, isMobile, router]);
 
   return (
     <>
@@ -188,7 +213,9 @@ const WalletPage = ({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Box sx={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
+      <Box
+        sx={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}
+      >
         <Wallet />
         <AddWalletModal
           open={openCreate}

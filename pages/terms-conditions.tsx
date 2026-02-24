@@ -1,11 +1,13 @@
 import useIsMobile from "@/hooks/useIsMobile";
 import { Box, Typography } from "@mui/material";
 import React from "react";
-import { terms } from "@/utils/constants/term-condition";
+import { useTranslation } from "react-i18next";
+
+const SECTION_IDS = Array.from({ length: 18 }, (_, i) => `section${i + 1}`);
 
 const TermsConditions = () => {
-
   const isMobile = useIsMobile("md");
+  const { t } = useTranslation("termsConditions");
 
   return (
     <Box
@@ -33,7 +35,7 @@ const TermsConditions = () => {
           letterSpacing: 0,
         }}
       >
-        Terms & Conditions
+        {t("termsConditionsTitle")}
       </Typography>
 
       {/* SECTION CONTENT */}
@@ -45,93 +47,99 @@ const TermsConditions = () => {
           lineHeight: 1.5,
         }}
       >
-        {terms.map((section, index) => (
-          <Box key={index}>
-            {/* ITEM TITLE */}
-            <Typography
-              sx={{
-                fontSize: "18px",
-                color: "#676B7E",
-                fontWeight: 600,
-                fontFamily: "OutfitBold",
-                lineHeight: "28px",
-                letterSpacing: 0,
-              }}
-            >
-              {section.title}
-            </Typography>
+        {SECTION_IDS.map((sectionId) => {
+          const desc1 = t(`${sectionId}Desc1`);
+          const desc2 = t(`${sectionId}Desc2`);
+          const footer = t(`${sectionId}Footer`);
+          const bullets = t(`${sectionId}Bullets`, { returnObjects: true }) as string[];
 
-            {/* ITEM SECTION */}
-            {/* ITEM DESCRIPTION 1 */}
-            {section.description1 && (
+          return (
+            <Box key={sectionId}>
+              {/* ITEM TITLE */}
               <Typography
                 sx={{
                   fontSize: "18px",
                   color: "#676B7E",
-                  fontFamily: "OutfitRegular",
+                  fontWeight: 600,
+                  fontFamily: "OutfitBold",
                   lineHeight: "28px",
                   letterSpacing: 0,
                 }}
               >
-                {section.description1}
+                {t(`${sectionId}Title`)}
               </Typography>
-            )}
 
-            {/* ITEM DESCRIPTION 2 */}
-            {section.description2 && (
-              <Typography
-                sx={{
-                  fontSize: "18px",
-                  color: "#676B7E",
-                  fontFamily: "OutfitRegular",
-                  lineHeight: "28px",
-                  letterSpacing: 0,
-                }}
-              >
-                {section.description2}
-              </Typography>
-            )}
+              {/* ITEM DESCRIPTION 1 */}
+              {desc1 && (
+                <Typography
+                  sx={{
+                    fontSize: "18px",
+                    color: "#676B7E",
+                    fontFamily: "OutfitRegular",
+                    lineHeight: "28px",
+                    letterSpacing: 0,
+                  }}
+                >
+                  {desc1}
+                </Typography>
+              )}
 
-            {/* ITEM BULLET POINTS */}
-            {section.bulletPoints?.length > 0 && (
-              <Box component="ul" sx={{ pl: "26px", my: "5px" }}>
-                {section.bulletPoints.map((point, pointIndex) => (
-                  <Box
-                    component="li"
-                    key={pointIndex}
-                    sx={{
-                      listStyle: "disc",
-                      fontSize: "18px",
-                      color: "#676B7E",
-                      fontWeight: 400,
-                      fontFamily: "OutfitRegular",
-                      lineHeight: "28px",
-                      letterSpacing: 0,
-                    }}
-                  >
-                    {point}
-                  </Box>
-                ))}
-              </Box>
-            )}
+              {/* ITEM DESCRIPTION 2 */}
+              {desc2 && (
+                <Typography
+                  sx={{
+                    fontSize: "18px",
+                    color: "#676B7E",
+                    fontFamily: "OutfitRegular",
+                    lineHeight: "28px",
+                    letterSpacing: 0,
+                  }}
+                >
+                  {desc2}
+                </Typography>
+              )}
 
-            {/* ITEM FOOTER */}
-            {section.footer && (
-              <Typography
-                sx={{
-                  fontSize: "18px",
-                  color: "#676B7E",
-                  fontWeight: 400,
-                  fontFamily: "OutfitRegular",
-                  lineHeight: "28px",
-                  letterSpacing: 0,
-                }}
-              >
-                {section.footer}
-              </Typography>
-            )}
-          </Box>
-        ))}
+              {/* ITEM BULLET POINTS */}
+              {Array.isArray(bullets) && bullets.length > 0 && (
+                <Box component="ul" sx={{ pl: "26px", my: "5px" }}>
+                  {bullets.map((point, pointIndex) => (
+                    <Box
+                      component="li"
+                      key={pointIndex}
+                      sx={{
+                        listStyle: "disc",
+                        fontSize: "18px",
+                        color: "#676B7E",
+                        fontWeight: 400,
+                        fontFamily: "OutfitRegular",
+                        lineHeight: "28px",
+                        letterSpacing: 0,
+                      }}
+                    >
+                      {point}
+                    </Box>
+                  ))}
+                </Box>
+              )}
+
+              {/* ITEM FOOTER */}
+              {footer && (
+                <Typography
+                  sx={{
+                    fontSize: "18px",
+                    color: "#676B7E",
+                    fontWeight: 400,
+                    fontFamily: "OutfitRegular",
+                    lineHeight: "28px",
+                    letterSpacing: 0,
+                  }}
+                >
+                  {footer}
+                </Typography>
+              )}
+            </Box>
+          );
+        })}
       </Box>
     </Box>
   );

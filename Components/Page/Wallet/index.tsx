@@ -1,46 +1,34 @@
-import React, { useState, useCallback } from "react";
 import CopyIcon from "@/assets/Icons/copy-icon.svg";
 import EditIcon from "@/assets/Icons/edit-icon.svg";
-import WalletIcon from "@/assets/Icons/home/wallet.svg";
 import LinkIcon from "@/assets/Icons/link-icon.svg";
 import RoundedStackIcon from "@/assets/Icons/roundedStck-icon.svg";
-import { Box, Typography, Grid, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, CircularProgress } from "@mui/material";
-import Image from "next/image";
-import { ArrowOutward } from "@mui/icons-material";
-import { theme } from "@/styles/theme";
-import { getCurrencySymbol, formatNumberWithComma } from "@/helpers";
-import { useDispatch } from "react-redux";
-import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
-import { useTranslation } from "react-i18next";
+import AddWalletModal from "@/Components/UI/AddWalletModal";
+import InputField from "@/Components/UI/AuthLayout/InputFields";
+import CustomButton from "@/Components/UI/Buttons";
+import EmptyDataModel from "@/Components/UI/EmptyDataModel";
 import PanelCard from "@/Components/UI/PanelCard";
-import InfoIcon from "@/assets/Icons/info-icon.svg";
+import { formatNumberWithComma, getCurrencySymbol } from "@/helpers";
+import useIsMobile from "@/hooks/useIsMobile";
+import { useWalletData } from "@/hooks/useWalletData";
+import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
+import { theme } from "@/styles/theme";
+import { WalletData } from "@/utils/types/wallet";
+import { ArrowOutward } from "@mui/icons-material";
+import { Box, CircularProgress, Grid, Typography } from "@mui/material";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { CopyButton } from "../Transactions/TransactionDetailsModal.styled";
 import {
   HeaderIcon,
-  SetupWarnnigContainer,
   WalletCardBody,
   WalletCardBodyRow,
-  WalletCopyButton,
   WalletEditButton,
   WalletHeaderAction,
   WalletLabel,
 } from "./styled";
-import InputField from "@/Components/UI/AuthLayout/InputFields";
-import CustomButton from "@/Components/UI/Buttons";
-import AddWalletModal from "@/Components/UI/AddWalletModal";
-import { WarningIconContainer } from "@/Components/UI/AddWalletModal/styled";
-import useIsMobile from "@/hooks/useIsMobile";
-import { useWalletData } from "@/hooks/useWalletData";
-import EmptyDataModel from "@/Components/UI/EmptyDataModel";
-import { CopyButton } from "../Transactions/TransactionDetailsModal.styled";
-import { useRouter } from "next/router";
-
-interface WalletData {
-  icon: any;
-  walletTitle: string;
-  walletAddress: string;
-  name: string;
-  totalProcessed: number;
-}
 
 const Wallet = () => {
   const isMobile = useIsMobile("md");
@@ -51,7 +39,7 @@ const Wallet = () => {
       const result = t(key, { ns: "walletScreen" });
       return typeof result === "string" ? result : String(result);
     },
-    [t]
+    [t],
   );
 
   const router = useRouter();
@@ -70,35 +58,35 @@ const Wallet = () => {
     });
   };
 
-  const handleViewTransactions = (wallet: WalletData) => {
-    console.log("View transactions for:", wallet.walletTitle);
-  };
-
   const handleEdit = (wallet: WalletData) => {
     console.log("Edit wallet:", wallet.walletTitle);
     setOpenEditModal(true);
   };
 
   if (walletLoading) {
-    return <Box
-      sx={{
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <CircularProgress
+    return (
+      <Box
         sx={{
-          color: "#0004ff",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
-      />
-    </Box>;
+      >
+        <CircularProgress
+          sx={{
+            color: "#0004ff",
+          }}
+        />
+      </Box>
+    );
   }
 
   if (walletData.length === 0 && !walletLoading) {
     return (
-      <EmptyDataModel pageName="wallet" />
+      <>
+        <EmptyDataModel pageName="wallet" />
+      </>
     );
   }
 
@@ -110,10 +98,10 @@ const Wallet = () => {
         flexDirection: "column",
         gap: "16px",
         mt: isMobile ? 1 : 0,
-        pb: { xs: "70px", lg: "0" }
+        pb: { xs: "70px", lg: "0" },
       }}
     >
-      <Grid container spacing={isMobile ? 2 : 2.5}>
+      <Grid container spacing={isMobile ? "12px" : 2.7}>
         {walletData.map((wallet, index) => (
           <Grid
             item
@@ -143,17 +131,32 @@ const Wallet = () => {
               title={wallet.name}
               headerIcon={
                 <HeaderIcon>
-                  <Image src={wallet.icon} alt={wallet.name} draggable={false} />
+                  <Image
+                    src={wallet.icon}
+                    alt={wallet.name}
+                    draggable={false}
+                  />
                 </HeaderIcon>
               }
               showHeaderBorder={false}
               headerPadding={theme.spacing(2.5, 2.5, 0, 2.5)}
-              bodyPadding={isMobile ? theme.spacing(1.75, 2, 2, 2) : theme.spacing(3, 2.5, 2.5, 2.5)}
+              bodyPadding={
+                isMobile
+                  ? theme.spacing(1.75, 2, 2, 2)
+                  : theme.spacing(3, 2.5, 2.5, 2.5)
+              }
               headerAction={
                 <WalletHeaderAction>
-                  <Image src={wallet.icon} alt={wallet.name} draggable={false} />
+                  <Image
+                    src={wallet.icon}
+                    alt={wallet.name}
+                    draggable={false}
+                  />
                   <span>
-                    {wallet.name === "USDT-TRC20" || wallet.name === "USDT-ERC20" ? "USDT" : wallet.walletTitle}
+                    {wallet.name === "USDT-TRC20" ||
+                    wallet.name === "USDT-ERC20"
+                      ? "USDT"
+                      : wallet.walletTitle}
                   </span>
                 </WalletHeaderAction>
               }
@@ -188,7 +191,11 @@ const Wallet = () => {
                 </WalletCardBodyRow>
                 <WalletCardBodyRow>
                   <Box
-                    sx={{ display: "flex", flexDirection: "column", gap: 1.25 }}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: isMobile ? 1 : 1.25,
+                    }}
                   >
                     <WalletLabel>
                       <Image
@@ -200,16 +207,16 @@ const Wallet = () => {
                     </WalletLabel>
                     <Typography
                       sx={{
-                        fontSize: "20px",
+                        fontSize: isMobile ? "15px" : "20px",
                         fontWeight: 500,
                         color: theme.palette.text.primary,
-                        lineHeight: "24px",
+                        lineHeight: isMobile ? "18px" : "24px",
                         fontFamily: "UrbanistMedium",
                       }}
                     >
                       {getCurrencySymbol(
                         "USD",
-                        formatNumberWithComma(wallet.totalProcessed)
+                        formatNumberWithComma(wallet.totalProcessed),
                       )}
                     </Typography>
                   </Box>
@@ -252,7 +259,9 @@ const Wallet = () => {
                         width={isMobile ? 13 : 16}
                         height={isMobile ? 14 : 16}
                         draggable={false}
-                        style={{ filter: "brightness(0) saturate(100%) invert(0%)" }}
+                        style={{
+                          filter: "brightness(0) saturate(100%) invert(0%)",
+                        }}
                       />
                     </WalletEditButton>
                   </WalletCardBodyRow>

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import NoAccess from "@/assets/Images/404.png";
 import { Box, Button, Typography } from "@mui/material";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 const Error = ({ statusCode, setPageName }: any) => {
   const router = useRouter();
@@ -25,8 +26,8 @@ const Error = ({ statusCode, setPageName }: any) => {
         },
       }}
     >
-      <img src={NoAccess.src} />
-      <Typography color="primary" variant="h5">
+      <Image src={NoAccess} alt="No Access" height={200} width={200} draggable={false} style={{ objectFit: "contain" }} />
+      <Typography color="primary" variant="h5" fontFamily="UrbanistBold" fontSize="24px" lineHeight="32px" letterSpacing="0.01em" textTransform="none">
         {statusCode
           ? `An error ${statusCode} occurred on server`
           : "An error occurred on client"}{" "}
@@ -47,6 +48,11 @@ const Error = ({ statusCode, setPageName }: any) => {
             "&:hover": {
               color: "#12131C",
             },
+            fontFamily: "UrbanistBold",
+            fontSize: "16px",
+            lineHeight: "24px",
+            letterSpacing: "0.01em",
+            textTransform: "none",
           }}
           onClick={() => router.back()}
           disableRipple={false}

@@ -1,5 +1,6 @@
 import { Box, styled, Typography } from "@mui/material";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { homeTheme } from "@/styles/homeTheme";
 import Dashboard_png from "@/assets/Images/home/Dashboard.png";
 import Dashboard_svg from "@/assets/Images/home/Dashboard.svg";
@@ -90,6 +91,7 @@ const DecorativeImage = styled(Box)(() => ({
 
 const UseCaseBanner = () => {
   const { os } = useDevice();
+  const { t } = useTranslation("landing");
 
   return (
     <UseCaseBannerWrapper>
@@ -117,11 +119,10 @@ const UseCaseBanner = () => {
             />
           </DecorativeImage>
           <TitleText>
-            Start Accepting <HighlightText>Crypto Today</HighlightText>
+            {t("useCaseBannerTitlePrefix")} <HighlightText>{t("useCaseBannerTitleHighlight")}</HighlightText>
           </TitleText>
           <SubText>
-            Set up your workspace, add your wallets, and go live within minutes.
-            Join thousands of businesses already accepting crypto.
+            {t("useCaseBannerSubtitle")}
           </SubText>
           {/* Start Accepting Crypto Button */}
           <Box
@@ -131,7 +132,7 @@ const UseCaseBanner = () => {
               marginTop: "16px",
             }}
           >
-            <HomeButton variant="primary" label="Start Accepting Crypto" />
+            <HomeButton variant="primary" label={t("startAcceptingCrypto")} />
           </Box>
           <DecorativeImage
             sx={{
@@ -166,6 +167,8 @@ const UseCaseBanner = () => {
             fill
             style={{ objectFit: "contain", scale: os === "ios" ? "1" : "1.25", marginTop: os === "ios" ? "0px" : "8px" }}
             draggable={false}
+            quality={100}
+            priority={true}
           />
           <DecorativeImage
             sx={{

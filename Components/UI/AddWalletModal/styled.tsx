@@ -28,6 +28,9 @@ export const WarningContainer = styled(Box)(({ theme }) => ({
   alignItems: "center",
   justifyContent: "flex-start",
   gap: theme.spacing(1.5),
+  [theme.breakpoints.down("md")]: {
+    padding: theme.spacing(1, "14px"),
+  },
 }));
 
 export const WarningIconContainer = styled(Box)({
@@ -46,6 +49,10 @@ export const WarningContent = styled(Box)({
     fontWeight: 500,
     fontFamily: "UrbanistMedium",
     lineHeight: "15px",
+    [theme.breakpoints.down("md")]: {
+      fontSize: "10px",
+      lineHeight: "12px",
+    },
   },
 });
 

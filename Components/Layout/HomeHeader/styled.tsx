@@ -27,8 +27,11 @@ export const HeaderContainer = styled("nav")(({ theme }) => ({
 
 export const NavLinks = styled("div")(({ theme }) => ({
   display: "flex",
-  gap: 24,
+  gap: 32,
+  letterSpacing: "0px",
+  fontFamily: "OutfitRegular",
   alignItems: "center",
+  justifyContent: "space-between",
   [theme.breakpoints.down("md")]: {
     display: "none",
   },
@@ -38,6 +41,7 @@ export const NavLinks = styled("div")(({ theme }) => ({
     fontSize: "14px",
     fontWeight: 400,
     lineHeight: "20px",
+    letterSpacing: "0px",
     fontFamily: "OutfitRegular",
     color: homeTheme.palette.text.secondary,
     padding: 0,
@@ -63,16 +67,6 @@ export const Actions = styled("div")(({ theme }) => ({
     fontFamily: "OutfitMedium",
     whiteSpace: "nowrap",
 
-    // [theme.breakpoints.down("md")]: {
-    //   fontSize: "13px",
-    //   padding: "6px 8px",
-    // },
-
-    // [theme.breakpoints.down("sm")]: {
-    //   fontSize: "12px",
-    //   padding: "4px 6px",
-    // },
-
     "&:hover": {
       background: "transparent",
       color: homeTheme.palette.primary.main,
@@ -86,28 +80,25 @@ export const MobileMenuButton = styled(IconButton)(({ theme }) => ({
 
 export const MobileDrawer = styled("div")({
   height: "100%",
-  backgroundColor: "#fafafa",
+  backgroundColor: "transparent",
+
   display: "flex",
   flexDirection: "column",
   overflow: "hidden",
 });
 
 export const MobileNavItem = styled("div")(({ theme }) => ({
-  padding: "16px 0",
-  fontSize: "16px",
+  fontSize: "15.88px",
   fontWeight: 400,
-  lineHeight: "24px",
+  lineHeight: "22.68px",
   fontFamily: "OutfitRegular",
-  color: homeTheme.palette.text.primary,
+  color: homeTheme.palette.text.secondary,
   cursor: "pointer",
-  borderBottom: `1px solid ${homeTheme.palette.border.main}`,
   transition: "color 0.2s ease",
-
-  "&:hover": {
-    color: homeTheme.palette.primary.main,
-  },
-
-  "&:last-child": {
-    borderBottom: "none",
-  },
+  textAlign: "right",
+  disableRipple: true,
+  userSelect: "none",
+  WebkitUserSelect: "none",
+  MozUserSelect: "none",
+  msUserSelect: "none",
 }));

@@ -1,55 +1,54 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Grid, Typography } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
 
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 
-import PanelCard from "@/Components/UI/PanelCard";
 import CustomButton from "@/Components/UI/Buttons";
+import PanelCard from "@/Components/UI/PanelCard";
 
 import { ApiAction, CompanyAction } from "@/Redux/Actions";
 import { API_DELETE, API_FETCH, API_INSERT } from "@/Redux/Actions/ApiAction";
 import { COMPANY_FETCH } from "@/Redux/Actions/CompanyAction";
 import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
+import CopyIcon from "@/assets/Icons/copy-icon.svg";
+import EyeIcon from "@/assets/Icons/eye-icon.svg";
+import InfoIcon from "@/assets/Icons/info-icon.svg";
+import TrashIcon from "@/assets/Icons/trash-icon.svg";
+import BgImage from "@/assets/Images/card-bg.png";
+import { formatDate, getTime } from "@/helpers/dateTimeFormatter";
 import { rootReducer } from "@/utils/types";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import TrashIcon from "@/assets/Icons/trash-icon.svg";
-import EyeIcon from "@/assets/Icons/eye-icon.svg";
-import CopyIcon from "@/assets/Icons/copy-icon.svg";
-import InfoIcon from "@/assets/Icons/info-icon.svg";
-import { formatDate, getTime } from "@/helpers/dateTimeFormatter";
-import BgImage from "@/assets/Images/card-bg.png";
 
-import * as yup from "yup";
+import CreateApiModel from "@/Components/UI/ApiKeysModel/CreateApiModel";
+import InputField from "@/Components/UI/AuthLayout/InputFields";
+import DeleteModel from "@/Components/UI/DeleteModel";
+import EmptyDataModel from "@/Components/UI/EmptyDataModel";
+import UnitedStatesFlag from "@/assets/Images/Icons/flags/united-states-flag.png";
+import { stringShorten } from "@/helpers";
+import useIsMobile from "@/hooks/useIsMobile";
+import { theme } from "@/styles/theme";
 import Image from "next/image";
+import * as yup from "yup";
 import {
+  ApiDocumentationCardDescription,
   ApiKeyCardBody,
+  ApiKeyCardSubTitle,
   ApiKeyCardTopRow,
   ApiKeyCopyButton,
   ApiKeyCreatedText,
   ApiKeyDeleteButton,
   ApiKeyViewButton,
-  Tags,
   InfoText,
-  ApiKeyCardSubTitle,
-  ApiDocumentationCardDescription,
+  Tags,
 } from "./styled";
-import { theme } from "@/styles/theme";
-import InputField from "@/Components/UI/AuthLayout/InputFields";
-import CreateApiModel from "@/Components/UI/ApiKeysModel/CreateApiModel";
-import DeleteModel from "@/Components/UI/DeleteModel";
-import UnitedStatesFlag from "@/assets/Images/Icons/flags/united-states-flag.png";
-import useIsMobile from "@/hooks/useIsMobile";
-import { stringShorten } from "@/helpers";
-import EmptyDataModel from "@/Components/UI/EmptyDataModel";
 
 const companyInitial = {
   company_id: 0,
   base_currency: "",
 };
-
 
 type ApiRow = any;
 
@@ -64,7 +63,8 @@ const ApiDocumentationCard = ({ docsUrl }: { docsUrl: string }) => {
         <Image
           src={InfoIcon.src}
           style={{
-            filter: "brightness(0) saturate(100%) invert(15%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(100%)",
+            filter:
+              "brightness(0) saturate(100%) invert(15%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(100%)",
           }}
           alt={t("documentation.infoIconAlt")}
           width={isMobile ? 14 : 16}
@@ -74,7 +74,11 @@ const ApiDocumentationCard = ({ docsUrl }: { docsUrl: string }) => {
       }
       showHeaderBorder={false}
       headerPadding={theme.spacing(2.5, 2.5, 0, 2.5)}
-      bodyPadding={theme.spacing(1.75, 2.5, 2.5, 2.5)}
+      bodyPadding={
+        isMobile
+          ? theme.spacing("12px", 2.5, 2.5, 2.5)
+          : theme.spacing(1.75, 2.5, 2.5, 2.5)
+      }
       sx={{
         position: "relative",
         overflow: "hidden",
@@ -114,21 +118,26 @@ const ApiDocumentationCard = ({ docsUrl }: { docsUrl: string }) => {
         backgroundColor: "transparent",
       }}
     >
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: isMobile ? "17px" : 4.5,
+        }}
+      >
         <ApiDocumentationCardDescription>
           {t("documentation.description")}
         </ApiDocumentationCardDescription>
         <CustomButton
           label={t("documentation.viewDocumentation")}
           variant="secondary"
-          size="medium"
+          size={isMobile ? "small" : "medium"}
           endIcon={<ArrowOutwardIcon sx={{ fontSize: 14 }} />}
           // onClick={() => {
           //   if (!docsUrl) return;
           //   window.open(docsUrl, "_blank", "noopener,noreferrer");
           // }}
           sx={{
-            height: 40,
             width: "fit-content",
           }}
         />
@@ -174,7 +183,9 @@ const ApiKeyCard = ({
     <PanelCard
       title={title}
       showHeaderBorder={false}
-      bodyPadding={theme.spacing(0, 2.5, 2.5, 2.5)}
+      bodyPadding={
+        isMobile ? theme.spacing(0, 2, 2, 2) : theme.spacing(0, 2.5, 2.5, 2.5)
+      }
       headerPadding={theme.spacing(2.5, 2.5, 0, 2.5)}
       headerActionLayout="inline"
       headerAction={
@@ -198,7 +209,7 @@ const ApiKeyCard = ({
         {baseCurrency}
       </ApiKeyCardSubTitle>
 
-      <ApiKeyCardBody sx={{ pt: "18px" }}>
+      <ApiKeyCardBody sx={{ pt: isMobile ? "16px" : "18px" }}>
         <ApiKeyCardTopRow sx={{ gap: 1.25 }}>
           <InputField
             label={t("generate.yourKey")}
@@ -317,14 +328,15 @@ const ApiKeysPage = ({
 }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation("apiScreen");
+  const isMobile = useIsMobile("md");
 
   const companyList = useSelector(
-    (state: rootReducer) => state.companyReducer.companyList
+    (state: rootReducer) => state.companyReducer.companyList,
   );
   const apiState = useSelector((state: rootReducer) => state.apiReducer);
 
   const [initialValue, setInitialValue] = useState(
-    structuredClone(companyInitial)
+    structuredClone(companyInitial),
   );
 
   const [openCreateLocal, setOpenCreateLocal] = useState(false);
@@ -339,7 +351,7 @@ const ApiKeysPage = ({
       .test(
         "company_id",
         t("validation.selectCompany"),
-        (value: any) => value != 0
+        (value: any) => value != 0,
       ),
   });
 
@@ -411,33 +423,35 @@ const ApiKeysPage = ({
     "https://docs.dynopay.com";
 
   const itemAnimation = {
-    '@keyframes fadeSlideIn': {
+    "@keyframes fadeSlideIn": {
       from: {
         opacity: 0,
-        transform: 'translateY(16px)',
+        transform: "translateY(16px)",
       },
       to: {
         opacity: 1,
-        transform: 'translateY(0)',
+        transform: "translateY(0)",
       },
     },
   };
 
   if (apiState.loading) {
-    return <Box
-      sx={{
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <CircularProgress
+    return (
+      <Box
         sx={{
-          color: "#0004ff",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
-      />
-    </Box>;
+      >
+        <CircularProgress
+          sx={{
+            color: "#0004ff",
+          }}
+        />
+      </Box>
+    );
   }
 
   if (apiState?.apiList?.length === 0 && !apiState?.loading) {
@@ -496,7 +510,7 @@ const ApiKeysPage = ({
       <Grid
         container
         spacing={2.5}
-        sx={{ mb: 2.5, ...itemAnimation }}
+        sx={{ mb: isMobile ? 2 : 2.5, ...itemAnimation }}
         alignItems="flex-start"
       >
         {apiState?.apiList?.map((api: any, index: number) => (
@@ -509,7 +523,7 @@ const ApiKeysPage = ({
             xl={4}
             sx={{
               opacity: 0,
-              animation: 'fadeSlideIn 0.5s ease forwards',
+              animation: "fadeSlideIn 0.5s ease forwards",
               animationDelay: `${index * 0.1}s`,
             }}
           >
@@ -531,7 +545,7 @@ const ApiKeysPage = ({
           xl={4}
           sx={{
             opacity: 0,
-            animation: 'fadeSlideIn 0.5s ease forwards',
+            animation: "fadeSlideIn 0.5s ease forwards",
             animationDelay: `${(apiState?.apiList?.length || 0) * 0.1}s`,
           }}
         >
@@ -542,17 +556,17 @@ const ApiKeysPage = ({
       <Box
         sx={{
           bgcolor: theme.palette.primary.light,
-          p: 2,
+          p: isMobile ? "16px" : "7px 18px",
           borderRadius: "6px",
           display: "flex",
           flexDirection: { xs: "column", sm: "row" },
-          alignItems: "flex-start",
+          alignItems: isMobile ? "flex-start" : "center",
           justifyContent: "start",
           gap: 1,
           border: `1px solid ${theme.palette.border.main}`,
           flexWrap: { xs: "wrap", sm: "nowrap" },
           opacity: 0,
-          animation: 'fadeSlideIn 0.5s ease forwards',
+          animation: "fadeSlideIn 0.5s ease forwards",
           animationDelay: `${(apiState?.apiList?.length || 0) * 0.2}s`,
         }}
       >
@@ -568,8 +582,8 @@ const ApiKeysPage = ({
           <Box
             component="span"
             sx={{
-              width: 16,
-              height: 16,
+              width: isMobile ? 14 : 16,
+              height: isMobile ? 14 : 24,
               display: "inline-block",
               bgcolor: "#E8484A",
               WebkitMask: `url(${InfoIcon.src}) no-repeat center / contain`,

@@ -29,6 +29,9 @@ export function CompanyDialogProvider({ children }: { children: React.ReactNode 
   const [company, setCompany] = useState<ICompany | null>(null);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const token = window.localStorage.getItem("token");
+    if (!token) return;
     dispatch(CompanyAction(COMPANY_FETCH));
   }, [dispatch]);
 

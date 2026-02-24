@@ -1,32 +1,45 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
-import { Box, Grid, IconButton, InputBase, ListItemButton, ListItemText, MenuItem, Popover, TextField, Typography } from "@mui/material";
-import * as yup from "yup";
-import { useDispatch, useSelector } from "react-redux";
+import {
+  Box,
+  Grid,
+  IconButton,
+  InputBase,
+  ListItemButton,
+  ListItemText,
+  Popover,
+  Typography,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import Image from "next/image";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import * as yup from "yup";
 
-import PopupModal from "@/Components/UI/PopupModal";
+import BusinessIcon from "@/assets/Icons/business-icon.svg";
+import DownloadIcon from "@/assets/Icons/download-icon.svg";
+import EditPencilIcon from "@/assets/Icons/edit-pencil-icon.svg";
 import FormManager from "@/Components/Page/Common/FormManager";
 import type { Values } from "@/Components/Page/Common/FormManager/types";
 import InputField from "@/Components/UI/AuthLayout/InputFields";
 import PanelCard from "@/Components/UI/PanelCard";
+import PopupModal from "@/Components/UI/PopupModal";
+import useIsMobile from "@/hooks/useIsMobile";
 import { CompanyAction } from "@/Redux/Actions";
 import { COMPANY_INSERT, COMPANY_UPDATE } from "@/Redux/Actions/CompanyAction";
 import { ICompany, rootReducer } from "@/utils/types";
-import EditPencilIcon from "@/assets/Icons/edit-pencil-icon.svg";
-import BusinessIcon from "@/assets/Icons/business-icon.svg";
-import DownloadIcon from "@/assets/Icons/download-icon.svg";
-import CustomButton from "../Buttons";
-import useIsMobile from "@/hooks/useIsMobile";
-import { CryptocurrencyDividerLine, CryptocurrencyDropdown, CryptocurrencyTrigger } from "../CryptocurrencySelector/styled";
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import CustomButton from "../Buttons";
+import {
+  CryptocurrencyDividerLine,
+  CryptocurrencyDropdown,
+  CryptocurrencyTrigger,
+} from "../CryptocurrencySelector/styled";
 
-import { Country, State, City } from "country-state-city";
-import type { ICountry, IState, ICity } from "country-state-city";
+import type { ICity, ICountry, IState } from "country-state-city";
+import { City, Country, State } from "country-state-city";
 import CountryPhoneInput from "../CountryPhoneInput";
 
 export type CompanyDialogMode = "add" | "edit";
@@ -60,12 +73,10 @@ const companyInitial: CompanyFormValues = {
   VAT_number: "",
 };
 
-
-
 // Component to sync form values to parent state
 const ValueSyncer = ({
   values,
-  onValuesChange
+  onValuesChange,
 }: {
   values: Values;
   onValuesChange: (values: Values) => void;
@@ -77,10 +88,7 @@ const ValueSyncer = ({
 };
 
 // Custom hook to manage states and cities based on form values
-const useLocationData = (
-  formValues: Values,
-  countries: ICountry[]
-) => {
+const useLocationData = (formValues: Values, countries: ICountry[]) => {
   const [states, setStates] = useState<IState[]>([]);
   const [cities, setCities] = useState<ICity[]>([]);
   const prevCountryRef = useRef<string>("");
@@ -88,7 +96,7 @@ const useLocationData = (
 
   useEffect(() => {
     const getCountryByName = (name: string): ICountry | undefined => {
-      return countries.find(c => c.name === name);
+      return countries.find((c) => c.name === name);
     };
 
     const countryValue = String(formValues.country || "");
@@ -109,7 +117,7 @@ const useLocationData = (
 
   useEffect(() => {
     const getCountryByName = (name: string): ICountry | undefined => {
-      return countries.find(c => c.name === name);
+      return countries.find((c) => c.name === name);
     };
 
     const stateValue = String(formValues.state || "");
@@ -119,7 +127,7 @@ const useLocationData = (
       const country = getCountryByName(countryValue);
       if (country) {
         const statesOfCountry = State.getStatesOfCountry(country.isoCode);
-        const state = statesOfCountry.find(s => s.name === stateValue);
+        const state = statesOfCountry.find((s) => s.name === stateValue);
         if (state) {
           setCities(City.getCitiesOfState(country.isoCode, state.isoCode));
         }
@@ -150,7 +158,7 @@ export default function CompanyDialog({
   const { t } = useTranslation("companyDialog");
   const fileRef = useRef<HTMLInputElement>(null);
   const companyState = useSelector(
-    (state: rootReducer) => state.companyReducer
+    (state: rootReducer) => state.companyReducer,
   );
   const isMobile = useIsMobile("sm");
 
@@ -189,7 +197,7 @@ export default function CompanyDialog({
 
   // Helper to get country object from name
   const getCountryByName = (name: string): ICountry | undefined => {
-    return countries.find(c => c.name === name);
+    return countries.find((c) => c.name === name);
   };
 
   // Compute initial values
@@ -213,22 +221,23 @@ export default function CompanyDialog({
   }, [mode, company]);
 
   // Track current form values for useLocationData hook
-  const [currentFormValues, setCurrentFormValues] = useState<Values>(initialValues);
+  const [currentFormValues, setCurrentFormValues] =
+    useState<Values>(initialValues);
 
   // Use custom hook for location data with current form values
   const { states, cities } = useLocationData(currentFormValues, countries);
 
   // Filtered lists based on search terms
   const filteredCountries = countries.filter((c) =>
-    c.name.toLowerCase().includes(searchTerm.toLowerCase())
+    c.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const filteredStates = states.filter((s) =>
-    s.name.toLowerCase().includes(stateSearchTerm.toLowerCase())
+    s.name.toLowerCase().includes(stateSearchTerm.toLowerCase()),
   );
 
   const filteredCities = cities.filter((c) =>
-    c.name.toLowerCase().includes(citySearchTerm.toLowerCase())
+    c.name.toLowerCase().includes(citySearchTerm.toLowerCase()),
   );
 
   // Image preview setup
@@ -263,12 +272,13 @@ export default function CompanyDialog({
         zip_code: yup.string().nullable(),
         VAT_number: yup.string().nullable(),
       }),
-    [t]
+    [t],
   );
 
   const isDataChanged = (currentValues: Values) => {
     const hasImageChanged = !!mediaFile;
-    const hasValuesChanged = JSON.stringify(currentValues) !== JSON.stringify(initialValues);
+    const hasValuesChanged =
+      JSON.stringify(currentValues) !== JSON.stringify(initialValues);
     return hasImageChanged || hasValuesChanged;
   };
 
@@ -312,7 +322,7 @@ export default function CompanyDialog({
       dispatch(CompanyAction(COMPANY_INSERT, formData));
     } else if (company?.company_id) {
       dispatch(
-        CompanyAction(COMPANY_UPDATE, { id: company.company_id, formData })
+        CompanyAction(COMPANY_UPDATE, { id: company.company_id, formData }),
       );
     }
 
@@ -405,7 +415,7 @@ export default function CompanyDialog({
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          p: 2
+          p: 2,
         },
       }}
     >
@@ -414,7 +424,11 @@ export default function CompanyDialog({
         subTitle={subtitle}
         showHeaderBorder={false}
         headerPadding={theme.spacing("30px", "30px", 0, "30px")}
-        bodyPadding={isMobile ? theme.spacing("16px", "16px", "16px", "16px") : theme.spacing("30px", "30px", "30px", "30px")}
+        bodyPadding={
+          isMobile
+            ? theme.spacing("16px", "16px", "16px", "16px")
+            : theme.spacing("12px", "30px", "37px", "30px")
+        }
         sx={{
           width: "100%",
           borderRadius: "14px",
@@ -424,7 +438,7 @@ export default function CompanyDialog({
         subTitleSx={{
           fontSize: isMobile ? "13px" : "15px",
           fontWeight: 500,
-          lineHeight: "100%",
+          lineHeight: "18px",
           letterSpacing: 0,
           color: theme.palette.text.secondary,
           fontFamily: "UrbanistMedium",
@@ -485,8 +499,11 @@ export default function CompanyDialog({
             values,
           }) => (
             <>
-              <ValueSyncer values={values} onValuesChange={setCurrentFormValues} />
-              <Grid container spacing={"14px"}>
+              <ValueSyncer
+                values={values}
+                onValuesChange={setCurrentFormValues}
+              />
+              <Grid container rowSpacing={"14px"} columnSpacing={"12px"}>
                 <Grid item xs={isMobile ? 12 : 6}>
                   <InputField
                     fullWidth
@@ -503,6 +520,7 @@ export default function CompanyDialog({
                     }
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    sx={{ gap: "8px" }}
                   />
                 </Grid>
 
@@ -516,6 +534,7 @@ export default function CompanyDialog({
                     value={String(values.website || "")}
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    sx={{ gap: "8px" }}
                   />
                 </Grid>
 
@@ -529,10 +548,13 @@ export default function CompanyDialog({
                     value={String(values.email || "")}
                     error={Boolean(touched.email && errors.email)}
                     helperText={
-                      touched.email && errors.email ? String(errors.email) : undefined
+                      touched.email && errors.email
+                        ? String(errors.email)
+                        : undefined
                     }
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    sx={{ gap: "8px" }}
                   />
                 </Grid>
 
@@ -545,9 +567,9 @@ export default function CompanyDialog({
                       fontFamily: "UrbanistMedium",
                       textAlign: "start",
                       color: "#242428",
-                      lineHeight: "100%",
+                      lineHeight: "18px",
                       letterSpacing: 0,
-                      mb: 0.75,
+                      mb: 1,
                     }}
                   >
                     {t("fields.mobile.label")}
@@ -567,12 +589,19 @@ export default function CompanyDialog({
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                      height: "64px",
+                    }}
+                  >
                     <Typography
                       sx={{
                         fontSize: isMobile ? "13px" : "15px",
                         fontWeight: 500,
-                        lineHeight: "100%",
+                        lineHeight: "18px",
                         letterSpacing: 0,
                         color: theme.palette.text.primary,
                         fontFamily: "UrbanistMedium",
@@ -596,12 +625,16 @@ export default function CompanyDialog({
                         cursor: "text",
                       }}
                     >
-                      <Box sx={{ flex: 1, display: "flex", alignItems: "center" }}>
+                      <Box
+                        sx={{ flex: 1, display: "flex", alignItems: "center" }}
+                      >
                         <InputBase
                           id="country"
                           fullWidth
                           placeholder="Select Country"
-                          value={isOpen ? searchTerm : String(values.country || "")}
+                          value={
+                            isOpen ? searchTerm : String(values.country || "")
+                          }
                           onChange={(e) => setSearchTerm(e.target.value)}
                           sx={{
                             fontFamily: "UrbanistMedium",
@@ -617,9 +650,26 @@ export default function CompanyDialog({
                         />
                       </Box>
 
-                      <Box component="label" htmlFor="country" sx={{ display: "flex", alignItems: "center", cursor: "pointer", color: "rgba(103, 103, 104, 1)" }}>
+                      <Box
+                        component="label"
+                        htmlFor="country"
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          cursor: "pointer",
+                          color: "rgba(103, 103, 104, 1)",
+                        }}
+                      >
                         <CryptocurrencyDividerLine />
-                        {isOpen ? <ExpandLessIcon sx={{ width: isMobile ? "20px" : "24px" }} /> : <ExpandMoreIcon sx={{ width: isMobile ? "20px" : "24px" }} />}
+                        {isOpen ? (
+                          <ExpandLessIcon
+                            sx={{ width: isMobile ? "20px" : "24px" }}
+                          />
+                        ) : (
+                          <ExpandMoreIcon
+                            sx={{ width: isMobile ? "20px" : "24px" }}
+                          />
+                        )}
                       </Box>
                     </CryptocurrencyTrigger>
 
@@ -702,13 +752,25 @@ export default function CompanyDialog({
                                     },
                                   }}
                                 />
-                                {isSelected && <CheckIcon sx={{ ml: "auto", fontSize: 18 }} />}
+                                {isSelected && (
+                                  <CheckIcon
+                                    sx={{ ml: "auto", fontSize: 18 }}
+                                  />
+                                )}
                               </ListItemButton>
                             );
                           })
                         ) : (
-                          <Box sx={{ p: 2, textAlign: "center", color: "text.secondary" }}>
-                            <Typography variant="body2">No results found</Typography>
+                          <Box
+                            sx={{
+                              p: 2,
+                              textAlign: "center",
+                              color: "text.secondary",
+                            }}
+                          >
+                            <Typography variant="body2">
+                              No results found
+                            </Typography>
                           </Box>
                         )}
                       </CryptocurrencyDropdown>
@@ -717,12 +779,19 @@ export default function CompanyDialog({
                 </Grid>
 
                 <Grid item xs={isMobile ? 12 : 6}>
-                  <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                      height: "64px",
+                    }}
+                  >
                     <Typography
                       sx={{
                         fontSize: isMobile ? "13px" : "15px",
                         fontWeight: 500,
-                        lineHeight: "100%",
+                        lineHeight: "18px",
                         letterSpacing: 0,
                         color: theme.palette.text.primary,
                         fontFamily: "UrbanistMedium",
@@ -749,12 +818,18 @@ export default function CompanyDialog({
                         pointerEvents: values.country ? "auto" : "none",
                       }}
                     >
-                      <Box sx={{ flex: 1, display: "flex", alignItems: "center" }}>
+                      <Box
+                        sx={{ flex: 1, display: "flex", alignItems: "center" }}
+                      >
                         <InputBase
                           id="state"
                           fullWidth
                           placeholder="Select State"
-                          value={stateAnchor ? stateSearchTerm : String(values.state || "")}
+                          value={
+                            stateAnchor
+                              ? stateSearchTerm
+                              : String(values.state || "")
+                          }
                           onChange={(e) => setStateSearchTerm(e.target.value)}
                           sx={{
                             fontFamily: "UrbanistMedium",
@@ -771,9 +846,26 @@ export default function CompanyDialog({
                         />
                       </Box>
 
-                      <Box component="label" htmlFor="state" sx={{ display: "flex", alignItems: "center", cursor: "pointer", color: "rgba(103, 103, 104, 1)" }}>
+                      <Box
+                        component="label"
+                        htmlFor="state"
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          cursor: "pointer",
+                          color: "rgba(103, 103, 104, 1)",
+                        }}
+                      >
                         <CryptocurrencyDividerLine />
-                        {isOpen ? <ExpandLessIcon sx={{ width: isMobile ? "20px" : "24px" }} /> : <ExpandMoreIcon sx={{ width: isMobile ? "20px" : "24px" }} />}
+                        {isOpen ? (
+                          <ExpandLessIcon
+                            sx={{ width: isMobile ? "20px" : "24px" }}
+                          />
+                        ) : (
+                          <ExpandMoreIcon
+                            sx={{ width: isMobile ? "20px" : "24px" }}
+                          />
+                        )}
                       </Box>
                     </CryptocurrencyTrigger>
 
@@ -851,13 +943,25 @@ export default function CompanyDialog({
                                   }}
                                 />
 
-                                {isSelected && <CheckIcon sx={{ ml: "auto", fontSize: 18 }} />}
+                                {isSelected && (
+                                  <CheckIcon
+                                    sx={{ ml: "auto", fontSize: 18 }}
+                                  />
+                                )}
                               </ListItemButton>
                             );
                           })
                         ) : (
-                          <Box sx={{ p: 2, textAlign: "center", color: "text.secondary" }}>
-                            <Typography variant="body2">No results found</Typography>
+                          <Box
+                            sx={{
+                              p: 2,
+                              textAlign: "center",
+                              color: "text.secondary",
+                            }}
+                          >
+                            <Typography variant="body2">
+                              No results found
+                            </Typography>
                           </Box>
                         )}
                       </CryptocurrencyDropdown>
@@ -866,12 +970,19 @@ export default function CompanyDialog({
                 </Grid>
 
                 <Grid item xs={isMobile ? 12 : 6}>
-                  <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                      height: "64px",
+                    }}
+                  >
                     <Typography
                       sx={{
                         fontSize: isMobile ? "13px" : "15px",
                         fontWeight: 500,
-                        lineHeight: "100%",
+                        lineHeight: "18px",
                         letterSpacing: 0,
                         color: theme.palette.text.primary,
                         fontFamily: "UrbanistMedium",
@@ -898,13 +1009,18 @@ export default function CompanyDialog({
                         pointerEvents: values.state ? "auto" : "none",
                       }}
                     >
-
-                      <Box sx={{ flex: 1, display: "flex", alignItems: "center" }}>
+                      <Box
+                        sx={{ flex: 1, display: "flex", alignItems: "center" }}
+                      >
                         <InputBase
                           id="city"
                           fullWidth
                           placeholder="Select City"
-                          value={cityAnchor ? citySearchTerm : String(values.city || "")}
+                          value={
+                            cityAnchor
+                              ? citySearchTerm
+                              : String(values.city || "")
+                          }
                           onChange={(e) => setCitySearchTerm(e.target.value)}
                           sx={{
                             fontFamily: "UrbanistMedium",
@@ -921,9 +1037,26 @@ export default function CompanyDialog({
                         />
                       </Box>
 
-                      <Box component="label" htmlFor="city" sx={{ display: "flex", alignItems: "center", cursor: "pointer", color: "rgba(103, 103, 104, 1)" }}>
+                      <Box
+                        component="label"
+                        htmlFor="city"
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          cursor: "pointer",
+                          color: "rgba(103, 103, 104, 1)",
+                        }}
+                      >
                         <CryptocurrencyDividerLine />
-                        {isOpen ? <ExpandLessIcon sx={{ width: isMobile ? "20px" : "24px" }} /> : <ExpandMoreIcon sx={{ width: isMobile ? "20px" : "24px" }} />}
+                        {isOpen ? (
+                          <ExpandLessIcon
+                            sx={{ width: isMobile ? "20px" : "24px" }}
+                          />
+                        ) : (
+                          <ExpandMoreIcon
+                            sx={{ width: isMobile ? "20px" : "24px" }}
+                          />
+                        )}
                       </Box>
                     </CryptocurrencyTrigger>
 
@@ -997,13 +1130,25 @@ export default function CompanyDialog({
                                   }}
                                 />
 
-                                {isSelected && <CheckIcon sx={{ ml: "auto", fontSize: 18 }} />}
+                                {isSelected && (
+                                  <CheckIcon
+                                    sx={{ ml: "auto", fontSize: 18 }}
+                                  />
+                                )}
                               </ListItemButton>
                             );
                           })
                         ) : (
-                          <Box sx={{ p: 2, textAlign: "center", color: "text.secondary" }}>
-                            <Typography variant="body2">No results found</Typography>
+                          <Box
+                            sx={{
+                              p: 2,
+                              textAlign: "center",
+                              color: "text.secondary",
+                            }}
+                          >
+                            <Typography variant="body2">
+                              No results found
+                            </Typography>
                           </Box>
                         )}
                       </CryptocurrencyDropdown>
@@ -1019,7 +1164,9 @@ export default function CompanyDialog({
                     placeholder={t("fields.addressLine1.placeholder")}
                     name="address_line_1"
                     value={String(values.address_line_1 || "")}
-                    error={Boolean(touched.address_line_1 && errors.address_line_1)}
+                    error={Boolean(
+                      touched.address_line_1 && errors.address_line_1,
+                    )}
                     helperText={
                       touched.address_line_1 && errors.address_line_1
                         ? String(errors.address_line_1)
@@ -1027,6 +1174,7 @@ export default function CompanyDialog({
                     }
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    sx={{ gap: "8px" }}
                   />
                 </Grid>
 
@@ -1038,7 +1186,9 @@ export default function CompanyDialog({
                     placeholder={t("fields.addressLine2.placeholder")}
                     name="address_line_2"
                     value={String(values.address_line_2 || "")}
-                    error={Boolean(touched.address_line_2 && errors.address_line_2)}
+                    error={Boolean(
+                      touched.address_line_2 && errors.address_line_2,
+                    )}
                     helperText={
                       touched.address_line_2 && errors.address_line_2
                         ? String(errors.address_line_2)
@@ -1046,6 +1196,7 @@ export default function CompanyDialog({
                     }
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    sx={{ gap: "8px" }}
                   />
                 </Grid>
 
@@ -1065,16 +1216,23 @@ export default function CompanyDialog({
                     }
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    sx={{ gap: "8px" }}
                   />
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                    }}
+                  >
                     <Typography
                       sx={{
                         fontSize: isMobile ? "13px" : "15px",
                         fontWeight: 500,
-                        lineHeight: "100%",
+                        lineHeight: "18px",
                         color: theme.palette.text.primary,
                         fontFamily: "UrbanistMedium",
                       }}
@@ -1082,12 +1240,14 @@ export default function CompanyDialog({
                       {t("vatNumber")}
                     </Typography>
 
-                    <Grid container spacing={2}>
+                    <Grid container rowSpacing={"14px"} columnSpacing={"8px"}>
                       {/* Country VAT Dropdown */}
                       <Grid item xs={5}>
                         <Box
                           maxWidth={"150px"}
-                          onClick={(e) => setVatAnchorEl(vatAnchorEl ? null : e.currentTarget)}
+                          onClick={(e) =>
+                            setVatAnchorEl(vatAnchorEl ? null : e.currentTarget)
+                          }
                           sx={{
                             cursor: "pointer",
                             border: "1px solid #E9ECF2",
@@ -1097,7 +1257,7 @@ export default function CompanyDialog({
                             padding: isMobile ? "8px" : "10px",
                             display: "flex",
                             alignItems: "center",
-                            justifyContent: "space-between"
+                            justifyContent: "space-between",
                           }}
                         >
                           <img
@@ -1119,12 +1279,22 @@ export default function CompanyDialog({
                             {vatValue.code} {vatValue.taxCode}
                           </Typography>
 
-                          <Box sx={{ width: "1px", height: "20px", backgroundColor: "#D9D9D9" }} />
+                          <Box
+                            sx={{
+                              width: "1px",
+                              height: "20px",
+                              backgroundColor: "#D9D9D9",
+                            }}
+                          />
 
                           {vatAnchorEl ? (
-                            <ExpandLessIcon sx={{ width: "20px", color: "#676768" }} />
+                            <ExpandLessIcon
+                              sx={{ width: "20px", color: "#676768" }}
+                            />
                           ) : (
-                            <ExpandMoreIcon sx={{ width: "20px", color: "#676768" }} />
+                            <ExpandMoreIcon
+                              sx={{ width: "20px", color: "#676768" }}
+                            />
                           )}
                         </Box>
 
@@ -1132,8 +1302,14 @@ export default function CompanyDialog({
                           open={Boolean(vatAnchorEl)}
                           anchorEl={vatAnchorEl}
                           onClose={() => setVatAnchorEl(null)}
-                          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-                          transformOrigin={{ vertical: "top", horizontal: "left" }}
+                          anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "left",
+                          }}
+                          transformOrigin={{
+                            vertical: "top",
+                            horizontal: "left",
+                          }}
                           transitionDuration={0}
                           TransitionProps={{
                             onEntering: () => {
@@ -1158,26 +1334,48 @@ export default function CompanyDialog({
                           {vatCountries.map((country) => (
                             <Box
                               key={country.code}
-                              ref={country.code === vatValue.code ? selectedVatRef : null}
+                              ref={
+                                country.code === vatValue.code
+                                  ? selectedVatRef
+                                  : null
+                              }
                               onClick={() => {
-                                setVatValue({ ...vatValue, code: country.code, taxCode: country.taxCode });
+                                setVatValue({
+                                  ...vatValue,
+                                  code: country.code,
+                                  taxCode: country.taxCode,
+                                });
                                 setVatAnchorEl(null);
                               }}
                               sx={{
                                 display: "flex",
                                 justifyContent: "space-between",
                                 cursor: "pointer",
-                                backgroundColor: country.code === vatValue.code && country.taxCode === vatValue.taxCode ? "#E5EDFF" : "",
+                                backgroundColor:
+                                  country.code === vatValue.code &&
+                                  country.taxCode === vatValue.taxCode
+                                    ? "#E5EDFF"
+                                    : "",
                                 borderRadius: "63px",
                                 height: "40px",
                                 padding: "10px 14px",
                                 alignItems: "center",
                                 "&:hover": {
-                                  backgroundColor: country.code === vatValue.code && country.taxCode === vatValue.taxCode ? "#E5EDFF" : "#F0F4FF",
+                                  backgroundColor:
+                                    country.code === vatValue.code &&
+                                    country.taxCode === vatValue.taxCode
+                                      ? "#E5EDFF"
+                                      : "#F0F4FF",
                                 },
                               }}
                             >
-                              <Box sx={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "14px",
+                                }}
+                              >
                                 <img
                                   width={isMobile ? 16 : 20}
                                   height={isMobile ? 16 : 20}
@@ -1198,9 +1396,12 @@ export default function CompanyDialog({
                                 </Typography>
                               </Box>
 
-                              {country.code === vatValue.code && country.taxCode === vatValue.taxCode && (
-                                <CheckIcon sx={{ width: "20px", height: "15px" }} />
-                              )}
+                              {country.code === vatValue.code &&
+                                country.taxCode === vatValue.taxCode && (
+                                  <CheckIcon
+                                    sx={{ width: "20px", height: "15px" }}
+                                  />
+                                )}
                             </Box>
                           ))}
                         </Popover>
@@ -1216,16 +1417,41 @@ export default function CompanyDialog({
                             handleFieldsChange({ vatNumber: e.target.value })
                           }
                           inputHeight={isMobile ? "32px" : "38px"}
+                          sx={{ gap: "8px" }}
                         />
                       </Grid>
                     </Grid>
                   </Box>
 
-                  <Box sx={{ mt: "8px", display: "flex", justifyContent: "space-between", padding: "8px 12px", backgroundColor: "#DDF5DC", borderRadius: "7px" }}>
-                    <Box sx={{ display: "flex", gap: "5px", alignItems: "center" }}>
-                      <CheckIcon sx={{ width: "16px", height: "16px", color: "#1B902B" }} />
+                  <Box
+                    sx={{
+                      mt: "8px",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      padding: "8px 12px",
+                      backgroundColor: "#DDF5DC",
+                      borderRadius: "7px",
+                    }}
+                  >
+                    <Box
+                      sx={{ display: "flex", gap: "5px", alignItems: "center" }}
+                    >
+                      <CheckIcon
+                        sx={{ width: "16px", height: "16px", color: "#1B902B" }}
+                      />
 
-                      <Typography sx={{ fontSize: "12px", color: "#1B902B", fontWeight: 500, fontFamily: "UrbanistMedium", lineHeight: "100%", letterSpacing: 0 }}>{t("vatVerify")}</Typography>
+                      <Typography
+                        sx={{
+                          fontSize: "12px",
+                          color: "#1B902B",
+                          fontWeight: 500,
+                          fontFamily: "UrbanistMedium",
+                          lineHeight: "100%",
+                          letterSpacing: 0,
+                        }}
+                      >
+                        {t("vatVerify")}
+                      </Typography>
                     </Box>
                     <CloseIcon sx={{ width: "16px", height: "16px" }} />
                   </Box>
@@ -1240,9 +1466,9 @@ export default function CompanyDialog({
                       textAlign: "start",
                       color: "#242428",
                       fontFamily: "UrbanistMedium",
-                      lineHeight: "100%",
+                      lineHeight: "18px",
                       letterSpacing: 0,
-                      mb: 0.75,
+                      mb: 1,
                     }}
                   >
                     {t("fields.brandLogo.label")}
@@ -1347,7 +1573,7 @@ export default function CompanyDialog({
 
               <Box
                 sx={{
-                  mt: 2.25,
+                  mt: "10px",
                   display: "flex",
                   justifyContent: "space-between",
                   gap: 1.5,

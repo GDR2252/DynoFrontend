@@ -1,6 +1,7 @@
 import HomeSectionTitle from "@/Components/UI/SectionTitle";
 import { Box } from "@mui/material";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import Dashboard_png from "@/assets/Images/home/Dashboard.png";
 import Payment_png from "@/assets/Images/home/Payment-Container.png";
@@ -22,6 +23,7 @@ import { useDevice } from "@/hooks/useDevice";
 
 const HeroSection = () => {
   const { os, browser } = useDevice();
+  const { t } = useTranslation("landing");
 
   return (
     <div>
@@ -34,10 +36,10 @@ const HeroSection = () => {
         <Box sx={{ position: "relative" }}>
           <HomeSectionTitle
             type="large"
-            badgeText="Crypto Payments Made Simple"
-            title="Accept Crypto Payments in Minutes"
-            highlightText="Crypto Payments"
-            subtitle="A modern crypto payment gateway that plugs into any e-commerce setup. Add your wallets, generate payment links, use the API, and receive crypto fast and securely."
+            badgeText={t("heroBadge")}
+            title={t("heroTitle")}
+            highlightText={t("heroHighlight")}
+            subtitle={t("heroSubtitle")}
           />
           <Box
             sx={{
@@ -113,9 +115,9 @@ const HeroSection = () => {
           }}
         >
           {/* Start Accepting Crypto Button */}
-          <HomeButton variant="primary" label="Start Accepting Crypto" />
+          <HomeButton variant="primary" label={t("startAcceptingCrypto")} />
           {/* Learn More Button */}
-          <HomeButton variant="outlined" label="Learn More" />
+          <HomeButton variant="outlined" label={t("learnMore")} />
         </Box>
       </Box>
 
@@ -215,7 +217,8 @@ const HeroSection = () => {
               alt="Dashboard Container"
               fill
               style={{ objectFit: "contain", scale: "1.2" }}
-              priority
+              priority={true}
+              quality={100}
               draggable={false}
             />
           </Box>
@@ -240,6 +243,7 @@ const HeroSection = () => {
             alt="Wallet Container"
             fill
             style={{ objectFit: "fill", scale: "1.4" }}
+            quality={100}
             draggable={false}
           />
         </Box>
@@ -306,6 +310,7 @@ const HeroSection = () => {
             alt="Wallet Container"
             fill
             style={{ objectFit: "fill", scale: os === "ios" ? "1" : "1.3" }}
+            quality={100}
             draggable={false}
           />
         </Box>
@@ -325,6 +330,7 @@ const HeroSection = () => {
             fill
             style={{ objectFit: "fill", scale: os === "ios" ? "1" : "1.3" }}
             draggable={false}
+            quality={100}
           />
         </Box>
         <Box
@@ -377,6 +383,8 @@ const HeroSection = () => {
             fill
             style={{ objectFit: "cover", placeContent: "left", scale: os === "ios" ? "1.026" : "1.12" }}
             draggable={false}
+            quality={100}
+            priority={true}
           />
         </Box>
       </Box>

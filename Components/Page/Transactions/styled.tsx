@@ -1,5 +1,11 @@
 import { theme } from "@/styles/theme";
-import { Box, Button, IconButton, ListItemButton, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  ListItemButton,
+  Typography,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 
 export const TransactionsTableContainer = styled(Box)({
@@ -147,9 +153,6 @@ export const TransactionsTableRow = styled(Box)(({ theme }) => ({
     gap: "8px",
     padding: "4px 0",
   },
-  //   "&:last-child": {
-  //     borderBottom: "none",
-  //   },
 }));
 
 export const TransactionsTableCell = styled(Typography)(({ theme }) => ({
@@ -181,12 +184,11 @@ export const TransactionsTableCell = styled(Typography)(({ theme }) => ({
 
 export const TransactionsTableFooter = styled(Box)(({ theme }) => ({
   width: "100%",
-  // Removed height: "100%" to prevent layout stretching
   display: "flex",
   flexDirection: "row",
   justifyContent: "space-between",
   alignItems: "center",
-  padding: "16px 24px 20px 24px",
+  padding: "16px 20px 20px 20px",
   flexShrink: 0,
   minHeight: "max-content",
   [theme.breakpoints.down("md")]: {
@@ -249,7 +251,7 @@ export const StatusBadge = styled(Box)<{
 
 export const StatusIconWrapper = styled(Box)<{
   status: "done" | "pending" | "failed";
-}>(({ status, theme }) => {
+}>(({ theme }) => {
   return {
     display: "flex",
     alignItems: "center",
@@ -398,7 +400,7 @@ export const SearchContainer = styled(Box)(({ theme }) => ({
   width: "100%",
   display: "flex",
   alignItems: "center",
-  gap: "10px",
+  gap: "8px",
   [theme.breakpoints.up("md")]: {
     flex: 1,
     minWidth: "350px",
@@ -428,11 +430,7 @@ export const DatePickerWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   position: "relative",
-  // flex: 1,
   minWidth: "fit-content",
-  [theme.breakpoints.up("md")]: {
-    // maxWidth: "200px",
-  },
 }));
 
 export const WalletSelectorWrapper = styled(Box)(({ theme }) => ({
@@ -441,9 +439,6 @@ export const WalletSelectorWrapper = styled(Box)(({ theme }) => ({
   position: "relative",
   flex: 1,
   minWidth: "fit-content",
-  [theme.breakpoints.up("md")]: {
-    // maxWidth: "200px",
-  },
 }));
 
 export const ExportButtonWrapper = styled(Box)(({ theme }) => ({
@@ -550,11 +545,10 @@ export const SearchIconButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-// Standardize theme access: Always use the callback form (({ theme }) => ...)
 export const TransactionsTopBarContainer = styled(Box)(({ theme }) => ({
   width: "100%",
   display: "flex",
-  gap: "12px",
+  gap: "20px",
   flexDirection: "row",
   alignItems: "center",
   flexWrap: "wrap",
@@ -580,33 +574,34 @@ export const TransactionsTableScrollWrapper = styled(Box)(({ theme }) => ({
   },
 }));
 
-// Added missing Dropdown styling for cleaner JSX
-export const WalletDropdownContainer = styled(Box)<{ isMobile: boolean }>(({ theme, isMobile }) => ({
-  position: "absolute",
-  top: "0",
-  left: isMobile ? "auto" : 0,
-  right: isMobile ? 0 : "auto",
-  width: isMobile ? "250px" : "270px",
-  background: theme.palette.common.white,
-  borderRadius: "6px",
-  border: `1px solid ${theme.palette.border.main}`,
-  boxShadow: "0px 8px 24px 0px rgba(16, 24, 40, 0.12)",
-  padding: "10px 8px",
-  zIndex: 3000,
-  "& .dropdown-header": {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "0px 6px 8px",
-    cursor: "pointer",
-  },
-  "& .header-text": {
-    fontSize: isMobile ? "13px" : "15px",
-    fontFamily: "UrbanistMedium",
-    fontWeight: 500,
-    color: theme.palette.text.primary,
-  }
-}));
+export const WalletDropdownContainer = styled(Box)<{ isMobile: boolean }>(
+  ({ theme, isMobile }) => ({
+    position: "absolute",
+    top: "0",
+    left: isMobile ? "auto" : 0,
+    right: isMobile ? 0 : "auto",
+    width: isMobile ? "250px" : "270px",
+    background: theme.palette.common.white,
+    borderRadius: "6px",
+    border: `1px solid ${theme.palette.border.main}`,
+    boxShadow: "0px 8px 24px 0px rgba(16, 24, 40, 0.12)",
+    padding: "10px 8px",
+    zIndex: 3000,
+    "& .dropdown-header": {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "0px 6px 8px",
+      cursor: "pointer",
+    },
+    "& .header-text": {
+      fontSize: isMobile ? "13px" : "15px",
+      fontFamily: "UrbanistMedium",
+      fontWeight: 500,
+      color: theme.palette.text.primary,
+    },
+  }),
+);
 
 export const WalletListItem = styled(ListItemButton)(({ theme }) => ({
   display: "flex",
@@ -616,7 +611,7 @@ export const WalletListItem = styled(ListItemButton)(({ theme }) => ({
   padding: "3px 12px 3px 3px",
   transition: "background-color 0.2s",
   "&.Mui-selected": {
-    backgroundColor: theme.palette.primary.light, // Fixed: was a string literal "theme.palette..."
+    backgroundColor: theme.palette.primary.light,
   },
   "&:hover": {
     backgroundColor: theme.palette.primary.light,
@@ -627,10 +622,9 @@ export const WalletListItem = styled(ListItemButton)(({ theme }) => ({
     fontWeight: 500,
     color: theme.palette.text.primary,
     [theme.breakpoints.down("md")]: { fontSize: "13px" },
-  }
+  },
 }));
 
-// Cleaned up DatePickerTriggerButton internal classes
 export const DatePickerTriggerButton = styled(Button)(({ theme }) => ({
   display: "flex",
   alignItems: "center",

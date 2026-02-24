@@ -1,9 +1,10 @@
-import { pageProps } from "@/utils/types";
-import React, { useCallback, useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import Head from "next/head";
-import { Box } from "@mui/material";
 import CreatePaymentLinkPage from "@/Components/Page/CreatePaymentLink";
+import useIsMobile from "@/hooks/useIsMobile";
+import { pageProps } from "@/utils/types";
+import { Box } from "@mui/material";
+import Head from "next/head";
+import { useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const CreatePaymentLink = ({
   setPageName,
@@ -13,6 +14,7 @@ const CreatePaymentLink = ({
 }: pageProps) => {
   const namespaces = ["createPaymentLinkScreen", "common"];
   const { t } = useTranslation(namespaces);
+  const isMobile = useIsMobile("md");
   const tCreatePaymentLink = useCallback(
     (key: string, defaultValue?: string) =>
       t(key, { ns: "createPaymentLinkScreen", defaultValue }),
@@ -36,7 +38,7 @@ const CreatePaymentLink = ({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Box>
+      <Box sx={{ mt: isMobile ? "4px" : "0px" }}>
         <CreatePaymentLinkPage paymentLinkData={{}} disabled={false} />
       </Box>
     </>

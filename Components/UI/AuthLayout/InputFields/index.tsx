@@ -1,17 +1,16 @@
-import React, { useState, useRef, useEffect } from "react";
+import useIsMobile from "@/hooks/useIsMobile";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   Box,
-  TextField,
-  InputAdornment,
   IconButton,
+  InputAdornment,
+  TextField,
   Typography,
 } from "@mui/material";
-import { SxProps, Theme } from "@mui/system";
-import EditIcon from "@mui/icons-material/Edit";
 import { useTheme } from "@mui/material/styles";
-import Image from "next/image";
-import { StaticImageData } from "next/image";
-import useIsMobile from "@/hooks/useIsMobile";
+import { SxProps, Theme } from "@mui/system";
+import Image, { StaticImageData } from "next/image";
+import React, { useCallback, useId, useMemo, useState } from "react";
 
 export interface InputFieldProps {
   label?: string | React.ReactNode | React.ReactElement;
@@ -23,6 +22,11 @@ export interface InputFieldProps {
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onPaste?: (e: React.ClipboardEvent<HTMLInputElement>) => void;
+  // new events forwarded so consumers (like OTP dialog) can rely on a
+  // straight paste hook. Prior versions had reports of the prop not
+  // reaching the native <input> which made paste unreliable.
+  onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
+  onBeforeInput?: (e: React.FormEvent<HTMLInputElement>) => void;
   type?: "text" | "email" | "password" | "number" | "tel" | "url" | string;
   variant?: "outlined" | "filled" | "standard";
   size?: "small" | "medium";
@@ -49,27 +53,22 @@ export interface InputFieldProps {
   iconBoxSize?: string;
   inputBgColor?: string;
   inputMode?:
-  | "none"
-  | "text"
-  | "tel"
-  | "url"
-  | "email"
-  | "numeric"
-  | "decimal"
-  | "search";
+    | "none"
+    | "text"
+    | "tel"
+    | "url"
+    | "email"
+    | "numeric"
+    | "decimal"
+    | "search";
   inputRef?: React.Ref<HTMLInputElement>;
   autoComplete?: string;
   minRows?: number;
   maxRows?: number;
+  ariaLabel?: string;
+  ariaInvalid?: boolean;
 }
 
-/**
- * Comprehensive InputField component with support for all variants:
- * - Disabled, Read-only, Success, Error states
- * - Password visibility toggle
- * - Custom adornments
- * - MUI TextField with full customization
- */
 const InputField: React.FC<InputFieldProps> = ({
   label,
   placeholder,
@@ -80,9 +79,10 @@ const InputField: React.FC<InputFieldProps> = ({
   onFocus,
   onKeyDown,
   onPaste,
+  onInput,
+  onBeforeInput,
   type = "text",
   variant = "outlined",
-  size = "medium",
   disabled = false,
   readOnly = false,
   error = false,
@@ -91,7 +91,6 @@ const InputField: React.FC<InputFieldProps> = ({
   fullWidth = true,
   startAdornment,
   endAdornment,
-  showPasswordToggle = false,
   sideButton = false,
   onSideButtonClick,
   sideButtonIcon,
@@ -110,137 +109,100 @@ const InputField: React.FC<InputFieldProps> = ({
   maxRows,
   inputRef,
   autoComplete,
+  ariaLabel,
+  ariaInvalid,
 }) => {
   const theme = useTheme();
   const isMobile = useIsMobile("sm");
-  const [showPassword, setShowPassword] = useState(false);
-  const [passwordArray, setPasswordArray] = useState<string[]>([]);
-  const inputRefInternal = useRef<HTMLInputElement | null>(null);
+  const [internalValue, setInternalValue] = useState(value);
 
-  useEffect(() => {
-    if (type === "password") {
-      if (value) {
-        setPasswordArray(value.split(""));
-      } else {
-        setPasswordArray([]);
-      }
-    }
-  }, [value, type]);
-
-  const handleTogglePassword = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const handlePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (type === "password" && !showPassword) {
-      const inputEvent = e.nativeEvent as InputEvent;
-      const input = e.target;
-      let newArray: string[];
-
-      if (
-        !inputEvent.data &&
-        inputEvent.inputType === "deleteContentBackward"
-      ) {
-        newArray = passwordArray.slice(0, -1);
-        setPasswordArray(newArray);
-      } else if (inputEvent.data !== null && inputEvent.data !== undefined) {
-        if (inputEvent.data.trim() === "" && inputEvent.data === " ") {
-          newArray = passwordArray;
-        } else {
-          newArray = [...passwordArray, inputEvent.data];
-        }
-        setPasswordArray(newArray);
-      } else {
-        const asteriskCount = (input.value.match(/\*/g) || []).length;
-        if (asteriskCount < passwordArray.length) {
-          newArray = passwordArray.slice(0, asteriskCount);
-        } else if (asteriskCount > passwordArray.length) {
-          newArray = passwordArray;
-        } else {
-          newArray = passwordArray;
-        }
-        setPasswordArray(newArray);
-      }
-
-      if (!newArray) {
-        newArray = passwordArray;
-      }
-
-      const displayValue = showPassword
-        ? newArray.join("")
-        : newArray.map(() => "*").join("");
-
-      const syntheticEvent = {
-        ...e,
-        target: {
-          ...e.target,
-          name: e.target.name,
-          value: newArray.join(""),
-        },
-      } as React.ChangeEvent<HTMLInputElement>;
-
-      if (onChange) {
-        onChange(syntheticEvent);
-      }
-    } else if (onChange) {
-      onChange(e);
-    }
-  };
-
-  const inputType = type === "password" ? "text" : type;
-
-  const inputValue =
-    type === "password"
-      ? showPassword
-        ? passwordArray.join("")
-        : "*".repeat(passwordArray.length)
-      : value;
-
-  const handleNumberKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    if (type === "number") {
-      if (e.key === "e" || e.key === "E" || e.key === "+" || e.key === "-") {
-        e.preventDefault();
-        return;
-      }
-    }
-
-    if (type === "password" && e.key === " ") {
-      e.preventDefault();
-      return;
-    }
-
-    if (onKeyDown) {
-      onKeyDown(e as React.KeyboardEvent<HTMLInputElement>);
-    }
-  };
-  const handleNumberPaste = (
-    e: React.ClipboardEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    if (type === "number") {
-      const pastedText = e.clipboardData.getData("text");
-      if (pastedText.includes("e") || pastedText.includes("E")) {
-        e.preventDefault();
-        return;
-      }
-    }
-
-    if (onPaste) {
-      onPaste(e as React.ClipboardEvent<HTMLInputElement>);
-    }
-  };
-  const borderColor = success
-    ? theme.palette.success.main
-    : error
-      ? theme.palette.error.main
-      : theme.palette.border.main;
+  const borderColor = useMemo(
+    () =>
+      success
+        ? theme.palette.success.main
+        : error
+          ? theme.palette.error.main
+          : theme.palette.border.main,
+    [error, success, theme],
+  );
+  const focusBorderColor = useMemo(
+    () =>
+      success
+        ? theme.palette.success.main
+        : error
+          ? theme.palette.error.main
+          : theme.palette.border.focus,
+    [error, success, theme],
+  );
   const borderWidth = "1px";
-  const focusBorderColor = success
-    ? theme.palette.success.main
-    : error
-      ? theme.palette.error.main
-      : theme.palette.border.focus;
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      if (type === "number") {
+        if (e.key === "e" || e.key === "E" || e.key === "+" || e.key === "-") {
+          e.preventDefault();
+          return;
+        }
+      }
+
+      if (type === "password" && e.key === " ") {
+        e.preventDefault();
+        return;
+      }
+
+      if (onKeyDown) {
+        onKeyDown(e as React.KeyboardEvent<HTMLInputElement>);
+      }
+    },
+    [onKeyDown, type],
+  );
+
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      if (type === "number") {
+        const pastedText = e.clipboardData.getData("text");
+        if (pastedText.includes("e") || pastedText.includes("E")) {
+          e.preventDefault();
+          return;
+        }
+      }
+
+      if (onPaste) {
+        onPaste(e as React.ClipboardEvent<HTMLInputElement>);
+      }
+    },
+    [onPaste, type],
+  );
+
+  const handleInputRef = useCallback(
+    (el: HTMLInputElement | null) => {
+      if (!inputRef) {
+        return;
+      }
+
+      if (typeof inputRef === "function") {
+        inputRef(el);
+      } else {
+        (inputRef as React.MutableRefObject<HTMLInputElement | null>).current =
+          el;
+      }
+    },
+    [inputRef],
+  );
+
+  const autoCompleteValue = useMemo(() => {
+    if (autoComplete) {
+      return autoComplete;
+    }
+
+    if (type === "password") {
+      return "new-password";
+    }
+
+    return "off";
+  }, [autoComplete, type]);
+
+  const formId = useId();
 
   const renderSideButtonIcon = () => {
     const iconWidth = sideButtonIconWidth ?? (isMobile ? "16px" : "18px");
@@ -311,6 +273,7 @@ const InputField: React.FC<InputFieldProps> = ({
     >
       {label && (
         <Typography
+          component="label"
           variant="body2"
           sx={{
             fontWeight: 500,
@@ -318,10 +281,11 @@ const InputField: React.FC<InputFieldProps> = ({
             fontSize: isMobile ? "13px" : "15px",
             textAlign: "start",
             color: theme.palette.text.primary,
-            lineHeight: "100%",
+            lineHeight: 1.2,
             letterSpacing: 0,
           }}
           className="label"
+          htmlFor={name}
         >
           {typeof label === "string" ? <span>{label}</span> : label}
         </Typography>
@@ -335,8 +299,7 @@ const InputField: React.FC<InputFieldProps> = ({
         }}
       >
         <Box
-          component="form"
-          autoComplete="off"
+          component="div"
           sx={{
             display: "flex",
             alignItems: multiline ? "flex-start" : "center",
@@ -345,74 +308,55 @@ const InputField: React.FC<InputFieldProps> = ({
           }}
         >
           <TextField
+            id={name}
             placeholder={placeholder}
-            value={inputValue}
-            name={name}
-            onChange={
-              type === "password"
-                ? handlePasswordInput
-                : onChange
+            value={
+              type === "password" ? "*".repeat(internalValue.length) : value
             }
+            name={name}
+            onChange={(e) => {
+              if (type === "password") {
+                const newValue = e.target.value;
+                const realValue =
+                  newValue.length > internalValue.length
+                    ? internalValue + newValue.slice(-1)
+                    : internalValue.slice(0, -1);
+
+                setInternalValue(realValue);
+
+                if (onChange) {
+                  onChange({
+                    ...e,
+                    target: {
+                      ...e.target,
+                      value: realValue,
+                    },
+                  } as React.ChangeEvent<HTMLInputElement>);
+                }
+              } else {
+                onChange?.(e as React.ChangeEvent<HTMLInputElement>);
+              }
+            }}
             onBlur={onBlur}
             onFocus={onFocus}
-            onKeyDown={handleNumberKeyDown as any}
-            onPaste={
-              type === "number" || onPaste
-                ? (e: React.ClipboardEvent<HTMLDivElement>) => {
-                  handleNumberPaste(e as any);
-                }
-                : type === "password"
-                  ? (e: React.ClipboardEvent<HTMLDivElement>) => {
-                    e.preventDefault();
-                    const pastedText = e.clipboardData.getData("text");
-                    const pastedTextWithoutSpaces = pastedText.replace(
-                      /\s/g,
-                      ""
-                    );
-                    const newArray = [
-                      ...passwordArray,
-                      ...pastedTextWithoutSpaces.split(""),
-                    ];
-                    setPasswordArray(newArray);
-                    if (onChange) {
-                      const syntheticEvent = {
-                        ...e,
-                        target: {
-                          ...e.target,
-                          name: name || "",
-                          value: newArray.join(""),
-                        },
-                      } as any;
-                      onChange(syntheticEvent);
-                    }
-                  }
-                  : undefined
-            }
-            type={inputType}
+            type={type === "password" ? "text" : type}
             variant={variant}
             disabled={disabled}
-            inputRef={(el) => {
-              if (inputRef) {
-                if (typeof inputRef === "function") {
-                  inputRef(el);
-                } else {
-                  (
-                    inputRef as React.MutableRefObject<HTMLInputElement | null>
-                  ).current = el;
-                }
-              }
-              inputRefInternal.current = el;
-            }}
+            inputRef={handleInputRef}
             inputProps={{
               readOnly: readOnly,
               maxLength: maxLength,
               inputMode: inputMode,
-              autoComplete: "new-password",
-              name: "new-password",
-              form: "no-autofill",
-              "data-lpignore": "true",
-              "data-form-type": "other",
-              "data-1p-ignore": "true",
+              form: formId,
+              autoComplete: autoCompleteValue,
+              "aria-invalid":
+                ariaInvalid !== undefined ? ariaInvalid : error || undefined,
+              "aria-label":
+                ariaLabel ?? (typeof label === "string" ? label : undefined),
+              onKeyDown: handleKeyDown,
+              onPaste: handlePaste,
+              onInput: onInput,
+              onBeforeInput: onBeforeInput,
               autoCorrect: "off",
               autoCapitalize: "off",
               spellCheck: false,
@@ -446,13 +390,13 @@ const InputField: React.FC<InputFieldProps> = ({
               "& .MuiInputBase-root": {
                 ...(multiline
                   ? {
-                    minHeight: inputHeight ?? (isMobile ? "32px" : "40px"),
-                    alignItems: "flex-start",
-                    padding: "0px !important",
-                  }
+                      minHeight: inputHeight ?? (isMobile ? "32px" : "40px"),
+                      alignItems: "flex-start",
+                      padding: "0px !important",
+                    }
                   : {
-                    height: inputHeight ?? (isMobile ? "32px" : "40px"),
-                  }),
+                      height: inputHeight ?? (isMobile ? "32px" : "40px"),
+                    }),
                 borderRadius: "6px",
                 boxSizing: "border-box",
                 "& input, & textarea": {
@@ -531,7 +475,9 @@ const InputField: React.FC<InputFieldProps> = ({
               onClick={onSideButtonClick}
               disabled={disabled}
               tabIndex={-1}
-              aria-label="Toggle visibility"
+              aria-label={
+                typeof label === "string" ? label : "Side button action"
+              }
               sx={{
                 width: iconBoxSize ?? (isMobile ? "32px" : "40px"),
                 height: iconBoxSize ?? (isMobile ? "32px" : "40px"),
@@ -540,8 +486,9 @@ const InputField: React.FC<InputFieldProps> = ({
                 maxWidth: isMobile ? "32px" : "40px",
                 maxHeight: iconBoxSize ?? (isMobile ? "32px" : "40px"),
                 borderRadius: "6px",
-                border: `1px solid ${sideButtonType === "primary" ? "#676768" : "#0004FF"
-                  }`,
+                border: `1px solid ${
+                  sideButtonType === "primary" ? "#676768" : "#0004FF"
+                }`,
                 backgroundColor: "#FFFFFF",
                 color: "#242428",
                 padding: isMobile ? "8px" : "11px",
@@ -569,14 +516,14 @@ const InputField: React.FC<InputFieldProps> = ({
         {helperText && (
           <Typography
             sx={{
-              margin: "4px 0 0 0",
+              margin: "6px 0 0 0",
               fontSize: isMobile ? "10px" : "13px",
               fontFamily: "UrbanistMedium",
               fontWeight: 500,
               color: error
                 ? theme.palette.error.main
                 : theme.palette.secondary.contrastText,
-              lineHeight: "1.2",
+              lineHeight: isMobile ? "1.2" : "20px",
               textAlign: "start",
             }}
             className="helper-text"

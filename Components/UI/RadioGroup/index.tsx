@@ -1,4 +1,3 @@
-import React from "react";
 import { Radio, RadioProps, styled, SxProps, Theme } from "@mui/material";
 
 export interface CustomRadioProps extends Omit<RadioProps, "sx"> {

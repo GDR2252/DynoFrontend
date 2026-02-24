@@ -1,47 +1,37 @@
 import PanelCard from "@/Components/UI/PanelCard";
-import {
-  Box,
-  useMediaQuery,
-} from "@mui/material";
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-} from "react";
+import { Box, useMediaQuery } from "@mui/material";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  TabContentContainer,
-} from "./styled";
 import PaymentLinkSuccessModal from "./PaymentLinkSuccessModal";
+import { TabContentContainer } from "./styled";
 
 import BitcoinIcon from "@/assets/cryptocurrency/Bitcoin-icon.svg";
+import BitcoinCashIcon from "@/assets/cryptocurrency/BitcoinCash-icon.svg";
+import DogecoinIcon from "@/assets/cryptocurrency/Dogecoin-icon.svg";
 import EthereumIcon from "@/assets/cryptocurrency/Ethereum-icon.svg";
 import LitecoinIcon from "@/assets/cryptocurrency/Litecoin-icon.svg";
-import DogecoinIcon from "@/assets/cryptocurrency/Dogecoin-icon.svg";
-import BitcoinCashIcon from "@/assets/cryptocurrency/BitcoinCash-icon.svg";
+import PolygonIcon from "@/assets/cryptocurrency/Polygon-icon.svg";
+import RLUSDIcon from "@/assets/cryptocurrency/RLUSD-icon.svg";
+import SolanaIcon from "@/assets/cryptocurrency/Solana-icon.svg";
 import TronIcon from "@/assets/cryptocurrency/Tron-icon.svg";
 import USDTIcon from "@/assets/cryptocurrency/USDT-icon.svg";
 import USDT2Icon from "@/assets/cryptocurrency/USDT2-icon.svg";
-import SolanaIcon from "@/assets/cryptocurrency/Solana-icon.svg";
 import XRPIcon from "@/assets/cryptocurrency/XRP-icon.svg";
-import PolygonIcon from "@/assets/cryptocurrency/Polygon-icon.svg";
-import RLUSDIcon from "@/assets/cryptocurrency/RLUSD-icon.svg";
 
-import i18n from "@/i18n";
-import { ICryptoItem, PaymentLink } from "@/utils/types/paymentLink";
-import { theme } from "@/styles/theme";
 import useIsMobile from "@/hooks/useIsMobile";
+import i18n from "@/i18n";
+import { theme } from "@/styles/theme";
+import { ICryptoItem, PaymentLink } from "@/utils/types/paymentLink";
 
 import {
-  TabNavigation,
+  ActionButtons,
+  CryptoSelection,
+  DescriptionSection,
   PaymentLinkHeader,
   PaymentSettingsBasic,
-  DescriptionSection,
-  CryptoSelection,
-  TaxSection,
-  ActionButtons,
   PostPaymentSettings,
+  TabNavigation,
+  TaxSection,
 } from "@/Components/UI/pay-link";
 import SaveChangeModel from "@/Components/UI/pay-link/SaveChangeModel";
 
@@ -73,15 +63,19 @@ const CreatePaymentLinkPage = ({
   const hasPaymentLinkData = Object.keys(paymentLinkData).length > 0;
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [cryptoItems, setCryptoItems] = useState<ICryptoItem[]>([]);
-  const [filteredCryptoItems, setFilteredCryptoItems] = useState<ICryptoItem[]>([]);
-  const [showFilteredCryptoItems, setShowFilteredCryptoItems] = useState<boolean>(false);
+  const [filteredCryptoItems, setFilteredCryptoItems] = useState<ICryptoItem[]>(
+    [],
+  );
+  const [showFilteredCryptoItems, setShowFilteredCryptoItems] =
+    useState<boolean>(false);
   const [activeTab, setActiveTab] = useState(0);
   const [blockchainFees, setBlockchainFees] = useState("company");
   const expireAnchorEl = useRef<HTMLElement | null>(null);
   const expireTriggerRef = useRef<HTMLDivElement>(null);
   const [expireOpen, setExpireOpen] = useState<boolean>(false);
   const [successModalOpen, setSuccessModalOpen] = useState<boolean>(false);
-  const [saveChangeModalOpen, setSaveChangeModalOpen] = useState<boolean>(false);
+  const [saveChangeModalOpen, setSaveChangeModalOpen] =
+    useState<boolean>(false);
   const [paymentLink, setPaymentLink] = useState("");
   const currencyTriggerRef = useRef<HTMLButtonElement | null>(null);
   const currencyAnchorEl = useRef<HTMLButtonElement | null>(null);
@@ -244,10 +238,13 @@ const CreatePaymentLinkPage = ({
     handleExpireClose();
   };
 
-  const validateCurrency = useCallback((value: string) => {
-    if (!value) return tPaymentLink("currencyRequired");
-    return "";
-  }, [tPaymentLink]);
+  const validateCurrency = useCallback(
+    (value: string) => {
+      if (!value) return tPaymentLink("currencyRequired");
+      return "";
+    },
+    [tPaymentLink],
+  );
 
   const handleCurrencyBlur = () => {
     setPaymentSettingsTouched((p) => ({ ...p, currency: true }));
@@ -361,105 +358,124 @@ const CreatePaymentLinkPage = ({
     filter: disabled ? "grayscale(1)" : "none",
   };
 
-  const ALL_CRYPTO_ITEMS: ICryptoItem[] = React.useMemo(() => [
-    {
-      name: "Bitcoin",
-      label: "BTC",
-      icon: BitcoinIcon,
-      fullOrder: 15,
-      shortOrder: 1,
-    },
-    {
-      name: "Ethereum",
-      label: "ETH",
-      icon: EthereumIcon,
-      fullOrder: 5,
-      shortOrder: 2,
-    },
-    { name: "Tron", label: "TRX", icon: TronIcon, fullOrder: 4, shortOrder: 3 },
-    {
-      name: "Litecoin",
-      label: "LTC",
-      icon: LitecoinIcon,
-      fullOrder: 3,
-      shortOrder: 4,
-    },
-    {
-      name: "Dogecoin",
-      label: "DOGE",
-      icon: DogecoinIcon,
-      fullOrder: 8,
-      shortOrder: 5,
-    },
-    {
-      name: "Bitcoin Cash",
-      label: "BCH",
-      icon: BitcoinCashIcon,
-      fullOrder: 1,
-      shortOrder: 6,
-    },
-    {
-      name: "USDT",
-      label: "TRC-20",
-      icon: USDTIcon,
-      fullOrder: 2,
-      shortOrder: 7,
-    },
-    {
-      name: "USDT",
-      label: "ERC-20",
-      icon: USDTIcon,
-      fullOrder: 6,
-      shortOrder: 8,
-    },
-    {
-      name: "USDT",
-      label: "FRC-20",
-      icon: USDT2Icon,
-      fullOrder: 7,
-      shortOrder: 9,
-    },
-    {
-      name: "Solana",
-      label: "SOL",
-      icon: SolanaIcon,
-      fullOrder: 9,
-      shortOrder: 10,
-    },
-    { name: "XRP", label: "XRP", icon: XRPIcon, fullOrder: 10, shortOrder: 11 },
-    {
-      name: "POLYGON",
-      label: "POLYGON",
-      icon: PolygonIcon,
-      fullOrder: 11,
-      shortOrder: 12,
-    },
-    {
-      name: "POLYGON USDT",
-      label: "ERC-20",
-      icon: PolygonIcon,
-      fullOrder: 12,
-      shortOrder: 13,
-    },
-    {
-      name: "RLUSD",
-      label: "XRP",
-      icon: RLUSDIcon,
-      fullOrder: 13,
-      shortOrder: 14,
-    },
-    {
-      name: "RLUSD",
-      label: "ERC-20",
-      icon: RLUSDIcon,
-      fullOrder: 14,
-      shortOrder: 15,
-    },
-  ], []);
+  const ALL_CRYPTO_ITEMS: ICryptoItem[] = React.useMemo(
+    () => [
+      {
+        name: "Bitcoin",
+        label: "BTC",
+        icon: BitcoinIcon,
+        fullOrder: 15,
+        shortOrder: 1,
+      },
+      {
+        name: "Ethereum",
+        label: "ETH",
+        icon: EthereumIcon,
+        fullOrder: 5,
+        shortOrder: 2,
+      },
+      {
+        name: "Tron",
+        label: "TRX",
+        icon: TronIcon,
+        fullOrder: 4,
+        shortOrder: 3,
+      },
+      {
+        name: "Litecoin",
+        label: "LTC",
+        icon: LitecoinIcon,
+        fullOrder: 3,
+        shortOrder: 4,
+      },
+      {
+        name: "Dogecoin",
+        label: "DOGE",
+        icon: DogecoinIcon,
+        fullOrder: 8,
+        shortOrder: 5,
+      },
+      {
+        name: "Bitcoin Cash",
+        label: "BCH",
+        icon: BitcoinCashIcon,
+        fullOrder: 1,
+        shortOrder: 6,
+      },
+      {
+        name: "USDT",
+        label: "TRC-20",
+        icon: USDTIcon,
+        fullOrder: 2,
+        shortOrder: 7,
+      },
+      {
+        name: "USDT",
+        label: "ERC-20",
+        icon: USDTIcon,
+        fullOrder: 6,
+        shortOrder: 8,
+      },
+      {
+        name: "USDT",
+        label: "FRC-20",
+        icon: USDT2Icon,
+        fullOrder: 7,
+        shortOrder: 9,
+      },
+      {
+        name: "Solana",
+        label: "SOL",
+        icon: SolanaIcon,
+        fullOrder: 9,
+        shortOrder: 10,
+      },
+      {
+        name: "XRP",
+        label: "XRP",
+        icon: XRPIcon,
+        fullOrder: 10,
+        shortOrder: 11,
+      },
+      {
+        name: "POLYGON",
+        label: "POLYGON",
+        icon: PolygonIcon,
+        fullOrder: 11,
+        shortOrder: 12,
+      },
+      {
+        name: "POLYGON USDT",
+        label: "ERC-20",
+        icon: PolygonIcon,
+        fullOrder: 12,
+        shortOrder: 13,
+      },
+      {
+        name: "RLUSD",
+        label: "XRP",
+        icon: RLUSDIcon,
+        fullOrder: 13,
+        shortOrder: 14,
+      },
+      {
+        name: "RLUSD",
+        label: "ERC-20",
+        icon: RLUSDIcon,
+        fullOrder: 14,
+        shortOrder: 15,
+      },
+    ],
+    [],
+  );
 
   const handleSearch = () => {
     if (searchTerm.trim() !== "") {
-      const filterdData = cryptoItems.filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.label.toLowerCase().includes(searchTerm.toLowerCase()));
+      const filterdData = cryptoItems.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.label.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
       setFilteredCryptoItems(filterdData);
     } else {
       setFilteredCryptoItems([]);
@@ -471,7 +487,7 @@ const CreatePaymentLinkPage = ({
     if (searchTerm.trim() === "") {
       setShowFilteredCryptoItems(false);
     }
-  }, [searchTerm])
+  }, [searchTerm]);
 
   useEffect(() => {
     const fullSorted = [...ALL_CRYPTO_ITEMS].sort(
@@ -531,7 +547,7 @@ const CreatePaymentLinkPage = ({
             ? 2
             : hasPaymentLinkData
               ? theme.spacing("30px", 2.4, "30px", 2.5)
-              : 2.5
+              : theme.spacing("30px", 2.5, "30px", 2.5)
         }
         sx={{
           mb: hasPaymentLinkData ? 10 : 0,
@@ -549,7 +565,13 @@ const CreatePaymentLinkPage = ({
 
         {activeTab === 0 && (
           <TabContentContainer
-            sx={{ padding: hasPaymentLinkData ? "0 !important" : "" }}
+            sx={{
+              padding: isMobile
+                ? "14px 0px 0px 0px"
+                : hasPaymentLinkData
+                  ? "0px"
+                  : "16px 0px 0px 0px",
+            }}
           >
             {hasPaymentLinkData && (
               <PaymentLinkHeader
@@ -567,7 +589,7 @@ const CreatePaymentLinkPage = ({
                 sx={{
                   display: "flex",
                   flexDirection: { xs: "column", md: "row" },
-                  gap: { xs: 2, md: 3 },
+                  gap: { xs: "12px", md: 3 },
                 }}
               >
                 <PaymentSettingsBasic
@@ -648,12 +670,14 @@ const CreatePaymentLinkPage = ({
                 currentLng={currentLng}
               />
 
-              <Box
-                sx={{
-                  height: "1px",
-                  backgroundColor: theme.palette.border.main,
-                }}
-              />
+              {hasPaymentLinkData && (
+                <Box
+                  sx={{
+                    height: "1px",
+                    backgroundColor: theme.palette.border.main,
+                  }}
+                />
+              )}
 
               {hasPaymentLinkData && (
                 <PostPaymentSettings
@@ -678,7 +702,11 @@ const CreatePaymentLinkPage = ({
                 hasPaymentLinkData={hasPaymentLinkData}
                 disabled={disabled}
                 tPaymentLink={tPaymentLink}
-                handleCreatePaymentLink={hasPaymentLinkData ? handleSaveChanges : handleCreatePaymentLink}
+                handleCreatePaymentLink={
+                  hasPaymentLinkData
+                    ? handleSaveChanges
+                    : handleCreatePaymentLink
+                }
                 paymentSettingsErrors={paymentSettingsErrors}
                 paymentSettings={paymentSettings}
               />
@@ -687,7 +715,9 @@ const CreatePaymentLinkPage = ({
         )}
 
         {activeTab === 1 && (
-          <TabContentContainer>
+          <TabContentContainer
+            sx={{ padding: isMobile ? "14px 0px 0px 0px" : "16px 0px 0px 0px" }}
+          >
             <PostPaymentSettings
               hasPaymentLinkData={hasPaymentLinkData}
               isMobile={isMobile}

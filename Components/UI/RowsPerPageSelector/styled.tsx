@@ -48,7 +48,4 @@ export const CustomSelectValue = styled(Typography)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     fontSize: "13px",
   },
-  // [theme.breakpoints.down("sm")]: {
-  //   fontSize: "12px",
-  // },
 }));

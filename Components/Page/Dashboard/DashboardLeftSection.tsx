@@ -1,26 +1,25 @@
-import React, { useCallback, useState, useRef, useMemo, memo } from "react";
-import { Box, Typography, useTheme, IconButton } from "@mui/material";
-import PanelCard from "@/Components/UI/PanelCard";
-import CustomButton from "@/Components/UI/Buttons";
-import { ArrowOutward, TrendingUp, Add, Remove } from "@mui/icons-material";
-import Image from "next/image";
-import TransactionIcon from "@/assets/Icons/transaction.svg";
-import WalletIcon from "@/assets/Icons/wallet-grey.svg";
-import { useTranslation } from "react-i18next";
-import { PercentageChip } from "./styled";
-import ArrowUpSuccessIcon from "@/assets/Icons/up-success.svg";
 import RoundedStackIcon from "@/assets/Icons/roundedStck-icon.svg";
-import { formatNumberWithComma, getCurrencySymbol } from "@/helpers";
+import TransactionIcon from "@/assets/Icons/transaction.svg";
+import ArrowUpSuccessIcon from "@/assets/Icons/up-success.svg";
+import WalletIcon from "@/assets/Icons/wallet-grey.svg";
+import Chart from "@/Components/UI/AreaChart";
+import CustomButton from "@/Components/UI/Buttons";
 import {
   CryptocurrencyIcon,
   IconChip,
 } from "@/Components/UI/CryptocurrencySelector/styled";
+import PanelCard from "@/Components/UI/PanelCard";
+import TimePeriodSelector from "@/Components/UI/TimePeriodSelector";
+import { formatNumberWithComma, getCurrencySymbol } from "@/helpers";
 import useIsMobile from "@/hooks/useIsMobile";
-import TimePeriodSelector, {
+import { useWalletData } from "@/hooks/useWalletData";
+import {
+  DateRange,
   TimePeriod,
-} from "@/Components/UI/TimePeriodSelector";
-import { useRouter } from "next/router";
-import { DateRange } from "@/Components/UI/DatePicker";
+  TransactionData,
+} from "@/utils/types/dashboard";
+import { Add, ArrowOutward, Remove } from "@mui/icons-material";
+import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import {
   eachDayOfInterval,
   endOfDay,
@@ -28,8 +27,11 @@ import {
   isValid,
   startOfDay,
 } from "date-fns";
-import { useWalletData } from "@/hooks/useWalletData";
-import Chart from "@/Components/UI/AreaChart";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import React, { memo, useCallback, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { PercentageChip } from "./styled";
 
 const formatDate = (date: Date): string => {
   const months = [
@@ -109,9 +111,9 @@ const generateDateRange = (period: SelectedPeriod): Date[] => {
 };
 
 const processTransactionData = (
-  rawData: Array<{ date: string; value: number }>,
-  period: SelectedPeriod
-): Array<{ date: string; value: number }> => {
+  rawData: TransactionData[],
+  period: SelectedPeriod,
+): TransactionData[] => {
   const dateRange = generateDateRange(period);
   const safeDateRange =
     dateRange.length > 0 ? dateRange : generateDateRange("7days");
@@ -138,7 +140,6 @@ const TransactionVolumeChart = ({
   selectedPeriod: SelectedPeriod;
 }) => {
   const isMobile = useIsMobile("md");
-  const isSmall = useIsMobile("sm");
 
   const rawTransactionData = useMemo(
     () => [
@@ -150,103 +151,27 @@ const TransactionVolumeChart = ({
       { date: "Feb 10", value: 13500 },
       { date: "Feb 11", value: 15000 },
     ],
-    []
+    [],
   );
 
   const transactionData = useMemo(
     () => processTransactionData(rawTransactionData, selectedPeriod),
-    [rawTransactionData, selectedPeriod]
-  );
-
-  // Check if we have any non-zero data
-  const hasData = useMemo(
-    () => transactionData.some((item) => item.value > 0),
-    [transactionData]
+    [rawTransactionData, selectedPeriod],
   );
 
   return (
-    <Box sx={{ width: "100%", mt: isMobile ? "14px" : "12px", overflow: "visible" }}>
+    <Box
+      sx={{
+        width: "100%",
+        mt: isMobile ? "14px" : "12px",
+        overflow: "visible",
+      }}
+    >
       <Chart data={transactionData} />
     </Box>
   );
 };
 
-const StatCard = ({
-  title,
-  value,
-  change,
-  icon,
-}: {
-  title: string;
-  value: string | number;
-  change?: string;
-  icon: any;
-}) => {
-  const theme = useTheme();
-  return (
-    <PanelCard
-      showHeaderBorder={false}
-      headerPadding={theme.spacing(2.5)}
-      bodyPadding={theme.spacing(2.5)}
-      sx={{ height: "100%" }}
-      headerAction={
-        <Box
-          sx={{
-            width: "32px",
-            height: "32px",
-            borderRadius: "8px",
-            background: theme.palette.grey[100],
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Image src={icon} alt={title} width={16} height={16} />
-        </Box>
-      }
-    >
-      <Box>
-        <Typography
-          sx={{
-            fontSize: "15px",
-            color: theme.palette.text.secondary,
-            mb: 1,
-            fontFamily: "UrbanistRegular",
-          }}
-        >
-          {title}
-        </Typography>
-        <Typography
-          sx={{
-            fontSize: "28px",
-            fontWeight: 600,
-            color: theme.palette.text.primary,
-            mb: change ? 1 : 0,
-            fontFamily: "UrbanistMedium",
-          }}
-        >
-          {value}
-        </Typography>
-        {change && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-            <TrendingUp sx={{ fontSize: 16, color: "#10B981" }} />
-            <Typography
-              sx={{
-                fontSize: "13px",
-                color: "#10B981",
-                fontFamily: "UrbanistMedium",
-              }}
-            >
-              {change}
-            </Typography>
-          </Box>
-        )}
-      </Box>
-    </PanelCard>
-  );
-};
-
-// Memoized wallet card component to prevent re-renders during drag
 const ActiveWalletsCard = memo(
   ({
     title,
@@ -295,7 +220,7 @@ const ActiveWalletsCard = memo(
         </span>
       </IconChip>
     );
-  }
+  },
 );
 
 ActiveWalletsCard.displayName = "ActiveWalletsCard";
@@ -325,7 +250,7 @@ const DashboardLeftSection = () => {
   const { t } = useTranslation(namespaces);
   const tDashboard = useCallback(
     (key: string) => t(key, { ns: "dashboardLayout" }),
-    [t]
+    [t],
   );
 
   const { activeWalletsData } = useWalletData();
@@ -348,7 +273,7 @@ const DashboardLeftSection = () => {
       startXRef.current = e.pageX - scrollContainerRef.current.offsetLeft;
       scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
     },
-    [showAllWallets, isStatCardsDragging]
+    [showAllWallets, isStatCardsDragging],
   );
 
   const handleMouseMove = useCallback(
@@ -362,10 +287,10 @@ const DashboardLeftSection = () => {
       e.preventDefault();
       e.stopPropagation();
       const x = e.pageX - scrollContainerRef.current.offsetLeft;
-      const walk = (x - startXRef.current) * 2; // Scroll speed multiplier
+      const walk = (x - startXRef.current) * 2;
       scrollContainerRef.current.scrollLeft = scrollLeftRef.current - walk;
     },
-    [showAllWallets]
+    [showAllWallets],
   );
 
   const handleMouseUp = useCallback((e?: React.MouseEvent<HTMLDivElement>) => {
@@ -384,7 +309,7 @@ const DashboardLeftSection = () => {
       isDraggingRef.current = false;
       setIsDragging(false);
     },
-    []
+    [],
   );
 
   const handleStatCardsMouseDown = useCallback(
@@ -407,7 +332,7 @@ const DashboardLeftSection = () => {
         e.pageX - statCardsContainerRef.current.offsetLeft;
       statCardsScrollLeftRef.current = statCardsContainerRef.current.scrollLeft;
     },
-    []
+    [],
   );
 
   const handleStatCardsMouseMove = useCallback(
@@ -426,7 +351,7 @@ const DashboardLeftSection = () => {
       statCardsContainerRef.current.scrollLeft =
         statCardsScrollLeftRef.current - walk;
     },
-    []
+    [],
   );
 
   const handleStatCardsMouseUp = useCallback(() => {
@@ -450,8 +375,9 @@ const DashboardLeftSection = () => {
         onMouseLeave={handleStatCardsMouseLeave}
         sx={{
           mb: 2.5,
+          px: { xs: "16px", md: "0px" },
           display: "flex",
-          gap: isMobile ? "8px" : "16px",
+          gap: isMobile ? "8px" : "20px",
           overflowX: "auto",
           overflowY: "hidden",
           cursor: isStatCardsDragging ? "grabbing" : "grab",
@@ -625,8 +551,6 @@ const DashboardLeftSection = () => {
               <Image
                 src={RoundedStackIcon}
                 alt="Rounded Stack Icon"
-                width={17}
-                height={14}
                 style={{
                   width: "clamp(14px, 2vw, 17px)",
                   height: "auto",
@@ -733,8 +657,6 @@ const DashboardLeftSection = () => {
               <Image
                 src={WalletIcon}
                 alt="Wallet Icon"
-                width={17}
-                height={14}
                 style={{
                   width: "clamp(12px, 2vw, 17px)",
                   height: "auto",
@@ -875,79 +797,87 @@ const DashboardLeftSection = () => {
       </Box>
 
       {/* Transaction Volume Graph */}
-      <PanelCard
-        showHeaderBorder={false}
-        headerPadding={theme.spacing(2.5)}
-        bodyPadding={theme.spacing(2.5, 2, 2.5, 2)}
-        headerActionLayout="inline"
-        sx={{ mb: 2.5, boxShadow: "none !important", overflow: "visible" }}
-      >
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            justifyContent: { xs: "flex-start", sm: "space-between" },
-            alignItems: { xs: "flex-start", md: "center" },
-            gap: { xs: 2, md: 0 },
-          }}
+      <Box sx={{ px: { xs: "16px", md: "0px" } }}>
+        <PanelCard
+          showHeaderBorder={false}
+          headerPadding={theme.spacing(2.5)}
+          bodyPadding={
+            isMobile ? theme.spacing(2, 0, 2, 2) : theme.spacing(2.5, 2, 2.5, 2)
+          }
+          headerActionLayout="inline"
+          sx={{ mb: 2.5, boxShadow: "none !important", overflow: "visible" }}
         >
-          <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <Typography
-              sx={{
-                fontSize: isMobile ? "15px" : "20px",
-                color: theme.palette.text.primary,
-                fontFamily: "UrbanistMedium",
-                lineHeight: 1.2,
-              }}
-            >
-              {tDashboard("transactionVolume")}
-            </Typography>
-            <Typography
-              sx={{
-                fontSize: "13px",
-                color: theme.palette.text.secondary,
-                fontFamily: "UrbanistMedium",
-                lineHeight: 1.2,
-              }}
-            >
-              {tDashboard("dailyTransactionActivity")}
-            </Typography>
-          </Box>
           <Box
             sx={{
+              width: "100%",
               display: "flex",
-              gap: "12px",
-              alignItems: "center",
-              justifyContent: { xs: "space-between", md: "flex-start" },
-              width: { xs: "100%", sm: "auto" },
+              flexDirection: { xs: "column", sm: "row" },
+              justifyContent: { xs: "flex-start", sm: "space-between" },
+              alignItems: { xs: "flex-start", md: "center" },
+              gap: { xs: "12px", md: 0 },
             }}
           >
-            <TimePeriodSelector
-              value={selectedPeriod}
-              onChange={(period) => setSelectedPeriod(period)}
-              dateRange={customDateRange}
-              onDateRangeChange={setCustomDateRange}
-              sx={{ flexShrink: 0 }}
-            />
-            <Box>
-              <CustomButton
-                label={t("viewTransactions")}
-                variant="secondary"
-                size={isMobile ? "small" : "medium"}
-                endIcon={<ArrowOutward sx={{ fontSize: 16 }} />}
+            <Box
+              sx={{ display: "flex", flexDirection: "column", gap: "6.41px" }}
+            >
+              <Typography
+                sx={{
+                  fontSize: isMobile ? "15px" : "20px",
+                  color: theme.palette.text.primary,
+                  fontFamily: "UrbanistMedium",
+                  lineHeight: 1.2,
+                }}
+              >
+                {tDashboard("transactionVolume")}
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: "13px",
+                  color: theme.palette.text.secondary,
+                  fontFamily: "UrbanistMedium",
+                  lineHeight: 1.2,
+                }}
+              >
+                {tDashboard("dailyTransactionActivity")}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                gap: selectedPeriod === "custom" ? "6px" : "12px",
+                alignItems: "center",
+                width: { xs: "100%", sm: "auto" },
+                p: { xs: "0px 16px 0px 0px", md: "0px" },
+              }}
+            >
+              <TimePeriodSelector
+                value={selectedPeriod}
+                onChange={(period) => setSelectedPeriod(period)}
+                dateRange={customDateRange}
+                onDateRangeChange={setCustomDateRange}
                 sx={{ flexShrink: 0 }}
-                onClick={() => router.push("/transactions")}
               />
+              <Box>
+                <CustomButton
+                  label={t("viewTransactions")}
+                  variant="secondary"
+                  size={isMobile ? "small" : "medium"}
+                  endIcon={
+                    <ArrowOutward sx={{ fontSize: isMobile ? 14 : 16 }} />
+                  }
+                  sx={{ flexShrink: 0, padding: "8px 12px !important" }}
+                  onClick={() => router.push("/transactions")}
+                />
+              </Box>
             </Box>
           </Box>
-        </Box>
-        <TransactionVolumeChart
-          selectedPeriod={
-            selectedPeriod === "custom" ? customDateRange : selectedPeriod
-          }
-        />
-      </PanelCard>
+          <TransactionVolumeChart
+            selectedPeriod={
+              selectedPeriod === "custom" ? customDateRange : selectedPeriod
+            }
+          />
+        </PanelCard>
+      </Box>
     </Box>
   );
 };

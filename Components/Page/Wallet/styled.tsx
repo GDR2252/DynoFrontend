@@ -152,7 +152,7 @@ export const WalletEditButton = styled(IconButton)(({ theme }) => ({
 
 export const SetupWarnnigContainer = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.primary.light,
-  padding: theme.spacing(1, 1.8),
+  padding: theme.spacing("7px", 1.8),
   borderRadius: "7px",
   border: `1px solid ${theme.palette.border.main}`,
   display: "flex",

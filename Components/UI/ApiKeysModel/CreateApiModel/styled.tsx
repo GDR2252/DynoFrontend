@@ -4,13 +4,16 @@ import { styled } from "@mui/material/styles";
 
 export const PermissionsContainer = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.primary.light,
-  padding: "8px 10px",
+  padding: "8px 14px",
   borderRadius: "7px",
   border: `1px solid ${theme.palette.border.main}`,
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-start",
   gap: theme.spacing(1),
+  [theme.breakpoints.down("md")]: {
+    padding: "8px 10px",
+  },
 }));
 
 export const IconContainer = styled(Box)({
@@ -28,7 +31,7 @@ export const ContentContainer = styled(Box)({
 export const PermissionsTitle = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,
   fontWeight: 600,
-  fontStyle : "semibold",
+  fontStyle: "semibold",
   lineHeight: 1.2,
   fontFamily: "UrbanistRegular",
   marginBottom: theme.spacing(0.5),

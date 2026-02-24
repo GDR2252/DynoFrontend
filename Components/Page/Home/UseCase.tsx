@@ -1,6 +1,7 @@
 import HomeSectionTitle from "@/Components/UI/SectionTitle";
-import { Box, Grid, Typography, Button } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import { homeTheme } from "@/styles/homeTheme";
 import useCase1 from "@/assets/Images/UseCase/use-case-1.svg";
@@ -43,7 +44,6 @@ const UseCaseTitleWrapper = styled(Box)(() => ({
   flexDirection: "column",
   gap: "13px",
   flex: 1,
-  maxWidth: "244px",
 }));
 
 const UseCaseTitle = styled(Typography)(() => ({
@@ -59,6 +59,7 @@ const UseCaseDescription = styled(Typography)(() => ({
   fontSize: "14px",
   lineHeight: "20px",
   fontWeight: 400,
+  maxWidth: "244px",
   fontFamily: "OutfitRegular",
   letterSpacing: 0,
   color: homeTheme.palette.text.secondary,
@@ -82,34 +83,33 @@ const UseCaseTag = styled(Typography)(() => ({
 }));
 
 const UseCaseSection = () => {
-
   const isMobile = useIsMobile("md");
+  const { t } = useTranslation("landing");
 
   const useCases = [
     {
       image: useCase1,
-      title: "E-commerce Brands",
-      description: "Straightforward crypto checkout for your online store.",
-      tag: "Payment links",
+      titleKey: "useCase1Title",
+      descriptionKey: "useCase1Description",
+      tagKey: "useCase1Tag",
     },
     {
       image: useCase2,
-      title: "Digital Product Creators",
-      description:
-        "Easy one-time payments for courses, templates, and downloads.",
-      tag: "Wallet stats",
+      titleKey: "useCase2Title",
+      descriptionKey: "useCase2Description",
+      tagKey: "useCase2Tag",
     },
     {
       image: useCase3,
-      title: "Subscription & SaaS Products",
-      description: "Automated callbacks and API for recurring payments.",
-      tag: "API keys",
+      titleKey: "useCase3Title",
+      descriptionKey: "useCase3Description",
+      tagKey: "useCase3Tag",
     },
     {
       image: useCase4,
-      title: "Marketplaces",
-      description: "Multi-wallet support and clear transaction flow.",
-      tag: "Transactions",
+      titleKey: "useCase4Title",
+      descriptionKey: "useCase4Description",
+      tagKey: "useCase4Tag",
     },
   ];
 
@@ -132,15 +132,15 @@ const UseCaseSection = () => {
         >
           <HomeSectionTitle
             type="small"
-            badgeText="Use Cases"
-            title="Built for every business"
-            highlightText="every business"
-            subtitle="See how different businesses use DynoPay to accept crypto payments."
+            badgeText={t("useCases")}
+            title={t("useCaseTitle")}
+            highlightText={t("useCaseHighlight")}
+            subtitle={t("useCaseSubtitle")}
           />
 
-          <Grid container spacing={isMobile ? 0 : 3} sx={{ width: "100%" }}>
+          <Grid container spacing={isMobile ? "25px" : 3} sx={{ width: "100%" }}>
             {useCases.map((useCase) => (
-              <Grid item xs={12} md={6} key={useCase.title}>
+              <Grid item xs={12} md={6} key={useCase.titleKey}>
                 <UseCaseCard>
                   <Box
                     sx={{
@@ -158,7 +158,7 @@ const UseCaseSection = () => {
                   <UseCaseImage>
                     <Image
                       src={useCase.image}
-                      alt={useCase.title}
+                      alt={t(useCase.titleKey)}
                       width={163}
                       height={133}
                       style={{
@@ -171,7 +171,7 @@ const UseCaseSection = () => {
                   </UseCaseImage>
 
                   <UseCaseTitleWrapper>
-                    <UseCaseTitle>{useCase.title}</UseCaseTitle>
+                    <UseCaseTitle>{t(useCase.titleKey)}</UseCaseTitle>
 
                     <Box
                       sx={{
@@ -181,12 +181,12 @@ const UseCaseSection = () => {
                       }}
                     >
                       <UseCaseDescription>
-                        {useCase.description}
+                        {t(useCase.descriptionKey)}
                       </UseCaseDescription>
 
                       <UseCaseTag>
                         <CheckCircleRoundedIcon sx={{ fontSize: 16 }} />
-                        {useCase.tag}
+                        {t(useCase.tagKey)}
                       </UseCaseTag>
                     </Box>
                   </UseCaseTitleWrapper>

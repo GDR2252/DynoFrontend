@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Box, Typography, useTheme, Link } from "@mui/material";
-import Image from "next/image";
-import PopupModal from "@/Components/UI/PopupModal";
-import CustomButton from "@/Components/UI/Buttons";
-import InputField from "@/Components/UI/AuthLayout/InputFields";
-import PanelCard from "@/Components/UI/PanelCard";
-import useIsMobile from "@/hooks/useIsMobile";
-import * as yup from "yup";
-import { ArrowBack } from "@mui/icons-material";
-import LockIcon from "@/assets/Icons/lock-icon.svg";
-import { DialogCloseButton } from "../OtpDialog/styled";
 import CloseIcon from "@/assets/Icons/close-icon.svg";
-import OtpDialog from "@/Components/UI/OtpDialog";
+import LockIcon from "@/assets/Icons/lock-icon.svg";
+import InputField from "@/Components/UI/AuthLayout/InputFields";
+import CustomButton from "@/Components/UI/Buttons";
+import PanelCard from "@/Components/UI/PanelCard";
+import PopupModal from "@/Components/UI/PopupModal";
+import useIsMobile from "@/hooks/useIsMobile";
+import { ArrowBack } from "@mui/icons-material";
+import { Box, Link, Typography, useTheme } from "@mui/material";
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import * as yup from "yup";
+import { DialogCloseButton } from "../OtpDialog/styled";
 
 export interface ForgotPasswordDialogProps {
   open: boolean;
@@ -31,13 +30,9 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
   open,
   onClose,
   onEmailSubmit,
-  onOtpVerify,
-  onResendCode,
-  countdown = 0,
   loading = false,
   currentEmail,
   emailError,
-  otpError,
 }) => {
   const { t } = useTranslation("auth");
   const theme = useTheme();
@@ -56,7 +51,7 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
           .email(t("emailInvalid"))
           .required(t("emailRequired")),
       }),
-    [t]
+    [t],
   );
 
   // Reset state when dialog closes
@@ -111,20 +106,6 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
     }
   };
 
-  const handleOtpVerify = (otp: string) => {
-    if (onOtpVerify) {
-      const emailToUse = currentEmail || email;
-      onOtpVerify(otp, emailToUse);
-    }
-  };
-
-  const handleResendCode = () => {
-    if (onResendCode) {
-      const emailToUse = currentEmail || email;
-      onResendCode(emailToUse);
-    }
-  };
-
   const handleReturnToAuth = () => {
     onClose();
   };
@@ -137,7 +118,6 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
     onClose();
   };
 
-  // Email Input Step
   if (step === "email") {
     return (
       <PopupModal
@@ -171,25 +151,32 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
             <Image
               src={LockIcon.src}
               alt="lock icon"
-              width={24}
-              height={24}
+              width={isMobile ? 18 : 24}
+              height={isMobile ? 18 : 24}
               draggable={false}
             />
           }
           headerAction={
-            <DialogCloseButton onClick={handleClose}>
+            <DialogCloseButton
+              onClick={handleClose}
+              sx={{
+                position: "absolute",
+                top: isMobile ? "-15px" : "-25px",
+                right: isMobile ? "-15px" : "-25px",
+              }}
+            >
               <Image
                 src={CloseIcon.src}
                 alt="close icon"
-                width={16}
-                height={16}
+                width={isMobile ? 10 : 16}
+                height={isMobile ? 10 : 16}
                 draggable={false}
               />
             </DialogCloseButton>
           }
           showHeaderBorder={false}
           bodyPadding="0"
-          headerPadding="0"
+          headerPadding="0 !important"
           headerSx={{
             "& .MuiTypography-root": {
               fontWeight: 500,
@@ -246,7 +233,6 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
             <CustomButton
               variant="primary"
               size={isMobile ? "small" : "medium"}
-              // label={t("getCode")}
               label={t("Send Reset Link")}
               onClick={handleEmailSubmit}
               disabled={loading}
@@ -296,28 +282,6 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
       </PopupModal>
     );
   }
-
-  // OTP Verification Step
-  // return (
-  //   <OtpDialog
-  //     open={open}
-  //     onClose={handleClose}
-  //     title={t("passwordRecovery")}
-  //     subtitle=""
-  //     contactInfo={currentEmail || email}
-  //     contactType="email"
-  //     otpLength={6}
-  //     resendCodeLabel={t("resendCode")}
-  //     resendCodeCountdownLabel={(seconds) => `${t("codeIn")} ${seconds}s`}
-  //     primaryButtonLabel={t("confirm")}
-  //     onResendCode={handleResendCode}
-  //     onVerify={handleOtpVerify}
-  //     countdown={countdown}
-  //     loading={loading}
-  //     preventClose={countdown > 0}
-  //     error={otpError}
-  //   />
-  // );
 };
 
 export default ForgotPasswordDialog;

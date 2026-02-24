@@ -1,14 +1,14 @@
+import DashboardLeftSection from "@/Components/Page/Dashboard/DashboardLeftSection";
+import DashboardRightSection from "@/Components/Page/Dashboard/DashboardRightSection";
 import CustomButton from "@/Components/UI/Buttons";
 import useIsMobile from "@/hooks/useIsMobile";
 import { pageProps } from "@/utils/types";
 import { AddRounded } from "@mui/icons-material";
+import { Grid } from "@mui/material";
 import Head from "next/head";
 import router from "next/router";
-import { useEffect, useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Grid } from "@mui/material";
-import DashboardLeftSection from "@/Components/Page/Dashboard/DashboardLeftSection";
-import DashboardRightSection from "@/Components/Page/Dashboard/DashboardRightSection";
 
 export default function Home({
   setPageName,
@@ -21,13 +21,11 @@ export default function Home({
   const { t } = useTranslation(namespaces);
   const tDashboard = useCallback(
     (key: string) => t(key, { ns: "dashboardLayout" }),
-    [t]
+    [t],
   );
-  const tCommon = useCallback((key: string) => t(key, { ns: "common" }), [t]);
 
   useEffect(() => {
     if (setPageName && setPageDescription) {
-      // Using dashboardLayout namespace
       setPageName(tDashboard("dashboard"));
       setPageDescription(tDashboard("dashboardDescription"));
     }
@@ -38,9 +36,7 @@ export default function Home({
     setPageAction(
       <CustomButton
         label={
-          isMobile
-            ? tDashboard("create")
-            : tDashboard("createPaymentLink")
+          isMobile ? tDashboard("create") : tDashboard("createPaymentLink")
         }
         variant="primary"
         size="medium"
@@ -51,7 +47,10 @@ export default function Home({
           px: isMobile ? 1.5 : 2.5,
           fontSize: isMobile ? 13 : 15,
         }}
-      />
+        labelSx={{
+          fontSize: "15px !important",
+        }}
+      />,
     );
     return () => setPageAction(null);
   }, [setPageAction, tDashboard, isMobile]);
@@ -66,12 +65,10 @@ export default function Home({
 
       <main>
         <Grid container spacing={2.5}>
-          {/* Left Section - Stat Cards and Graph */}
           <Grid item xs={12} xl={8}>
             <DashboardLeftSection />
           </Grid>
 
-          {/* Right Section - Fee Tier and Upgrade */}
           <Grid item xs={12} xl={4}>
             <DashboardRightSection />
           </Grid>

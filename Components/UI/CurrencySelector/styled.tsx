@@ -4,7 +4,13 @@ import { Box } from "@mui/material";
 import { styled as muiStyled } from "@mui/material/styles";
 import Image from "next/image";
 
-export const CurrencyTrigger = muiStyled(Box)<{
+export const CurrencyTrigger = muiStyled(Box, {
+  shouldForwardProp: (prop) =>
+    prop !== "error" &&
+    prop !== "fullWidth" &&
+    prop !== "isOpen" &&
+    prop !== "isMobile",
+})<{
   error?: boolean;
   fullWidth?: boolean;
   isOpen?: boolean;

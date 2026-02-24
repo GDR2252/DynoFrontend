@@ -1,28 +1,28 @@
-import { useState, useRef, useEffect } from "react";
+import LoadingIcon from "@/assets/Icons/LoadingIcon";
 import Logo from "@/assets/Images/auth/dynopay-logo.png";
-import Image from "next/image";
+import InputField from "@/Components/UI/AuthLayout/InputFields";
+import PasswordValidation from "@/Components/UI/AuthLayout/PasswordValidation";
+import TitleDescription from "@/Components/UI/AuthLayout/TitleDescription";
+import CustomButton from "@/Components/UI/Buttons";
 import LanguageSwitcher from "@/Components/UI/LanguageSwitcher";
 import { AuthContainer, CardWrapper } from "@/Containers/Login/styled";
 import useIsMobile from "@/hooks/useIsMobile";
-import { Box, Typography } from "@mui/material";
-import TitleDescription from "@/Components/UI/AuthLayout/TitleDescription";
-import { useTranslation } from "react-i18next";
-import InputField from "@/Components/UI/AuthLayout/InputFields";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import CustomButton from "@/Components/UI/Buttons";
-import { theme } from "@/styles/theme";
-import router from "next/router";
-import PasswordValidation from "@/Components/UI/AuthLayout/PasswordValidation";
-import { useDispatch, useSelector } from "react-redux";
-import { rootReducer } from "@/utils/types";
 import {
   USER_API_ERROR,
   USER_REGISTER,
   UserAction,
 } from "@/Redux/Actions/UserAction";
+import { theme } from "@/styles/theme";
+import { rootReducer } from "@/utils/types";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { Box, Typography } from "@mui/material";
+import Image from "next/image";
+import router from "next/router";
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
 import * as yup from "yup";
-import LoadingIcon from "@/assets/Icons/LoadingIcon";
 
 type RegisterErrorKey =
   | ""
@@ -64,7 +64,6 @@ const Register = () => {
     /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()\-=__+{}\[\]:;<>,.?/~]).{8,20}$/;
 
   const registerSchema = yup.object().shape({
-    // Store translation keys as messages so UI can translate live on language change
     firstName: yup.string().required("firstNameRequired"),
     lastName: yup.string().required("lastNameRequired"),
     email: yup.string().email("emailInvalid").required("emailRequired"),
@@ -92,8 +91,6 @@ const Register = () => {
     }
   }, [userState.loading, userState.name, dispatch]);
 
-  // Errors for firstName, lastName, email only show on Sign Up click (via schema)
-
   const validateField = async (
     field: "firstName" | "lastName" | "email" | "password",
     nextValues?: {
@@ -102,7 +99,7 @@ const Register = () => {
       email?: string;
       password?: string;
       confirmPassword?: string;
-    }
+    },
   ) => {
     try {
       await registerSchema.validateAt(field, {
@@ -126,7 +123,6 @@ const Register = () => {
       if (field === "lastName") setLastNameError(key);
       if (field === "email") setEmailError(key);
       if (field === "password") {
-        // For invalid password pattern, show the PasswordValidation UI instead of helper text
         if (key === "passwordInvalid") {
           setPasswordError("");
           setShowPasswordValidation(true);
@@ -138,7 +134,6 @@ const Register = () => {
   };
 
   const handlePasswordChange = (value: string) => {
-    // Remove spaces from password
     const valueWithoutSpaces = value.replace(/\s/g, "");
     const finalValue = valueWithoutSpaces;
 
@@ -146,10 +141,8 @@ const Register = () => {
 
     if (!finalValue) {
       setShowPasswordValidation(false);
-      // If the user already tried submitting, keep schema-driven error in sync
       if (passwordError) validateField("password", { password: finalValue });
     } else if (passwordRegex.test(finalValue)) {
-      // Hide validation when all conditions are met
       setPasswordError("");
       setShowPasswordValidation(false);
     } else {
@@ -157,7 +150,6 @@ const Register = () => {
       setShowPasswordValidation(true);
     }
 
-    // If confirm password already has a value, keep mismatch error in sync
     if (confirmPassword) {
       if (finalValue && confirmPassword && confirmPassword !== finalValue) {
         setConfirmPasswordError("passwordAndConfirmPasswordShouldBeSame");
@@ -168,7 +160,6 @@ const Register = () => {
   };
 
   const handlePasswordBlur = () => {
-    // Only handle closing the validation popover; no new errors on blur
     setTimeout(() => {
       setShowPasswordValidation(false);
     }, 200);
@@ -178,7 +169,7 @@ const Register = () => {
     try {
       await registerSchema.validate(
         { firstName, lastName, email, password, confirmPassword },
-        { abortEarly: false }
+        { abortEarly: false },
       );
 
       setFirstNameError("");
@@ -213,7 +204,6 @@ const Register = () => {
           setPasswordError(fieldErrors.password || "");
         }
 
-        // confirmPassword: schema doesn't have its own message, so map to our key
         if (confirmPassword && password && confirmPassword !== password) {
           setConfirmPasswordError("passwordAndConfirmPasswordShouldBeSame");
         } else {
@@ -260,7 +250,6 @@ const Register = () => {
 
       {/* Register Card */}
       <CardWrapper sx={{ padding: "30px" }}>
-        {/* Register Title & Description */}
         <TitleDescription
           title={t("register")}
           description={t("registerDescription")}
@@ -271,17 +260,17 @@ const Register = () => {
 
         <Box
           sx={{
-            marginTop: "24px",
+            marginTop: isMobile ? "16px" : "24px",
             display: "flex",
             flexDirection: "column",
-            gap: "14px",
+            gap: "12px",
           }}
         >
           <Box
             sx={{
               display: "flex",
               flexDirection: isMobile ? "column" : "row",
-              gap: "10px",
+              gap: isMobile ? "12px" : "14px",
             }}
           >
             {/* First Name */}
@@ -291,7 +280,6 @@ const Register = () => {
               placeholder={t("firstNamePlaceholder")}
               value={firstName}
               onChange={(e) => {
-                // Remove spaces and capitalize first character
                 const rawValue = e.target.value.replace(/\s/g, "");
                 const capitalized =
                   rawValue.length > 0
@@ -318,7 +306,6 @@ const Register = () => {
               placeholder={t("lastNamePlaceholder")}
               value={lastName}
               onChange={(e) => {
-                // Remove spaces and capitalize first character
                 const rawValue = e.target.value.replace(/\s/g, "");
                 const capitalized =
                   rawValue.length > 0
@@ -346,14 +333,12 @@ const Register = () => {
             placeholder={t("emailPlaceholder")}
             value={email}
             onChange={(e) => {
-              // Remove all spaces from email
               const valueWithoutSpaces = e.target.value.replace(/\s/g, "");
               setEmail(valueWithoutSpaces);
               if (emailError)
                 validateField("email", { email: valueWithoutSpaces });
             }}
             onKeyDown={(e) => {
-              // Prevent space key from being entered
               if (e.key === " " || e.key === "Spacebar") {
                 e.preventDefault();
               }
@@ -395,8 +380,6 @@ const Register = () => {
                 }
               }}
               placeholder={t("passwordPlaceHolder")}
-              // Show red border when there is a password error or
-              // when the PasswordValidation component is visible (invalid password)
               error={!!passwordError || showPasswordValidation}
               helperText={passwordError ? t(passwordError) : ""}
               sideButton={true}
@@ -439,10 +422,10 @@ const Register = () => {
                 position: "absolute",
                 ...(isMobile &&
                   theme.breakpoints.down("lg") && {
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  width: "100%",
-                }),
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: "100%",
+                  }),
                 zIndex: 5,
               }}
             >
@@ -463,15 +446,13 @@ const Register = () => {
             autoComplete="off"
             label={t("confirmPassword")}
             onChange={(e) => {
-              // Remove spaces from confirm password
               const value = e.target.value.replace(/\s/g, "");
               setConfirmPassword(value);
               if (!password || !value) {
-                // Only show error when both passwords have a value
                 setConfirmPasswordError("");
               } else if (value !== password) {
                 setConfirmPasswordError(
-                  "passwordAndConfirmPasswordShouldBeSame"
+                  "passwordAndConfirmPasswordShouldBeSame",
                 );
               } else {
                 setConfirmPasswordError("");
@@ -523,7 +504,7 @@ const Register = () => {
         </Box>
 
         {/* Sign Up Button */}
-        <Box sx={{ marginTop: "24px" }}>
+        <Box sx={{ marginTop: isMobile ? "16px" : "24px" }}>
           <CustomButton
             label={t("signUpButton")}
             variant="primary"
@@ -554,7 +535,7 @@ const Register = () => {
             }}
             fontWeight={500}
           >
-            {t("alreadyHaveAccount")}
+            {t("alreadyHaveAccountLink")}
             <Typography
               component="span"
               sx={{

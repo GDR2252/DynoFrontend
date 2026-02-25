@@ -1,12 +1,7 @@
+import { CopyButton } from "@/Components/Layout/NewSidebar/styled";
 import useIsMobile from "@/hooks/useIsMobile";
 import EditIcon from "@mui/icons-material/Edit";
-import {
-  Box,
-  IconButton,
-  InputAdornment,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, InputAdornment, TextField, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { SxProps, Theme } from "@mui/system";
 import Image, { StaticImageData } from "next/image";
@@ -471,45 +466,7 @@ const InputField: React.FC<InputFieldProps> = ({
           />
 
           {sideButton && (
-            <IconButton
-              onClick={onSideButtonClick}
-              disabled={disabled}
-              tabIndex={-1}
-              aria-label={
-                typeof label === "string" ? label : "Side button action"
-              }
-              sx={{
-                width: iconBoxSize ?? (isMobile ? "32px" : "40px"),
-                height: iconBoxSize ?? (isMobile ? "32px" : "40px"),
-                minWidth: iconBoxSize ?? (isMobile ? "32px" : "40px"),
-                minHeight: iconBoxSize ?? (isMobile ? "32px" : "40px"),
-                maxWidth: isMobile ? "32px" : "40px",
-                maxHeight: iconBoxSize ?? (isMobile ? "32px" : "40px"),
-                borderRadius: "6px",
-                border: `1px solid ${
-                  sideButtonType === "primary" ? "#676768" : "#0004FF"
-                }`,
-                backgroundColor: "#FFFFFF",
-                color: "#242428",
-                padding: isMobile ? "8px" : "11px",
-                flexShrink: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxSizing: "border-box",
-                "&:hover": {
-                  backgroundColor: "#F5F5F5",
-                  borderColor: "#E9ECF2",
-                },
-                "&:disabled": {
-                  backgroundColor: "#F5F5F5",
-                  opacity: 0.6,
-                  borderColor: "#E9ECF2",
-                },
-              }}
-            >
-              {renderSideButtonIcon()}
-            </IconButton>
+            <CopyButton type="button">{renderSideButtonIcon()}</CopyButton>
           )}
         </Box>
 

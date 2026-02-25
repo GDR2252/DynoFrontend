@@ -1,7 +1,7 @@
 import TrueIcon from "@/assets/Icons/True.svg";
 import InfoIcon from "@/assets/Icons/info-icon.svg";
 import { theme } from "@/styles/theme";
-import { TaxSectionProps } from "@/utils/types/paymentLink";
+import { TaxSectionProps } from "@/utils/types/create-pay-link";
 import { Box } from "@mui/material";
 import Image from "next/image";
 import React from "react";

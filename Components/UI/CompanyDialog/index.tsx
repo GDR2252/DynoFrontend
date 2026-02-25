@@ -1,13 +1,3 @@
-import {
-  Box,
-  Grid,
-  IconButton,
-  InputBase,
-  ListItemButton,
-  ListItemText,
-  Popover,
-  Typography,
-} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import Image from "next/image";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -38,6 +28,16 @@ import {
   CryptocurrencyTrigger,
 } from "../CryptocurrencySelector/styled";
 
+import {
+  Box,
+  Grid,
+  IconButton,
+  InputBase,
+  ListItemButton,
+  ListItemText,
+  Popover,
+  Typography,
+} from "@mui/material";
 import type { ICity, ICountry, IState } from "country-state-city";
 import { City, Country, State } from "country-state-city";
 import CountryPhoneInput from "../CountryPhoneInput";
@@ -57,6 +57,12 @@ type CompanyFormValues = {
   address_line_2: string;
   zip_code: string;
   VAT_number: string;
+};
+
+type VatOption = {
+  code: string;
+  label: string;
+  taxCode: string;
 };
 
 const companyInitial: CompanyFormValues = {
@@ -164,8 +170,8 @@ export default function CompanyDialog({
 
   // Only image-related state (not form data)
   const [mediaFile, setMediaFile] = useState<File | undefined>();
-  const [fileName, setFileName] = useState<string | undefined>();
   const [imagePreview, setImagePreview] = useState<string | undefined>();
+  const imageObjectUrlRef = useRef<string | null>(null);
   const [formKey, setFormKey] = useState(0);
 
   // Refs for dropdown triggers
@@ -194,11 +200,6 @@ export default function CompanyDialog({
   const [countries, setCountries] = useState<ICountry[]>([]);
 
   const isOpen = Boolean(anchorEl);
-
-  // Helper to get country object from name
-  const getCountryByName = (name: string): ICountry | undefined => {
-    return countries.find((c) => c.name === name);
-  };
 
   // Compute initial values
   const initialValues = useMemo<CompanyFormValues>(() => {
@@ -243,9 +244,21 @@ export default function CompanyDialog({
   // Image preview setup
   useEffect(() => {
     if (!open) return;
+    if (imageObjectUrlRef.current) {
+      URL.revokeObjectURL(imageObjectUrlRef.current);
+      imageObjectUrlRef.current = null;
+    }
     if (mode === "edit" && company?.photo) setImagePreview(company.photo);
     if (mode === "add") setImagePreview(undefined);
   }, [open, mode, company]);
+
+  useEffect(() => {
+    return () => {
+      if (imageObjectUrlRef.current) {
+        URL.revokeObjectURL(imageObjectUrlRef.current);
+      }
+    };
+  }, []);
 
   // Validation schema
   const schema = useMemo(
@@ -275,28 +288,24 @@ export default function CompanyDialog({
     [t],
   );
 
-  const isDataChanged = (currentValues: Values) => {
-    const hasImageChanged = !!mediaFile;
-    const hasValuesChanged =
-      JSON.stringify(currentValues) !== JSON.stringify(initialValues);
-    return hasImageChanged || hasValuesChanged;
-  };
-
   const resetLocal = () => {
-    setFileName(undefined);
+    if (imageObjectUrlRef.current) {
+      URL.revokeObjectURL(imageObjectUrlRef.current);
+      imageObjectUrlRef.current = null;
+    }
     setMediaFile(undefined);
     setImagePreview(undefined);
     setSearchTerm("");
     setStateSearchTerm("");
     setCitySearchTerm("");
+    setAnchorEl(null);
+    setStateAnchor(null);
+    setCityAnchor(null);
+    setVatAnchorEl(null);
   };
 
   const handleRequestClose = () => {
-    if (!isDataChanged(currentFormValues)) {
-      handleClose();
-    } else {
-      console.log("Form has changes, preventing auto-close");
-    }
+    handleClose();
   };
 
   const handleClose = () => {
@@ -307,8 +316,12 @@ export default function CompanyDialog({
 
   const handleFileChange = (file?: File) => {
     if (!file) return;
-    setImagePreview(URL.createObjectURL(file));
-    setFileName(file.name);
+    if (imageObjectUrlRef.current) {
+      URL.revokeObjectURL(imageObjectUrlRef.current);
+    }
+    const objectUrl = URL.createObjectURL(file);
+    imageObjectUrlRef.current = objectUrl;
+    setImagePreview(objectUrl);
     setMediaFile(file);
   };
 
@@ -345,9 +358,8 @@ export default function CompanyDialog({
   }, [initialValues]);
 
   const [vatValue, setVatValue] = useState({ code: "AT", taxCode: "VAT" });
-  const [vatOpen, setVatOpen] = useState(false);
 
-  const vatCountries = [
+  const vatCountries: VatOption[] = [
     // 🇪🇺 EU VAT
     { code: "AT", label: "Austria", taxCode: "VAT" },
     { code: "BE", label: "Belgium", taxCode: "VAT" },
@@ -398,10 +410,6 @@ export default function CompanyDialog({
     { code: "US", label: "United States", taxCode: "EIN" },
     { code: "ZA", label: "South Africa", taxCode: "VAT" },
   ];
-
-  const handleClick = (event: any) => {
-    setVatAnchorEl(vatAnchorEl ? null : event.currentTarget);
-  };
 
   return (
     <PopupModal
@@ -857,7 +865,7 @@ export default function CompanyDialog({
                         }}
                       >
                         <CryptocurrencyDividerLine />
-                        {isOpen ? (
+                        {Boolean(stateAnchor) ? (
                           <ExpandLessIcon
                             sx={{ width: isMobile ? "20px" : "24px" }}
                           />
@@ -1048,7 +1056,7 @@ export default function CompanyDialog({
                         }}
                       >
                         <CryptocurrencyDividerLine />
-                        {isOpen ? (
+                        {Boolean(cityAnchor) ? (
                           <ExpandLessIcon
                             sx={{ width: isMobile ? "20px" : "24px" }}
                           />
@@ -1333,7 +1341,7 @@ export default function CompanyDialog({
                         >
                           {vatCountries.map((country) => (
                             <Box
-                              key={country.code}
+                              key={`${country.code}-${country.taxCode}`}
                               ref={
                                 country.code === vatValue.code
                                   ? selectedVatRef
@@ -1412,9 +1420,9 @@ export default function CompanyDialog({
                         <InputField
                           fullWidth
                           placeholder="Enter VAT number"
-                          value={values.vatNumber || ""}
+                          value={values.VAT_number || ""}
                           onChange={(e) =>
-                            handleFieldsChange({ vatNumber: e.target.value })
+                            handleFieldsChange({ VAT_number: e.target.value })
                           }
                           inputHeight={isMobile ? "32px" : "38px"}
                           sx={{ gap: "8px" }}

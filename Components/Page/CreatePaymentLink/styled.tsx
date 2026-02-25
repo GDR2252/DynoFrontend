@@ -17,49 +17,47 @@ export const TabContainer = styled(Box)(({ theme }) => ({
 
 export const TabItem = styled(Box, {
   shouldForwardProp: (prop) => prop !== "active",
-})<{ active?: boolean }>(
-  ({ theme, active }) => ({
-    flex: 1,
-    padding: theme.spacing(0.75, 1),
-    borderRadius: "50px",
+})<{ active?: boolean }>(({ theme, active }) => ({
+  flex: 1,
+  padding: theme.spacing(0.75, 1),
+  borderRadius: "50px",
+  background: active
+    ? theme.palette.background.paper
+    : theme.palette.primary.light,
+  cursor: "pointer",
+  "&:hover": {
     background: active
       ? theme.palette.background.paper
       : theme.palette.primary.light,
-    cursor: "pointer",
-    "&:hover": {
-      background: active
-        ? theme.palette.background.paper
-        : theme.palette.primary.light,
-    },
-    [theme.breakpoints.up("md")]: {
-      padding: theme.spacing(1),
-    },
-    p: {
-      fontSize: "20px",
-      fontWeight: active ? 700 : 500,
+  },
+  [theme.breakpoints.up("md")]: {
+    padding: theme.spacing(1),
+  },
+  p: {
+    fontSize: "20px",
+    fontWeight: active ? 700 : 500,
+    lineHeight: 1.2,
+    color: theme.palette.text.primary,
+    fontFamily: active ? "UrbanistBold" : "UrbanistMedium",
+    textTransform: "capitalize",
+    textAlign: "center",
+    whiteSpace: "nowrap",
+    [theme.breakpoints.down("md")]: {
+      fontSize: "15px",
       lineHeight: 1.2,
-      color: theme.palette.text.primary,
-      fontFamily: active ? "UrbanistBold" : "UrbanistMedium",
-      textTransform: "capitalize",
-      textAlign: "center",
       whiteSpace: "nowrap",
-      [theme.breakpoints.down("md")]: {
-        fontSize: "15px",
-        lineHeight: 1.2,
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      },
-      [theme.breakpoints.down("sm")]: {
-        fontSize: "10px",
-        lineHeight: 1.2,
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      },
+      overflow: "hidden",
+      textOverflow: "ellipsis",
     },
-  }),
-);
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "10px",
+      lineHeight: 1.2,
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+    },
+  },
+}));
 
 export const TabContentContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2, 0, 0, 0),

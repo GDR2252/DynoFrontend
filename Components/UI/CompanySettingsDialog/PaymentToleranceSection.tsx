@@ -1,12 +1,11 @@
-import React from "react";
-import { Box, Typography } from "@mui/material";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { useTranslation } from "react-i18next";
 import RoundedStackIcon from "@/assets/Icons/roundedStck-icon.svg";
 import TimeIcon from "@/assets/Icons/time-icon.svg";
-import SettingsAccordion from "@/Components/UI/SettingsAccordion";
 import AdornedInputField from "@/Components/UI/AdornedInputField";
+import SettingsAccordion from "@/Components/UI/SettingsAccordion";
+import { Box, Typography } from "@mui/material";
 import Image from "next/image";
+import React from "react";
+import { useTranslation } from "react-i18next";
 
 export type PaymentToleranceSectionProps = {
   values: {
@@ -14,8 +13,16 @@ export type PaymentToleranceSectionProps = {
     flag_overpayments_above: string;
     time_for_partial_payments: string;
   };
-  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
-  handleBlur: (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  handleChange: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => void;
+  handleBlur: (
+    e: React.FocusEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => void;
   isMobile?: boolean;
   expanded: boolean;
   onAccordionChange: (event: React.SyntheticEvent, isExpanded: boolean) => void;
@@ -34,7 +41,6 @@ export default function PaymentToleranceSection({
   return (
     <SettingsAccordion
       icon={
-
         <Image
           src={RoundedStackIcon}
           alt="rounded stack"
@@ -52,39 +58,24 @@ export default function PaymentToleranceSection({
       onChange={onAccordionChange}
       isMobile={isMobile}
     >
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: isMobile ? "12px" : 2.5,
+        }}
+      >
         <AdornedInputField
           fullWidth
-          inputHeight={isMobile ? "32px" : "38px"}
+          inputHeight={isMobile ? "32px" : "40px"}
           label={tSettings("paymentToleranceFields.acceptUnderpaymentsUpTo")}
           name="accept_underpayments_up_to"
           value={String(values.accept_underpayments_up_to ?? "1.00")}
           onChange={handleChange}
           onBlur={handleBlur}
-          helperText={tSettings("paymentToleranceFields.acceptUnderpaymentsHelper")}
-          startAdornment={<Typography
-            component="span"
-            variant="body2"
-            sx={{
-              fontFamily: "UrbanistMedium",
-              color: "text.secondary",
-              fontSize: isMobile ? "13px" : "14px",
-            }}
-          >
-            $
-          </Typography>}
-          type="text"
-          inputMode="decimal"
-        />
-        <AdornedInputField
-          fullWidth
-          inputHeight={isMobile ? "32px" : "38px"}
-          label={tSettings("paymentToleranceFields.flagOverpaymentsAbove")}
-          name="flag_overpayments_above"
-          value={String(values.flag_overpayments_above ?? "5.00")}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          helperText={tSettings("paymentToleranceFields.flagOverpaymentsHelper")}
+          helperText={tSettings(
+            "paymentToleranceFields.acceptUnderpaymentsHelper",
+          )}
           startAdornment={
             <Typography
               component="span"
@@ -103,21 +94,51 @@ export default function PaymentToleranceSection({
         />
         <AdornedInputField
           fullWidth
-          inputHeight={isMobile ? "32px" : "38px"}
+          inputHeight={isMobile ? "32px" : "40px"}
+          label={tSettings("paymentToleranceFields.flagOverpaymentsAbove")}
+          name="flag_overpayments_above"
+          value={String(values.flag_overpayments_above ?? "5.00")}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          helperText={tSettings(
+            "paymentToleranceFields.flagOverpaymentsHelper",
+          )}
+          startAdornment={
+            <Typography
+              component="span"
+              variant="body2"
+              sx={{
+                fontFamily: "UrbanistMedium",
+                color: "text.secondary",
+                fontSize: isMobile ? "13px" : "14px",
+              }}
+            >
+              $
+            </Typography>
+          }
+          type="text"
+          inputMode="decimal"
+        />
+        <AdornedInputField
+          fullWidth
+          inputHeight={isMobile ? "32px" : "40px"}
           label={tSettings("paymentToleranceFields.timeForPartialPayments")}
           name="time_for_partial_payments"
           value={String(values.time_for_partial_payments ?? "30")}
           onChange={handleChange}
           onBlur={handleBlur}
-          helperText={tSettings("paymentToleranceFields.timeForPartialPaymentsHelper")}
+          helperText={tSettings(
+            "paymentToleranceFields.timeForPartialPaymentsHelper",
+          )}
           startAdornment={
-              <Image
-                src={TimeIcon}
-                alt="time"
-                width={16}
-                height={16}
-                style={{
-                filter: `brightness(0) saturate(100%) invert(15%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(100%)`,
+            <Image
+              src={TimeIcon}
+              alt="time"
+              width={isMobile ? 12 : 16}
+              height={isMobile ? 12 : 16}
+              style={{
+                filter:
+                  "brightness(0) saturate(100%) invert(41%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(92%) contrast(88%)",
               }}
             />
           }

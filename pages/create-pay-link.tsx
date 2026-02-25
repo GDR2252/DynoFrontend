@@ -6,12 +6,7 @@ import Head from "next/head";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-const CreatePaymentLink = ({
-  setPageName,
-  setPageDescription,
-  setPageAction,
-  setPageHeaderSx,
-}: pageProps) => {
+const CreatePaymentLink = ({ setPageName, setPageDescription }: pageProps) => {
   const namespaces = ["createPaymentLinkScreen", "common"];
   const { t } = useTranslation(namespaces);
   const isMobile = useIsMobile("md");

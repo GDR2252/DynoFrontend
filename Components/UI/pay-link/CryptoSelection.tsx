@@ -2,7 +2,7 @@ import CheckIcon from "@/assets/Icons/Check-icon.svg";
 import SearchIcon from "@/assets/Icons/search-icon.svg";
 import InputField from "@/Components/UI/AuthLayout/InputFields";
 import { theme } from "@/styles/theme";
-import { CryptoSelectionProps } from "@/utils/types/paymentLink";
+import { CryptoSelectionProps } from "@/utils/types/create-pay-link";
 import { Box, Grid } from "@mui/material";
 import Image from "next/image";
 import React from "react";

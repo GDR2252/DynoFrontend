@@ -1,6 +1,9 @@
-import React from "react";
+import InfoIcon from "@/assets/Icons/info-icon.svg";
+import useIsMobile from "@/hooks/useIsMobile";
 import { Box, Typography } from "@mui/material";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import Image from "next/image";
+import React from "react";
+import { WarningIconContainer } from "../AddWalletModal/styled";
 
 export type InfoBannerProps = {
   /** Message to display (e.g. "Please set up your USDT/USDC wallet first.") */
@@ -16,18 +19,15 @@ export type InfoBannerProps = {
  * dark circle with info icon on the left, and message text.
  * Use for prerequisites or informational callouts.
  */
-export default function InfoBanner({
-  message,
-  children,
-  sx,
-}: InfoBannerProps) {
+export default function InfoBanner({ message, children, sx }: InfoBannerProps) {
+  const isMobile = useIsMobile("md");
   return (
     <Box
       sx={{
         display: "flex",
         alignItems: "center",
         gap: 1.5,
-        py: 1.5,
+        py: "11px",
         px: 2,
         borderRadius: "8px",
         bgcolor: "#E8EBFB",
@@ -35,34 +35,25 @@ export default function InfoBanner({
         ...sx,
       }}
     >
-      <Box
-        sx={{
-          width: 24,
-          height: 24,
-          borderRadius: "50%",
-          bgcolor: "grey.800",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        <InfoOutlinedIcon
-          sx={{
-            color: "common.white",
-            fontSize: 16,
-          }}
+      <WarningIconContainer>
+        <Image
+          src={InfoIcon}
+          alt="info icon"
+          width={16}
+          height={16}
+          draggable={false}
+          style={{ filter: "brightness(0)", marginTop: "-5px" }}
         />
-      </Box>
+      </WarningIconContainer>
       {children ?? (
         <Typography
           variant="body2"
           sx={{
             color: "text.primary",
-            fontSize: "14px",
+            fontSize: isMobile ? "13px" : "15px",
             fontWeight: 500,
             fontFamily: "UrbanistMedium",
-            lineHeight: 1.4,
+            lineHeight: "16px",
           }}
         >
           {message}

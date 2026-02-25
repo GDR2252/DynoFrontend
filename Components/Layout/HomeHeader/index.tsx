@@ -1,275 +1,379 @@
-import { useState, useEffect, useRef } from "react";
-import { Box, Button, Divider, Drawer } from "@mui/material";
-import { useRouter } from "next/router";
-import Image from "next/image";
-import { useTranslation } from "react-i18next";
+// HomeHeader.tsx
 import DynopayLogo from "@/assets/Images/auth/dynopay-logo.svg";
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import {
-  HeaderContainer,
-  NavLinks,
-  Actions,
-  MobileMenuButton,
-  MobileDrawer,
-  MobileNavItem,
-} from "./styled";
-import { homeTheme } from "@/styles/homeTheme";
-import useIsMobile from "@/hooks/useIsMobile";
-import HomeButton from "../HomeButton";
-import { theme } from "@/styles/theme";
-import { MenuRounded } from "@mui/icons-material";
 import LanguageSwitcher from "@/Components/UI/LanguageSwitcher";
+import useIsMobile from "@/hooks/useIsMobile";
+import { Button } from "@mui/material";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  Actions,
+  ClickableLogo,
+  DesktopLanguageWrapper,
+  FixedHeader,
+  HeaderContainer,
+  HeaderDivider,
+  LeftGroup,
+  MenuCloseIcon,
+  MenuOpenIcon,
+  MobileDrawer,
+  MobileLanguageWrapper,
+  MobileMenuButton,
+  MobileMenuDrawer,
+  MobileNavContent,
+  MobileNavItem,
+  NavLinks,
+  RightGroup,
+  StyledGetStartedButton,
+} from "./styled";
+
+type HeaderItem = Readonly<{
+  translationKey: "howItWorks" | "features" | "useCases" | "documentation";
+  path: string;
+  sectionId?: "how-it-works" | "features" | "use-cases";
+}>;
+
+const HEADER_OFFSET_PX = 100;
+const SCROLL_THRESHOLD_PX = 10;
+
+const HEADER_ITEMS: ReadonlyArray<HeaderItem> = [
+  { translationKey: "howItWorks", sectionId: "how-it-works", path: "/" },
+  { translationKey: "features", sectionId: "features", path: "/" },
+  { translationKey: "useCases", sectionId: "use-cases", path: "/" },
+  { translationKey: "documentation", path: "/" },
+] as const;
+
+const parseItemIndex = (value: string | undefined): number | null => {
+  if (!value) return null;
+  const n = Number.parseInt(value, 10);
+  return Number.isFinite(n) && n >= 0 && n < HEADER_ITEMS.length ? n : null;
+};
 
 const HomeHeader = () => {
   const router = useRouter();
   const { t } = useTranslation("landing");
   const isMobile = useIsMobile("md");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
-  const lastScrollY = useRef(0);
-  const scrollThreshold = 10;
 
-  const HeaderItems = [
-    { translationKey: "howItWorks", sectionId: "how-it-works", path: "/" },
-    { translationKey: "features", sectionId: "features", path: "/" },
-    { translationKey: "useCases", sectionId: "use-cases", path: "/" },
-    { translationKey: "documentation", path: "/" },
-  ];
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [isHeaderVisible, setIsHeaderVisible] = useState<boolean>(true);
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      const headerOffset = 100;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+  const lastScrollYRef = useRef<number>(0);
+  const isHeaderVisibleRef = useRef<boolean>(true);
+  const rafIdRef = useRef<number | null>(null);
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
-    setMobileMenuOpen(false);
-  };
-
-  const handleNavClick = (item: typeof HeaderItems[0]) => {
-    if (item.sectionId) {
-      if (router.pathname !== "/") {
-        router.push("/").then(() => {
-          setTimeout(() => {
-            scrollToSection(item.sectionId!);
-          }, 100);
-        });
-      } else {
-        scrollToSection(item.sectionId);
-      }
-    } else {
-      router.push(item.path);
-      setMobileMenuOpen(false);
-    }
-  };
+  const lockStateRef = useRef<{
+    htmlOverflow: string;
+    bodyOverflow: string;
+    bodyPaddingRight: string;
+  } | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+    isHeaderVisibleRef.current = isHeaderVisible;
+  }, [isHeaderVisible]);
 
-      // Show header at the top of the page
-      if (currentScrollY < scrollThreshold) {
-        setIsHeaderVisible(true);
-      } else {
-        if (currentScrollY > lastScrollY.current) {
-          setIsHeaderVisible(false);
-        } else if (currentScrollY < lastScrollY.current) {
-          setIsHeaderVisible(true);
+  const closeMobileMenu = useCallback((): void => {
+    setMobileMenuOpen(false);
+  }, []);
+
+  const openMobileMenu = useCallback((): void => {
+    setMobileMenuOpen(true);
+  }, []);
+
+  const scrollToSection = useCallback(
+    (sectionId: HeaderItem["sectionId"]): void => {
+      if (!sectionId) return;
+      if (typeof document === "undefined" || typeof window === "undefined")
+        return;
+
+      const element = document.getElementById(sectionId);
+      if (!element) return;
+
+      const elementTop = element.getBoundingClientRect().top;
+      const targetTop = elementTop + window.pageYOffset - HEADER_OFFSET_PX;
+
+      window.scrollTo({ top: targetTop, behavior: "smooth" });
+    },
+    [],
+  );
+
+  const handleNavClick = useCallback(
+    (item: HeaderItem): void => {
+      const doClose = (): void => closeMobileMenu();
+
+      if (item.sectionId) {
+        if (router.pathname !== "/") {
+          void router.push("/").then(() => {
+            if (typeof window === "undefined") return;
+            window.setTimeout(() => {
+              scrollToSection(item.sectionId);
+              doClose();
+            }, 100);
+          });
+        } else {
+          scrollToSection(item.sectionId);
+          doClose();
         }
+        return;
       }
 
-      lastScrollY.current = currentScrollY;
+      void router.push(item.path);
+      doClose();
+    },
+    [closeMobileMenu, router, scrollToSection],
+  );
+
+  const onNavItemClick = useCallback(
+    (e: React.MouseEvent<HTMLElement>): void => {
+      const idx = parseItemIndex((e.currentTarget as HTMLElement).dataset.idx);
+      if (idx == null) return;
+      handleNavClick(HEADER_ITEMS[idx]);
+    },
+    [handleNavClick],
+  );
+
+  const onNavItemKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLElement>): void => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      e.preventDefault();
+      const idx = parseItemIndex((e.currentTarget as HTMLElement).dataset.idx);
+      if (idx == null) return;
+      handleNavClick(HEADER_ITEMS[idx]);
+    },
+    [handleNavClick],
+  );
+
+  const onLogoClick = useCallback((): void => {
+    void router.push("/");
+  }, [router]);
+
+  const onLogoKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLButtonElement>): void => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onLogoClick();
+      }
+    },
+    [onLogoClick],
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const updateVisibility = (): void => {
+      rafIdRef.current = null;
+
+      const currentScrollY = window.scrollY;
+      let nextVisible = isHeaderVisibleRef.current;
+
+      if (currentScrollY < SCROLL_THRESHOLD_PX) {
+        nextVisible = true;
+      } else {
+        if (currentScrollY > lastScrollYRef.current) nextVisible = false;
+        else if (currentScrollY < lastScrollYRef.current) nextVisible = true;
+      }
+
+      lastScrollYRef.current = currentScrollY;
+
+      if (nextVisible !== isHeaderVisibleRef.current) {
+        isHeaderVisibleRef.current = nextVisible;
+        setIsHeaderVisible(nextVisible);
+      }
     };
 
-    // Add scroll event listener
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const onScroll = (): void => {
+      if (rafIdRef.current != null) return;
+      rafIdRef.current = window.requestAnimationFrame(updateVisibility);
+    };
 
-    // Cleanup
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", onScroll);
+      if (rafIdRef.current != null) {
+        window.cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
     };
   }, []);
 
   useEffect(() => {
-    if (mobileMenuOpen) {
-      const scrollBarWidth =
-        window.innerWidth - document.documentElement.clientWidth;
+    if (typeof window === "undefined" || typeof document === "undefined")
+      return;
 
-      document.documentElement.style.overflow = "hidden";
-      document.body.style.overflow = "hidden";
-      document.body.style.paddingRight = `${scrollBarWidth}px`;
-    } else {
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
-      document.body.style.paddingRight = "";
+    const html = document.documentElement;
+    const body = document.body;
+
+    if (mobileMenuOpen) {
+      if (!lockStateRef.current) {
+        lockStateRef.current = {
+          htmlOverflow: html.style.overflow,
+          bodyOverflow: body.style.overflow,
+          bodyPaddingRight: body.style.paddingRight,
+        };
+      }
+
+      const scrollBarWidth = window.innerWidth - html.clientWidth;
+
+      html.style.overflow = "hidden";
+      body.style.overflow = "hidden";
+      body.style.paddingRight = `${scrollBarWidth}px`;
+      return;
     }
 
-    return () => {
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
-      document.body.style.paddingRight = "";
-    };
+    if (lockStateRef.current) {
+      html.style.overflow = lockStateRef.current.htmlOverflow;
+      body.style.overflow = lockStateRef.current.bodyOverflow;
+      body.style.paddingRight = lockStateRef.current.bodyPaddingRight;
+      lockStateRef.current = null;
+    }
   }, [mobileMenuOpen]);
 
+  useEffect(() => {
+    return () => {
+      if (typeof document === "undefined") return;
+      const html = document.documentElement;
+      const body = document.body;
+
+      if (lockStateRef.current) {
+        html.style.overflow = lockStateRef.current.htmlOverflow;
+        body.style.overflow = lockStateRef.current.bodyOverflow;
+        body.style.paddingRight = lockStateRef.current.bodyPaddingRight;
+        lockStateRef.current = null;
+      }
+    };
+  }, []);
+
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1400,
-        backgroundColor: "white",
-        transform: isHeaderVisible ? "translateY(0)" : "translateY(-100%)",
-        transition: "transform 0.3s ease-in-out",
-        width: "100%",
-      }}
-    >
-      <HeaderContainer>
-        <Box sx={{ display: "flex", alignItems: "center", gap: "102px" }}>
+    <FixedHeader $visible={isHeaderVisible}>
+      <HeaderContainer aria-label="Primary">
+        <LeftGroup>
+          <ClickableLogo
+            type="button"
+            aria-label="Go to home"
+            onClick={onLogoClick}
+            onKeyDown={onLogoKeyDown}
+          >
+            <Image
+              src={DynopayLogo}
+              alt="Dynopay"
+              width={134}
+              height={45}
+              draggable={false}
+              className="logo"
+              priority
+            />
+          </ClickableLogo>
 
-          {/* Logo */}
-          <Image
-            src={DynopayLogo}
-            alt="Dynopay"
-            width={134}
-            height={45}
-            draggable={false}
-            className="logo"
-            style={{ width: "134px", height: "45px" }}
-            onClick={() => router.push("/")}
-          />
-
-          {/* Center Nav - Desktop Only */}
-          <NavLinks className="desktop-nav">
-            {HeaderItems.map((item) => (
-              <Button disableRipple key={item.translationKey} onClick={() => handleNavClick(item)}>
+          <NavLinks className="desktop-nav" aria-label="Primary navigation">
+            {HEADER_ITEMS.map((item, idx) => (
+              <Button
+                disableRipple
+                key={item.translationKey}
+                data-idx={idx}
+                onClick={onNavItemClick}
+              >
                 {t(item.translationKey)}
               </Button>
             ))}
           </NavLinks>
-        </Box>
+        </LeftGroup>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          {/* Right Actions */}
+        <RightGroup>
           <Actions>
             {!isMobile && (
-              <Box sx={{ marginRight: "8px" }}>
-                <LanguageSwitcher
-                  sx={{
-                    maxWidth: isMobile ? "78px" : "111px",
-                    padding: isMobile ? "7px 10px" : "10px 14px",
-                  }}
-                />
-              </Box>
+              <DesktopLanguageWrapper>
+                <LanguageSwitcher />
+              </DesktopLanguageWrapper>
             )}
-            <Button disableRipple className="signin" onClick={() => router.push("/auth/login")}>
+
+            <Button
+              disableRipple
+              className="signin"
+              onClick={() => void router.push("/auth/login")}
+            >
               {t("signIn")}
             </Button>
 
-            <HomeButton
+            <StyledGetStartedButton
               variant="primary"
               label={t("getStarted")}
-              onClick={() => router.push("/auth/register")}
+              onClick={() => void router.push("/auth/register")}
               showIcon={false}
-              sx={{
-                borderRadius: "8px !important",
-                padding: "8px 12px !important",
-                minWidth: "98px !important",
-              }}
             />
           </Actions>
-          {/* Mobile Menu Button */}
+
           {isMobile && !mobileMenuOpen && (
-            <MobileMenuButton onClick={() => setMobileMenuOpen(true)}>
-              <MenuRounded sx={{ color: theme.palette.text.primary, fontSize: 24 }} />
+            <MobileMenuButton
+              aria-label="Open menu"
+              aria-haspopup="dialog"
+              aria-expanded={false}
+              onClick={openMobileMenu}
+            >
+              <MenuOpenIcon />
             </MobileMenuButton>
           )}
+
           {isMobile && mobileMenuOpen && (
-            <MobileMenuButton onClick={() => setMobileMenuOpen(false)}>
-              <CloseRoundedIcon sx={{ color: theme.palette.text.primary, fontSize: 24 }} />
+            <MobileMenuButton
+              aria-label="Close menu"
+              aria-haspopup="dialog"
+              aria-expanded
+              onClick={closeMobileMenu}
+            >
+              <MenuCloseIcon />
             </MobileMenuButton>
           )}
-        </Box>
+        </RightGroup>
       </HeaderContainer>
 
-      {/* Mobile Drawer - positioned below fixed header */}
       {isMobile && (
-        <Drawer
+        <MobileMenuDrawer
           anchor="right"
           open={mobileMenuOpen}
-          onClose={() => setMobileMenuOpen(false)}
+          onClose={closeMobileMenu}
           ModalProps={{
             keepMounted: true,
             disableScrollLock: false,
           }}
-          sx={{
-            zIndex: 1200,
-            "& .MuiDrawer-paper": {
-              top: "64px !important",
-              height: "calc(100vh - 64px) !important",
-              width: "100%",
-              maxWidth: "320px",
-              backgroundColor: "transparent !important",
-              boxShadow: "none !important",
-              border: "none !important",
-            },
-            "& .MuiBackdrop-root": {
-              backgroundColor: "#FFFFFFCC",
-              backdropFilter: "blur(8px)",
-              WebkitBackdropFilter: "blur(8px)",
-            },
-          }}
         >
           <MobileDrawer>
-            {/* Mobile Nav Items */}
-            <Box
+            <MobileNavContent
               onClick={(e) => {
-                // Only close if user clicked the empty area of this container
-                if (e.target === e.currentTarget) setMobileMenuOpen(false);
+                if (e.target === e.currentTarget) closeMobileMenu();
               }}
-              sx={{
-                marginTop: "51px",
-                padding: "0 16px",
-                flex: 1,
-                overflowY: "auto",
-                display: "flex",
-                flexDirection: "column",
-                gap: "36.29px",
-                alignItems: "flex-end",
-              }}
+              aria-label="Mobile navigation"
             >
-              {HeaderItems.map((item) => (
+              {HEADER_ITEMS.map((item, idx) => (
                 <MobileNavItem
                   key={item.translationKey}
-                  onClick={() => handleNavClick(item)}
+                  type="button"
+                  data-idx={idx}
+                  onClick={onNavItemClick}
+                  onKeyDown={onNavItemKeyDown}
+                  aria-label={t(item.translationKey)}
                 >
                   {t(item.translationKey)}
                 </MobileNavItem>
               ))}
 
-              <Box onClick={(e) => e.stopPropagation()}>
+              <MobileLanguageWrapper
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
                 <LanguageSwitcher
-                  sx={{
-                    maxWidth: "111px",
-                    height: "40px",
-                  }}
-                  mobileBreakpoint='xs'
-                  onLanguageChange={() => setMobileMenuOpen(false)}
+                  mobileBreakpoint="xs"
+                  onLanguageChange={closeMobileMenu}
                 />
-              </Box>
-            </Box>
+              </MobileLanguageWrapper>
+            </MobileNavContent>
           </MobileDrawer>
-        </Drawer>
+        </MobileMenuDrawer>
       )}
 
-      <Divider sx={{ borderColor: homeTheme.palette.border.main }} />
-    </div>
+      <HeaderDivider />
+    </FixedHeader>
   );
 };
 

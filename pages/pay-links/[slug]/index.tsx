@@ -6,7 +6,7 @@ import { PaymentLink } from "@/utils/types/paymentLink";
 import { ExpandLess } from "@mui/icons-material";
 import { Box } from "@mui/material";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function EditPaymentLink() {
@@ -14,22 +14,43 @@ export default function EditPaymentLink() {
   const { slug } = router.query;
   const isMobile = useIsMobile();
   const { t } = useTranslation("createPaymentLinkScreen");
+  const [payLinkId, setPayLinkId] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
 
   useEffect(() => {
     if (!router.isReady) return;
 
     if (typeof slug !== "string" || slug === undefined) {
       router.push("/pay-links");
+    } else {
+      setPayLinkId(slug);
     }
   }, [router, router.isReady, slug]);
 
+  useEffect(() => {
+    const getStatus = () => {
+      if (payLinkId === "a7b9c1d2e23fd5") {
+        setStatus("active");
+      } else if (payLinkId === "a7b9c1d2e6ihj") {
+        setStatus("expired");
+      } else if (payLinkId === "a7b9c1dcvb78") {
+        setStatus("pending");
+      } else if (payLinkId === "a7b9c1d2e3f4a5") {
+        setStatus("paid");
+      } else {
+        setStatus("active");
+      }
+    };
+    getStatus();
+  }, [payLinkId]);
+
   const paymentLinkData: PaymentLink | {} = (slug as string)
     ? {
-        link_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        link_id: payLinkId,
         amount: 199.99,
         currency: "USD",
         description: "Order #12345 - Premium Subscription",
-        status: "active",
+        status: status,
         clientName: "Artur S.",
         expire: "yes",
         blockchainFees: "customer",
@@ -92,7 +113,9 @@ export default function EditPaymentLink() {
           color: theme.palette.text.primary,
         }}
       >
-        {t("editPaymentLink")}
+        {"status" in paymentLinkData && paymentLinkData.status === "paid"
+          ? t("paymentLinkDetail")
+          : t("editPaymentLink")}
       </Text>
       <CreatePaymentLinkPage
         paymentLinkData={paymentLinkData}

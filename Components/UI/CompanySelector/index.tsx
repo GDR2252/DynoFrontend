@@ -28,7 +28,7 @@ export default function CompanySelector() {
   const theme = useTheme();
   const isMobile = useIsMobile("md");
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const { openAddCompany, openEditCompany } = useCompanyDialog();
+  const { openAddCompany } = useCompanyDialog();
   const { openCompanySettings } = useCompanySettingsDialog();
   const companyState = useSelector(
     (state: rootReducer) => state.companyReducer,

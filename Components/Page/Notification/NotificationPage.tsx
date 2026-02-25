@@ -11,17 +11,10 @@ import EnvelopeIcon from "@/assets/Icons/envelope-icon.svg";
 import MobileIcon from "@/assets/Icons/mobile-icon.svg";
 import Toast from "@/Components/UI/Toast";
 import useIsMobile from "@/hooks/useIsMobile";
+import { NotificationItemProps } from "@/utils/types/notification";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-
-interface NotificationItemProps {
-  title: string;
-  description: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  showDivider?: boolean;
-}
 
 const NotificationItem: React.FC<NotificationItemProps> = ({
   title,

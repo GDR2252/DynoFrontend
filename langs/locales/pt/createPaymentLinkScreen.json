@@ -78,6 +78,7 @@
   "paidWarning": "Este pagamento foi concluído e não pode ser editado",
   "backToPaymentLinks": "Voltar para Links de Pagamento",
   "editPaymentLink": "Editar Link de Pagamento",
+  "paymentLinkDetail": "Detalhes do link de pagamento",
   "expiteDate": "Data de validade",
   "expiteTime": "Prazo de validade"
 }

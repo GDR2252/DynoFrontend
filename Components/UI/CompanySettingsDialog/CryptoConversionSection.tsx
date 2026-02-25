@@ -1,4 +1,4 @@
-import React from "react";
+import SwapHorizIcon from "@/assets/Icons/swap-round-icon.svg";
 import {
   Box,
   FormControl,
@@ -6,12 +6,12 @@ import {
   RadioGroup,
   Typography,
 } from "@mui/material";
+import React from "react";
 import { useTranslation } from "react-i18next";
-import SwapHorizIcon from "@/assets/Icons/swap-round-icon.svg";
 
-import SettingsAccordion from "@/Components/UI/SettingsAccordion";
 import InfoBanner from "@/Components/UI/InfoBanner";
 import CustomRadio from "@/Components/UI/RadioGroup";
+import SettingsAccordion from "@/Components/UI/SettingsAccordion";
 import Image from "next/image";
 
 export type CryptoConversionSectionProps = {
@@ -37,15 +37,15 @@ export default function CryptoConversionSection({
     <SettingsAccordion
       icon={
         <Image
-        src={SwapHorizIcon}
-        alt="swap horiz"
-        width={16}
-        height={16}
-        style={{
-          filter: `brightness(0) saturate(100%) invert(15%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(100%)`,
-        }}
-        draggable={false}
-      />
+          src={SwapHorizIcon}
+          alt="swap horiz"
+          width={16}
+          height={16}
+          style={{
+            filter: `brightness(0) saturate(100%) invert(15%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(100%)`,
+          }}
+          draggable={false}
+        />
       }
       title={tSettings("cryptoConversion")}
       subtitle={tSettings("cryptoConversionSubtitle")}
@@ -65,6 +65,7 @@ export default function CryptoConversionSection({
               fontWeight: 500,
               fontFamily: "UrbanistMedium",
               color: "text.primary",
+              lineHeight: "18px",
               mb: 1.5,
             }}
           >
@@ -78,11 +79,11 @@ export default function CryptoConversionSection({
                 auto_convert_volatile_crypto: e.target.value,
               })
             }
-            sx={{ flexDirection: "column", gap: 0.5, mt: 0.5 }}
+            sx={{ flexDirection: "column", gap: 0.5, mt: 0.5, ml: "10px" }}
           >
             <FormControlLabel
               value="yes"
-              control={<CustomRadio sx={{mr: 1}} />}
+              control={<CustomRadio sx={{ mr: 1 }} />}
               label={tSettings("cryptoConversionYes")}
               sx={{
                 "& .MuiFormControlLabel-label": {
@@ -94,7 +95,7 @@ export default function CryptoConversionSection({
             />
             <FormControlLabel
               value="no"
-              control={<CustomRadio sx={{mr: 1}}/>}
+              control={<CustomRadio sx={{ mr: 1 }} />}
               label={tSettings("cryptoConversionNo")}
               sx={{
                 "& .MuiFormControlLabel-label": {
@@ -139,11 +140,11 @@ export default function CryptoConversionSection({
                 convert_to_stablecoin: e.target.value,
               })
             }
-            sx={{ flexDirection: "column", gap: 0.5, mt: 0.5 }}
+            sx={{ flexDirection: "column", gap: 0.5, mt: 0.5, ml: "10px" }}
           >
             <FormControlLabel
               value="usdt_trc20"
-              control={<CustomRadio sx={{mr: 1}} />}
+              control={<CustomRadio sx={{ mr: 1 }} />}
               label={tSettings("cryptoConversionUsdtTrc20")}
               sx={{
                 "& .MuiFormControlLabel-label": {
@@ -155,7 +156,7 @@ export default function CryptoConversionSection({
             />
             <FormControlLabel
               value="usdt_erc20"
-              control={<CustomRadio sx={{mr: 1}} />}
+              control={<CustomRadio sx={{ mr: 1 }} />}
               label={tSettings("cryptoConversionUsdtErc20")}
               sx={{
                 "& .MuiFormControlLabel-label": {
@@ -167,7 +168,7 @@ export default function CryptoConversionSection({
             />
             <FormControlLabel
               value="usdc_erc20"
-              control={<CustomRadio sx={{mr: 1}} />}
+              control={<CustomRadio sx={{ mr: 1 }} />}
               label={tSettings("cryptoConversionUsdcErc20")}
               sx={{
                 "& .MuiFormControlLabel-label": {

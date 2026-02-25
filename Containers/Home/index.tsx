@@ -1,25 +1,39 @@
-import useTokenData from "@/hooks/useTokenData";
-import { useTheme } from "@mui/material";
-import React from "react";
-import { useSelector } from "react-redux";
-import { rootReducer } from "@/utils/types";
-import HomeHeader from "@/Components/Layout/HomeHeader";
+import { Box } from "@mui/material";
+import { ReactNode } from "react";
+
 import HomeFooter from "@/Components/Layout/HomeFooter";
-import { HomeContainer } from "./styled";
+import HomeHeader from "@/Components/Layout/HomeHeader";
 import ScrollToTopButton from "@/Components/Layout/ScrollToTopButton";
 
-const HomeLayout = ({ children }: { children: React.ReactNode }) => {
-  const homeTheme = useTheme();
-  const tokenData = useTokenData();
-  const ToastState = useSelector((state: rootReducer) => state.toastReducer);
+interface HomeLayoutProps {
+  children: ReactNode;
+}
+
+export default function HomeLayout({ children }: HomeLayoutProps) {
   return (
-    <>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        bgcolor: "background.default",
+      }}
+    >
       <HomeHeader />
-      {children}
+
+      <Box
+        component="main"
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {children}
+      </Box>
+
       <HomeFooter />
       <ScrollToTopButton />
-    </>
+    </Box>
   );
-};
-
-export default HomeLayout;
+}

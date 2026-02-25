@@ -1,23 +1,30 @@
-import React from "react";
-import { ArrowForward } from "@mui/icons-material";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import type { SxProps, Theme } from "@mui/material";
 import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { StyledHomeButton } from "./styled";
-import { rootReducer } from "@/utils/types";
-import { SxProps, Theme } from "@mui/material";
 
-interface HomeButtonProps {
-  variant?: "primary" | "outlined";
+export type HomeButtonVariant = "primary" | "outlined";
+
+export interface HomeButtonProps {
+  variant?: HomeButtonVariant;
   label?: string;
   showIcon?: boolean;
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
   fullWidth?: boolean;
   navigateTo?: string;
   sx?: SxProps<Theme>;
 }
 
-const HomeButton: React.FC<HomeButtonProps> = ({
+const HomeButton = memo(function HomeButton({
   variant = "primary",
   label,
   showIcon,
@@ -26,56 +33,90 @@ const HomeButton: React.FC<HomeButtonProps> = ({
   fullWidth = false,
   navigateTo,
   sx,
-}) => {
+}: HomeButtonProps) {
   const router = useRouter();
-  const userState = useSelector((state: rootReducer) => state.userReducer);
+  const mountedRef = useRef(true);
+  const [isNavigating, setIsNavigating] = useState(false);
 
-  // Default labels based on variant
-  const defaultLabel =
-    variant === "primary" ? "Start Accepting Crypto" : "Learn More";
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
-  // Default icon visibility based on variant
-  const defaultShowIcon = variant === "primary";
+  const resolvedLabel = useMemo(() => {
+    if (label && label.trim().length > 0) return label;
+    return variant === "primary" ? "Start Accepting Crypto" : "Learn More";
+  }, [label, variant]);
 
-  const handleClick = () => {
-    if (onClick) {
-      onClick();
-      return;
-    }
+  const shouldShowIcon = useMemo(() => {
+    if (typeof showIcon === "boolean") return showIcon;
+    return variant === "primary";
+  }, [showIcon, variant]);
 
-    // If navigateTo is provided, use it
-    if (navigateTo) {
-      router.push(navigateTo);
-      return;
-    }
+  const safePush = useCallback(
+    async (to: string) => {
+      if (!to) return;
+      if (isNavigating) return;
 
-    // Default navigation logic for primary variant
-    if (variant === "primary") {
-      const token = localStorage.getItem("token");
-      const isLoggedIn = token;
-
-      if (isLoggedIn) {
-        router.push("/dashboard");
-      } else {
-        router.push("/auth/login");
+      setIsNavigating(true);
+      try {
+        await router.push(to);
+      } finally {
+        if (mountedRef.current) setIsNavigating(false);
       }
-    }
-  };
+    },
+    [router, isNavigating],
+  );
+
+  const handleClick = useCallback<React.MouseEventHandler<HTMLButtonElement>>(
+    async (e) => {
+      if (disabled || isNavigating) {
+        e.preventDefault();
+        return;
+      }
+
+      if (onClick) {
+        onClick(e);
+        return;
+      }
+
+      if (navigateTo) {
+        await safePush(navigateTo);
+        return;
+      }
+
+      if (variant !== "primary") return;
+
+      const token =
+        typeof window !== "undefined"
+          ? window.localStorage.getItem("token")
+          : null;
+
+      await safePush(token ? "/dashboard" : "/auth/login");
+    },
+    [disabled, isNavigating, onClick, navigateTo, variant, safePush],
+  );
+
+  const isDisabled = disabled || isNavigating;
 
   return (
     <StyledHomeButton
       intent={variant}
       onClick={handleClick}
-      disabled={disabled}
+      disabled={isDisabled}
       fullWidth={fullWidth}
       sx={sx}
+      type="button"
+      aria-label={resolvedLabel}
+      aria-busy={isNavigating || undefined}
+      aria-disabled={isDisabled || undefined}
     >
-      {label || defaultLabel}
-      {(showIcon !== undefined ? showIcon : defaultShowIcon) && (
-        <ArrowForward sx={{ fontSize: 18 }} />
-      )}
+      {resolvedLabel}
+      {shouldShowIcon && <ArrowForwardIcon sx={{ fontSize: 18 }} />}
     </StyledHomeButton>
   );
-};
+});
 
 export default HomeButton;

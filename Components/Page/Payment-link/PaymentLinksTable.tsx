@@ -1,5 +1,9 @@
 import {
   Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Table,
   TableBody,
   TableCell,
@@ -143,6 +147,8 @@ const PaymentLinksTable = ({
   const [paymentLink, setPaymentLink] = useState<string>(
     "https://pay.dynopay.com/9vpej",
   );
+  const [deleteModel, setDeleteModel] = useState<boolean>(false);
+  const [deleteId, setDeletId] = useState<string>("");
 
   const total = paymentLinks.length;
   const start = page * rows;
@@ -423,11 +429,24 @@ const PaymentLinksTable = ({
                       )}
                       {row.status !== "expired" && row.status !== "paid" && (
                         <CopyButton
+                          onClick={() => {
+                            if (row.status !== "active") {
+                              setDeleteModel(true);
+                              setDeletId(row.id);
+                            }
+                          }}
                           sx={{
-                            borderColor: theme.palette.text.primary,
+                            borderColor:
+                              row.status === "active"
+                                ? theme.palette.secondary.contrastText
+                                : theme.palette.text.primary,
                             "&:hover": {
                               backgroundColor: "transparent",
                               boxShadow: "none",
+                              cursor:
+                                row.status === "active"
+                                  ? "not-allowed"
+                                  : "pointer",
                             },
                           }}
                         >
@@ -437,6 +456,12 @@ const PaymentLinksTable = ({
                             width={isMobile ? 12 : 20}
                             height={isMobile ? 12 : 16}
                             draggable={false}
+                            style={{
+                              filter:
+                                row.status === "active"
+                                  ? ""
+                                  : "brightness(0) saturate(100%) invert(0%)",
+                            }}
                           />
                         </CopyButton>
                       )}
@@ -561,6 +586,104 @@ const PaymentLinksTable = ({
         message={tCommon("copiedToClipboard")}
         severity="success"
       />
+
+      <Dialog
+        open={deleteModel}
+        onClose={() => {
+          setDeleteModel(false);
+          setDeletId("");
+        }}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            p: 0,
+            maxWidth: 576,
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            pb: 0,
+            pt: isMobile ? "16px" : "30px",
+            px: isMobile ? "16px" : "30px",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              mb: isMobile ? "16px" : "24px",
+            }}
+          >
+            <Image
+              src={TrashIcon}
+              alt="Info Icon"
+              width={isMobile ? 12 : 22}
+              height={isMobile ? 12 : 16}
+              draggable={false}
+            />
+            <Typography
+              sx={{
+                fontWeight: 500,
+                fontSize: isMobile ? "16px" : "20px",
+                fontFamily: "UrbanistMedium",
+                color: "text.primary",
+                lineHeight: "24px",
+              }}
+            >
+              {t("deleteModelTitle")} {deleteId}
+            </Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent sx={{ px: isMobile ? "16px" : "30px", pt: 1.5, pb: 0 }}>
+          <Typography
+            sx={{
+              fontSize: isMobile ? "13px" : "15px",
+              color: "text.secondary",
+              lineHeight: "18px",
+              fontFamily: "UrbanistMedium",
+            }}
+          >
+            {t("deleteModelDescription")}
+          </Typography>
+        </DialogContent>
+        <DialogActions
+          sx={{
+            justifyContent: "flex-end",
+            gap: 1,
+            px: 2.5,
+            pb: 2.5,
+            pt: 3,
+          }}
+        >
+          <CustomButton
+            label={t("cancel")}
+            variant="outlined"
+            size={isMobile ? "small" : "medium"}
+            onClick={() => {
+              setDeleteModel(false);
+              setDeletId("");
+            }}
+            sx={{ fontSize: isMobile ? "13px" : "14px", width: "100%" }}
+          />
+          <CustomButton
+            label={t("delete")}
+            variant="danger"
+            size={isMobile ? "small" : "medium"}
+            onClick={() => {
+              setDeleteModel(false);
+              setDeletId("");
+            }}
+            sx={{ fontSize: isMobile ? "13px" : "14px", width: "100%" }}
+          />
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

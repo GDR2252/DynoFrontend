@@ -1,10 +1,10 @@
-import React, { useCallback, useRef, useState } from "react";
+import InputField from "@/Components/UI/AuthLayout/InputFields";
+import PopupModal from "@/Components/UI/PopupModal";
+import useIsMobile from "@/hooks/useIsMobile";
+import { theme } from "@/styles/theme";
 import { Box } from "@mui/material";
 import Image from "next/image";
-import PopupModal from "@/Components/UI/PopupModal";
-import InputField from "@/Components/UI/AuthLayout/InputFields";
-import { theme } from "@/styles/theme";
-import useIsMobile from "@/hooks/useIsMobile";
+import React, { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   CloseIconButton,
@@ -16,17 +16,20 @@ import {
 } from "./styled";
 
 import CloseIcon from "@/assets/Icons/close-icon.svg";
-import RoundedStackIcon from "@/assets/Icons/roundedStck-icon.svg";
-import HourglassIcon from "@/assets/Icons/hourglass-icon.svg";
-import PaymentIcon from "@/assets/Icons/payment-icon.svg";
-import TransactionIcon from "@/assets/Icons/transaction-icon.svg";
-import NoteIcon from "@/assets/Icons/note-icon.svg";
 import CopyIcon from "@/assets/Icons/copy-icon.svg";
+import HourglassIcon from "@/assets/Icons/hourglass-icon.svg";
+import NoteIcon from "@/assets/Icons/note-icon.svg";
+import PaymentIcon from "@/assets/Icons/payment-icon.svg";
+import RoundedStackIcon from "@/assets/Icons/roundedStck-icon.svg";
 import ShareIcon from "@/assets/Icons/ShareIcon.svg";
+import TransactionIcon from "@/assets/Icons/transaction-icon.svg";
 import PanelCard from "@/Components/UI/PanelCard";
-import { ApiKeyCopyButton } from "../API/styled";
 import Toast from "@/Components/UI/Toast";
-import { PaymentDetailRowProps, PaymentLinkSuccessModalProps } from "@/utils/types/paymentLink";
+import {
+  PaymentDetailRowProps,
+  PaymentLinkSuccessModalProps,
+} from "@/utils/types/paymentLink";
+import { ApiKeyCopyButton } from "../API/styled";
 
 const PaymentDetailRow: React.FC<PaymentDetailRowProps> = ({
   icon,
@@ -62,7 +65,6 @@ const PaymentLinkSuccessModal: React.FC<PaymentLinkSuccessModalProps> = ({
   onClose,
   paymentLink,
   paymentSettings,
-  onCopyLink,
 }) => {
   const isMobile = useIsMobile("md");
   const { t } = useTranslation("createPaymentLinkScreen");

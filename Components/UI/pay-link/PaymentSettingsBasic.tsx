@@ -6,7 +6,7 @@ import RoundedStackIcon from "@/assets/Icons/roundedStck-icon.svg";
 import InputField from "@/Components/UI/AuthLayout/InputFields";
 import CustomRadio from "@/Components/UI/RadioGroup";
 import { theme } from "@/styles/theme";
-import { PaymentSettingsBasicProps } from "@/utils/types/paymentLink";
+import { PaymentSettingsBasicProps } from "@/utils/types/create-pay-link";
 import { Box, FormControl, FormControlLabel, RadioGroup } from "@mui/material";
 import Image from "next/image";
 import React, { useState } from "react";
@@ -14,16 +14,6 @@ import { PaymentSettingsLabel } from "../../Page/CreatePaymentLink/styled";
 import CurrencySelector from "../CurrencySelector";
 import ExpirationDateTime from "../TimePicker/ExpirationDateTime";
 import ExpireSelector from "./ExpireSelector";
-
-export interface DatePickerRef {
-  open: (event: DatePickerOpenEvent) => void;
-  close: () => void;
-  isOpen: () => boolean;
-}
-
-export interface DatePickerOpenEvent {
-  currentTarget: HTMLElement;
-}
 
 const PaymentSettingsBasic: React.FC<PaymentSettingsBasicProps> = ({
   isMobile,

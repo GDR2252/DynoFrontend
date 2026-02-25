@@ -1,6 +1,6 @@
 import InputField from "@/Components/UI/AuthLayout/InputFields";
 import NoteIcon from "@/assets/Icons/note-icon.svg";
-import { DescriptionSectionProps } from "@/utils/types/paymentLink";
+import { DescriptionSectionProps } from "@/utils/types/create-pay-link";
 import Image from "next/image";
 import React from "react";
 import { PaymentSettingsLabel } from "../../Page/CreatePaymentLink/styled";

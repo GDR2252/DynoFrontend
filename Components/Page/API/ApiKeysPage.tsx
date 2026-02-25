@@ -1,5 +1,5 @@
 import { Box, CircularProgress, Grid, Typography } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -9,7 +9,7 @@ import CustomButton from "@/Components/UI/Buttons";
 import PanelCard from "@/Components/UI/PanelCard";
 
 import { ApiAction, CompanyAction } from "@/Redux/Actions";
-import { API_DELETE, API_FETCH, API_INSERT } from "@/Redux/Actions/ApiAction";
+import { API_DELETE, API_FETCH } from "@/Redux/Actions/ApiAction";
 import { COMPANY_FETCH } from "@/Redux/Actions/CompanyAction";
 import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
 import CopyIcon from "@/assets/Icons/copy-icon.svg";
@@ -18,7 +18,7 @@ import InfoIcon from "@/assets/Icons/info-icon.svg";
 import TrashIcon from "@/assets/Icons/trash-icon.svg";
 import BgImage from "@/assets/Images/card-bg.png";
 import { formatDate, getTime } from "@/helpers/dateTimeFormatter";
-import { rootReducer } from "@/utils/types";
+import { IApi, rootReducer } from "@/utils/types";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 
@@ -30,6 +30,7 @@ import UnitedStatesFlag from "@/assets/Images/Icons/flags/united-states-flag.png
 import { stringShorten } from "@/helpers";
 import useIsMobile from "@/hooks/useIsMobile";
 import { theme } from "@/styles/theme";
+import { ApiKeyCardProps, ApiKeysPageProps } from "@/utils/types/apis";
 import Image from "next/image";
 import * as yup from "yup";
 import {
@@ -45,13 +46,6 @@ import {
   Tags,
 } from "./styled";
 import Toast from "@/Components/UI/Toast";
-
-const companyInitial = {
-  company_id: 0,
-  base_currency: "",
-};
-
-type ApiRow = any;
 
 const ApiDocumentationCard = ({ docsUrl }: { docsUrl: string }) => {
   const { t } = useTranslation("apiScreen");
@@ -147,17 +141,7 @@ const ApiDocumentationCard = ({ docsUrl }: { docsUrl: string }) => {
   );
 };
 
-const ApiKeyCard = ({
-  title,
-  apiRow,
-  onCopy,
-  onDelete,
-}: {
-  title: string;
-  apiRow?: ApiRow;
-  onCopy: (value: string) => void;
-  onDelete: (apiId: number) => void;
-}) => {
+const ApiKeyCard = ({ title, apiRow, onCopy, onDelete }: ApiKeyCardProps) => {
   const { t } = useTranslation("apiScreen");
   const [showApiKey, setShowApiKey] = useState(false);
   const [showAdminToken, setShowAdminToken] = useState(false);
@@ -323,23 +307,12 @@ const ApiKeyCard = ({
 const ApiKeysPage = ({
   openCreate: openCreateProp,
   setOpenCreate: setOpenCreateProp,
-}: {
-  openCreate?: boolean;
-  setOpenCreate?: (open: boolean) => void;
-}) => {
+}: ApiKeysPageProps) => {
   const dispatch = useDispatch();
   const { t } = useTranslation("apiScreen");
   const isMobile = useIsMobile("md");
-
-  const companyList = useSelector(
-    (state: rootReducer) => state.companyReducer.companyList,
-  );
   const apiState = useSelector((state: rootReducer) => state.apiReducer);
   const ToastState = useSelector((state: rootReducer) => state.toastReducer);
-
-  const [initialValue, setInitialValue] = useState(
-    structuredClone(companyInitial),
-  );
 
   const [openCreateLocal, setOpenCreateLocal] = useState(false);
   const openCreate = openCreateProp ?? openCreateLocal;
@@ -395,17 +368,7 @@ const ApiKeysPage = ({
   };
 
   const handleCreateClose = () => {
-    setInitialValue(structuredClone(companyInitial));
     setOpenCreate(false);
-  };
-
-  const handleCreateSubmit = (values: any) => {
-    const payload = {
-      ...values,
-    };
-
-    dispatch(ApiAction(API_INSERT, payload));
-    handleCreateClose();
   };
 
   const requestDelete = (apiId: number) => {
@@ -536,29 +499,29 @@ const ApiKeysPage = ({
         sx={{ mb: isMobile ? 2 : 2.5, ...itemAnimation }}
         alignItems="flex-start"
       >
-        {/* {apiState?.apiList?.map((api: any, index: number) => ( */}
-        {apiList?.map((api: any, index: number) => (
-          <Grid
-            key={api.api_id}
-            item
-            xs={12}
-            md={6}
-            lg={6}
-            xl={4}
-            sx={{
-              opacity: 0,
-              animation: "fadeSlideIn 0.5s ease forwards",
-              animationDelay: `${index * 0.1}s`,
-            }}
-          >
-            <ApiKeyCard
-              title={`keys.${api.base_currency.toLowerCase()}`}
-              apiRow={api}
-              onCopy={handleCopy}
-              onDelete={requestDelete}
-            />
-          </Grid>
-        ))}
+        {Array.isArray(apiState?.apiList) &&
+          apiState.apiList.map((api: IApi, index: number) => (
+            <Grid
+              key={api.api_id}
+              item
+              xs={12}
+              md={6}
+              lg={6}
+              xl={4}
+              sx={{
+                opacity: 0,
+                animation: "fadeSlideIn 0.5s ease forwards",
+                animationDelay: `${index * 0.1}s`,
+              }}
+            >
+              <ApiKeyCard
+                title={`keys.${api.base_currency.toLowerCase()}`}
+                apiRow={api}
+                onCopy={handleCopy}
+                onDelete={requestDelete}
+              />
+            </Grid>
+          ))}
 
         {/* Last card */}
         <Grid

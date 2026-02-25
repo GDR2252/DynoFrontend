@@ -79,6 +79,7 @@
   "paidWarning": "This payment has been completed and cannot be edited",
   "backToPaymentLinks": "Back to Payment Links",
   "editPaymentLink": "Edit Payment Link",
+  "paymentLinkDetail": "Payment Link Details",
   "expiteDate": "Expiration date",
   "expiteTime": "Expiration time"
 }

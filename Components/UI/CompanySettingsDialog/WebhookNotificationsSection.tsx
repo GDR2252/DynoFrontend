@@ -1,32 +1,37 @@
-import React, { useState, useCallback } from "react";
-import {
-  Box,
-  Typography,
-  IconButton,
-  Tooltip,
-  useTheme,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import RefreshIcon from "@/assets/Icons/refresh-icon.svg";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import InfoIcon from "@/assets/Icons/info-icon.svg";
-import { useTranslation } from "react-i18next";
 import CopyIcon from "@/assets/Icons/copy-icon.svg";
-import SettingsAccordion from "@/Components/UI/SettingsAccordion";
+import InfoIcon from "@/assets/Icons/info-icon.svg";
+import RefreshIcon from "@/assets/Icons/refresh-icon.svg";
+import { CopyButton } from "@/Components/Layout/NewSidebar/styled";
 import InputField from "@/Components/UI/AuthLayout/InputFields";
 import CustomButton from "@/Components/UI/Buttons";
+import SettingsAccordion from "@/Components/UI/SettingsAccordion";
 import useIsMobile from "@/hooks/useIsMobile";
 import SidebarIcon from "@/utils/customIcons/sidebar-icons";
-import AutorenewIcon from '@mui/icons-material/Autorenew';
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Tooltip,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import Image from "next/image";
+import React, { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const iconButtonSize = { width: 40, height: 40, minWidth: 40, minHeight: 40 };
-const iconButtonSizeMobile = { width: 32, height: 32, minWidth: 32, minHeight: 32 };
+const iconButtonSizeMobile = {
+  width: 32,
+  height: 32,
+  minWidth: 32,
+  minHeight: 32,
+};
 
 export type WebhookNotificationsSectionProps = {
   notificationUrl: string;
@@ -102,7 +107,6 @@ export default function WebhookNotificationsSection({
       onChange={onAccordionChange}
       isMobile={isMobile}
     >
-
       {/* Notification URL */}
       <Box sx={{ mb: 2.5, width: "100%" }}>
         <InputField
@@ -111,21 +115,21 @@ export default function WebhookNotificationsSection({
           placeholder="https://mystore.com/dynopay-webhook"
           name="webhook_notification_url"
           value={notificationUrl}
-          onChange={(e) =>
-            onNotificationUrlChange?.(e.target.value)
-          }
-          onBlur={() => { }}
+          onChange={(e) => onNotificationUrlChange?.(e.target.value)}
+          onBlur={() => {}}
           helperText={tSettings("webhookNotificationUrlHelper")}
           inputHeight={isMobile ? "32px" : "38px"}
           sideButton
           onSideButtonClick={handleCopyUrl}
-          sideButtonIcon={<Image
-            src={CopyIcon}
-            alt="Copy Icon"
-            width={isMobile ? 12 : 14}
-            height={isMobile ? 12 : 14}
-            draggable={false}
-          />}
+          sideButtonIcon={
+            <Image
+              src={CopyIcon}
+              alt="Copy Icon"
+              width={isMobile ? 12 : 14}
+              height={isMobile ? 12 : 14}
+              draggable={false}
+            />
+          }
           sideButtonType="secondary"
         />
       </Box>
@@ -140,7 +144,8 @@ export default function WebhookNotificationsSection({
             fontSize: isMobile ? "13px" : "15px",
             fontFamily: "UrbanistMedium",
             color: "text.primary",
-            mb: 0.75,
+            lineHeight: "18px",
+            mb: "12px",
           }}
         >
           {tSettings("webhookSecretKey")}
@@ -159,35 +164,22 @@ export default function WebhookNotificationsSection({
             type={showSecret ? "text" : "password"}
             value={secretKey}
             onChange={(e) => onSecretKeyChange?.(e.target.value)}
-            onBlur={() => { }}
+            onBlur={() => {}}
             readOnly={!onSecretKeyChange}
             inputHeight={isMobile ? "32px" : "38px"}
             sx={{ flex: 1 }}
           />
           <Box sx={{ display: "flex", gap: 0.5, flexShrink: 0 }}>
             <Tooltip title={tSettings("webhookCopy")}>
-              <IconButton
-                onClick={handleCopySecret}
-                aria-label={tSettings("webhookCopy")}
-                sx={{
-                  ...sizeSx,
-                  borderRadius: "6px",
-                  border: `1px solid ${primaryBorder}`,
-                  color: primaryBorder,
-                  backgroundColor: "#FFFFFF",
-                  "&:hover": {
-                    backgroundColor: "#F5F5F5",
-                    borderColor: primaryBorder,
-                  },
-                }}
-              ><Image
+              <CopyButton type="button" onClick={handleCopySecret}>
+                <Image
                   src={CopyIcon}
                   alt="Copy Icon"
                   width={isMobile ? 12 : 14}
                   height={isMobile ? 12 : 14}
                   draggable={false}
                 />
-              </IconButton>
+              </CopyButton>
             </Tooltip>
             <Tooltip
               title={
@@ -202,7 +194,7 @@ export default function WebhookNotificationsSection({
                 sx={{
                   ...sizeSx,
                   borderRadius: "6px",
-                  border: outlineBorder,
+                  border: `1px solid ${theme.palette.text.primary}`,
                   color: "text.primary",
                   backgroundColor: "#FFFFFF",
                   "&:hover": {
@@ -211,9 +203,9 @@ export default function WebhookNotificationsSection({
                 }}
               >
                 {showSecret ? (
-                  <VisibilityOffIcon sx={{ fontSize: 18 }} />
+                  <VisibilityOffIcon sx={{ fontSize: 22 }} />
                 ) : (
-                  <VisibilityIcon sx={{ fontSize: 18 }} />
+                  <VisibilityIcon sx={{ fontSize: 22 }} />
                 )}
               </IconButton>
             </Tooltip>
@@ -224,7 +216,7 @@ export default function WebhookNotificationsSection({
                 sx={{
                   ...sizeSx,
                   borderRadius: "6px",
-                  border: outlineBorder,
+                  border: `1px solid ${theme.palette.text.primary}`,
                   color: "text.primary",
                   backgroundColor: "#FFFFFF",
                   "&:hover": {
@@ -238,6 +230,10 @@ export default function WebhookNotificationsSection({
                   width={isMobile ? 12 : 22}
                   height={isMobile ? 12 : 16}
                   draggable={false}
+                  style={{
+                    filter:
+                      "brightness(0) saturate(100%) invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%)",
+                  }}
                 />
               </IconButton>
             </Tooltip>
@@ -290,11 +286,13 @@ export default function WebhookNotificationsSection({
             alignItems: "center",
             justifyContent: "space-between",
             pb: 0,
-            pt: 2.5,
-            px: 2.5,
+            pt: "30px",
+            px: "30px",
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box
+            sx={{ display: "flex", alignItems: "center", gap: 1, mb: "24px" }}
+          >
             <Image
               src={InfoIcon}
               alt="Info Icon"
@@ -304,10 +302,11 @@ export default function WebhookNotificationsSection({
             />
             <Typography
               sx={{
-                fontWeight: 600,
-                fontSize: isMobile ? "16px" : "18px",
+                fontWeight: 500,
+                fontSize: isMobile ? "16px" : "20px",
                 fontFamily: "UrbanistMedium",
                 color: "text.primary",
+                lineHeight: "24px",
               }}
             >
               {tSettings("webhookRegenerateConfirmTitle")}
@@ -317,28 +316,35 @@ export default function WebhookNotificationsSection({
             onClick={handleRegenerateCancel}
             aria-label="Close"
             sx={{
+              position: "absolute",
+              top: 15,
+              right: 15,
               width: 32,
               height: 32,
               borderRadius: "50%",
               bgcolor: "action.hover",
               "&:hover": { bgcolor: "action.selected" },
+              border: `1px solid ${theme.palette.border.main}`,
+              color: "text.primary",
+              backgroundColor: "#FFFFFF",
             }}
           >
             <Image
               src={RefreshIcon}
-              alt="Close Icon"
+              alt="Refresh Icon"
               width={isMobile ? 12 : 22}
               height={isMobile ? 12 : 16}
               draggable={false}
             />
           </IconButton>
         </DialogTitle>
-        <DialogContent sx={{ px: 2.5, pt: 1.5, pb: 0 }}>
+        <DialogContent sx={{ px: "30px", pt: 1.5, pb: 0 }}>
           <Typography
             sx={{
-              fontSize: isMobile ? "13px" : "14px",
+              fontSize: isMobile ? "13px" : "15px",
               color: "text.secondary",
-              lineHeight: 1.5,
+              lineHeight: "18px",
+              fontFamily: "UrbanistMedium",
             }}
           >
             {tSettings("webhookRegenerateConfirmMessage")}
@@ -350,7 +356,7 @@ export default function WebhookNotificationsSection({
             gap: 1,
             px: 2.5,
             pb: 2.5,
-            pt: 2,
+            pt: 3,
           }}
         >
           <CustomButton
@@ -358,7 +364,7 @@ export default function WebhookNotificationsSection({
             variant="outlined"
             size="medium"
             onClick={handleRegenerateCancel}
-            sx={{ fontSize: isMobile ? "13px" : "14px", width: "100%"}}
+            sx={{ fontSize: isMobile ? "13px" : "14px", width: "100%" }}
           />
           <CustomButton
             label={tSettings("webhookRegenerateConfirmButton")}

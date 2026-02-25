@@ -1,6 +1,6 @@
 import CheckIcon from "@/assets/Icons/Check-icon.svg";
 import { theme } from "@/styles/theme";
-import { CryptoItemCardProps } from "@/utils/types/paymentLink";
+import { CryptoItemCardProps } from "@/utils/types/create-pay-link";
 import { Box, Grid, useMediaQuery } from "@mui/material";
 import Image from "next/image";
 import React from "react";

@@ -3,7 +3,7 @@ import InputField from "@/Components/UI/AuthLayout/InputFields";
 import CustomButton from "@/Components/UI/Buttons";
 import i18n from "@/i18n";
 import { theme } from "@/styles/theme";
-import { PostPaymentSettingsProps } from "@/utils/types/paymentLink";
+import { PostPaymentSettingsProps } from "@/utils/types/create-pay-link";
 import { Box } from "@mui/material";
 import React from "react";
 

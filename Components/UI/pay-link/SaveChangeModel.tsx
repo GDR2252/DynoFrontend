@@ -1,19 +1,31 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, Typography } from "@mui/material"
-import Image from "next/image"
 import InfoIcon from "@/assets/Icons/info-icon.svg";
-import { theme } from "@/styles/theme";
 import useIsMobile from "@/hooks/useIsMobile";
+import { theme } from "@/styles/theme";
+import { SaveChangeModelProps } from "@/utils/types/create-pay-link";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Typography,
+} from "@mui/material";
+import Image from "next/image";
 
-const SaveChangeModel = ({ open, onClose, onSave }: { open: boolean; onClose: () => void; onSave: () => void }) => {
+const SaveChangeModel = ({ open, onClose, onSave }: SaveChangeModelProps) => {
   const isMobile = useIsMobile("md");
   return (
     <Dialog
       open={open}
       PaperProps={{
-        sx: { borderRadius: "12px", maxWidth: "576px" }
+        sx: { borderRadius: "12px", maxWidth: "576px" },
       }}
     >
-      <DialogContent sx={{ padding: isMobile ? "16px 16px 12px 16px" : "30px 30px 24px 30px" }}>
+      <DialogContent
+        sx={{
+          padding: isMobile ? "16px 16px 12px 16px" : "30px 30px 24px 30px",
+        }}
+      >
         <Box sx={{ display: "flex", gap: "10px", alignItems: "center" }}>
           <Image
             src={InfoIcon}
@@ -30,7 +42,7 @@ const SaveChangeModel = ({ open, onClose, onSave }: { open: boolean; onClose: ()
               fontSize: "20px",
               lineHeight: 1.2,
               letterSpacing: 0,
-              color: theme.palette.text.primary
+              color: theme.palette.text.primary,
             }}
           >
             Save Changes?
@@ -44,10 +56,11 @@ const SaveChangeModel = ({ open, onClose, onSave }: { open: boolean; onClose: ()
             fontSize: isMobile ? "13px" : "15px",
             lineHeight: "140%",
             mt: isMobile ? "12px" : "24px",
-            color: "#676768"
+            color: "#676768",
           }}
         >
-          This payment link is active and may have been shared with customers. Changes will apply immediately.
+          This payment link is active and may have been shared with customers.
+          Changes will apply immediately.
         </Typography>
       </DialogContent>
 
@@ -55,7 +68,7 @@ const SaveChangeModel = ({ open, onClose, onSave }: { open: boolean; onClose: ()
         sx={{
           padding: isMobile ? "0 16px 16px 16px" : "0 30px 30px 30px",
           display: "flex",
-          gap: "20px"
+          gap: "20px",
         }}
       >
         <Button
@@ -69,7 +82,7 @@ const SaveChangeModel = ({ open, onClose, onSave }: { open: boolean; onClose: ()
             color: "#676768",
             border: "1px solid #E9ECF2",
             py: "11px",
-            borderRadius: "6px"
+            borderRadius: "6px",
           }}
         >
           Cancel
@@ -91,15 +104,15 @@ const SaveChangeModel = ({ open, onClose, onSave }: { open: boolean; onClose: ()
             py: "11px",
             borderRadius: "6px",
             "&:hover": {
-              backgroundColor: "#0003cc"
-            }
+              backgroundColor: "#0003cc",
+            },
           }}
         >
           Save Change
         </Button>
       </DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 
 export default SaveChangeModel;

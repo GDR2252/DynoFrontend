@@ -1,8 +1,9 @@
- import React from "react";
 import { Box, Typography } from "@mui/material";
+import React from "react";
 // import { useTheme } from "@mui/material/styles";
-import { SxProps, Theme } from "@mui/system";
+import useIsMobile from "@/hooks/useIsMobile";
 import { theme } from "@/styles/theme";
+import { SxProps, Theme } from "@mui/system";
 
 const DIVIDER_COLOR = "#E0E0E0";
 const INPUT_PADDING_X = 14;
@@ -51,7 +52,7 @@ export default function AdornedInputField({
   startAdornmentWidth = "44px",
   endAdornmentWidth = "70px",
 }: AdornedInputFieldProps) {
-  // const theme = useTheme();
+  const isMobile = useIsMobile("md");
   const hasStart = !!startAdornment;
   const hasEnd = !!endAdornment;
 
@@ -69,7 +70,7 @@ export default function AdornedInputField({
         width: fullWidth ? "100%" : "auto",
         display: "flex",
         flexDirection: "column",
-        gap: "6px",
+        gap: isMobile ? "6px" : "8px",
         ...sx,
       }}
     >
@@ -79,7 +80,7 @@ export default function AdornedInputField({
           sx={{
             fontWeight: 500,
             fontFamily: "UrbanistMedium",
-            fontSize: "15px",
+            fontSize: isMobile ? "13px" : "15px",
             textAlign: "start",
             color: theme.palette.text.primary,
             lineHeight: "100%",
@@ -174,7 +175,7 @@ export default function AdornedInputField({
             outline: "none",
             padding: `0 ${INPUT_PADDING_X}px`,
             fontFamily: "UrbanistMedium",
-            fontSize: "14px",
+            fontSize: isMobile ? "13px" : "15px",
             color: disabled ? "#B0BEC5" : theme.palette.text.primary,
             backgroundColor: "transparent",
             boxSizing: "border-box",
@@ -182,8 +183,14 @@ export default function AdornedInputField({
             "&:disabled": { cursor: "not-allowed" },
             ...(type === "number" && {
               MozAppearance: "textfield",
-              "&::-webkit-outer-spin-button": { WebkitAppearance: "none", margin: 0 },
-              "&::-webkit-inner-spin-button": { WebkitAppearance: "none", margin: 0 },
+              "&::-webkit-outer-spin-button": {
+                WebkitAppearance: "none",
+                margin: 0,
+              },
+              "&::-webkit-inner-spin-button": {
+                WebkitAppearance: "none",
+                margin: 0,
+              },
             }),
           }}
         />
@@ -219,7 +226,7 @@ export default function AdornedInputField({
                 flexShrink: 0,
                 paddingRight: "14px",
                 color: theme.palette.text.secondary,
-                fontSize: "14px",
+                fontSize: isMobile ? "10px" : "13px",
                 fontFamily: "UrbanistMedium",
               }}
             >
@@ -233,7 +240,7 @@ export default function AdornedInputField({
         <Typography
           sx={{
             margin: "4px 0 0 0",
-            fontSize: "13px",
+            fontSize: isMobile ? "10px" : "13px",
             fontFamily: "UrbanistMedium",
             fontWeight: 500,
             color: error

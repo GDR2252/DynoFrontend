@@ -1,4 +1,11 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useDispatch } from "react-redux";
 
 import { CompanyAction } from "@/Redux/Actions";
@@ -8,21 +15,28 @@ import CompanyDialog, { CompanyDialogMode } from "./index";
 
 type CompanyDialogContextValue = {
   openAddCompany: () => void;
-  openEditCompany: (company: ICompany) => void;
   closeCompanyDialog: () => void;
 };
 
-const CompanyDialogContext = createContext<CompanyDialogContextValue | null>(null);
+const CompanyDialogContext = createContext<CompanyDialogContextValue | null>(
+  null,
+);
 
 export function useCompanyDialog() {
   const ctx = useContext(CompanyDialogContext);
   if (!ctx) {
-    throw new Error("useCompanyDialog must be used within CompanyDialogProvider");
+    throw new Error(
+      "useCompanyDialog must be used within CompanyDialogProvider",
+    );
   }
   return ctx;
 }
 
-export function CompanyDialogProvider({ children }: { children: React.ReactNode }) {
+export function CompanyDialogProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<CompanyDialogMode>("add");
@@ -44,22 +58,20 @@ export function CompanyDialogProvider({ children }: { children: React.ReactNode 
     setOpen(true);
   }, []);
 
-  const openEditCompany = useCallback((c: ICompany) => {
-    setMode("edit");
-    setCompany(c);
-    setOpen(true);
-  }, []);
-
   const value = useMemo(
-    () => ({ openAddCompany, openEditCompany, closeCompanyDialog }),
-    [openAddCompany, openEditCompany, closeCompanyDialog]
+    () => ({ openAddCompany, closeCompanyDialog }),
+    [openAddCompany, closeCompanyDialog],
   );
 
   return (
     <CompanyDialogContext.Provider value={value}>
       {children}
-      <CompanyDialog open={open} mode={mode} company={company} onClose={closeCompanyDialog} />
+      <CompanyDialog
+        open={open}
+        mode={mode}
+        company={company}
+        onClose={closeCompanyDialog}
+      />
     </CompanyDialogContext.Provider>
   );
 }
-

@@ -1,122 +1,161 @@
+import "@/styles/globals.css";
+import "../i18n";
+
+import type { NextPage } from "next";
+import type { AppProps } from "next/app";
+import { useRouter } from "next/router";
+import { ReactNode, useMemo, useState } from "react";
+
+import type { SxProps, Theme } from "@mui/material";
+import { ThemeProvider } from "@mui/material";
+import { SessionProvider } from "next-auth/react";
+import { Provider } from "react-redux";
+
+import LanguageBootstrap from "@/helpers/LanguageBootstrap";
+import store from "@/store";
+
 import {
   AdminLayout,
   ClientLayout,
   LoginLayout,
   PaymentLayout,
 } from "@/Containers";
-import store from "@/store";
-import "@/styles/globals.css";
-import { theme } from "@/styles/theme";
-import { ThemeProvider } from "@mui/material";
-import { SessionProvider } from "next-auth/react";
-import type { AppProps } from "next/app";
-import { useRouter } from "next/router";
-import { useState } from "react";
-import { Provider } from "react-redux";
-import "../i18n";
-import LanguageBootstrap from "@/helpers/LanguageBootstrap";
-import type { ReactNode } from "react";
-import { SxProps, Theme } from "@mui/material";
 import HomeLayout from "@/Containers/Home";
-import { homeTheme } from "@/styles/homeTheme";
 
-export default function App({ Component, pageProps }: AppProps) {
-  const { pathname } = useRouter();
-  const [pageName, setPageName] = useState("");
-  const [pageDescription, setPageDescription] = useState("");
+import { homeTheme } from "@/styles/homeTheme";
+import { theme } from "@/styles/theme";
+
+// -----------------------------
+// Types
+// -----------------------------
+
+export type LayoutSetterProps = {
+  setPageName?: (value: string) => void;
+  setPageDescription?: (value: string) => void;
+  setPageAction?: (value: ReactNode | null) => void;
+  setPageWarning?: (value: ReactNode | null) => void;
+  setPageHeaderSx?: (value: SxProps<Theme> | null) => void;
+};
+
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  layout?: "home" | "client" | "login" | "payment" | "admin";
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+// -----------------------------
+// App Component
+// -----------------------------
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  const router = useRouter();
+  const pathname = router.pathname;
+
+  const [pageName, setPageName] = useState<string>("");
+  const [pageDescription, setPageDescription] = useState<string>("");
   const [pageAction, setPageAction] = useState<ReactNode | null>(null);
   const [pageWarning, setPageWarning] = useState<ReactNode | null>(null);
   const [pageHeaderSx, setPageHeaderSx] = useState<SxProps<Theme> | null>(null);
 
-  const homePaths = [
-    "/",
-    "/terms-conditions",
-    "/privacy-policy",
-    "/aml-policy",
-    "/api-status",
-  ];
-  const isHomePath = homePaths.includes(pathname);
-  return (
-    <>
-      <Provider store={store}>
-        <LanguageBootstrap />
-        <SessionProvider session={pageProps.session}>
-          <ThemeProvider theme={theme}>
-            {isHomePath && (
-              <ThemeProvider theme={homeTheme}>
-                <HomeLayout>
-                  <Component {...pageProps} />
-                </HomeLayout>
-              </ThemeProvider>
-            )}
+  // -----------------------------
+  // Layout Resolver
+  // -----------------------------
 
-            {!isHomePath &&
-              !pathname.includes("auth") &&
-              !pathname.includes("payment") &&
-              !pathname.includes("admin") &&
-              !pathname.includes("reset-password") && (
-                <ClientLayout
-                  pageName={pageName}
-                  pageDescription={pageDescription}
-                  pageAction={pageAction}
-                  pageWarning={pageWarning}
-                  pageHeaderSx={pageHeaderSx || undefined}
-                >
-                  <Component
-                    {...pageProps}
-                    setPageName={setPageName}
-                    setPageDescription={setPageDescription}
-                    setPageAction={setPageAction}
-                    setPageWarning={setPageWarning}
-                    setPageHeaderSx={setPageHeaderSx}
-                  />
-                </ClientLayout>
-              )}
-            {(pathname.includes("auth") ||
-              pathname.includes("reset-password") ||
-              pathname.includes("admin/login")) && (
-                <LoginLayout
-                  pageName={pageName}
-                  pageDescription={pageDescription}
-                >
-                  <Component
-                    {...pageProps}
-                    setPageName={setPageName}
-                    setPageDescription={setPageDescription}
-                    setPageAction={setPageAction}
-                  />
-                </LoginLayout>
-              )}
-            {pathname.includes("payment") && (
-              <PaymentLayout
-                pageName={pageName}
-                pageDescription={pageDescription}
-              >
-                <Component
-                  {...pageProps}
-                  setPageName={setPageName}
-                  setPageDescription={setPageDescription}
-                  setPageAction={setPageAction}
-                />
-              </PaymentLayout>
-            )}
-            {pathname.includes("admin") &&
-              !pathname.includes("admin/login") && (
-                <AdminLayout
-                  pageName={pageName}
-                  pageDescription={pageDescription}
-                >
-                  <Component
-                    {...pageProps}
-                    setPageName={setPageName}
-                    setPageDescription={setPageDescription}
-                    setPageAction={setPageAction}
-                  />
-                </AdminLayout>
-              )}
+  const resolvedLayout = useMemo(() => {
+    if (Component.layout) return Component.layout;
+
+    const homePaths = new Set([
+      "/",
+      "/terms-conditions",
+      "/privacy-policy",
+      "/aml-policy",
+      "/api-status",
+    ]);
+
+    if (homePaths.has(pathname)) return "home";
+
+    if (
+      pathname.startsWith("/auth") ||
+      pathname === "/reset-password" ||
+      pathname === "/admin/login"
+    ) {
+      return "login";
+    }
+
+    if (pathname.startsWith("/payment")) {
+      return "payment";
+    }
+
+    if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+      return "admin";
+    }
+
+    return "client";
+  }, [Component.layout, pathname]);
+
+  const pageSetterProps: LayoutSetterProps = {
+    setPageName,
+    setPageDescription,
+    setPageAction,
+    setPageWarning,
+    setPageHeaderSx,
+  };
+
+  const renderWithLayout = () => {
+    switch (resolvedLayout) {
+      case "home":
+        return (
+          <ThemeProvider theme={homeTheme}>
+            <HomeLayout>
+              <Component {...pageProps} />
+            </HomeLayout>
           </ThemeProvider>
-        </SessionProvider>
-      </Provider>
-    </>
+        );
+
+      case "login":
+        return (
+          <LoginLayout pageName={pageName} pageDescription={pageDescription}>
+            <Component {...pageProps} {...pageSetterProps} />
+          </LoginLayout>
+        );
+
+      case "payment":
+        return (
+          <PaymentLayout pageName={pageName} pageDescription={pageDescription}>
+            <Component {...pageProps} {...pageSetterProps} />
+          </PaymentLayout>
+        );
+
+      case "admin":
+        return (
+          <AdminLayout pageName={pageName} pageDescription={pageDescription}>
+            <Component {...pageProps} {...pageSetterProps} />
+          </AdminLayout>
+        );
+
+      default:
+        return (
+          <ClientLayout
+            pageName={pageName}
+            pageDescription={pageDescription}
+            pageAction={pageAction}
+            pageWarning={pageWarning}
+            pageHeaderSx={pageHeaderSx || undefined}
+          >
+            <Component {...pageProps} {...pageSetterProps} />
+          </ClientLayout>
+        );
+    }
+  };
+
+  return (
+    <Provider store={store}>
+      <LanguageBootstrap />
+      <SessionProvider session={pageProps.session}>
+        <ThemeProvider theme={theme}>{renderWithLayout()}</ThemeProvider>
+      </SessionProvider>
+    </Provider>
   );
 }

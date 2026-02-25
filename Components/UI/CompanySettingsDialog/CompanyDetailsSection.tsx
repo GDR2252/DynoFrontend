@@ -1,5 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Box,
   Grid,
@@ -10,17 +13,14 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
+import type { ICity, ICountry, IState } from "country-state-city";
+import { City, Country, State } from "country-state-city";
+import Image from "next/image";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Country, State, City } from "country-state-city";
-import type { ICountry, IState, ICity } from "country-state-city";
 
-import SettingsAccordion from "@/Components/UI/SettingsAccordion";
-import InfoBanner from "@/Components/UI/InfoBanner";
+import DownloadIcon from "@/assets/Icons/download-icon.svg";
+import { Text } from "@/Components/Page/CreatePaymentLink/styled";
 import InputField from "@/Components/UI/AuthLayout/InputFields";
 import CountryPhoneInput from "@/Components/UI/CountryPhoneInput";
 import {
@@ -28,11 +28,11 @@ import {
   CryptocurrencyDropdown,
   CryptocurrencyTrigger,
 } from "@/Components/UI/CryptocurrencySelector/styled";
-import DownloadIcon from "@/assets/Icons/download-icon.svg";
+import SettingsAccordion from "@/Components/UI/SettingsAccordion";
 
 const useLocationData = (
   formValues: { country?: string; state?: string },
-  countries: ICountry[]
+  countries: ICountry[],
 ) => {
   const [states, setStates] = useState<IState[]>([]);
   const [cities, setCities] = useState<ICity[]>([]);
@@ -146,8 +146,16 @@ export type CompanyDetailsSectionProps = {
   values: CompanyDetailsSectionValues;
   errors: Record<string, string | undefined>;
   touched: Record<string, boolean | undefined>;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
-  handleBlur: (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  handleChange: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => void;
+  handleBlur: (
+    e: React.FocusEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => void;
   handleFieldsChange: (fields: Record<string, unknown>) => void;
   imagePreview?: string;
   onFileChange: (file?: File) => void;
@@ -171,9 +179,6 @@ export default function CompanyDetailsSection({
   isMobile = false,
   expanded,
   onAccordionChange,
-  infoBannerMessage,
-  infoBannerChildren,
-  infoBannerSx,
 }: CompanyDetailsSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation("companyDialog");
@@ -203,32 +208,29 @@ export default function CompanyDetailsSection({
   const { states, cities } = useLocationData(values, countries);
 
   const filteredCountries = countries.filter((c) =>
-    c.name.toLowerCase().includes(searchTerm.toLowerCase())
+    c.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
   const filteredStates = states.filter((s) =>
-    s.name.toLowerCase().includes(stateSearchTerm.toLowerCase())
+    s.name.toLowerCase().includes(stateSearchTerm.toLowerCase()),
   );
   const filteredCities = cities.filter((c) =>
-    c.name.toLowerCase().includes(citySearchTerm.toLowerCase())
+    c.name.toLowerCase().includes(citySearchTerm.toLowerCase()),
   );
 
   useEffect(() => {
     setCountries(Country.getAllCountries());
   }, []);
 
-  const labelSx = {
-    display: "block",
-    fontSize: isMobile ? "13px" : "15px",
-    fontWeight: 500,
-    fontFamily: "UrbanistMedium",
-    color: "text.primary",
-    mb: 0.75,
-  } as const;
-
   return (
     <SettingsAccordion
       icon={
-        <BusinessCenterIcon sx={{ color: "text.primary", height: 16, width: 16 }} />
+        <BusinessCenterIcon
+          sx={{
+            color: "text.primary",
+            fontSize: isMobile ? "16px" : "18px",
+            marginTop: "-2px",
+          }}
+        />
       }
       title={tSettings("title")}
       subtitle={tSettings("subtitle")}
@@ -237,12 +239,15 @@ export default function CompanyDetailsSection({
       isMobile={isMobile}
     >
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-
-        <Grid container spacing={2}>
+        <Grid
+          container
+          columnSpacing={"12px"}
+          rowSpacing={isMobile ? "16px" : "14px"}
+        >
           <Grid item xs={isMobile ? 12 : 6}>
             <InputField
               fullWidth
-              inputHeight={isMobile ? "32px" : "38px"}
+              inputHeight={isMobile ? "32px" : "40px"}
               label={t("fields.companyName.label")}
               placeholder={t("fields.companyName.placeholder")}
               name="company_name"
@@ -260,7 +265,7 @@ export default function CompanyDetailsSection({
           <Grid item xs={isMobile ? 12 : 6}>
             <InputField
               fullWidth
-              inputHeight={isMobile ? "32px" : "38px"}
+              inputHeight={isMobile ? "32px" : "40px"}
               label={t("fields.website.label")}
               placeholder={t("fields.website.placeholder")}
               name="website"
@@ -272,7 +277,7 @@ export default function CompanyDetailsSection({
           <Grid item xs={isMobile ? 12 : 6}>
             <InputField
               fullWidth
-              inputHeight={isMobile ? "32px" : "38px"}
+              inputHeight={isMobile ? "32px" : "40px"}
               label={t("fields.email.label")}
               placeholder={t("fields.email.placeholder")}
               name="email"
@@ -286,16 +291,21 @@ export default function CompanyDetailsSection({
             />
           </Grid>
           <Grid item xs={isMobile ? 12 : 6}>
-            <Typography component="label" variant="body2" sx={labelSx}>
+            <Text
+              sx={{
+                fontSize: isMobile ? "13px" : "15px",
+                mb: isMobile ? "6px" : "8px",
+              }}
+            >
               {t("fields.mobile.label")}
-            </Typography>
+            </Text>
             <CountryPhoneInput
               fullWidth
               placeholder={t("mobilePlaceholder")}
               name="mobile"
               defaultCountry="US"
               value={String(values.mobile || "")}
-              inputHeight={isMobile ? "32px" : "38px"}
+              inputHeight={isMobile ? "32px" : "40px"}
               onChange={(newValue) => handleFieldsChange({ mobile: newValue })}
               onBlur={handleBlur}
             />
@@ -303,10 +313,10 @@ export default function CompanyDetailsSection({
 
           {/* Country */}
           <Grid item xs={12}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <Typography sx={{ ...labelSx, color: theme.palette.text.primary }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <Text sx={{ fontSize: isMobile ? "13px" : "15px" }}>
                 {t("fields.country.label")}
-              </Typography>
+              </Text>
               <CryptocurrencyTrigger
                 ref={triggerRef}
                 onClick={(e) => {
@@ -336,9 +346,26 @@ export default function CompanyDetailsSection({
                     }}
                   />
                 </Box>
-                <Box component="label" htmlFor="country" sx={{ display: "flex", alignItems: "center", cursor: "pointer", color: "rgba(103, 103, 104, 1)" }}>
+                <Box
+                  component="label"
+                  htmlFor="country"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    color: "rgba(103, 103, 104, 1)",
+                  }}
+                >
                   <CryptocurrencyDividerLine />
-                  {isOpen ? <ExpandLessIcon sx={{ width: isMobile ? "20px" : "24px" }} /> : <ExpandMoreIcon sx={{ width: isMobile ? "20px" : "24px" }} />}
+                  {isOpen ? (
+                    <ExpandLessIcon
+                      sx={{ width: isMobile ? "20px" : "24px" }}
+                    />
+                  ) : (
+                    <ExpandMoreIcon
+                      sx={{ width: isMobile ? "20px" : "24px" }}
+                    />
+                  )}
                 </Box>
               </CryptocurrencyTrigger>
               <Popover
@@ -355,7 +382,10 @@ export default function CompanyDetailsSection({
                 transitionDuration={0}
                 TransitionProps={{
                   onEntering: () => {
-                    selectedItemRef.current?.scrollIntoView({ block: "center", behavior: "auto" });
+                    selectedItemRef.current?.scrollIntoView({
+                      block: "center",
+                      behavior: "auto",
+                    });
                   },
                 }}
                 PaperProps={{
@@ -380,7 +410,11 @@ export default function CompanyDetailsSection({
                           ref={isSelected ? selectedItemRef : null}
                           selected={isSelected}
                           onClick={() => {
-                            handleFieldsChange({ country: c.name, state: "", city: "" });
+                            handleFieldsChange({
+                              country: c.name,
+                              state: "",
+                              city: "",
+                            });
                             setAnchorEl(null);
                             setSearchTerm("");
                           }}
@@ -412,12 +446,20 @@ export default function CompanyDetailsSection({
                               },
                             }}
                           />
-                          {isSelected && <CheckIcon sx={{ ml: "auto", fontSize: 18 }} />}
+                          {isSelected && (
+                            <CheckIcon sx={{ ml: "auto", fontSize: 18 }} />
+                          )}
                         </ListItemButton>
                       );
                     })
                   ) : (
-                    <Box sx={{ p: 2, textAlign: "center", color: "text.secondary" }}>
+                    <Box
+                      sx={{
+                        p: 2,
+                        textAlign: "center",
+                        color: "text.secondary",
+                      }}
+                    >
                       <Typography variant="body2">No results found</Typography>
                     </Box>
                   )}
@@ -428,10 +470,10 @@ export default function CompanyDetailsSection({
 
           {/* State */}
           <Grid item xs={isMobile ? 12 : 6}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <Typography sx={{ ...labelSx, color: theme.palette.text.primary }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <Text sx={{ fontSize: isMobile ? "13px" : "15px" }}>
                 {t("fields.state.label")}
-              </Typography>
+              </Text>
               <CryptocurrencyTrigger
                 ref={stateRef}
                 onClick={(e) => {
@@ -455,7 +497,9 @@ export default function CompanyDetailsSection({
                     id="state"
                     fullWidth
                     placeholder="Select State"
-                    value={stateAnchor ? stateSearchTerm : String(values.state || "")}
+                    value={
+                      stateAnchor ? stateSearchTerm : String(values.state || "")
+                    }
                     onChange={(e) => setStateSearchTerm(e.target.value)}
                     sx={{
                       fontFamily: "UrbanistMedium",
@@ -468,9 +512,26 @@ export default function CompanyDetailsSection({
                     }}
                   />
                 </Box>
-                <Box component="label" htmlFor="state" sx={{ display: "flex", alignItems: "center", cursor: "pointer", color: "rgba(103, 103, 104, 1)" }}>
+                <Box
+                  component="label"
+                  htmlFor="state"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    color: "rgba(103, 103, 104, 1)",
+                  }}
+                >
                   <CryptocurrencyDividerLine />
-                  {stateAnchor ? <ExpandLessIcon sx={{ width: isMobile ? "20px" : "24px" }} /> : <ExpandMoreIcon sx={{ width: isMobile ? "20px" : "24px" }} />}
+                  {stateAnchor ? (
+                    <ExpandLessIcon
+                      sx={{ width: isMobile ? "20px" : "24px" }}
+                    />
+                  ) : (
+                    <ExpandMoreIcon
+                      sx={{ width: isMobile ? "20px" : "24px" }}
+                    />
+                  )}
                 </Box>
               </CryptocurrencyTrigger>
               <Popover
@@ -487,7 +548,10 @@ export default function CompanyDetailsSection({
                 transitionDuration={0}
                 TransitionProps={{
                   onEntering: () => {
-                    selectedStateRef.current?.scrollIntoView({ block: "center", behavior: "auto" });
+                    selectedStateRef.current?.scrollIntoView({
+                      block: "center",
+                      behavior: "auto",
+                    });
                   },
                 }}
                 PaperProps={{
@@ -538,12 +602,20 @@ export default function CompanyDetailsSection({
                               },
                             }}
                           />
-                          {isSelected && <CheckIcon sx={{ ml: "auto", fontSize: 18 }} />}
+                          {isSelected && (
+                            <CheckIcon sx={{ ml: "auto", fontSize: 18 }} />
+                          )}
                         </ListItemButton>
                       );
                     })
                   ) : (
-                    <Box sx={{ p: 2, textAlign: "center", color: "text.secondary" }}>
+                    <Box
+                      sx={{
+                        p: 2,
+                        textAlign: "center",
+                        color: "text.secondary",
+                      }}
+                    >
                       <Typography variant="body2">No results found</Typography>
                     </Box>
                   )}
@@ -554,10 +626,10 @@ export default function CompanyDetailsSection({
 
           {/* City */}
           <Grid item xs={isMobile ? 12 : 6}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <Typography sx={{ ...labelSx, color: theme.palette.text.primary }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <Text sx={{ fontSize: isMobile ? "13px" : "15px" }}>
                 {t("fields.city.label")}
-              </Typography>
+              </Text>
               <CryptocurrencyTrigger
                 ref={cityRef}
                 onClick={(e) => {
@@ -581,7 +653,9 @@ export default function CompanyDetailsSection({
                     id="city"
                     fullWidth
                     placeholder="Select City"
-                    value={cityAnchor ? citySearchTerm : String(values.city || "")}
+                    value={
+                      cityAnchor ? citySearchTerm : String(values.city || "")
+                    }
                     onChange={(e) => setCitySearchTerm(e.target.value)}
                     sx={{
                       fontFamily: "UrbanistMedium",
@@ -594,9 +668,26 @@ export default function CompanyDetailsSection({
                     }}
                   />
                 </Box>
-                <Box component="label" htmlFor="city" sx={{ display: "flex", alignItems: "center", cursor: "pointer", color: "rgba(103, 103, 104, 1)" }}>
+                <Box
+                  component="label"
+                  htmlFor="city"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    color: "rgba(103, 103, 104, 1)",
+                  }}
+                >
                   <CryptocurrencyDividerLine />
-                  {cityAnchor ? <ExpandLessIcon sx={{ width: isMobile ? "20px" : "24px" }} /> : <ExpandMoreIcon sx={{ width: isMobile ? "20px" : "24px" }} />}
+                  {cityAnchor ? (
+                    <ExpandLessIcon
+                      sx={{ width: isMobile ? "20px" : "24px" }}
+                    />
+                  ) : (
+                    <ExpandMoreIcon
+                      sx={{ width: isMobile ? "20px" : "24px" }}
+                    />
+                  )}
                 </Box>
               </CryptocurrencyTrigger>
               <Popover
@@ -613,7 +704,10 @@ export default function CompanyDetailsSection({
                 transitionDuration={0}
                 TransitionProps={{
                   onEntering: () => {
-                    selectedCityRef.current?.scrollIntoView({ block: "center", behavior: "auto" });
+                    selectedCityRef.current?.scrollIntoView({
+                      block: "center",
+                      behavior: "auto",
+                    });
                   },
                 }}
                 PaperProps={{
@@ -664,12 +758,20 @@ export default function CompanyDetailsSection({
                               },
                             }}
                           />
-                          {isSelected && <CheckIcon sx={{ ml: "auto", fontSize: 18 }} />}
+                          {isSelected && (
+                            <CheckIcon sx={{ ml: "auto", fontSize: 18 }} />
+                          )}
                         </ListItemButton>
                       );
                     })
                   ) : (
-                    <Box sx={{ p: 2, textAlign: "center", color: "text.secondary" }}>
+                    <Box
+                      sx={{
+                        p: 2,
+                        textAlign: "center",
+                        color: "text.secondary",
+                      }}
+                    >
                       <Typography variant="body2">No results found</Typography>
                     </Box>
                   )}
@@ -681,7 +783,7 @@ export default function CompanyDetailsSection({
           <Grid item xs={12}>
             <InputField
               fullWidth
-              inputHeight={isMobile ? "32px" : "38px"}
+              inputHeight={isMobile ? "32px" : "40px"}
               label={t("fields.addressLine1.label")}
               placeholder={t("fields.addressLine1.placeholder")}
               name="address_line_1"
@@ -694,13 +796,14 @@ export default function CompanyDetailsSection({
               }
               onChange={handleChange}
               onBlur={handleBlur}
+              sx={{ gap: "8px" }}
             />
           </Grid>
 
           <Grid item xs={12}>
             <InputField
               fullWidth
-              inputHeight={isMobile ? "32px" : "38px"}
+              inputHeight={isMobile ? "32px" : "40px"}
               label={t("fields.addressLine2.label")}
               placeholder={t("fields.addressLine2.placeholder")}
               name="address_line_2"
@@ -713,13 +816,14 @@ export default function CompanyDetailsSection({
               }
               onChange={handleChange}
               onBlur={handleBlur}
+              sx={{ gap: "8px" }}
             />
           </Grid>
 
           <Grid item xs={12}>
             <InputField
               fullWidth
-              inputHeight={isMobile ? "32px" : "38px"}
+              inputHeight={isMobile ? "32px" : "40px"}
               label={t("fields.zipCode.label")}
               placeholder={t("fields.zipCode.placeholder")}
               name="zip_code"
@@ -732,21 +836,24 @@ export default function CompanyDetailsSection({
               }
               onChange={handleChange}
               onBlur={handleBlur}
+              sx={{ gap: "8px" }}
             />
           </Grid>
 
           {/* VAT Number */}
           <Grid item xs={12}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <Typography sx={{ ...labelSx, color: theme.palette.text.primary }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <Text sx={{ fontSize: isMobile ? "13px" : "15px" }}>
                 {t("vatNumber")}
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={5}>
+              </Text>
+              <Grid container spacing={isMobile ? "8px" : "0px"}>
+                <Grid item xs={5} md={3.6}>
                   <Box
                     maxWidth="150px"
                     onClick={(e) =>
-                      setVatAnchorEl(vatAnchorEl ? null : (e.currentTarget as HTMLElement))
+                      setVatAnchorEl(
+                        vatAnchorEl ? null : (e.currentTarget as HTMLElement),
+                      )
                     }
                     sx={{
                       cursor: "pointer",
@@ -778,11 +885,21 @@ export default function CompanyDetailsSection({
                     >
                       {vatValue.code} {vatValue.taxCode}
                     </Typography>
-                    <Box sx={{ width: "1px", height: "20px", backgroundColor: "#D9D9D9" }} />
+                    <Box
+                      sx={{
+                        width: "1px",
+                        height: "20px",
+                        backgroundColor: "#D9D9D9",
+                      }}
+                    />
                     {vatAnchorEl ? (
-                      <ExpandLessIcon sx={{ width: "20px", color: "#676768" }} />
+                      <ExpandLessIcon
+                        sx={{ width: "20px", color: "#676768" }}
+                      />
                     ) : (
-                      <ExpandMoreIcon sx={{ width: "20px", color: "#676768" }} />
+                      <ExpandMoreIcon
+                        sx={{ width: "20px", color: "#676768" }}
+                      />
                     )}
                   </Box>
                   <Popover
@@ -816,7 +933,8 @@ export default function CompanyDetailsSection({
                       <Box
                         key={`${country.code}-${country.taxCode}-${idx}`}
                         ref={
-                          country.code === vatValue.code && country.taxCode === vatValue.taxCode
+                          country.code === vatValue.code &&
+                          country.taxCode === vatValue.taxCode
                             ? selectedVatRef
                             : null
                         }
@@ -850,7 +968,13 @@ export default function CompanyDetailsSection({
                           },
                         }}
                       >
-                        <Box sx={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "14px",
+                          }}
+                        >
                           <img
                             width={isMobile ? 16 : 20}
                             height={isMobile ? 16 : 20}
@@ -878,7 +1002,7 @@ export default function CompanyDetailsSection({
                     ))}
                   </Popover>
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={7} md={8.4}>
                   <InputField
                     fullWidth
                     placeholder="Enter VAT number"
@@ -902,7 +1026,9 @@ export default function CompanyDetailsSection({
               }}
             >
               <Box sx={{ display: "flex", gap: "5px", alignItems: "center" }}>
-                <CheckIcon sx={{ width: "16px", height: "16px", color: "#1B902B" }} />
+                <CheckIcon
+                  sx={{ width: "16px", height: "16px", color: "#1B902B" }}
+                />
                 <Typography
                   sx={{
                     fontSize: "12px",
@@ -922,9 +1048,9 @@ export default function CompanyDetailsSection({
 
           {/* Brand Logo / Profile Image */}
           <Grid item xs={12}>
-            <Typography variant="body2" sx={labelSx}>
+            <Text sx={{ fontSize: "15px", mb: "8px" }}>
               {t("fields.brandLogo.label")}
-            </Typography>
+            </Text>
             <Box
               sx={{
                 border: "1px dashed #E9ECF2",
@@ -982,7 +1108,7 @@ export default function CompanyDetailsSection({
                   </Box>
                   <Typography
                     sx={{
-                      fontSize: 13,
+                      fontSize: isMobile ? 10 : 13,
                       color: theme.palette.text.secondary,
                       mb: 0.5,
                       fontWeight: 400,
@@ -992,7 +1118,7 @@ export default function CompanyDetailsSection({
                   </Typography>
                   <Typography
                     sx={{
-                      fontSize: 12,
+                      fontSize: isMobile ? 9 : 12,
                       color: theme.palette.text.secondary,
                       fontWeight: 400,
                     }}

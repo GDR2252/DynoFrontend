@@ -21,7 +21,7 @@ import XRPIcon from "@/assets/cryptocurrency/XRP-icon.svg";
 import useIsMobile from "@/hooks/useIsMobile";
 import i18n from "@/i18n";
 import { theme } from "@/styles/theme";
-import { ICryptoItem, PaymentLink } from "@/utils/types/paymentLink";
+import { PaymentLink } from "@/utils/types/paymentLink";
 
 import {
   ActionButtons,
@@ -34,6 +34,10 @@ import {
   TaxSection,
 } from "@/Components/UI/pay-link";
 import SaveChangeModel from "@/Components/UI/pay-link/SaveChangeModel";
+import {
+  CreatePaymentLinkPageProps,
+  ICryptoItem,
+} from "@/utils/types/create-pay-link";
 
 function truncateByWords(text: string, maxLength: number) {
   if (text.length <= maxLength) return text;
@@ -46,10 +50,7 @@ function truncateByWords(text: string, maxLength: number) {
 const CreatePaymentLinkPage = ({
   paymentLinkData,
   disabled,
-}: {
-  paymentLinkData: PaymentLink | {};
-  disabled: boolean;
-}) => {
+}: CreatePaymentLinkPageProps) => {
   const isMobile = useIsMobile("md");
   const { t } = useTranslation("createPaymentLinkScreen");
   const tPaymentLink = useCallback(
@@ -179,7 +180,6 @@ const CreatePaymentLinkPage = ({
       description: "",
     };
 
-    // Validate value field
     if (!paymentSettings.value || paymentSettings.value.trim() === "") {
       errors.value = tPaymentLink("valueRequired");
     } else {
@@ -193,7 +193,6 @@ const CreatePaymentLinkPage = ({
       }
     }
 
-    // Validate description (optional but check max length if provided)
     if (
       paymentSettings.description &&
       paymentSettings.description.length > 500
@@ -208,7 +207,6 @@ const CreatePaymentLinkPage = ({
   const handlePaymentSettingsChange = (field: string, value: string) => {
     setPaymentSettings((prev) => ({ ...prev, [field]: value }));
 
-    // Clear error when user starts typing
     if (paymentSettingsErrors[field as keyof typeof paymentSettingsErrors]) {
       setPaymentSettingsErrors((prev) => ({ ...prev, [field]: "" }));
     }
@@ -246,13 +244,6 @@ const CreatePaymentLinkPage = ({
     [tPaymentLink],
   );
 
-  const handleCurrencyBlur = () => {
-    setPaymentSettingsTouched((p) => ({ ...p, currency: true }));
-
-    const error = validateCurrency(paymentSettings.currency);
-    setPaymentSettingsErrors((p) => ({ ...p, currency: error }));
-  };
-
   // Handle click outside for expire dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -281,20 +272,17 @@ const CreatePaymentLinkPage = ({
 
   const handleCreatePaymentLink = () => {
     if (activeTab === 0) {
-      // Mark all fields as touched
       setPaymentSettingsTouched({
         value: true,
         currency: true,
         description: true,
       });
 
-      // Validate before submitting
       if (!validatePaymentSettings()) {
         return;
       }
 
       console.log("Payment Settings Data:", paymentSettings);
-      // Generate a mock payment link (in real app, this would come from API)
       const mockLink = `https://pay.dynopay.com/${Math.random()
         .toString(36)
         .substring(7)}`;
@@ -302,7 +290,6 @@ const CreatePaymentLinkPage = ({
       setSuccessModalOpen(true);
     } else if (activeTab === 1) {
       console.log("Post-Payment Settings Data:", postPaymentSettings);
-      // Generate a mock payment link (in real app, this would come from API)
       const mockLink = `https://pay.dynopay.com/${Math.random()
         .toString(36)
         .substring(7)}`;
@@ -334,7 +321,6 @@ const CreatePaymentLinkPage = ({
       ) {
         setCurrencyOpen(false);
 
-        // 👇 Mark as touched only when user leaves without selecting
         setPaymentSettingsTouched((p) => ({ ...p, currency: true }));
 
         const error = validateCurrency(paymentSettings.currency);

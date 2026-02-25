@@ -1,4 +1,10 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 
 import { ICompany } from "@/utils/types";
 import CompanySettingsDialog from "./index";
@@ -8,17 +14,24 @@ type CompanySettingsDialogContextValue = {
   closeCompanySettings: () => void;
 };
 
-const CompanySettingsDialogContext = createContext<CompanySettingsDialogContextValue | null>(null);
+const CompanySettingsDialogContext =
+  createContext<CompanySettingsDialogContextValue | null>(null);
 
 export function useCompanySettingsDialog() {
   const ctx = useContext(CompanySettingsDialogContext);
   if (!ctx) {
-    throw new Error("useCompanySettingsDialog must be used within CompanySettingsDialogProvider");
+    throw new Error(
+      "useCompanySettingsDialog must be used within CompanySettingsDialogProvider",
+    );
   }
   return ctx;
 }
 
-export function CompanySettingsDialogProvider({ children }: { children: React.ReactNode }) {
+export function CompanySettingsDialogProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   const [company, setCompany] = useState<ICompany | null>(null);
 
@@ -34,13 +47,17 @@ export function CompanySettingsDialogProvider({ children }: { children: React.Re
 
   const value = useMemo(
     () => ({ openCompanySettings, closeCompanySettings }),
-    [openCompanySettings, closeCompanySettings]
+    [openCompanySettings, closeCompanySettings],
   );
 
   return (
     <CompanySettingsDialogContext.Provider value={value}>
       {children}
-      <CompanySettingsDialog open={open} company={company} onClose={closeCompanySettings} />
+      <CompanySettingsDialog
+        open={open}
+        company={company}
+        onClose={closeCompanySettings}
+      />
     </CompanySettingsDialogContext.Provider>
   );
 }

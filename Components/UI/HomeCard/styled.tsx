@@ -1,70 +1,59 @@
+import { getBrowser } from "@/hooks/useDevice";
+import { homeTheme } from "@/styles/homeTheme";
 import { theme } from "@/styles/theme";
 import { Box, Card, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { homeTheme } from "@/styles/homeTheme";
-import { getBrowser } from "@/hooks/useDevice";
 
 interface StyledCardProps {
   height?: number | string;
   width?: number | string;
 }
 
-export const StyledCard = styled(Card)<StyledCardProps>(
-  ({ theme, height, width }) => {
-    const { isDesktopSafari } =
-      typeof window !== "undefined" ? getBrowser() : { isDesktopSafari: false };
+// HomeCard
+export const StyledCard = styled(Card)(({ theme }) => {
+  const { isDesktopSafari } =
+    typeof window !== "undefined" ? getBrowser() : { isDesktopSafari: false };
 
-    return {
-      background: "#fff",
-      width: width,
-      height: height,
-      border: `1px solid ${homeTheme.palette.border.main}`,
-      boxShadow: "none !important",
-      borderRadius: "20px",
-      display: "flex",
-      flexDirection: "column",
-      overflow: "hidden",
+  return {
+    backgroundColor: theme.palette.common.white,
+    border: `1px solid ${homeTheme.palette.border.main}`,
+    boxShadow: "none !important",
+    borderRadius: "20px",
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
+    position: "relative",
+
+    "&::before": {
+      content: '""',
+      position: "absolute",
+      bottom: 0,
+      top: isDesktopSafari ? "180px" : "220px",
+      width: "100%",
+      height: "120%",
+      background: isDesktopSafari
+        ? "radial-gradient(ellipse at bottom, rgba(0,4,255,0.45) 0%, #FFFFFF 70%)"
+        : "radial-gradient(at center bottom, #0004FF4D, #FFFFFF)",
+      filter: isDesktopSafari ? "blur(140px)" : "blur(100px)",
+      opacity: isDesktopSafari ? 0.7 : 0.5,
+      zIndex: 0,
+      pointerEvents: "none",
+    },
+
+    "& > *": {
       position: "relative",
-      // Fix for iOS Safari shadow clipping
-      // WebkitMaskImage: "-webkit-radial-gradient(at center bottom, #0004FF4D, #FFFFFF)",
-      // maskImage: "radial-gradient(white, black)",
-      // transform: "translateZ(0)",
-      // WebkitTransform: "translateZ(0)",
-      // willChange: "transform",
+      zIndex: 1,
+    },
 
-      "&::before": {
-        content: '""',
-        position: "absolute",
-        bottom: 0,
-        top: isDesktopSafari ? "180px" : "220px",
-        width: "100%",
-        height: "120%",
-        // borderRadius: "1000px",
-        // WebkitMaskImage: "-webkit-radial-gradient(at center bottom, #0004FF4D, #FFFFFF)",
-        // maskImage: "radial-gradient(at center bottom, #0004FF4D, #FFFFFF)",
+    [theme.breakpoints.down("md")]: {
+      height: "auto",
+    },
+  };
+});
 
-        // ONLY desktop Safari
-        background: isDesktopSafari
-          ? "radial-gradient(ellipse at bottom, rgba(0,4,255,0.45) 0%, #FFFFFF 70%)"
-          : "radial-gradient(at center bottom, #0004FF4D, #FFFFFF)",
-
-        filter: isDesktopSafari ? "blur(140px)" : "blur(100px)",
-        opacity: isDesktopSafari ? 0.7 : 0.5,
-        zIndex: 0,
-        pointerEvents: "none",
-      },
-
-      "& > *": {
-        position: "relative",
-        zIndex: 1,
-      },
-
-      [theme.breakpoints.down("md")]: {
-        height: "auto",
-      },
-    };
-  }
-);
+export const CardBody = styled(Box)(() => ({
+  flex: 1,
+}));
 
 export const GoLiveCount = styled(Typography)(({ theme }) => ({
   fontSize: "48px",
@@ -207,9 +196,6 @@ export const HeaderIcon = styled(Box)(({ theme }) => ({
     fontSize: "20px",
   },
 }));
-export const CardBody = styled(Box)(({ theme }) => ({
-  flex: 1,
-}));
 
 export const CardFooter = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -247,7 +233,7 @@ export const TypographyTitle = styled(Typography)(({ theme }) => ({
   fontFamily: "OutfitSemiBold",
   lineHeight: "24px",
   letterSpacing: 0,
-  color: "#131520"
+  color: "#131520",
 }));
 
 export const TypographyDescription = styled(Typography)(({ theme }) => ({
@@ -256,7 +242,7 @@ export const TypographyDescription = styled(Typography)(({ theme }) => ({
   fontWeight: 400,
   lineHeight: "20px",
   letterSpacing: 0,
-  color: "#676B7E"
+  color: "#676B7E",
 }));
 
 export const TypographyTime = styled(Typography)(({ theme }) => ({
@@ -265,5 +251,5 @@ export const TypographyTime = styled(Typography)(({ theme }) => ({
   fontWeight: 400,
   lineHeight: "16px",
   letterSpacing: 0,
-  color: "#676B7E"
+  color: "#676B7E",
 }));

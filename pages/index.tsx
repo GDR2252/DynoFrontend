@@ -1,12 +1,13 @@
 import HomePage from "@/Components/Page/Home";
-import React from "react";
+import { Box } from "@mui/material";
+import { memo } from "react";
 
 const Home = () => {
   return (
-    <div>
+    <Box height={"100%"} width={"100%"}>
       <HomePage />
-    </div>
+    </Box>
   );
 };
 
-export default Home;
+export default memo(Home);

@@ -27,7 +27,7 @@ export default function InfoBanner({ message, children, sx }: InfoBannerProps) {
         display: "flex",
         alignItems: "center",
         gap: 1.5,
-        py: "11px",
+        py: "12px",
         px: 2,
         borderRadius: "8px",
         bgcolor: "#E8EBFB",
@@ -42,7 +42,7 @@ export default function InfoBanner({ message, children, sx }: InfoBannerProps) {
           width={16}
           height={16}
           draggable={false}
-          style={{ filter: "brightness(0)", marginTop: "-5px" }}
+          style={{ filter: "brightness(0)", marginTop: "-2px" }}
         />
       </WarningIconContainer>
       {children ?? (
@@ -50,7 +50,7 @@ export default function InfoBanner({ message, children, sx }: InfoBannerProps) {
           variant="body2"
           sx={{
             color: "text.primary",
-            fontSize: isMobile ? "13px" : "15px",
+            fontSize: "13px",
             fontWeight: 500,
             fontFamily: "UrbanistMedium",
             lineHeight: "16px",

@@ -37,6 +37,22 @@ const WalletPage = ({
   );
 
   const [openCreate, setOpenCreate] = useState(false);
+  const [currentCryptocurrency, setCurrentCryptocurrency] = useState("");
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem("walletAction");
+
+    if (!stored) return;
+
+    const { openCreate, cryptocurrency } = JSON.parse(stored);
+
+    if (openCreate && cryptocurrency) {
+      setOpenCreate(true);
+      setCurrentCryptocurrency(cryptocurrency);
+    }
+
+    sessionStorage.removeItem("walletAction");
+  }, []);
 
   const { walletWarning } = useWalletData();
 
@@ -219,6 +235,7 @@ const WalletPage = ({
         <Wallet />
         <AddWalletModal
           open={openCreate}
+          currentCryptocurrency={currentCryptocurrency}
           onClose={() => setOpenCreate(false)}
         />
       </Box>

@@ -11,11 +11,7 @@ import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
 import { verifyOtp } from "@/Redux/Sagas/WalletSaga";
 import { theme } from "@/styles/theme";
 import { rootReducer } from "@/utils/types";
-import {
-  Address,
-  AddWalletModalProps,
-  WalletError,
-} from "@/utils/types/wallet";
+import { Address, AddWalletModalProps } from "@/utils/types/wallet";
 import { Box, Typography } from "@mui/material";
 import Image from "next/image";
 import React, { useCallback, useEffect, useState } from "react";
@@ -31,6 +27,7 @@ import {
 const AddWalletModal: React.FC<AddWalletModalProps> = ({
   open,
   onClose,
+  currentCryptocurrency = "",
   fiatData = [],
   cryptoData = [],
   onWalletAdded,
@@ -49,7 +46,13 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
   const [walletName, setWalletName] = useState("");
   const [cryptocurrency, setCryptocurrency] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
-  const [errors, setErrors] = useState<WalletError>({});
+  const [xrpTag, setXrpTag] = useState("");
+  const [errors, setErrors] = useState<{
+    walletName?: string;
+    cryptocurrency?: string;
+    walletAddress?: string;
+    xrpTag?: string;
+  }>({});
   const [popupLoading, setPopupLoading] = useState(false);
   const [otpModalOpen, setOtpModalOpen] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
@@ -57,6 +60,12 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
   const [otpError, setOtpError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [closeCryptoDropdown, setCloseCryptoDropdown] = useState(false);
+
+  useEffect(() => {
+    if (currentCryptocurrency) {
+      setCryptocurrency(currentCryptocurrency);
+    }
+  }, [currentCryptocurrency]);
 
   const validate = () => {
     const newErrors: typeof errors = {};
@@ -382,15 +391,15 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
           <InputField
             label={tWallet("XRPTag")}
             placeholder={tWallet("XRPTagPlaceholder")}
-            value={walletAddress}
+            value={xrpTag}
             onChange={(e) => {
-              setWalletAddress(e.target.value);
-              if (errors.walletAddress) {
-                setErrors({ ...errors, walletAddress: undefined });
+              setXrpTag(e.target.value);
+              if (errors.xrpTag) {
+                setErrors({ ...errors, xrpTag: undefined });
               }
             }}
-            error={!!errors.walletAddress}
-            helperText={errors.walletAddress}
+            error={!!errors.xrpTag}
+            helperText={errors.xrpTag}
           />
 
           <WarningContainer>

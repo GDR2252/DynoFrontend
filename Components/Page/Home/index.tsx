@@ -1,42 +1,40 @@
-import React from "react";
-import HeroSection from "./Hero";
-import GoLiveSection from "./GoLive";
+import useIsMobile from "@/hooks/useIsMobile";
+import { FC, memo } from "react";
 import FeaturesSection from "./Features";
-import {
-  HomeContainer,
-  HomeFullWidthContainer,
-} from "@/Containers/Home/styled";
+import GoLiveSection from "./GoLive";
+import HeroSection from "./Hero";
 import UseCaseSection from "./UseCase";
 import WhyChooseDynopaySection from "./WhyChooseDynoPay";
-import useIsMobile from "@/hooks/useIsMobile";
+import { HomeContainer, HomeFullWidthContainer, HomeWrapper } from "./styled";
 
-const HomePage = () => {
-  const isMobile = useIsMobile("md");
+interface HomePageProps {}
+
+const HomePage: FC<HomePageProps> = () => {
+  useIsMobile("md");
+
   return (
-    <>
-      <div style={{ paddingTop: isMobile ? "76px" : "65px" }}>
-        <HomeContainer>
-          <HeroSection />
-        </HomeContainer>
+    <HomeWrapper>
+      <HomeContainer>
+        <HeroSection />
+      </HomeContainer>
 
-        <HomeFullWidthContainer>
-          <GoLiveSection />
-        </HomeFullWidthContainer>
+      <HomeFullWidthContainer>
+        <GoLiveSection />
+      </HomeFullWidthContainer>
 
-        <HomeContainer>
-          <FeaturesSection />
-        </HomeContainer>
+      <HomeContainer>
+        <FeaturesSection />
+      </HomeContainer>
 
-        <HomeFullWidthContainer>
-          <WhyChooseDynopaySection />
-        </HomeFullWidthContainer>
+      <HomeFullWidthContainer>
+        <WhyChooseDynopaySection />
+      </HomeFullWidthContainer>
 
-        <HomeContainer>
-          <UseCaseSection />
-        </HomeContainer>
-      </div>
-    </>
+      <HomeContainer>
+        <UseCaseSection />
+      </HomeContainer>
+    </HomeWrapper>
   );
 };
 
-export default HomePage;
+export default memo(HomePage);

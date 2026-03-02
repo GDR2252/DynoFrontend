@@ -1,15 +1,16 @@
+import { theme } from "@/styles/theme";
 import { Box, styled } from "@mui/material";
 
-export const HomeContainer = styled(Box)(({ theme }) => ({
-  width: "100%",
-  maxWidth: "1280px",
-  margin: "0 auto",
-  padding: theme.spacing(0, 2),
+// HomeLayout
+export const MainBox = styled(Box)(() => ({
+  minHeight: "100vh",
+  display: "flex",
+  flexDirection: "column",
+  bgcolor: theme.palette.common.white,
 }));
 
-export const HomeFullWidthContainer = styled(Box)(({ theme }) => ({
-  width: "100%",
-  margin: "0 auto",
-  padding: theme.spacing(0, 2),
-  backgroundColor: "#F2F3F84D",
+export const MainSection = styled(Box)(() => ({
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
 }));

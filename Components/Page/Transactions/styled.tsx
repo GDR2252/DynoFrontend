@@ -167,6 +167,9 @@ export const TransactionsTableCell = styled(Typography)(({ theme }) => ({
   whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
+  display: "flex",
+  gap: "12px",
+  alignItems: "center",
   [theme.breakpoints.down("md")]: {
     fontSize: "13px",
   },

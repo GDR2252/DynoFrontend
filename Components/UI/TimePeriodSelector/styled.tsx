@@ -36,9 +36,3 @@ export const CheckIconStyled = styled(CheckIcon)`
   font-size: 18px;
   color: #000;
 `;
-
-export const VerticalLine = styled.div`
-  width: 1px;
-  height: 20px;
-  background: #ddd;
-`;

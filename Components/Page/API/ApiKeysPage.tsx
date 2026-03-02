@@ -127,10 +127,10 @@ const ApiDocumentationCard = ({ docsUrl }: { docsUrl: string }) => {
           variant="secondary"
           size={isMobile ? "small" : "medium"}
           endIcon={<ArrowOutwardIcon sx={{ fontSize: 14 }} />}
-          // onClick={() => {
-          //   if (!docsUrl) return;
-          //   window.open(docsUrl, "_blank", "noopener,noreferrer");
-          // }}
+          onClick={() => {
+            if (!docsUrl) return;
+            window.open(docsUrl, "_blank", "noopener,noreferrer");
+          }}
           sx={{
             width: "fit-content",
           }}

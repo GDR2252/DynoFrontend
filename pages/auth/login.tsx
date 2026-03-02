@@ -712,12 +712,7 @@ export default function Login() {
         />
 
         <Box>
-          <LanguageSwitcher
-            sx={{
-              maxWidth: isMobile ? "78px" : "111px",
-              padding: isMobile ? "7px 10px" : "10px 14px",
-            }}
-          />
+          <LanguageSwitcher />
         </Box>
       </CardWrapper>
 

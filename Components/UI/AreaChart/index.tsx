@@ -210,19 +210,22 @@ const Chart = ({ data }: { data: ChartData[] }) => {
   const gradientEndOpacity = 0;
   const xGridPointsRef = useRef<number[]>([]);
   const [, forceRender] = useState(0);
-  const [containerWidth, setContainerWidth] = useState(0);
+  const [containerSize, setContainerSize] = useState({
+    width: 0,
+    height: 0,
+  });
 
   useEffect(() => {
     xGridPointsRef.current = [];
     forceRender((n) => n + 1);
-  }, [data, containerWidth]);
+  }, [data, containerSize.width]);
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
     const observer = new ResizeObserver((entries) => {
-      const width = entries[0].contentRect.width;
-      setContainerWidth(width);
+      const { width, height } = entries[0].contentRect;
+      setContainerSize({ width, height });
     });
 
     observer.observe(chartContainerRef.current);
@@ -321,19 +324,20 @@ const Chart = ({ data }: { data: ChartData[] }) => {
         ref={chartContainerRef}
         sx={{
           height: isMobile ? 260 : 320,
+          minHeight: isMobile ? 260 : 320,
           width: {
             xs:
               data.length < 8 ? "500px" : data.length < 31 ? "800px" : "1000px",
             sm: data.length < 31 ? "800px" : "1000px",
             md: "100%",
           },
-          minWidth: "100%",
+          minWidth: 0,
         }}
       >
-        {containerWidth > 0 && (
+        {containerSize.width > 0 && containerSize.height > 0 && (
           <ResponsiveContainer
             width="100%"
-            height="100%"
+            height={isMobile ? 260 : 320}
             style={{ outline: "none" }}
           >
             <AreaChart

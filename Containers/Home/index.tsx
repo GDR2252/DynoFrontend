@@ -1,39 +1,26 @@
-import { Box } from "@mui/material";
-import { ReactNode } from "react";
+import { FC, ReactNode, memo } from "react";
 
 import HomeFooter from "@/Components/Layout/HomeFooter";
 import HomeHeader from "@/Components/Layout/HomeHeader";
 import ScrollToTopButton from "@/Components/Layout/ScrollToTopButton";
+import { MainBox, MainSection } from "./styled";
 
 interface HomeLayoutProps {
   children: ReactNode;
 }
 
-export default function HomeLayout({ children }: HomeLayoutProps) {
+const HomeLayout: FC<HomeLayoutProps> = ({ children }) => {
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        bgcolor: "background.default",
-      }}
-    >
+    <MainBox>
       <HomeHeader />
 
-      <Box
-        component="main"
-        sx={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        {children}
-      </Box>
+      <MainSection>{children}</MainSection>
 
       <HomeFooter />
+
       <ScrollToTopButton />
-    </Box>
+    </MainBox>
   );
-}
+};
+
+export default memo(HomeLayout);

@@ -1,20 +1,20 @@
-import { useState, useEffect, useRef } from "react";
-import { Popover, useTheme, Box, Typography } from "@mui/material";
-import { UserTrigger, UserName, PopWrapper, MenuItemRow } from "./styled";
+import { Box, Typography, useTheme } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import { MenuItemRow, UserName, UserTrigger } from "./styled";
 
-import Image from "next/image";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import SettingsIcon from "@mui/icons-material/Settings";
-import useTokenData from "@/hooks/useTokenData";
-import { VerticalLine } from "../LanguageSwitcher/styled";
-import { useRouter } from "next/router";
-import useWindow from "@/hooks/useWindow";
-import CustomButton from "../Buttons";
-import { useTranslation } from "react-i18next";
 import LogoutIcon from "@/assets/Icons/logout-icon.svg";
-import useIsMobile from "@/hooks/useIsMobile";
 import { getInitials } from "@/helpers";
+import useIsMobile from "@/hooks/useIsMobile";
+import useTokenData from "@/hooks/useTokenData";
+import useWindow from "@/hooks/useWindow";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SettingsIcon from "@mui/icons-material/Settings";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
+import CustomButton from "../Buttons";
+import { HeaderDivider } from "../LanguageSwitcher/styled";
 
 export default function UserMenu() {
   const theme = useTheme();
@@ -50,10 +50,12 @@ export default function UserMenu() {
     setImageError(false);
   }, [userPhoto]);
 
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
         closeMenu();
       }
     };
@@ -128,11 +130,17 @@ export default function UserMenu() {
           </UserName>
         </Box>
 
-        <VerticalLine />
+        <HeaderDivider />
         {anchorEl ? (
-          <ExpandLessIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+          <ExpandLessIcon
+            fontSize="small"
+            sx={{ color: theme.palette.text.secondary }}
+          />
         ) : (
-          <ExpandMoreIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+          <ExpandMoreIcon
+            fontSize="small"
+            sx={{ color: theme.palette.text.secondary }}
+          />
         )}
       </UserTrigger>
 
@@ -212,8 +220,11 @@ export default function UserMenu() {
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <VerticalLine />
-              <ExpandLessIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+              <HeaderDivider />
+              <ExpandLessIcon
+                fontSize="small"
+                sx={{ color: theme.palette.text.secondary }}
+              />
             </Box>
           </Box>
 

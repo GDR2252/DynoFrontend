@@ -9,6 +9,7 @@ export interface WalletData {
 export interface AddWalletModalProps {
   open: boolean;
   onClose: () => void;
+  currentCryptocurrency?: string;
   fiatData?: any[];
   cryptoData?: any[];
   onWalletAdded?: () => void;

@@ -5,6 +5,7 @@ import EthereumIcon from "@/assets/cryptocurrency/Ethereum-icon.svg";
 import LitecoinIcon from "@/assets/cryptocurrency/Litecoin-icon.svg";
 import TronIcon from "@/assets/cryptocurrency/Tron-icon.svg";
 import USDTIcon from "@/assets/cryptocurrency/USDT-icon.svg";
+import { ArrowOutward as ArrowOutwardIcon } from "@mui/icons-material";
 import { Box, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 import React, { useCallback, useEffect, useState } from "react";
@@ -17,6 +18,7 @@ import CryptoIcon from "@/assets/Icons/crypto-icon.svg";
 import CurrencyIcon from "@/assets/Icons/dollar-sign-icon.svg";
 import HexagonIcon from "@/assets/Icons/hexagon-icon.svg";
 import RoundedStackIcon from "@/assets/Icons/roundedStck-icon.svg";
+import SwapHorizIcon from "@/assets/Icons/swap-round-icon.svg";
 import TimeIcon from "@/assets/Icons/time-icon.svg";
 import TransactionIcon from "@/assets/Icons/transaction-icon.svg";
 
@@ -31,6 +33,7 @@ import {
   ExtendedTransaction,
   TransactionsTableProps,
 } from "@/utils/types/transaction";
+import { Text } from "../CreatePaymentLink/styled";
 import {
   CryptoIconChip,
   MobileNavigationButtons,
@@ -291,6 +294,41 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
                           {transaction.crypto}
                         </Typography>
                       </CryptoIconChip>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: "3px",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Image
+                          src={SwapHorizIcon}
+                          alt="swap horiz"
+                          width={15}
+                          height={15}
+                          draggable={false}
+                          style={{
+                            filter:
+                              "brightness(0) saturate(100%) invert(41%) sepia(2%) saturate(168%) hue-rotate(201deg) brightness(95%) contrast(88%)",
+                          }}
+                        />
+                        <ArrowOutwardIcon
+                          sx={{
+                            fontSize: isMobile ? 14 : 16,
+                            transform: "rotate(45deg)",
+                            color: theme.palette.text.secondary,
+                            lineHeight: "100%",
+                          }}
+                        />
+                        <Text
+                          sx={{
+                            fontSize: isMobile ? "10px" : "13px",
+                            color: theme.palette.text.secondary,
+                          }}
+                        >
+                          USDT
+                        </Text>
+                      </Box>
                     </TransactionsTableCell>
 
                     <TransactionsTableCell>

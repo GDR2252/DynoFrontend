@@ -1,5 +1,5 @@
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import type { SxProps, Theme } from "@mui/material";
+import { SxProps, Theme } from "@mui/material";
 import { useRouter } from "next/router";
 import React, {
   memo,
@@ -10,6 +10,8 @@ import React, {
   useState,
 } from "react";
 import { StyledHomeButton } from "./styled";
+
+/* ================= TYPES ================= */
 
 export type HomeButtonVariant = "primary" | "outlined";
 
@@ -24,6 +26,8 @@ export interface HomeButtonProps {
   sx?: SxProps<Theme>;
 }
 
+/* ================= COMPONENT ================= */
+
 const HomeButton = memo(function HomeButton({
   variant = "primary",
   label,
@@ -33,10 +37,11 @@ const HomeButton = memo(function HomeButton({
   fullWidth = false,
   navigateTo,
   sx,
-}: HomeButtonProps) {
+}: Readonly<HomeButtonProps>) {
   const router = useRouter();
-  const mountedRef = useRef(true);
-  const [isNavigating, setIsNavigating] = useState(false);
+
+  const mountedRef = useRef<boolean>(false);
+  const [isNavigating, setIsNavigating] = useState<boolean>(false);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -45,40 +50,41 @@ const HomeButton = memo(function HomeButton({
     };
   }, []);
 
-  const resolvedLabel = useMemo(() => {
+  const resolvedLabel = useMemo<string>(() => {
     if (label && label.trim().length > 0) return label;
     return variant === "primary" ? "Start Accepting Crypto" : "Learn More";
   }, [label, variant]);
 
-  const shouldShowIcon = useMemo(() => {
+  const shouldShowIcon = useMemo<boolean>(() => {
     if (typeof showIcon === "boolean") return showIcon;
     return variant === "primary";
   }, [showIcon, variant]);
 
   const safePush = useCallback(
     async (to: string) => {
-      if (!to) return;
-      if (isNavigating) return;
+      if (!to || isNavigating) return;
 
       setIsNavigating(true);
       try {
         await router.push(to);
       } finally {
-        if (mountedRef.current) setIsNavigating(false);
+        if (mountedRef.current) {
+          setIsNavigating(false);
+        }
       }
     },
     [router, isNavigating],
   );
 
   const handleClick = useCallback<React.MouseEventHandler<HTMLButtonElement>>(
-    async (e) => {
+    async (event) => {
       if (disabled || isNavigating) {
-        e.preventDefault();
+        event.preventDefault();
         return;
       }
 
       if (onClick) {
-        onClick(e);
+        onClick(event);
         return;
       }
 

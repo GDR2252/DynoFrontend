@@ -7,30 +7,36 @@ import Image from "next/image";
 const Error = ({ statusCode, setPageName }: any) => {
   const router = useRouter();
   useEffect(() => {
-    setPageName();
-  }, []);
+    if (setPageName) {
+      setPageName("");
+    }
+  }, [setPageName]);
   return (
     <Box
       sx={{
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        height: "calc(100vh - 120px)",
+        height: "100dvh",
+        width: "100%",
         flexDirection: "column",
         "& img": {
-          width: "400px",
+          width: "min(400px, 80vw)",
         },
         "& h5": {
           mt: 2,
           fontWeight: 700,
+          textAlign: "center",
         },
       }}
     >
       <Image src={NoAccess} alt="No Access" height={200} width={200} draggable={false} style={{ objectFit: "contain" }} />
-      <Typography color="primary" variant="h5" fontFamily="UrbanistBold" fontSize="24px" lineHeight="32px" letterSpacing="0.01em" textTransform="none">
-        {statusCode
-          ? `An error ${statusCode} occurred on server`
-          : "An error occurred on client"}{" "}
+      <Typography color="primary" variant="h5" fontFamily="UrbanistBold" fontSize="24px" lineHeight="32px" letterSpacing="0.01em" textTransform="none" maxWidth="500px">
+        {statusCode === 404
+          ? "The page you are looking for was not found or is unavailable"
+          : statusCode
+            ? `An error ${statusCode} occurred on server`
+            : "An error occurred on client"}{" "}
         ⛔
       </Typography>
       <Box
@@ -68,5 +74,7 @@ Error.getInitialProps = ({ res, err }: any) => {
   const statusCode = res ? res.statusCode : err ? err.statusCode : 404;
   return { statusCode };
 };
+
+Error.layout = "none";
 
 export default Error;

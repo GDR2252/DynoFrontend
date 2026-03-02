@@ -21,7 +21,7 @@ import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import CustomButton from "../Buttons";
-import { VerticalLine } from "../LanguageSwitcher/styled";
+import { HeaderDivider } from "../LanguageSwitcher/styled";
 
 export default function CompanySelector() {
   const { t } = useTranslation("dashboardLayout");
@@ -130,7 +130,7 @@ export default function CompanySelector() {
         </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <VerticalLine />
+          <HeaderDivider />
           {!anchorEl ? (
             <ExpandMoreIcon
               fontSize="small"
@@ -184,7 +184,7 @@ export default function CompanySelector() {
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <VerticalLine />
+              <HeaderDivider />
               <ExpandLess
                 fontSize="small"
                 sx={{ color: theme.palette.text.secondary }}

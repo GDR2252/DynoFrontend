@@ -325,7 +325,33 @@ export default function CompanyDialog({
     setMediaFile(file);
   };
 
+  const [error, setErrors] = useState<{
+    company_name?: string;
+    email?: string;
+  }>({});
+
+  const validate = (values: Values) => {
+    const newErrors: typeof error = {};
+
+    if (!values.company_name?.trim()) {
+      newErrors.company_name = t("validation.companyNameRequired");
+    }
+
+    if (!values.email?.trim()) {
+      newErrors.email = t("validation.emailRequired");
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+      newErrors.email = t("validation.emailInvalid");
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (values: Values) => {
+    if (!validate(values)) {
+      return;
+    }
+
     const formData = new FormData();
     formData.append("data", JSON.stringify(values));
     if (mediaFile) formData.append("image", mediaFile);
@@ -520,12 +546,8 @@ export default function CompanyDialog({
                     placeholder={t("fields.companyName.placeholder")}
                     name="company_name"
                     value={String(values.company_name || "")}
-                    error={Boolean(touched.company_name && errors.company_name)}
-                    helperText={
-                      touched.company_name && errors.company_name
-                        ? String(errors.company_name)
-                        : undefined
-                    }
+                    error={!!error.company_name}
+                    helperText={error.company_name}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     sx={{ gap: "8px" }}
@@ -554,12 +576,8 @@ export default function CompanyDialog({
                     placeholder={t("fields.email.placeholder")}
                     name="email"
                     value={String(values.email || "")}
-                    error={Boolean(touched.email && errors.email)}
-                    helperText={
-                      touched.email && errors.email
-                        ? String(errors.email)
-                        : undefined
-                    }
+                    error={!!error.email}
+                    helperText={error.email}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     sx={{ gap: "8px" }}

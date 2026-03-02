@@ -1,5 +1,5 @@
-import { Box, CircularProgress, Grid, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Box, Grid, Typography } from "@mui/material";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -8,9 +8,8 @@ import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import CustomButton from "@/Components/UI/Buttons";
 import PanelCard from "@/Components/UI/PanelCard";
 
-import { ApiAction, CompanyAction } from "@/Redux/Actions";
-import { API_DELETE, API_FETCH } from "@/Redux/Actions/ApiAction";
-import { COMPANY_FETCH } from "@/Redux/Actions/CompanyAction";
+import { ApiAction } from "@/Redux/Actions";
+import { API_DELETE } from "@/Redux/Actions/ApiAction";
 import { TOAST_SHOW } from "@/Redux/Actions/ToastAction";
 import CopyIcon from "@/assets/Icons/copy-icon.svg";
 import EyeIcon from "@/assets/Icons/eye-icon.svg";
@@ -25,7 +24,7 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CreateApiModel from "@/Components/UI/ApiKeysModel/CreateApiModel";
 import InputField from "@/Components/UI/AuthLayout/InputFields";
 import DeleteModel from "@/Components/UI/DeleteModel";
-import EmptyDataModel from "@/Components/UI/EmptyDataModel";
+import Toast from "@/Components/UI/Toast";
 import UnitedStatesFlag from "@/assets/Images/Icons/flags/united-states-flag.png";
 import { stringShorten } from "@/helpers";
 import useIsMobile from "@/hooks/useIsMobile";
@@ -45,7 +44,6 @@ import {
   InfoText,
   Tags,
 } from "./styled";
-import Toast from "@/Components/UI/Toast";
 
 const ApiDocumentationCard = ({ docsUrl }: { docsUrl: string }) => {
   const { t } = useTranslation("apiScreen");
@@ -429,19 +427,29 @@ const ApiKeysPage = ({
   const apiList = [
     {
       api_id: 21,
+      company_id: 9,
+      company_name: "Cortez and Tate LLC",
+      user_id: 1,
       base_currency: "USD",
-      apiKey: "U2FsdGVkX18bf7YlBPC8zzDdVjFdH5XhG+ew7W/Iy5MSF7OqVaq8WkNSKUytqiMjSOvX/RlXRS3zdhK5EtpF0N+uHMadYC3d0nHs9gjWRxZgwUut6H3C6nZigHkg6ZtO",
-      adminToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMzOTBmZDcwLTZhNTgtNGI3MC1hOWJjLTk0NDFiMzMxOTk2NiIsImNvbXBhbnlfaWQiOjksImN1c3RvbWVyX25hbWUiOiJDb3J0ZXogYW5kIFRhdGUgTExDICBhZG1pbiIsImVtYWlsIjoiZGhhcm1pa2dvZGhhbmkxNzA1QGdtYWlsLmNvbSIsIm1vYmlsZSI6ImRoYXJtaWtnb2RoYW5pMTcwNUBnbWFpbC5jb20iLCJjcmVhdGVkQXQiOiIyMDI2LTAxLTIwVDA5OjI1OjUyLjQ5OFoiLCJ1cGRhdGVkQXQiOiIyMDI2LTAxLTIwVDA5OjI1OjUyLjQ5OFoiLCJpYXQiOjE3Njg5MDExNTJ9.0UjR7Pyky5fmKuM7CMBnE1WhTBnDJjyhjza_6ez6u8k",
+      apiKey:
+        "U2FsdGVkX18bf7YlBPC8zzDdVjFdH5XhG+ew7W/Iy5MSF7OqVaq8WkNSKUytqiMjSOvX/RlXRS3zdhK5EtpF0N+uHMadYC3d0nHs9gjWRxZgwUut6H3C6nZigHkg6ZtO",
+      adminToken:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMzOTBmZDcwLTZhNTgtNGI3MC1hOWJjLTk0NDFiMzMxOTk2NiIsImNvbXBhbnlfaWQiOjksImN1c3RvbWVyX25hbWUiOiJDb3J0ZXogYW5kIFRhdGUgTExDICBhZG1pbiIsImVtYWlsIjoiZGhhcm1pa2dvZGhhbmkxNzA1QGdtYWlsLmNvbSIsIm1vYmlsZSI6ImRoYXJtaWtnb2RoYW5pMTcwNUBnbWFpbC5jb20iLCJjcmVhdGVkQXQiOiIyMDI2LTAxLTIwVDA5OjI1OjUyLjQ5OFoiLCJ1cGRhdGVkQXQiOiIyMDI2LTAxLTIwVDA5OjI1OjUyLjQ5OFoiLCJpYXQiOjE3Njg5MDExNTJ9.0UjR7Pyky5fmKuM7CMBnE1WhTBnDJjyhjza_6ez6u8k",
       createdAt: "2026-01-20T09:25:52.602Z",
     },
     {
       api_id: 22,
+      company_id: 9,
+      company_name: "Cortez and Tate LLC",
+      user_id: 1,
       base_currency: "USD",
-      apiKey: "U2FsdGVkX18bf7YlBPC8zzDdVjFdH5XhG+ew7W/Iy5MSF7OqVaq8WkNSKUytqiMjSOvX/RlXRS3zdhK5EtpF0N+uHMadYC3d0nHs9gjWRxZgwUut6H3C6nZigHkg6ZtO",
-      adminToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMzOTBmZDcwLTZhNTgtNGI3MC1hOWJjLTk0NDFiMzMxOTk2NiIsImNvbXBhbnlfaWQiOjksImN1c3RvbWVyX25hbWUiOiJDb3J0ZXogYW5kIFRhdGUgTExDICBhZG1pbiIsImVtYWlsIjoiZGhhcm1pa2dvZGhhbmkxNzA1QGdtYWlsLmNvbSIsIm1vYmlsZSI6ImRoYXJtaWtnb2RoYW5pMTcwNUBnbWFpbC5jb20iLCJjcmVhdGVkQXQiOiIyMDI2LTAxLTIwVDA5OjI1OjUyLjQ5OFoiLCJ1cGRhdGVkQXQiOiIyMDI2LTAxLTIwVDA5OjI1OjUyLjQ5OFoiLCJpYXQiOjE3Njg5MDExNTJ9.0UjR7Pyky5fmKuM7CMBnE1WhTBnDJjyhjza_6ez6u8k",
+      apiKey:
+        "U2FsdGVkX18bf7YlBPC8zzDdVjFdH5XhG+ew7W/Iy5MSF7OqVaq8WkNSKUytqiMjSOvX/RlXRS3zdhK5EtpF0N+uHMadYC3d0nHs9gjWRxZgwUut6H3C6nZigHkg6ZtO",
+      adminToken:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMzOTBmZDcwLTZhNTgtNGI3MC1hOWJjLTk0NDFiMzMxOTk2NiIsImNvbXBhbnlfaWQiOjksImN1c3RvbWVyX25hbWUiOiJDb3J0ZXogYW5kIFRhdGUgTExDICBhZG1pbiIsImVtYWlsIjoiZGhhcm1pa2dvZGhhbmkxNzA1QGdtYWlsLmNvbSIsIm1vYmlsZSI6ImRoYXJtaWtnb2RoYW5pMTcwNUBnbWFpbC5jb20iLCJjcmVhdGVkQXQiOiIyMDI2LTAxLTIwVDA5OjI1OjUyLjQ5OFoiLCJ1cGRhdGVkQXQiOiIyMDI2LTAxLTIwVDA5OjI1OjUyLjQ5OFoiLCJpYXQiOjE3Njg5MDExNTJ9.0UjR7Pyky5fmKuM7CMBnE1WhTBnDJjyhjza_6ez6u8k",
       createdAt: "2026-01-20T09:25:52.602Z",
-    }
-  ]
+    },
+  ];
 
   return (
     <>
@@ -499,8 +507,8 @@ const ApiKeysPage = ({
         sx={{ mb: isMobile ? 2 : 2.5, ...itemAnimation }}
         alignItems="flex-start"
       >
-        {Array.isArray(apiState?.apiList) &&
-          apiState.apiList.map((api: IApi, index: number) => (
+        {Array.isArray(apiList) &&
+          apiList.map((api: IApi, index: number) => (
             <Grid
               key={api.api_id}
               item
@@ -532,7 +540,7 @@ const ApiKeysPage = ({
           xl={4}
           sx={{
             opacity: 0,
-            animation: 'fadeSlideIn 0.5s ease forwards',
+            animation: "fadeSlideIn 0.5s ease forwards",
             // animationDelay: `${(apiState?.apiList?.length || 0) * 0.1}s`,
             animationDelay: `${(apiList?.length || 0) * 0.1}s`,
           }}
@@ -554,7 +562,7 @@ const ApiKeysPage = ({
           border: `1px solid ${theme.palette.border.main}`,
           flexWrap: { xs: "wrap", sm: "nowrap" },
           opacity: 0,
-          animation: 'fadeSlideIn 0.5s ease forwards',
+          animation: "fadeSlideIn 0.5s ease forwards",
           // animationDelay: `${(apiState?.apiList?.length || 0) * 0.2}s`,
           animationDelay: `${(apiList?.length || 0) * 0.2}s`,
         }}

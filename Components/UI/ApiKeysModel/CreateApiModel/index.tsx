@@ -118,7 +118,7 @@ const CreateApiModel: React.FC<CreateApiModelProps> = ({ open, onClose }) => {
               >
                 <InputField
                   fullWidth
-                  label={t("generate.keyName") + " *"}
+                  label={t("generate.keyName")}
                   placeholder={t("generate.keyNamePlaceholder")}
                   name="key_name"
                   value={values.key_name}

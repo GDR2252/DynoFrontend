@@ -48,10 +48,8 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
   const [walletAddress, setWalletAddress] = useState("");
   const [xrpTag, setXrpTag] = useState("");
   const [errors, setErrors] = useState<{
-    walletName?: string;
     cryptocurrency?: string;
     walletAddress?: string;
-    xrpTag?: string;
   }>({});
   const [popupLoading, setPopupLoading] = useState(false);
   const [otpModalOpen, setOtpModalOpen] = useState(false);
@@ -69,10 +67,6 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
 
   const validate = () => {
     const newErrors: typeof errors = {};
-
-    if (!walletName.trim()) {
-      newErrors.walletName = tWallet("walletNameRequired");
-    }
 
     if (!cryptocurrency) {
       newErrors.cryptocurrency = tWallet("cryptocurrencyRequired");
@@ -335,8 +329,6 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
             onChange={(e) => {
               setWalletName(e.target.value);
             }}
-            error={!!errors.walletName}
-            helperText={errors.walletName}
           />
           <CryptocurrencySelector
             label={tWallet("cryptocurrency") + " *"}
@@ -394,12 +386,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
             value={xrpTag}
             onChange={(e) => {
               setXrpTag(e.target.value);
-              if (errors.xrpTag) {
-                setErrors({ ...errors, xrpTag: undefined });
-              }
             }}
-            error={!!errors.xrpTag}
-            helperText={errors.xrpTag}
           />
 
           <WarningContainer>
@@ -438,7 +425,12 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({
             label={tWallet("continue")}
             variant="primary"
             onClick={handleSubmit}
-            disabled={popupLoading || isSubmitting}
+            disabled={
+              popupLoading ||
+              isSubmitting ||
+              !cryptocurrency ||
+              !walletAddress.trim()
+            }
             sx={{
               flex: 1,
               [theme.breakpoints.down("sm")]: {

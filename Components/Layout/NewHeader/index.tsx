@@ -1,5 +1,19 @@
-import React, { useCallback } from "react";
+import Logo from "@/assets/Images/auth/dynopay-logo.png";
+import MobileLogo from "@/assets/Images/auth/dynopay-mobile-logo.png";
+import CompanySelector from "@/Components/UI/CompanySelector";
+import LanguageSwitcher from "@/Components/UI/LanguageSwitcher";
+import { HeaderDivider } from "@/Components/UI/LanguageSwitcher/styled";
+import UserMenu from "@/Components/UI/UserMenu";
+import { useWalletData } from "@/hooks/useWalletData";
+import { theme } from "@/styles/theme";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
+import InfoIcon from "@mui/icons-material/Info";
 import { Box } from "@mui/material";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import {
   HeaderContainer,
   LogoContainer,
@@ -8,20 +22,6 @@ import {
   RequiredKYCText,
   RightSection,
 } from "./styled";
-import Logo from "@/assets/Images/auth/dynopay-logo.png";
-import MobileLogo from "@/assets/Images/auth/dynopay-mobile-logo.png";
-import Image from "next/image";
-import LanguageSwitcher from "@/Components/UI/LanguageSwitcher";
-import CompanySelector from "@/Components/UI/CompanySelector";
-import UserMenu from "@/Components/UI/UserMenu";
-import { useRouter } from "next/router";
-import InfoIcon from "@mui/icons-material/Info";
-import { theme } from "@/styles/theme";
-import { useTranslation } from "react-i18next";
-import { useWalletData } from "@/hooks/useWalletData";
-import Link from "next/link";
-import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
-import { VerticalLine } from "@/Components/UI/LanguageSwitcher/styled";
 
 const NewHeader = () => {
   const router = useRouter();
@@ -29,7 +29,7 @@ const NewHeader = () => {
   const { t } = useTranslation(namespaces);
   const tWallet = useCallback(
     (key: string) => t(key, { ns: "walletScreen" }),
-    [t]
+    [t],
   );
   const { walletWarning } = useWalletData();
   return (
@@ -81,7 +81,7 @@ const NewHeader = () => {
                   />
                   <RequiredKYCText sx={{ display: { lg: "none", xl: "block" } }}>{t("requiredKYC2")}</RequiredKYCText>
                   <RequiredKYCText sx={{ display: { lg: "block", xl: "none" } }}>{t("requiredKYC1")}</RequiredKYCText>
-                  <VerticalLine style={{ margin: "0 14px" }} />
+                   <HeaderDivider style={{ margin: "0 14px" }} />
                   <ArrowOutwardIcon
                     sx={{ color: theme.palette.text.secondary, fontSize: 16 }}
                   />

@@ -82,8 +82,10 @@ export default function PaymentToleranceSection({
               variant="body2"
               sx={{
                 fontFamily: "UrbanistMedium",
-                color: "text.secondary",
-                fontSize: isMobile ? "13px" : "14px",
+                color: "text.primary",
+                fontWeight: 500,
+                lineHeight: 1.2,
+                fontSize: "13px",
               }}
             >
               $
@@ -109,8 +111,10 @@ export default function PaymentToleranceSection({
               variant="body2"
               sx={{
                 fontFamily: "UrbanistMedium",
-                color: "text.secondary",
-                fontSize: isMobile ? "13px" : "14px",
+                color: "text.primary",
+                fontWeight: 500,
+                lineHeight: 1.2,
+                fontSize: "13px",
               }}
             >
               $

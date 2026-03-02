@@ -1,160 +1,156 @@
-import { theme } from "@/styles/theme";
-import styled from "@emotion/styled";
-import { Box } from "@mui/material";
-import Image from "next/image";
+import { Box, styled, Typography } from "@mui/material";
 
-type Bool = boolean;
+export const WrapperBox = styled(Box)(() => ({
+  position: "relative",
+  width: "fit-content",
+}));
 
-export const WrapperBox = styled(Box)`
-  position: relative;
-  width: fit-content;
-`;
+export const TriggerBox = styled(Box)(() => ({
+  border: "1px solid #e8f0ff",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  borderRadius: 6,
+  cursor: "pointer",
+  backgroundColor: "#fff",
 
-export const TriggerBox = styled(Box, {
-  shouldForwardProp: (prop) => prop !== "$isMobile",
-})<{ $isMobile: Bool }>`
-  width: fit-content;
-  border: 1px solid #e8f0ff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 6px;
-  cursor: pointer;
-  background: #fff;
-  height: ${({ $isMobile }) => ($isMobile ? "28px" : "40px")};
-  padding: ${({ $isMobile }) => ($isMobile ? "7px 10px" : "10px 14px")};
-  gap: ${({ $isMobile }) => ($isMobile ? "10px" : "14px")};
-`;
+  "&:focus-visible": {
+    outline: "2px solid #1976d2",
+    outlineOffset: 2,
+  },
+}));
 
-export const TriggerLeft = styled(Box)`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-`;
+export const TriggerLeft = styled(Box)(() => ({
+  display: "flex",
+  alignItems: "center",
+  gap: 6,
+}));
 
-export const TriggerRight = styled(Box, {
-  shouldForwardProp: (prop) => prop !== "$isMobile",
-})<{ $isMobile: Bool }>`
-  display: flex;
-  align-items: center;
-  gap: ${({ $isMobile }) => ($isMobile ? "10px" : "14px")};
-`;
+export const TriggerRight = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: 14,
 
-export const TriggerDivider = styled(Box, {
-  shouldForwardProp: (prop) => prop !== "$height",
-})<{ $height: number }>`
-  width: 1px;
-  background: #ddd;
-  height: ${({ $height }) => `${$height}px`};
-`;
+  [theme.breakpoints.down("md")]: {
+    gap: 10,
+  },
+}));
 
-export const TriggerExpandIcon = styled(Image)``;
+export const TriggerDivider = styled(Box)(() => ({
+  width: 1,
+  background: "#D9D9D9",
+}));
 
-export const DropdownContainer = styled(Box, {
-  shouldForwardProp: (prop) => prop !== "$isMobile",
-})<{ $isMobile: Bool }>`
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 169px;
-  border: 1px solid #e8f0ff;
-  border-radius: ${({ $isMobile }) => ($isMobile ? "2px" : "6px")};
-  background: #fff;
-  z-index: 2000;
-  padding: 10px 6px 6px;
-  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.08);
-`;
+export const DropdownContainer = styled(Box)(() => ({
+  position: "absolute",
+  top: 0,
+  right: 0,
+  width: 169,
+  border: "1px solid #e8f0ff",
+  backgroundColor: "#fff",
+  zIndex: 2000,
+  padding: "10px 6px 6px",
+  boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.08)",
+  borderRadius: 6,
+}));
 
-export const DropdownHeader = styled(Box, {
-  shouldForwardProp: (prop) => prop !== "$isMobile",
-})<{ $isMobile: Bool }>`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: ${({ $isMobile }) => ($isMobile ? "0px 8px 6px" : "0px 8px 10px")};
-  cursor: pointer;
-`;
+export const DropdownHeader = styled(Box)(() => ({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: "0px 8px 12px",
+  cursor: "pointer",
+}));
 
-export const HeaderSelectedLeft = styled(Box)`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-`;
+export const HeaderSelectedLeft = styled(Box)(() => ({
+  display: "flex",
+  alignItems: "center",
+  gap: 6,
+}));
 
-export const HeaderRight = styled(Box)`
-  display: flex;
-  align-items: center;
-  gap: 14px;
-`;
+export const HeaderRight = styled(Box)(() => ({
+  display: "flex",
+  alignItems: "center",
+  gap: 14,
+}));
 
-export const HeaderDivider = styled(Box, {
-  shouldForwardProp: (prop) => prop !== "$height",
-})<{ $height: number }>`
-  width: 1px;
-  background: #ddd;
-  height: ${({ $height }) => `${$height}px`};
-`;
+export const HeaderDivider = styled(Box)(({ theme }) => ({
+  width: 1,
+  background: "#ddd",
+  height: 16,
 
-export const HeaderIcon = styled(Image)``;
+  [theme.breakpoints.down("md")]: {
+    height: 14,
+  },
+}));
 
-export const DropdownListWrapper = styled(Box)``;
+export const DropdownListItem = styled(Box)(() => ({
+  padding: 7,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  borderRadius: 63,
+  cursor: "pointer",
+  marginBottom: 6,
+  transition: "background 0.2s ease",
 
-export const DropdownListItem = styled(Box, {
-  shouldForwardProp: (prop) => prop !== "$active",
-})<{ $active: Bool }>`
-  background: ${({ $active }) => ($active ? "#E8F0FF" : "transparent")};
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: 63px;
-  cursor: pointer;
-  margin-bottom: 6px;
+  "&[data-selected='true']": {
+    background: "#E8F0FF",
+  },
 
-  &:hover {
-    background: #e8f0ff;
-  }
-`;
+  "&:hover": {
+    background: "#e8f0ff",
+  },
 
-export const ListItemLeft = styled(Box)`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-`;
+  "&:focus-visible": {
+    outline: "2px solid #1976d2",
+    outlineOffset: 2,
+  },
+}));
 
-export const ListItemRight = styled(Box)`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-`;
+export const ListItemLeft = styled(Box)(() => ({
+  display: "flex",
+  alignItems: "center",
+  gap: 6,
+}));
 
-export const LangFlag = styled.img<{ $size?: number }>`
-  width: ${({ $size }) => ($size ? `${$size}px` : "20px")};
-  height: ${({ $size }) => ($size ? `${$size}px` : "20px")};
-  border-radius: 50%;
-`;
+export const LangTextDesktop = styled(Typography)(({ theme }) => ({
+  fontSize: 15,
+  fontWeight: 500,
+  fontFamily: "UrbanistMedium",
+  lineHeight: 1.2,
+  letterSpacing: 0,
+  paddingTop: 0,
 
-export const LangText = styled.span<{ $fontSize?: number }>`
-  font-size: ${({ $fontSize }) => ($fontSize ? `${$fontSize}px` : "15px")};
-  font-weight: 500;
-  font-family: UrbanistMedium;
-  line-height: 1.2;
-  letter-spacing: 0;
-  ${theme.breakpoints.down("md")} {
-    font-size: 13px;
-  }
-`;
+  [theme.breakpoints.down("md")]: {
+    lineHeight: "100%",
+    paddingTop: 2.5,
+  },
+}));
 
-export const CheckIconStyled = styled.img<{ $w?: number; $h?: number }>`
-  width: ${({ $w }) => ($w ? `${$w}px` : "18px")};
-  height: ${({ $h }) => ($h ? `${$h}px` : "18px")};
-`;
+export const LangTextMobile = styled(Typography)(({ theme }) => ({
+  fontSize: 10.5,
+  fontWeight: 500,
+  fontFamily: "UrbanistMedium",
+  lineHeight: "100%",
+  letterSpacing: 0,
+  paddingTop: 2.5,
 
-export const VerticalLine = styled.div`
-  width: 1px;
-  height: 20px;
-  background: #ddd;
-  ${theme.breakpoints.down("md")} {
-    height: 16px;
-  }
-`;
+  [theme.breakpoints.up("md")]: {
+    fontSize: 15,
+    lineHeight: 1.2,
+    paddingTop: 0,
+  },
+}));
+
+export const ExpandIconBox = styled(Box)(() => ({
+  display: "flex",
+  alignItems: "center",
+}));
+
+export const CheckIconBox = styled(Box)(() => ({
+  display: "flex",
+  alignItems: "center",
+  minWidth: 11,
+  justifyContent: "flex-end",
+}));

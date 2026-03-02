@@ -302,7 +302,6 @@ const CryptocurrencySelector: React.FC<CryptocurrencySelectorProps> = ({
       {helperText && (
         <Typography
           sx={{
-            mt: "4px",
             fontSize: isMobile ? "10px" : "13px",
             color: error
               ? theme.palette.error.main

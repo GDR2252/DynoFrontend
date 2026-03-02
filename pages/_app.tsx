@@ -38,7 +38,7 @@ export type LayoutSetterProps = {
 };
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
-  layout?: "home" | "client" | "login" | "payment" | "admin";
+  layout?: "home" | "client" | "login" | "payment" | "admin" | "none";
 };
 
 type AppPropsWithLayout = AppProps & {
@@ -134,6 +134,9 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
             <Component {...pageProps} {...pageSetterProps} />
           </AdminLayout>
         );
+
+      case "none":
+        return <Component {...pageProps} {...pageSetterProps} />;
 
       default:
         return (

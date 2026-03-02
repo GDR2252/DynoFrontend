@@ -1,163 +1,120 @@
-import { Box, Typography } from "@mui/material";
-import { useTranslation } from "react-i18next";
-import Image from "next/image";
 import Logo from "@/assets/Icons/home/dynopay-whiteLogo.svg";
-import X from "@/assets/Icons/home/X.svg";
+import Facebook from "@/assets/Icons/home/Facebook.svg";
 import Instagram from "@/assets/Icons/home/instagram.svg";
 import LinkedIn from "@/assets/Icons/home/LinkeIn.svg";
-import Facebook from "@/assets/Icons/home/Facebook.svg";
-import { Navigation } from "./styled";
-import { homeTheme } from "@/styles/homeTheme";
+import X from "@/assets/Icons/home/X.svg";
 import useIsMobile from "@/hooks/useIsMobile";
-import { theme } from "@/styles/theme";
-import { useRouter } from "next/router";
+import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { FC, memo, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  BottomSection,
+  ContentRow,
+  CopyrightText,
+  DescriptionText,
+  FooterContainer,
+  FooterWrapper,
+  LogoWrapper,
+  Navigation,
+  NavigationList,
+  SocialItem,
+  SocialsWrapper,
+  TopSection,
+} from "./styled";
 
-const socials = [
+interface SocialItemType {
+  readonly label: string;
+  readonly icon: StaticImageData;
+  readonly link: string;
+}
+
+interface RouteItemType {
+  readonly labelKey: string;
+  readonly link: string;
+}
+
+const SOCIALS: readonly SocialItemType[] = [
   { label: "X", icon: X, link: "#" },
   { label: "Instagram", icon: Instagram, link: "#" },
   { label: "LinkedIn", icon: LinkedIn, link: "#" },
   { label: "Facebook", icon: Facebook, link: "#" },
-];
+] as const;
 
-const HomeFooter = () => {
+const ROUTES: readonly RouteItemType[] = [
+  { labelKey: "documentation", link: "#" },
+  { labelKey: "footerSandbox", link: "#" },
+  { labelKey: "footerTerms", link: "/terms-conditions" },
+  { labelKey: "footerPrivacy", link: "/privacy-policy" },
+  { labelKey: "footerApiStatus", link: "/api-status" },
+  { labelKey: "footerSupport", link: "#" },
+] as const;
+
+const HomeFooter: FC = () => {
   const router = useRouter();
   const isMobile = useIsMobile("md");
   const { t } = useTranslation("landing");
 
-  const routes = [
-    { labelKey: "documentation", link: "#" },
-    { labelKey: "footerSandbox", link: "#" },
-    { labelKey: "footerTerms", link: "/terms-conditions" },
-    { labelKey: "footerPrivacy", link: "/privacy-policy" },
-    { labelKey: "footerApiStatus", link: "/api-status" },
-    { labelKey: "footerSupport", link: "#" },
-  ];
+  const routeItems = useMemo(
+    () =>
+      ROUTES.map((item) => (
+        <Link key={item.labelKey} href={item.link}>
+          <Navigation>{t(item.labelKey)}</Navigation>
+        </Link>
+      )),
+    [t],
+  );
+
+  const socialItems = useMemo(
+    () =>
+      SOCIALS.map((item) => (
+        <Link
+          key={item.label}
+          href={item.link}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <SocialItem>
+            <Image src={item.icon} alt={item.label} width={20} height={20} />
+          </SocialItem>
+        </Link>
+      )),
+    [],
+  );
 
   return (
-    <Box
-      component="footer"
-      sx={{
-        bgcolor: homeTheme.palette.text.primary,
-        mt: "auto",
-        pt: "64px",
-        pb: isMobile ? "17px" : "64px",
-        px: isMobile ? "15px" : 0,
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
-      <Box
-        sx={{
-          width: "100%",
-          maxWidth: "1280px",
-          minHeight: isMobile ? "390px" : "222px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          px: 2,
-        }}
-      >
-        {/* TOP */}
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <Image src={Logo} alt="DynoPay logo" width={134} height={45} onClick={() => router.push("/")} style={{ cursor: "pointer" }} />
+    <FooterWrapper>
+      <FooterContainer>
+        <TopSection>
+          <LogoWrapper onClick={() => router.push("/")}>
+            <Image
+              src={Logo}
+              alt="DynoPay logo"
+              width={134}
+              height={45}
+              priority
+            />
+          </LogoWrapper>
 
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              justifyContent: "space-between",
-              gap: 6,
-            }}
-          >
-            <Typography
-              sx={{
-                minWidth: "316px",
-                color: theme.palette.common.white,
-                opacity: 0.6,
-                fontSize: 14,
-                maxWidth: 420,
-                fontFamily: "OutfitRegular",
-                textWrap: "nowrap",
-              }}
-            >
+          <ContentRow>
+            <DescriptionText>
               {t("footerDescription1")}
               <br />
               {t("footerDescription2")}
-            </Typography>
+            </DescriptionText>
 
-            <Box
-              sx={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: { xs: "27px", lg: 3 },
-                alignItems: "flex-end",
-              }}
-            >
-              {routes.map((item) => (
-                <Link key={item.labelKey} href={item.link}>
-                  <Navigation>{t(item.labelKey)}</Navigation>
-                </Link>
-              ))}
-            </Box>
-          </Box>
-        </Box>
+            <NavigationList>{routeItems}</NavigationList>
+          </ContentRow>
+        </TopSection>
 
-        {/* BOTTOMM */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            justifyContent: "space-between",
-            alignItems: isMobile ? "flex-start" : "center",
-            gap: isMobile ? "28px" : 0,
-            borderTop: 1,
-            pt: 4,
-            borderColor: "rgba(255, 255, 255, 0.1)"
-          }}
-        >
-          <Typography
-            sx={{
-              color: theme.palette.common.white,
-              opacity: 0.6,
-              fontSize: 14,
-              fontFamily: "OutfitRegular",
-            }}
-          >
-            {t("footerCopyright")}
-          </Typography>
-
-          <Box sx={{ display: "flex", gap: 2 }}>
-            {socials.map((item) => (
-              <Link
-                key={item.label}
-                href={item.link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Box
-                  sx={{
-                    background: "rgba(255, 255, 255, 0.1)",
-                    p: "10px",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                    '&:hover': {
-                      background: "rgba(255, 255, 255, 0.2)",
-                    }
-                  }}
-                >
-                  <Image src={item.icon} alt={item.label} width={20} height={20} />
-                </Box>
-              </Link>
-            ))}
-          </Box>
-        </Box>
-      </Box>
-    </Box>
+        <BottomSection>
+          <CopyrightText>{t("footerCopyright")}</CopyrightText>
+          <SocialsWrapper>{socialItems}</SocialsWrapper>
+        </BottomSection>
+      </FooterContainer>
+    </FooterWrapper>
   );
 };
 
-export default HomeFooter;
+export default memo(HomeFooter);

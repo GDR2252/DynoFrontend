@@ -1,44 +1,35 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/router";
+import AddIcon from "@mui/icons-material/Add";
+import ErrorIcon from "@mui/icons-material/Error";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import LanguageIcon from "@mui/icons-material/Language";
 import { Box, useTheme } from "@mui/material";
 import Image from "next/image";
-import AddIcon from "@mui/icons-material/Add";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import LanguageIcon from "@mui/icons-material/Language";
-import ErrorIcon from "@mui/icons-material/Error";
-import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
+import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
 
-import DashboardIcon from "@/assets/Icons/dashboard-icon.svg";
-import TransactionsIcon from "@/assets/Icons/transaction-icon.svg";
-import WalletsIcon from "@/assets/Icons/wallet-icon.svg";
-import APIIcon from "@/assets/Icons/key-icon.svg";
-import NotificationsIcon from "@/assets/Icons/notification-icon.svg";
 import i18n from "i18next";
 
 import portugalFlag from "@/assets/Images/Icons/flags/portugal-flag.png";
 import unitedStatesFlag from "@/assets/Images/Icons/flags/united-states-flag.png";
-import franceFlag from "@/assets/Images/Icons/flags/france-flag.png";
-import spainFlag from "@/assets/Images/Icons/flags/spain-flag.png";
 import Link from "next/link";
 
+import LanguageSwitcherModal from "@/Components/UI/MobileLanguageSwitcher";
+import SidebarIcon from "@/utils/customIcons/sidebar-icons";
+import { useTranslation } from "react-i18next";
 import {
-  NavigationBarContainer,
-  NavigationBar,
-  NavItem,
-  IconButton,
-  NavLabel,
-  MainNavRow,
-  FirstRow,
-  SecondRow,
   AlertBanner,
   AlertText,
   ExpandedContent,
+  FirstRow,
+  IconButton,
+  MainNavRow,
+  NavigationBar,
+  NavigationBarContainer,
+  NavItem,
+  NavLabel,
+  SecondRow,
 } from "./styled";
-import { VerticalLine } from "@/Components/UI/LanguageSwitcher/styled";
-import LanguageSwitcherModal from "@/Components/UI/MobileLanguageSwitcher";
-import { useTranslation } from "react-i18next";
-import SidebarIcon from "@/utils/customIcons/sidebar-icons";
 
 const MobileNavigationBar = () => {
   const router = useRouter();
@@ -64,7 +55,12 @@ const MobileNavigationBar = () => {
       path: "/transactions",
       id: "transactions",
     },
-    { label: t("create"), icon: "add", path: "/create-pay-link", id: "create-pay-link" },
+    {
+      label: t("create"),
+      icon: "add",
+      path: "/create-pay-link",
+      id: "create-pay-link",
+    },
     { label: t("wallets"), icon: "wallets", path: "/wallet", id: "wallets" },
     {
       label: isExpanded ? t("close") : t("more"),
@@ -99,7 +95,7 @@ const MobileNavigationBar = () => {
   };
 
   const handleNavClick = (
-    item: (typeof firstRowItems)[0] | (typeof secondRowItems)[0]
+    item: (typeof firstRowItems)[0] | (typeof secondRowItems)[0],
   ) => {
     if (item.id === "more") {
       setIsExpanded(!isExpanded);
@@ -136,7 +132,7 @@ const MobileNavigationBar = () => {
   const renderIcon = (
     icon: string | any,
     active: boolean,
-    isCreate = false
+    isCreate = false,
   ) => {
     if (typeof icon === "string") {
       switch (icon) {
@@ -266,7 +262,7 @@ const MobileNavigationBar = () => {
               />
               <AlertText>{t("requiredKYC")}</AlertText>
 
-              <VerticalLine />
+              <HeaderDivider />
               <ArrowOutwardIcon
                 sx={{ color: theme.palette.text.secondary, fontSize: "16px" }}
               />
@@ -274,7 +270,7 @@ const MobileNavigationBar = () => {
           </ExpandedContent> */}
 
           <ExpandedContent isExpanding={isExpanded}>
-            <Link href='/wallet' onClick={() => setIsExpanded(false)}>
+            <Link href="/wallet" onClick={() => setIsExpanded(false)}>
               <AlertBanner>
                 <ErrorIcon
                   sx={{ color: theme.palette.error.main, fontSize: "20px" }}

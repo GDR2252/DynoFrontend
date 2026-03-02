@@ -1,32 +1,32 @@
-"use client";
-
-import { SxProps, Theme } from "@mui/material";
+import useIsMobile from "@/hooks/useIsMobile";
+import { Box } from "@mui/material";
+import i18n from "i18next";
+import Image, { StaticImageData } from "next/image";
 import {
   KeyboardEvent,
   MouseEvent as ReactMouseEvent,
+  memo,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+
 import {
-  CheckIconStyled,
+  CheckIconBox,
   DropdownContainer,
   DropdownHeader,
   DropdownListItem,
-  DropdownListWrapper,
+  ExpandIconBox,
   HeaderDivider,
-  HeaderIcon,
   HeaderRight,
   HeaderSelectedLeft,
-  LangFlag,
-  LangText,
+  LangTextDesktop,
+  LangTextMobile,
   ListItemLeft,
-  ListItemRight,
   TriggerBox,
   TriggerDivider,
-  TriggerExpandIcon,
   TriggerLeft,
   TriggerRight,
   WrapperBox,
@@ -38,67 +38,66 @@ import CheckIcon from "@/assets/Icons/true-icon.svg";
 import portugalFlag from "@/assets/Images/Icons/flags/portugal-flag.png";
 import unitedStatesFlag from "@/assets/Images/Icons/flags/united-states-flag.png";
 
-import useIsMobile from "@/hooks/useIsMobile";
-import i18n from "i18next";
+/* ===================== TYPES ===================== */
 
-type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl";
+type LanguageCode = "pt" | "en";
 
 type Language = Readonly<{
-  code: "pt" | "en";
+  code: LanguageCode;
   label: string;
-  flag: { src: string };
+  flag: StaticImageData;
 }>;
-
-const languages = [
-  { code: "pt", label: "Português", flag: portugalFlag },
-  { code: "en", label: "English", flag: unitedStatesFlag },
-] as const satisfies readonly Language[];
 
 type Props = Readonly<{
-  sx?: SxProps<Theme>;
-  mobileBreakpoint?: Breakpoint;
-  onLanguageChange?: () => void;
+  showBig?: boolean;
 }>;
 
-export default function LanguageSwitcher({
-  sx,
-  mobileBreakpoint,
-  onLanguageChange,
-}: Props) {
-  const isMobile = useIsMobile(mobileBreakpoint || "md");
+/* ===================== CONSTANTS ===================== */
 
-  const wrapperRef = useRef<HTMLDivElement>(null);
+const LANGUAGES: readonly Language[] = [
+  { code: "pt", label: "Português", flag: portugalFlag },
+  { code: "en", label: "English", flag: unitedStatesFlag },
+] as const;
+
+/* ===================== COMPONENT ===================== */
+
+function LanguageSwitcher({ showBig = false }: Props) {
+  const isMobile = useIsMobile("md");
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const current = i18n.language || "en";
-
   const selected = useMemo<Language>(() => {
-    const found = languages.find(
-      (l) => l.code === (current as Language["code"]),
-    );
-    return found ?? languages[1];
+    return LANGUAGES.find((l) => l.code === current) ?? LANGUAGES[1];
   }, [current]);
+
+  const Text = showBig
+    ? LangTextDesktop
+    : isMobile
+      ? LangTextMobile
+      : LangTextDesktop;
 
   const close = useCallback(() => setIsOpen(false), []);
   const toggle = useCallback(() => setIsOpen((v) => !v), []);
 
   const changeLang = useCallback(
-    (lng: Language["code"]) => {
+    (lng: LanguageCode) => {
+      if (lng === current) {
+        close();
+        return;
+      }
       i18n.changeLanguage(lng);
       try {
         localStorage.setItem("lang", lng);
-      } catch {
-        // ignore
-      }
-      onLanguageChange?.();
+      } catch {}
       close();
     },
-    [close, onLanguageChange],
+    [close, current],
   );
 
   const onTriggerClick = useCallback(
-    (event: ReactMouseEvent) => {
+    (event: ReactMouseEvent<HTMLDivElement>) => {
       event.preventDefault();
       toggle();
     },
@@ -106,11 +105,13 @@ export default function LanguageSwitcher({
   );
 
   const onKeyActivate = useCallback(
-    (event: KeyboardEvent) => {
+    (event: KeyboardEvent<HTMLDivElement>) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         toggle();
-      } else if (event.key === "Escape") {
+        return;
+      }
+      if (event.key === "Escape") {
         event.preventDefault();
         close();
       }
@@ -122,8 +123,8 @@ export default function LanguageSwitcher({
     if (!isOpen) return;
 
     const handleClickOutside = (event: globalThis.MouseEvent) => {
-      const target = event.target as Node | null;
       const root = wrapperRef.current;
+      const target = event.target as Node | null;
       if (!root || !target) return;
       if (!root.contains(target)) close();
     };
@@ -141,107 +142,129 @@ export default function LanguageSwitcher({
         tabIndex={0}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        $isMobile={isMobile}
-        sx={sx}
+        sx={{
+          height: showBig ? 40 : isMobile ? 28 : 40,
+          width: showBig ? 111 : isMobile ? 78 : 111,
+          padding: showBig ? "10px 13px" : isMobile ? "7px 8px" : "10px 13px",
+          gap: showBig ? "14px" : isMobile ? "10px" : "14px",
+        }}
       >
         <TriggerLeft>
-          <LangFlag
-            src={selected.flag.src}
+          <Image
+            src={selected.flag}
             alt="flag"
-            $size={isMobile ? 14 : 20}
+            width={showBig ? 20 : isMobile ? 14 : 20}
+            height={showBig ? 20 : isMobile ? 14 : 20}
+            draggable={false}
           />
-          <LangText $fontSize={isMobile ? 10.5 : 15}>
-            {selected.code.toUpperCase()}
-          </LangText>
+          <Text>{selected.code.toUpperCase()}</Text>
         </TriggerLeft>
 
-        <TriggerRight $isMobile={isMobile}>
-          <TriggerDivider $height={isMobile ? 14 : 20} />
-          {isOpen ? (
-            <TriggerExpandIcon
-              src={ExpandLessIcon.src}
+        <TriggerRight>
+          <TriggerDivider sx={{ height: showBig ? 16 : isMobile ? 10 : 16 }} />
+
+          <ExpandIconBox>
+            <Image
+              src={isOpen ? ExpandLessIcon : ExpandMoreIcon}
               alt="expand"
-              width={isMobile ? 7 : 11}
-              height={isMobile ? 4 : 6}
+              width={showBig ? 11 : isMobile ? 7 : 11}
+              height={showBig ? 6 : isMobile ? 4 : 6}
+              draggable={false}
             />
-          ) : (
-            <TriggerExpandIcon
-              src={ExpandMoreIcon.src}
-              alt="expand"
-              width={isMobile ? 7 : 11}
-              height={isMobile ? 4 : 6}
-            />
-          )}
+          </ExpandIconBox>
         </TriggerRight>
       </TriggerBox>
 
       {isOpen && (
-        <DropdownContainer $isMobile={isMobile}>
+        <DropdownContainer>
           <DropdownHeader
             onClick={close}
             onKeyDown={onKeyActivate}
             role="button"
             tabIndex={0}
             aria-label="Close language menu"
-            $isMobile={isMobile}
           >
             <HeaderSelectedLeft>
-              <LangFlag src={selected.flag.src} alt="flag" $size={16} />
-              <LangText>{selected.code.toUpperCase()}</LangText>
+              <Image
+                src={selected.flag}
+                alt="flag"
+                width={16}
+                height={16}
+                draggable={false}
+              />
+              <LangTextDesktop>{selected.code.toUpperCase()}</LangTextDesktop>
             </HeaderSelectedLeft>
 
             <HeaderRight>
-              <HeaderDivider $height={isMobile ? 14 : 20} />
-              <HeaderIcon
-                src={ExpandLessIcon.src}
-                alt="expand"
-                width={isMobile ? 7 : 11}
-                height={isMobile ? 4 : 6}
-              />
+              <HeaderDivider />
+              <ExpandIconBox>
+                <Image
+                  src={ExpandLessIcon}
+                  alt="expand"
+                  width={showBig ? 11 : isMobile ? 7 : 11}
+                  height={showBig ? 6 : isMobile ? 4 : 6}
+                  draggable={false}
+                />
+              </ExpandIconBox>
             </HeaderRight>
           </DropdownHeader>
 
-          <DropdownListWrapper role="listbox" aria-label="Language options">
-            {languages.map((lng) => (
-              <DropdownListItem
-                key={lng.code}
-                onClick={() => changeLang(lng.code)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    changeLang(lng.code);
-                  } else if (e.key === "Escape") {
-                    e.preventDefault();
-                    close();
-                  }
-                }}
-                role="option"
-                tabIndex={0}
-                aria-selected={lng.code === current}
-                $active={lng.code === current}
-              >
-                <ListItemLeft>
-                  <LangFlag src={lng.flag.src} alt="flag" $size={16} />
-                  <LangText>
-                    {lng.code.toUpperCase()} - {lng.label}
-                  </LangText>
-                </ListItemLeft>
+          <Box role="listbox" aria-label="Language options">
+            {LANGUAGES.map((lng) => {
+              const isSelected = lng.code === current;
 
-                <ListItemRight>
-                  {lng.code === current && (
-                    <CheckIconStyled
-                      src={CheckIcon.src}
-                      alt="check"
-                      $w={11}
-                      $h={8}
+              return (
+                <DropdownListItem
+                  key={lng.code}
+                  role="option"
+                  tabIndex={0}
+                  aria-selected={isSelected}
+                  data-selected={isSelected ? "true" : "false"}
+                  onClick={() => changeLang(lng.code)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      changeLang(lng.code);
+                      return;
+                    }
+                    if (e.key === "Escape") {
+                      e.preventDefault();
+                      close();
+                    }
+                  }}
+                >
+                  <ListItemLeft>
+                    <Image
+                      src={lng.flag}
+                      alt="flag"
+                      width={16}
+                      height={16}
+                      draggable={false}
                     />
-                  )}
-                </ListItemRight>
-              </DropdownListItem>
-            ))}
-          </DropdownListWrapper>
+                    <LangTextDesktop>
+                      {lng.code.toUpperCase()} - {lng.label}
+                    </LangTextDesktop>
+                  </ListItemLeft>
+
+                  <CheckIconBox>
+                    {isSelected && (
+                      <Image
+                        src={CheckIcon}
+                        alt="check"
+                        width={11}
+                        height={8}
+                        draggable={false}
+                      />
+                    )}
+                  </CheckIconBox>
+                </DropdownListItem>
+              );
+            })}
+          </Box>
         </DropdownContainer>
       )}
     </WrapperBox>
   );
 }
+
+export default memo(LanguageSwitcher);

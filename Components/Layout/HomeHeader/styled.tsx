@@ -1,36 +1,35 @@
-// styles/HomeHeader.styles.ts
 import { homeTheme } from "@/styles/homeTheme";
 import { theme } from "@/styles/theme";
 import { MenuRounded } from "@mui/icons-material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import { Box, Divider, Drawer, IconButton, styled } from "@mui/material";
-import HomeButton from "../HomeButton";
+import {
+  Box,
+  Button,
+  Divider,
+  Drawer,
+  IconButton,
+  styled,
+  Typography,
+} from "@mui/material";
 
-type FixedHeaderProps = {
-  $visible: boolean;
-};
-
-export const FixedHeader = styled("div", {
-  shouldForwardProp: (prop) => prop !== "$visible",
-})<FixedHeaderProps>(({ $visible }) => ({
+export const FixedHeader = styled(Box)(() => ({
   position: "fixed",
   top: 0,
   left: 0,
   right: 0,
   zIndex: 1400,
-  backgroundColor: "#fff",
-  transform: $visible ? "translateY(0)" : "translateY(-100%)",
+  backgroundColor: theme.palette.common.white,
   transition: "transform 0.3s ease-in-out",
   width: "100%",
 }));
 
-export const HeaderContainer = styled("nav")(({ theme }) => ({
+export const HeaderContainer = styled(Box)(({ theme }) => ({
   height: 64,
   padding: "0 12px",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  backgroundColor: "#fff",
+  backgroundColor: theme.palette.common.white,
   maxWidth: 1280,
   margin: "0 auto",
 
@@ -52,7 +51,7 @@ export const HeaderDivider = styled(Divider)({
   borderColor: homeTheme.palette.border.main,
 });
 
-export const ClickableLogo = styled("button")({
+export const ClickableLogo = styled(Button)({
   display: "inline-flex",
   alignItems: "center",
   cursor: "pointer",
@@ -66,7 +65,7 @@ export const ClickableLogo = styled("button")({
 export const LeftGroup = styled(Box)({
   display: "flex",
   alignItems: "center",
-  gap: "102px",
+  gap: "100px",
 });
 
 export const RightGroup = styled(Box)({
@@ -75,15 +74,15 @@ export const RightGroup = styled(Box)({
   gap: "12px",
 });
 
-export const NavLinks = styled("div")(({ theme }) => ({
+export const NavLinks = styled(Box)(() => ({
   display: "flex",
-  gap: 32,
+  gap: 30,
   letterSpacing: "0px",
   fontFamily: "OutfitRegular",
   alignItems: "center",
   justifyContent: "space-between",
 
-  [theme.breakpoints.down("md")]: {
+  "@media (max-width: 1025px)": {
     display: "none",
   },
 
@@ -104,7 +103,7 @@ export const NavLinks = styled("div")(({ theme }) => ({
   },
 }));
 
-export const Actions = styled("div")({
+export const Actions = styled(Box)({
   display: "flex",
   alignItems: "center",
   gap: "12px",
@@ -133,13 +132,22 @@ export const DesktopLanguageWrapper = styled(Box)({
 });
 
 export const MobileLanguageWrapper = styled(Box)({
-  display: "flex",
+  display: "none",
   alignItems: "center",
+
+  "@media (max-width: 899px)": {
+    display: "flex",
+  },
 });
 
-export const MobileMenuButton = styled(IconButton)({
-  padding: "0px",
-});
+export const MobileMenuButton = styled(IconButton)(() => ({
+  display: "none",
+  padding: "5px 0px 0px 0px",
+
+  "@media (max-width: 1025px)": {
+    display: "block",
+  },
+}));
 
 export const MenuOpenIcon = styled(MenuRounded)({
   color: theme.palette.text.primary,
@@ -152,6 +160,7 @@ export const MenuCloseIcon = styled(CloseRoundedIcon)({
 });
 
 export const MobileMenuDrawer = styled(Drawer)({
+  display: "none",
   zIndex: 1200,
 
   "& .MuiDrawer-paper": {
@@ -169,9 +178,13 @@ export const MobileMenuDrawer = styled(Drawer)({
     backdropFilter: "blur(8px)",
     WebkitBackdropFilter: "blur(8px)",
   },
+
+  "@media (max-width: 1025px)": {
+    display: "block",
+  },
 });
 
-export const MobileDrawer = styled("div")({
+export const MobileDrawer = styled(Box)({
   height: "100%",
   backgroundColor: "transparent",
   display: "flex",
@@ -190,7 +203,7 @@ export const MobileNavContent = styled(Box)({
   alignItems: "flex-end",
 });
 
-export const MobileNavItem = styled("button")({
+export const MobileNavItem = styled(Typography)({
   fontSize: "15.88px",
   fontWeight: 400,
   lineHeight: "22.68px",
@@ -209,8 +222,23 @@ export const MobileNavItem = styled("button")({
   padding: 0,
 });
 
-export const StyledGetStartedButton = styled(HomeButton)({
-  borderRadius: "8px !important",
-  padding: "8px 12px !important",
-  minWidth: "98px !important",
+export const StyledSignInButton = styled(Button)(() => ({
+  textTransform: "none",
+  fontSize: "14px",
+  fontWeight: 500,
+  lineHeight: "20px",
+  fontFamily: "OutfitMedium",
+  color: homeTheme.palette.text.primary,
+  whiteSpace: "nowrap",
+  padding: 0,
+
+  "&:hover": {
+    background: "transparent",
+    color: homeTheme.palette.primary.main,
+  },
+}));
+
+export const StyledGetStartedButton = styled(Box)({
+  borderRadius: 8,
+  minWidth: 98,
 });
